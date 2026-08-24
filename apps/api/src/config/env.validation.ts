@@ -16,6 +16,21 @@ export const envSchema = z.object({
     .default(false),
   CONTENT_PATH: z.string().default('./content'),
   LAB_RUNNER: z.enum(['simulation', 'docker', 'proxmox']).default('simulation'),
+  TERMINAL_ENABLED: z
+    .string()
+    .transform((val) => val.toLowerCase() === 'true')
+    .or(z.boolean())
+    .default(true),
+  AI_ENABLED: z
+    .string()
+    .transform((val) => val.toLowerCase() === 'true')
+    .or(z.boolean())
+    .default(true),
+  AI_PROVIDER: z.enum(['openai-compatible', 'null']).default('openai-compatible'),
+  AI_BASE_URL: z.string().default('http://localhost:11434/v1'),
+  AI_MODEL: z.string().default('llama3.1:8b'),
+  AI_API_KEY: z.string().optional(),
+  AI_RATE_LIMIT_HOURLY: z.coerce.number().int().positive().default(20),
 });
 
 export type EnvConfig = z.infer<typeof envSchema>;

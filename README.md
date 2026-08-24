@@ -58,8 +58,8 @@ Projet réalisé dans le cadre du BTS SIO : l'architecture, la sécurité et la 
 | Backend | NestJS 11 (monolithe modulaire), Prisma 6 |
 | Base de données | PostgreSQL 16 (Docker) |
 | Contenu | Markdown + frontmatter YAML, schémas Zod |
-| Qualité | Vitest (154 tests au Lot 6), ESLint, Turborepo, GitHub Actions |
-| Sécurité | Argon2id, JWT, rehype-sanitize, audit RGPD |
+| Qualité | Vitest (207 tests au Lot 8), ESLint, Turborepo, GitHub Actions |
+| Sécurité | Argon2id, JWT, rehype-sanitize, audit RGPD, sandbox terminal, zéro-fuite IA |
 
 ## 🏗️ Architecture
 
@@ -125,8 +125,8 @@ Comptes de démonstration (développement local uniquement) :
 | 4 | Catalogue & leçons | ✅ |
 | 5 | Quiz interactifs | ✅ |
 | 6 | Progression & tableau de bord | ✅ |
-| 7 | Ateliers pratiques (labs) | 🚧 Prochain |
-| 8 | Terminal & assistant IA | ⬜ |
+| 7 | Ateliers pratiques (labs) | ✅ |
+| 8 | Terminal & assistant IA | ✅ |
 
 ## 📄 Licence
 
