@@ -10,6 +10,41 @@ import type {
 
 export const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
+// Promesse de rafraîchissement partagée pour dédupliquer les requêtes concurrentes (StrictMode, montages multiples)
+let inFlightRefreshPromise: Promise<LoginResponse | null> | null = null;
+
+/**
+ * Exécute une requête de rafraîchissement de session ou réutilise la promesse en cours.
+ * Évite le rejeu concurrent du cookie de rafraîchissement qui déclenche la détection de vol (lot 3).
+ */
+export async function requestSessionRefresh(): Promise<LoginResponse | null> {
+  if (inFlightRefreshPromise) {
+    return inFlightRefreshPromise;
+  }
+
+  inFlightRefreshPromise = (async () => {
+    try {
+      const response = await fetch('/api/v1/auth/refresh', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+      });
+
+      if (response.ok) {
+        const data: LoginResponse = await response.json();
+        return data;
+      }
+      return null;
+    } catch {
+      return null;
+    } finally {
+      inFlightRefreshPromise = null;
+    }
+  })();
+
+  return inFlightRefreshPromise;
+}
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   // D-09 / RM-13 : Access token conservé EN MÉMOIRE uniquement (jamais localStorage ni sessionStorage)
@@ -22,20 +57,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     async function restoreSession() {
       try {
-        const response = await fetch('/api/v1/auth/refresh', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
-        });
-
-        if (response.ok) {
-          const data: LoginResponse = await response.json();
-          if (isMounted) {
+        const data = await requestSessionRefresh();
+        if (isMounted) {
+          if (data) {
             setUser(data.user);
             setAccessToken(data.accessToken);
-          }
-        } else {
-          if (isMounted) {
+          } else {
             setUser(null);
             setAccessToken(null);
           }
