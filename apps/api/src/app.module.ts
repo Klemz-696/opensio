@@ -9,6 +9,7 @@ import { QuizzesModule } from './modules/quizzes/quizzes.module';
 
 import { ProgressModule } from './modules/progress/progress.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
+import { LabsModule } from './modules/labs/labs.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { DashboardModule } from './modules/dashboard/dashboard.module';
     QuizzesModule,
     ProgressModule,
     DashboardModule,
+    LabsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

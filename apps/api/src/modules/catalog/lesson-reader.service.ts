@@ -5,27 +5,14 @@ import {
 } from '@nestjs/common';
 import * as fs from 'fs';
 import * as path from 'path';
+import { resolveContentRoot } from '../../common/utils/content-path.util';
 
 @Injectable()
 export class LessonReaderService {
   private readonly contentRoot: string;
 
   constructor() {
-    const rawRoot = process.env.CONTENT_PATH ?? './content';
-    let resolved = path.resolve(process.cwd(), rawRoot);
-
-    // Résolution de repli si exécuté depuis apps/api
-    if (!fs.existsSync(resolved)) {
-      const workspaceRootFallback = path.resolve(process.cwd(), '../../content');
-      const apiParentFallback = path.resolve(process.cwd(), '../content');
-      if (fs.existsSync(workspaceRootFallback)) {
-        resolved = workspaceRootFallback;
-      } else if (fs.existsSync(apiParentFallback)) {
-        resolved = apiParentFallback;
-      }
-    }
-
-    this.contentRoot = resolved;
+    this.contentRoot = resolveContentRoot();
   }
 
   /**
