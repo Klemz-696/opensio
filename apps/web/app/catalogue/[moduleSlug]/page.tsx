@@ -89,7 +89,7 @@ export default function ModuleDetailPage({ params }: ModulePageProps) {
       <Breadcrumbs items={breadcrumbs} />
       <ModuleHeader module={moduleData} />
       <ModuleLessonsList moduleSlug={moduleData.slug} lessons={moduleData.lessons} />
-      <ModuleQuizzesList quizzes={moduleData.quizzes} />
+      <ModuleQuizzesList moduleSlug={moduleData.slug} quizzes={moduleData.quizzes} />
       <ModuleLabsList labs={moduleData.labs} />
     </div>
   );
