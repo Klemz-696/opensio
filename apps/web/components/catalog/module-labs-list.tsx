@@ -1,13 +1,15 @@
 import React from 'react';
-import { Terminal, Clock, Lock } from 'lucide-react';
+import Link from 'next/link';
+import { Terminal, Clock, Play, ChevronRight } from 'lucide-react';
 import type { LabSummary } from '../../lib/api/catalog-api';
 import { formatDuration, formatLabLevel } from '../../lib/utils/formatters';
 
 interface ModuleLabsListProps {
+  moduleSlug?: string;
   labs: LabSummary[];
 }
 
-export function ModuleLabsList({ labs }: ModuleLabsListProps) {
+export function ModuleLabsList({ moduleSlug, labs }: ModuleLabsListProps) {
   if (!labs || labs.length === 0) {
     return null;
   }
@@ -29,11 +31,14 @@ export function ModuleLabsList({ labs }: ModuleLabsListProps) {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {labs.map((lab) => {
           const levelInfo = formatLabLevel(lab.level);
+          const labHref = moduleSlug
+            ? `/catalogue/${moduleSlug}/labs/${lab.slug}`
+            : `#`;
 
           return (
             <div
               key={lab.id}
-              className="p-4 rounded-xl bg-slate-900/60 border border-slate-800 flex items-center justify-between"
+              className="p-4 rounded-xl bg-slate-900/60 border border-slate-800 flex items-center justify-between hover:border-emerald-500/30 transition-colors"
             >
               <div>
                 <div className="flex items-center gap-2 mb-1">
@@ -54,10 +59,20 @@ export function ModuleLabsList({ labs }: ModuleLabsListProps) {
                 </div>
               </div>
 
-              <div className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-slate-800 text-[11px] font-medium text-slate-400 border border-slate-700">
-                <Lock className="w-3.5 h-3.5" />
-                <span>Exécution (Lot 7)</span>
-              </div>
+              {moduleSlug ? (
+                <Link
+                  href={labHref}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-500/30 text-xs font-semibold text-emerald-300 transition-colors"
+                >
+                  <Play className="w-3.5 h-3.5 fill-emerald-300" />
+                  <span>Démarrer</span>
+                  <ChevronRight className="w-3.5 h-3.5 ml-0.5" />
+                </Link>
+              ) : (
+                <div className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-slate-800 text-[11px] font-medium text-slate-400 border border-slate-700">
+                  <span>Prêt</span>
+                </div>
+              )}
             </div>
           );
         })}

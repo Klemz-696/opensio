@@ -60,6 +60,21 @@ export function DashboardActivity({ events }: DashboardActivityProps) {
           subtext: `Score : ${meta.score}% (seuil : ${meta.passingScore}%)`,
           date,
         };
+      case 'LAB_STARTED':
+        return {
+          icon: <PlayCircle className="w-4 h-4 text-emerald-400" />,
+          title: `Atelier démarré : ${meta.labTitle || meta.labSlug || 'Atelier pratique'}`,
+          subtext: 'Session pratique en cours',
+          date,
+        };
+      case 'LAB_COMPLETED':
+      case 'LAB_PASSED':
+        return {
+          icon: <Trophy className="w-4 h-4 text-emerald-400" />,
+          title: `Atelier validé : ${meta.labTitle || meta.labSlug || 'Atelier pratique'}`,
+          subtext: meta.score !== undefined ? `Score obtenu : ${meta.score} pts` : 'Validé avec succès',
+          date,
+        };
       default:
         return {
           icon: <Sparkles className="w-4 h-4 text-slate-400" />,
