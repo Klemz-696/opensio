@@ -28,8 +28,9 @@ Projet réalisé dans le cadre du BTS SIO : l'architecture, la sécurité et la 
 
 ## ✨ Fonctionnalités
 
-- 🗂️ **Catalogue structuré** — années de formation, modules avec niveau de difficulté, durées estimées et codes de compétences du référentiel
-- 📚 **Leçons en Markdown** — rendu sécurisé (sanitization stricte), coloration syntaxique Shiki, métadonnées pédagogiques (objectifs, prérequis, critères de réussite)
+- 📊 **Tableau de bord & Progression** — synthèse globale de l'apprenant, calcul du temps actif (heartbeat 30s), reprise rapide (« Reprendre où j'en étais »), validation de modules (RM-03), recommandations pédagogiques et timeline d'activité
+- 🗂️ **Catalogue structuré** — années de formation, modules avec niveau de difficulté, jauges de progression dynamiques, durées estimées et codes de compétences du référentiel BTS
+- 📚 **Leçons en Markdown** — rendu sécurisé (sanitization stricte), coloration syntaxique Shiki, métadonnées pédagogiques (objectifs, prérequis, critères de réussite), bouton de validation interactive
 - ✅ **Quiz interactifs** — correction 100 % côté serveur, seuil de réussite configurable (80 % par défaut), explications pédagogiques après soumission, historique des tentatives
 - 🔐 **Authentification robuste** — JWT en mémoire vive, rotation des refresh tokens avec détection de réutilisation, hachage Argon2id
 - 🛡️ **Sécurité by design** — RBAC (étudiant / formateur / admin), rate limiting, erreurs RFC 7807, journal d'audit complet
@@ -57,7 +58,7 @@ Projet réalisé dans le cadre du BTS SIO : l'architecture, la sécurité et la 
 | Backend | NestJS 11 (monolithe modulaire), Prisma 6 |
 | Base de données | PostgreSQL 16 (Docker) |
 | Contenu | Markdown + frontmatter YAML, schémas Zod |
-| Qualité | Vitest (109 tests au Lot 5), ESLint, Turborepo, GitHub Actions |
+| Qualité | Vitest (154 tests au Lot 6), ESLint, Turborepo, GitHub Actions |
 | Sécurité | Argon2id, JWT, rehype-sanitize, audit RGPD |
 
 ## 🏗️ Architecture
@@ -123,8 +124,8 @@ Comptes de démonstration (développement local uniquement) :
 | 3 | Authentification & sécurité | ✅ |
 | 4 | Catalogue & leçons | ✅ |
 | 5 | Quiz interactifs | ✅ |
-| 6 | Progression & tableau de bord | 🚧 Prochain |
-| 7 | Ateliers pratiques (labs) | ⬜ |
+| 6 | Progression & tableau de bord | ✅ |
+| 7 | Ateliers pratiques (labs) | 🚧 Prochain |
 | 8 | Terminal & assistant IA | ⬜ |
 
 ## 📄 Licence

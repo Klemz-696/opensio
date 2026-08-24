@@ -3,6 +3,7 @@ import { NotFoundException } from '@nestjs/common';
 import { CatalogService } from '../catalog.service';
 import { CatalogCacheService } from '../catalog-cache.service';
 import { LessonReaderService } from '../lesson-reader.service';
+import { CatalogProgressEnricherService } from '../catalog-progress-enricher.service';
 import { PrismaService } from '../../../prisma/prisma.service';
 
 describe('CatalogService', () => {
@@ -35,10 +36,18 @@ describe('CatalogService', () => {
       readLessonMarkdown: vi.fn().mockResolvedValue('# Contenu de test'),
     };
 
+    const enricherMock = {
+      enrichTracks: vi.fn().mockImplementation((tracks) => tracks),
+      enrichModules: vi.fn().mockImplementation((modules) => modules),
+      enrichModuleDetail: vi.fn().mockImplementation((detail) => detail),
+      enrichLessonDetail: vi.fn().mockImplementation((detail) => detail),
+    };
+
     service = new CatalogService(
       prismaMock as unknown as PrismaService,
       cacheService,
       lessonReaderMock as unknown as LessonReaderService,
+      enricherMock as unknown as CatalogProgressEnricherService,
     );
   });
 

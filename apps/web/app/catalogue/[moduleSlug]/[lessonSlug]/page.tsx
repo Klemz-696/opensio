@@ -2,13 +2,15 @@
 
 import React, { useEffect, useState, use } from 'react';
 import Link from 'next/link';
-import { AlertCircle, RefreshCw, ArrowLeft, BookCheck } from 'lucide-react';
+import { AlertCircle, RefreshCw, ArrowLeft } from 'lucide-react';
 import { useAuth } from '../../../../lib/auth/use-auth';
 import { fetchLesson, type LessonDetail } from '../../../../lib/api/catalog-api';
 import { Breadcrumbs } from '../../../../components/layout/breadcrumbs';
 import { LessonHeader } from '../../../../components/lessons/lesson-header';
 import { LessonMetadata } from '../../../../components/lessons/lesson-metadata';
 import { MarkdownRenderer } from '../../../../components/lessons/markdown-renderer';
+import { LessonCompleteButton } from '../../../../components/lessons/lesson-complete-button';
+import { useLessonHeartbeat } from '../../../../lib/hooks/use-lesson-heartbeat';
 import LessonDetailLoading from './loading';
 
 interface LessonPageProps {
@@ -26,6 +28,9 @@ export default function LessonDetailPage({ params }: LessonPageProps) {
   const [lessonData, setLessonData] = useState<LessonDetail | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Suivi actif du temps passé
+  useLessonHeartbeat(lessonSlug, accessToken);
 
   const loadLesson = async () => {
     if (!accessToken || !lessonSlug) return;
@@ -91,11 +96,11 @@ export default function LessonDetailPage({ params }: LessonPageProps) {
       <LessonHeader lesson={lessonData} />
       <LessonMetadata lesson={lessonData} />
 
-      <article className="glass-panel rounded-2xl p-6 sm:p-10 border border-slate-800/90 bg-slate-900/60 shadow-2xl mb-12">
+      <article className="glass-panel rounded-2xl p-6 sm:p-10 border border-slate-800/90 bg-slate-900/60 shadow-2xl mb-8">
         <MarkdownRenderer content={lessonData.content} />
       </article>
 
-      <div className="flex items-center justify-between p-6 rounded-2xl bg-slate-900/80 border border-slate-800">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-6 rounded-2xl bg-slate-900/80 border border-slate-800 mb-12 shadow-xl">
         <Link
           href={`/catalogue/${moduleSlug}`}
           className="inline-flex items-center gap-2 text-sm font-semibold text-slate-300 hover:text-white transition-colors"
@@ -104,10 +109,12 @@ export default function LessonDetailPage({ params }: LessonPageProps) {
           <span>Retour au module</span>
         </Link>
 
-        <div className="flex items-center gap-2 text-xs text-slate-400">
-          <BookCheck className="w-4 h-4 text-emerald-400" />
-          <span>Leçon consultée avec succès</span>
-        </div>
+        <LessonCompleteButton
+          lessonSlug={lessonSlug}
+          isInitiallyCompleted={lessonData.progress?.status === 'completed'}
+          completedAt={lessonData.progress?.completedAt}
+          token={accessToken}
+        />
       </div>
     </div>
   );
