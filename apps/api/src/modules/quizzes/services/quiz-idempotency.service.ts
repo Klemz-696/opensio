@@ -1,8 +1,9 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, UnprocessableEntityException } from '@nestjs/common';
 import { createHash } from 'crypto';
 import type { QuizAttemptResultDto } from '../dto/quiz-responses.dto';
 
 interface CachedAttemptEntry {
+  payloadHash: string;
   result: QuizAttemptResultDto;
   expiresAt: number;
 }
@@ -15,33 +16,39 @@ export class QuizIdempotencyService {
   private readonly defaultTtlMs = 5 * 60 * 1000; // 5 minutes
 
   /**
+   * Calcule un hash SHA-256 stable et canonique du corps des réponses.
+   */
+  computePayloadHash(answers: Record<string, string[]>): string {
+    const sortedEntries = Object.entries(answers)
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([k, v]) => [k, [...v].sort()]);
+    return createHash('sha256').update(JSON.stringify(sortedEntries)).digest('hex');
+  }
+
+  /**
    * Génère une clé d'idempotence stable à partir de l'utilisateur, du quiz et du payload
    * ou utilise la clé explicitement fournie par le client (en-tête Idempotency-Key).
    */
   generateKey(
     userId: string,
     quizId: string,
-    answers: Record<string, string[]>,
+    payloadHash: string,
     clientKey?: string | null,
   ): string {
     if (clientKey && clientKey.trim().length > 0) {
       return `idempotency:${userId}:${quizId}:${clientKey.trim()}`;
     }
 
-    // Clé basée sur le contenu des réponses (déduplication automatique des doubles clics)
-    const sortedEntries = Object.entries(answers)
-      .sort(([a], [b]) => a.localeCompare(b))
-      .map(([k, v]) => [k, [...v].sort()]);
-    const payloadHash = createHash('sha256').update(JSON.stringify(sortedEntries)).digest('hex');
-
     return `auto-dedup:${userId}:${quizId}:${payloadHash}`;
   }
 
   /**
-   * Exécute une opération avec garantie d'idempotence et de déduplication des requêtes concurrentes.
+   * Exécute une opération avec garantie d'idempotence, déduplication des requêtes concurrentes
+   * et rejet 422 en cas de collision avec un payload différent.
    */
   async executeWithIdempotency(
     key: string,
+    payloadHash: string,
     operation: () => Promise<QuizAttemptResultDto>,
   ): Promise<QuizAttemptResultDto> {
     this.cleanExpired();
@@ -49,6 +56,13 @@ export class QuizIdempotencyService {
     // 1. Vérifier si un résultat a déjà été mis en cache pour cette clé
     const cached = this.cache.get(key);
     if (cached && cached.expiresAt > Date.now()) {
+      if (cached.payloadHash !== payloadHash) {
+        this.logger.warn(`[Idempotency] Collision 422 : clé ${key} réutilisée avec un payload différent`);
+        throw new UnprocessableEntityException(
+          'Cette clé d\'idempotence a déjà été utilisée avec un corps de réponses différent.',
+        );
+      }
+
       this.logger.debug(`[Idempotency] Résultat en cache retourné pour la clé ${key}`);
       return cached.result;
     }
@@ -65,6 +79,7 @@ export class QuizIdempotencyService {
       try {
         const result = await operation();
         this.cache.set(key, {
+          payloadHash,
           result,
           expiresAt: Date.now() + this.defaultTtlMs,
         });

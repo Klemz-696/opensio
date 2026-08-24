@@ -299,8 +299,17 @@ Implémentation complète des quiz interactifs d'auto-évaluation conformément 
 
 - `pnpm lint` : 100% vert (0 erreur, 0 avertissement sur l'ensemble du monorepo).
 - `pnpm typecheck` : 100% vert (0 erreur TypeScript).
-- `pnpm test` : 100% vert (107 tests unitaires, d'intégration, de démarrage et frontend passants).
+- `pnpm test` : 100% vert (109 tests unitaires, d'intégration, de démarrage et frontend passants).
 - `node scripts/check-file-size.mjs` : 100% conforme D-13 (143 fichiers analysés).
 - `pnpm build` : Build de production Next.js 15 App Router (`/catalogue/[moduleSlug]/quiz/[quizSlug]`) et NestJS 11 réussi avec succès.
 - Script de démonstration de bout en bout exécuté et validé avec succès (`pnpm --filter @opensio/api exec tsx test/demo-lot5.ts`).
+
+### Décisions & Arbitrages (Lot 5)
+
+- **Gestion des collisions d'idempotence** : Si une requête `POST /quizzes/:slug/attempts` arrive avec une `Idempotency-Key` déjà traitée :
+  - Si le corps de réponses est identique $\rightarrow$ renvoi immédiat du résultat d'origine mis en cache (status 200/201, 0 écriture en base).
+  - Si le corps de réponses est différent $\rightarrow$ rejet immédiat avec code **422 Unprocessable Entity** (RFC 7807) pour signaler l'incohérence des paramètres.
+  - Dans tous les cas, **aucune seconde tentative n'est créée en base sous la même clé**.
+- **Cache d'idempotence en mémoire vive (in-process)** : Le cache de déduplication réside en mémoire vive du processus API (TTL 5 min). En cas de redémarrage du conteneur API, le cache se vide et un retry réseau ultérieur créerait une nouvelle tentative en base. Cette limite est pleinement acceptée pour notre contexte homelab/LAN mono-instance et pédagogique (Redis et files distribuées étant réservés au jalon v0.2).
+
 

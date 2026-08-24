@@ -40,9 +40,10 @@ export class QuizAttemptsService {
       throw new NotFoundException(`Quiz introuvable : ${quizSlug}`);
     }
 
-    const dedupKey = this.idempotencyService.generateKey(userId, quiz.id, answers, idempotencyKey);
+    const payloadHash = this.idempotencyService.computePayloadHash(answers);
+    const dedupKey = this.idempotencyService.generateKey(userId, quiz.id, payloadHash, idempotencyKey);
 
-    return this.idempotencyService.executeWithIdempotency(dedupKey, async () => {
+    return this.idempotencyService.executeWithIdempotency(dedupKey, payloadHash, async () => {
       const questionsToGrade: QuestionToGrade[] = quiz.questions.map((q) => ({
         id: q.id,
         kind: q.kind,
