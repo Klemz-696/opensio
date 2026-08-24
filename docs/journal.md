@@ -50,3 +50,28 @@ retirés, .gitattributes LF ajouté).
 - Reproduire en local (suppression node_modules + install figée) avant de déboguer
   via la CI.
 - Revoir systématiquement les configs générées par agent (placeholders, formats).
+
+## 2026-08-24 — Clôture du Lot 0
+
+### Livré
+
+Monorepo pnpm + Turborepo, configs partagées, squelettes web/api, CI GitHub Actions,
+contrôle D-13, compose dev PostgreSQL. PR #1 mergée après revue (artefacts de build
+retirés, .gitattributes LF ajouté).
+
+### Incident CI — 5 runs, 3 causes racines
+
+1. Crash pnpm/action-setup : `.npmrc` avec `only-built-dependencies` en format string
+   → `onlyBuiltDependencies?.sort is not a function`
+2. Bloc `allowBuilds` auto-généré par pnpm 11 avec placeholders non remplacés
+   ("set this to true or false") → supprimé par erreur lors du nettoyage
+3. ERR_PNPM_IGNORED_BUILDS persistant : pnpm 11 n'honore plus `onlyBuiltDependencies`,
+   le mécanisme est `allowBuilds` (map paquet → booléen). Résolu via `pnpm approve-builds`.
+
+### Leçons
+
+- Lire les logs d'erreur jusqu'au bout : la solution (« Run pnpm approve-builds »)
+  figurait dans le premier log.
+- Reproduire en local (suppression node_modules + install figée) avant de déboguer
+  via la CI.
+- Revoir systématiquement les configs générées par agent (placeholders, formats).
