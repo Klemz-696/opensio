@@ -1,0 +1,24 @@
+{
+  "name": "opensio",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Plateforme auto-hébergée de formation et de révision pratique pour le BTS SIO SISR",
+  "scripts": {
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "lint": "turbo lint",
+    "typecheck": "turbo typecheck",
+    "test": "turbo test",
+    "check-file-size": "node scripts/check-file-size.mjs",
+    "format": "prettier --write \"**/*.{ts,tsx,js,mjs,json,md,yml,yaml}\""
+  },
+  "devDependencies": {
+    "prettier": "^3.5.1",
+    "turbo": "^2.4.4",
+    "typescript": "^5.7.3"
+  },
+  "packageManager": "pnpm@11.23.0",
+  "engines": {
+    "node": ">=22.0.0"
+  }
+}

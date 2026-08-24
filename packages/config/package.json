@@ -1,0 +1,20 @@
+{
+  "name": "@opensio/config",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Configurations partagées ESLint, TypeScript et Tailwind pour OpenSIO",
+  "main": "index.js",
+  "files": [
+    "tsconfig/*",
+    "eslint/*",
+    "tailwind/*"
+  ],
+  "dependencies": {
+    "@eslint/js": "^9.20.0",
+    "eslint": "^9.20.1",
+    "typescript-eslint": "^8.24.0"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.17"
+  }
+}

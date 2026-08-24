@@ -1,0 +1,21 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: opensio-db-dev
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: opensio
+      POSTGRES_USER: opensio
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-change-me}
+    ports:
+      - '5432:5432'
+    volumes:
+      - pgdata_dev:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U opensio -d opensio']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pgdata_dev:
