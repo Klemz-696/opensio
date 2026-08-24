@@ -1,0 +1,10 @@
+{
+  "extends": "@opensio/config/tsconfig/base.json",
+  "compilerOptions": {
+    "rootDir": "./",
+    "outDir": "./dist",
+    "allowJs": true,
+    "types": ["node", "vitest/globals"]
+  },
+  "include": ["src/**/*", "tests/**/*"]
+}
