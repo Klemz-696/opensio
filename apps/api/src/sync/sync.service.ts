@@ -6,7 +6,8 @@ import type { SyncReport } from './types.js';
 
 export async function executeContentSync(
   prisma: PrismaClient,
-  contentDir: string
+  contentDir: string,
+  cacheInvalidator?: { invalidateAll: () => void }
 ): Promise<SyncReport> {
   const startTime = Date.now();
 
@@ -36,6 +37,12 @@ export async function executeContentSync(
 
   // 3. Écriture transactionnelle en base
   const stats = await writeScannedContentToDatabase(prisma, scanned);
+
+  // 4. Invalidation du cache mémoire du catalogue (§41)
+  if (cacheInvalidator) {
+    cacheInvalidator.invalidateAll();
+  }
+
   const durationMs = Date.now() - startTime;
 
   return {
