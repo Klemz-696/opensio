@@ -50,3 +50,39 @@ retirés, .gitattributes LF ajouté).
 - Reproduire en local (suppression node_modules + install figée) avant de déboguer
   via la CI.
 - Revoir systématiquement les configs générées par agent (placeholders, formats).
+
+---
+
+## [Lot 1] — Données & Schéma Prisma MVP
+
+**Date** : 24/08/2026  
+**Branche** : `feat/b02-prisma-schema`  
+**Objectif** : Modélisation complète des 15 tables du MVP sous Prisma 6, respect strict de la convention D-13 (fichiers partiels), migrations PostgreSQL, amorçage (Seed) et intégration de `PrismaService` dans NestJS.
+
+### Réalisations
+
+- Découpage modulaire du schéma Prisma (`apps/api/prisma/schema/`) en 6 fichiers spécialisés :
+  - `base.prisma` : Datasource PostgreSQL, extensions `citext` et `pgcrypto`, client generator.
+  - `users.prisma` : Modèles `User`, `RefreshToken`, `PasswordResetToken`, enums `UserRole`, `UserStatus`.
+  - `content.prisma` : Modèles `Track`, `Module`, `Lesson`, `Quiz`, `QuizQuestion`, `LessonLab`, enum `QuizQuestionKind`.
+  - `progress.prisma` : Modèles `QuizAttempt`, `LessonProgress`, `ActivityEvent`, enum `LessonProgressStatus`.
+  - `labs.prisma` : Modèles `Lab`, `LabSession`, `LabEvent`, enums `LabLevel`, `LabSessionStatus`, `LabEventKind`.
+  - `audit.prisma` : Modèle `AuditLog`.
+- Ajout du modèle d'association `LessonLab` (relation n-n ordonnée et paramétrable entre `lessons` et `labs`, §21) avec clé primaire composite `[lesson_id, lab_id]`.
+- Seuil de réussite par défaut des quiz ajusté à 80 % (`Quiz.passingScore @default(80)`, règle RM-01).
+- Définition des index minimaux selon le §21 du Blueprint.
+- Création et application de la migration initiale unique et propre `20260824131650_init` sur le conteneur Docker PostgreSQL.
+- Implémentation du script de seed idempotent `apps/api/prisma/seed.ts` avec hachage **Argon2id** (m=64 Mio, t=3, p=4), variables `SEED_ADMIN_PASSWORD` / `SEED_STUDENT_PASSWORD`, fallback dev sécurisé et avertissement hors environnement de développement.
+- Création de `PrismaService` (avec hooks NestJS `onModuleInit` / `onModuleDestroy`), `PrismaModule` global et tests unitaires associés dans `apps/api`.
+- Scripts de gestion de données ajoutés aux `package.json` (`db:migrate`, `db:generate`, `seed`).
+
+### Validations
+
+- `pnpm lint` : 100% vert (0 erreur).
+- `pnpm typecheck` : 100% vert (0 erreur).
+- `pnpm test` : 100% vert (tests unitaires API et Web passants).
+- `node scripts/check-file-size.mjs` : 100% conforme D-13 (24 fichiers analysés, 0 avertissement, 0 violation).
+- `pnpm build` : Build API (NestJS) et Web (Next.js 15) réussi sans erreur.
+- Migration initiale et Seed réappliqués et testés avec succès sur PostgreSQL Docker.
+
+

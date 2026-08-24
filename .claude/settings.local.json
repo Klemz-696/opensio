@@ -1,0 +1,9 @@
+{
+  "env": {
+    "ANTHROPIC_BASE_URL": "https://openrouter.ai/api",
+    "ANTHROPIC_AUTH_TOKEN": "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",
+    "ANTHROPIC_API_KEY": "",
+    "ANTHROPIC_MODEL": "stealth/ox-alpha",
+    "ANTHROPIC_SMALL_FAST_MODEL": "stealth/ox-alpha"
+  }
+}

@@ -1,0 +1,84 @@
+enum LabLevel {
+  LEVEL_1_THEORY    @map("1_theory")
+  LEVEL_2_FILES     @map("2_files")
+  LEVEL_3_CONTAINER @map("3_container")
+  LEVEL_4_VM        @map("4_vm")
+
+  @@map("lab_level")
+}
+
+enum LabSessionStatus {
+  RUNNING @map("running")
+  PASSED  @map("passed")
+  FAILED  @map("failed")
+  EXPIRED @map("expired")
+  CLEANED @map("cleaned")
+
+  @@map("lab_session_status")
+}
+
+enum LabEventKind {
+  STARTED         @map("started")
+  FILE_SAVED      @map("file_saved")
+  VALIDATION_RUN  @map("validation_run")
+  HINT_USED       @map("hint_used")
+  TERMINAL_OPENED @map("terminal_opened")
+  PASSED          @map("passed")
+  FAILED          @map("failed")
+  EXPIRED         @map("expired")
+  CLEANUP         @map("cleanup")
+
+  @@map("lab_event_kind")
+}
+
+model Lab {
+  id               String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  moduleId         String?  @map("module_id") @db.Uuid
+  module           Module?  @relation(fields: [moduleId], references: [id], onDelete: SetNull)
+  slug             String   @unique @db.Citext
+  title            String
+  level            LabLevel @default(LEVEL_1_THEORY)
+  definitionPath   String   @map("definition_path")
+  maxScore         Int      @default(100) @map("max_score")
+  estimatedMinutes Int      @default(0) @map("estimated_minutes")
+  gitHash          String?  @map("git_hash")
+
+  sessions   LabSession[]
+  lessonLabs LessonLab[]
+
+  @@index([moduleId])
+  @@map("labs")
+}
+
+model LabSession {
+  id          String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  labId       String           @map("lab_id") @db.Uuid
+  lab         Lab              @relation(fields: [labId], references: [id], onDelete: Cascade)
+  userId      String           @map("user_id") @db.Uuid
+  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  status      LabSessionStatus @default(RUNNING)
+  score       Int?
+  hintsUsed   Int              @default(0) @map("hints_used")
+  startedAt   DateTime         @default(now()) @map("started_at") @db.Timestamptz(6)
+  expiresAt   DateTime         @map("expires_at") @db.Timestamptz(6)
+  completedAt DateTime?        @map("completed_at") @db.Timestamptz(6)
+  runtimeRef  Json?            @map("runtime_ref")
+  lastResult  Json?            @map("last_result")
+
+  events LabEvent[]
+
+  @@index([userId, status])
+  @@map("lab_sessions")
+}
+
+model LabEvent {
+  id        String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  sessionId String       @map("session_id") @db.Uuid
+  session   LabSession   @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  kind      LabEventKind
+  payload   Json?
+  createdAt DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@index([sessionId, createdAt])
+  @@map("lab_events")
+}

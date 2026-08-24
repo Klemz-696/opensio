@@ -9,6 +9,9 @@
     "lint": "turbo lint",
     "typecheck": "turbo typecheck",
     "test": "turbo test",
+    "db:migrate": "pnpm --filter @opensio/api db:migrate",
+    "db:generate": "pnpm --filter @opensio/api db:generate",
+    "seed": "pnpm --filter @opensio/api db:seed",
     "check-file-size": "node scripts/check-file-size.mjs",
     "format": "prettier --write \"**/*.{ts,tsx,js,mjs,json,md,yml,yaml}\""
   },

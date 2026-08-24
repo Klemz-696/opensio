@@ -1,0 +1,51 @@
+enum LessonProgressStatus {
+  STARTED   @map("started")
+  COMPLETED @map("completed")
+
+  @@map("lesson_progress_status")
+}
+
+model QuizAttempt {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId      String    @map("user_id") @db.Uuid
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  quizId      String    @map("quiz_id") @db.Uuid
+  quiz        Quiz      @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  answers     Json
+  score       Int
+  passed      Boolean
+  startedAt   DateTime  @default(now()) @map("started_at") @db.Timestamptz(6)
+  completedAt DateTime? @map("completed_at") @db.Timestamptz(6)
+
+  @@index([userId, quizId])
+  @@map("quiz_attempts")
+}
+
+model LessonProgress {
+  userId           String               @map("user_id") @db.Uuid
+  user             User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lessonId         String               @map("lesson_id") @db.Uuid
+  lesson           Lesson               @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  status           LessonProgressStatus @default(STARTED)
+  timeSpentSeconds Int                  @default(0) @map("time_spent_seconds")
+  completedAt      DateTime?            @map("completed_at") @db.Timestamptz(6)
+  updatedAt        DateTime             @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@id([userId, lessonId])
+  @@index([userId])
+  @@map("lesson_progress")
+}
+
+model ActivityEvent {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId     String   @map("user_id") @db.Uuid
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  kind       String
+  entityType String   @map("entity_type")
+  entityId   String   @map("entity_id")
+  metadata   Json?
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@index([userId, createdAt(sort: Desc)])
+  @@map("activity_events")
+}
