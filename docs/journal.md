@@ -151,3 +151,12 @@ retirés, .gitattributes LF ajouté).
   - Implémentation d'un upsert stable par clé naturelle/composite (`quizId_position` pour les questions, `lessonId_labId` pour les associations).
   - Détection fine des changements : une entité non modifiée conserve son ID et est comptabilisée en `inchangés`.
 - **Résultat** : 100% des compteurs à `= inchangés` dès la 2e exécution, intégrité des références d'essais de quiz garantie.
+
+## 2026-08-24 — Fix CI : Service PostgreSQL & isolation propre des tests d'intégration
+
+- **Problème identifié** : En CI, `src/sync/sync.spec.ts` échouait avec `PrismaClientInitializationError P1012` car le hook `beforeAll` tentait de se connecter sans instance PostgreSQL active.
+- **Correction apportée** :
+  - Ajout du service conteneur `postgres:16-alpine` avec healthcheck dans `.github/workflows/ci.yml`.
+  - Définition de `DATABASE_URL` et exécution de `prisma migrate deploy` en CI avant les tests.
+  - Encapsulation des tests de base de données de `sync.spec.ts` dans `describe.skipIf(!process.env.DATABASE_URL)` avec gestion propre de la connexion/déconnexion, permettant d'exécuter les tests unitaires même avec PostgreSQL arrêté sans aucune erreur.
+
