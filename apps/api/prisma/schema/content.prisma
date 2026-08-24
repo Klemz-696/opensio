@@ -56,6 +56,7 @@ model Lesson {
   gitHash          String?  @map("git_hash")
 
   lessonProgress LessonProgress[]
+  lessonLabs     LessonLab[]
 
   @@index([moduleId])
   @@map("lessons")
@@ -67,7 +68,7 @@ model Quiz {
   module       Module  @relation(fields: [moduleId], references: [id], onDelete: Cascade)
   slug         String  @unique @db.Citext
   title        String
-  passingScore Int     @default(70) @map("passing_score")
+  passingScore Int     @default(80) @map("passing_score")
   position     Int     @default(0)
 
   questions QuizQuestion[]
@@ -91,3 +92,17 @@ model QuizQuestion {
   @@index([quizId])
   @@map("quiz_questions")
 }
+
+model LessonLab {
+  lessonId String  @map("lesson_id") @db.Uuid
+  lesson   Lesson  @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  labId    String  @map("lab_id") @db.Uuid
+  lab      Lab     @relation(fields: [labId], references: [id], onDelete: Cascade)
+  required Boolean @default(false)
+  position Int     @default(0)
+
+  @@id([lessonId, labId])
+  @@index([labId])
+  @@map("lesson_labs")
+}
+

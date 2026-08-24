@@ -92,7 +92,7 @@ CREATE TABLE "quizzes" (
     "module_id" UUID NOT NULL,
     "slug" CITEXT NOT NULL,
     "title" TEXT NOT NULL,
-    "passing_score" INTEGER NOT NULL DEFAULT 70,
+    "passing_score" INTEGER NOT NULL DEFAULT 80,
     "position" INTEGER NOT NULL DEFAULT 0,
 
     CONSTRAINT "quizzes_pkey" PRIMARY KEY ("id")
@@ -110,6 +110,16 @@ CREATE TABLE "quiz_questions" (
     "position" INTEGER NOT NULL DEFAULT 0,
 
     CONSTRAINT "quiz_questions_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "lesson_labs" (
+    "lesson_id" UUID NOT NULL,
+    "lab_id" UUID NOT NULL,
+    "required" BOOLEAN NOT NULL DEFAULT false,
+    "position" INTEGER NOT NULL DEFAULT 0,
+
+    CONSTRAINT "lesson_labs_pkey" PRIMARY KEY ("lesson_id","lab_id")
 );
 
 -- CreateTable
@@ -267,6 +277,9 @@ CREATE INDEX "quizzes_module_id_idx" ON "quizzes"("module_id");
 CREATE INDEX "quiz_questions_quiz_id_idx" ON "quiz_questions"("quiz_id");
 
 -- CreateIndex
+CREATE INDEX "lesson_labs_lab_id_idx" ON "lesson_labs"("lab_id");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "labs_slug_key" ON "labs"("slug");
 
 -- CreateIndex
@@ -316,6 +329,12 @@ ALTER TABLE "quizzes" ADD CONSTRAINT "quizzes_module_id_fkey" FOREIGN KEY ("modu
 
 -- AddForeignKey
 ALTER TABLE "quiz_questions" ADD CONSTRAINT "quiz_questions_quiz_id_fkey" FOREIGN KEY ("quiz_id") REFERENCES "quizzes"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "lesson_labs" ADD CONSTRAINT "lesson_labs_lesson_id_fkey" FOREIGN KEY ("lesson_id") REFERENCES "lessons"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "lesson_labs" ADD CONSTRAINT "lesson_labs_lab_id_fkey" FOREIGN KEY ("lab_id") REFERENCES "labs"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "labs" ADD CONSTRAINT "labs_module_id_fkey" FOREIGN KEY ("module_id") REFERENCES "modules"("id") ON DELETE SET NULL ON UPDATE CASCADE;
