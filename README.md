@@ -2,6 +2,8 @@
 
 # 🎓 OpenSIO
 
+docs/assets/accueil.png
+
 **La plateforme d'entraînement pour le BTS SIO option SISR**
 
 [![Typing SVG](https://readme-typing-svg.demolab.com?font=Fira+Code&size=20&duration=3000&pause=1000&color=38BDF8&center=true&vCenter=true&width=650&lines=Plateforme+de+formation+BTS+SIO+SISR;Catalogue+%C2%B7+Le%C3%A7ons+%C2%B7+Quiz+interactifs;NestJS+11+%C2%B7+Next.js+15+%C2%B7+PostgreSQL)](https://git.io/typing-svg)
@@ -39,7 +41,7 @@ Projet réalisé dans le cadre du BTS SIO : l'architecture, la sécurité et la 
 
 | Catalogue | Leçon |
 |:---:|:---:|
-| ![Catalogue](docs/assets/catalogue.png) | ![Leçon](docs/assets/lesson.png) |
+| ![Catalogue](docs/assets/catalogue.png) | ![Leçon](docs/assets/lesson.gif) |
 
 | Quiz en cours | Résultat corrigé |
 |:---:|:---:|
