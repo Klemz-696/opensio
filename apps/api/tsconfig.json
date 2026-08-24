@@ -1,0 +1,8 @@
+{
+  "extends": "@opensio/config/tsconfig/nest.json",
+  "compilerOptions": {
+    "rootDir": "./",
+    "outDir": "./dist"
+  },
+  "include": ["src/**/*", "test/**/*"]
+}

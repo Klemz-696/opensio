@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  validate:
+    name: Validation globale (Lint, Types, Taille D-13, Tests, Build)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout du code
+        uses: actions/checkout@v4
+
+      - name: Installation de pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11.23.0
+
+      - name: Configuration de Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: "pnpm"
+
+      - name: Installation des dépendances
+        run: pnpm install --frozen-lockfile
+
+      - name: Contrôle de la taille des fichiers (Règle D-13 / RM-13)
+        run: node scripts/check-file-size.mjs
+
+      - name: Linting
+        run: pnpm lint
+
+      - name: Vérification des types TypeScript
+        run: pnpm typecheck
+
+      - name: Tests unitaires
+        run: pnpm test
+
+      - name: Build des applications et packages
+        run: pnpm build
