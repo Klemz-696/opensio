@@ -89,6 +89,23 @@ export class QuizAttemptsService {
         ip: ip ?? null,
       });
 
+      await this.prisma.activityEvent.create({
+        data: {
+          userId,
+          kind: grading.passed ? 'QUIZ_PASSED' : 'QUIZ_ATTEMPTED',
+          entityType: 'quiz',
+          entityId: quiz.id,
+          metadata: {
+            quizSlug: quiz.slug,
+            quizTitle: quiz.title,
+            score: grading.score,
+            passed: grading.passed,
+            passingScore: quiz.passingScore,
+            attemptId: attempt.id,
+          },
+        },
+      });
+
       return {
         id: attempt.id,
         quizId: quiz.id,

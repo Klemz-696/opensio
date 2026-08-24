@@ -7,6 +7,9 @@ import { LessonReaderService } from '../lesson-reader.service';
 import { CatalogController } from '../catalog.controller';
 import { executeContentSync } from '../../../sync/sync.service';
 
+import { CatalogProgressEnricherService } from '../catalog-progress-enricher.service';
+import { ProgressAggregationService } from '../../progress/progress-aggregation.service';
+
 const TEST_SECRET = 'c'.repeat(64);
 
 describe.skipIf(!process.env.DATABASE_URL)(
@@ -17,6 +20,8 @@ describe.skipIf(!process.env.DATABASE_URL)(
     let catalogService: CatalogService;
     let cacheService: CatalogCacheService;
     let lessonReader: LessonReaderService;
+    let enricher: CatalogProgressEnricherService;
+    let progressAggregation: ProgressAggregationService;
     let controller: CatalogController;
 
     const contentDir = path.resolve(__dirname, '../../../../../../content');
@@ -35,7 +40,9 @@ describe.skipIf(!process.env.DATABASE_URL)(
         cacheService = new CatalogCacheService();
         process.env.CONTENT_PATH = contentDir;
         lessonReader = new LessonReaderService();
-        catalogService = new CatalogService(prisma, cacheService, lessonReader);
+        progressAggregation = new ProgressAggregationService(prisma);
+        enricher = new CatalogProgressEnricherService(prisma, progressAggregation);
+        catalogService = new CatalogService(prisma, cacheService, lessonReader, enricher);
         controller = new CatalogController(catalogService);
 
         // Synchronisation du contenu réel de démonstration dans la base

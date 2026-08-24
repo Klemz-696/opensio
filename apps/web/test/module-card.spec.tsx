@@ -15,6 +15,12 @@ describe('ModuleCard', () => {
     competencyRefs: ['B2.1', 'B3.2'],
     trackSlug: 'annee-1',
     lessonsCount: 4,
+    progress: {
+      totalLessons: 4,
+      completedLessons: 2,
+      progressPercentage: 50,
+      isCompleted: false,
+    },
   };
 
   it('affiche le titre, la description, la durée et les compétences', () => {
@@ -27,5 +33,23 @@ describe('ModuleCard', () => {
     expect(screen.getByText('4 leçons')).toBeDefined();
     expect(screen.getByText('B2.1')).toBeDefined();
     expect(screen.getByText('B3.2')).toBeDefined();
+    expect(screen.getByText('2/4 leçons')).toBeDefined();
+    expect(screen.getByText('50%')).toBeDefined();
+  });
+
+  it('affiche le badge "Validé" quand le module est complètement terminé', () => {
+    const completedModule: ModuleSummary = {
+      ...mockModule,
+      progress: {
+        totalLessons: 4,
+        completedLessons: 4,
+        progressPercentage: 100,
+        isCompleted: true,
+      },
+    };
+
+    render(<ModuleCard module={completedModule} />);
+    expect(screen.getByText('Validé')).toBeDefined();
+    expect(screen.getByText('100%')).toBeDefined();
   });
 });
