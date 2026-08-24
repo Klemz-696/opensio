@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <defs>
+    <linearGradient id="opensio-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="100%" stop-color="#0284c7" />
+    </linearGradient>
+  </defs>
+  <rect width="32" height="32" rx="8" fill="#0b0f17" />
+  <rect x="1" y="1" width="30" height="30" rx="7" fill="none" stroke="#1e293b" stroke-width="1" />
+  <path d="M7 11.5L16 6.5L25 11.5V20.5L16 25.5L7 20.5V11.5Z" fill="none" stroke="url(#opensio-grad)" stroke-width="2" stroke-linejoin="round" />
+  <path d="M16 6.5V25.5" stroke="url(#opensio-grad)" stroke-width="1.5" stroke-linecap="round" />
+  <path d="M7 11.5L16 16.5L25 11.5" stroke="url(#opensio-grad)" stroke-width="1.5" stroke-linejoin="round" />
+</svg>

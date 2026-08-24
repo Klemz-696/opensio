@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, use } from 'react';
 import Link from 'next/link';
-import { Loader2, AlertCircle, RefreshCw, ArrowLeft } from 'lucide-react';
+import { AlertCircle, RefreshCw, ArrowLeft } from 'lucide-react';
 import { useAuth } from '../../../lib/auth/use-auth';
 import { fetchModule, type ModuleDetail } from '../../../lib/api/catalog-api';
 import { Breadcrumbs } from '../../../components/layout/breadcrumbs';
@@ -10,6 +10,7 @@ import { ModuleHeader } from '../../../components/catalog/module-header';
 import { ModuleLessonsList } from '../../../components/catalog/module-lessons-list';
 import { ModuleQuizzesList } from '../../../components/catalog/module-quizzes-list';
 import { ModuleLabsList } from '../../../components/catalog/module-labs-list';
+import ModuleDetailLoading from './loading';
 
 interface ModulePageProps {
   params: Promise<{
@@ -46,12 +47,7 @@ export default function ModuleDetailPage({ params }: ModulePageProps) {
   }, [accessToken, moduleSlug]);
 
   if (isLoading) {
-    return (
-      <div className="py-20 flex flex-col items-center justify-center gap-4 text-slate-400">
-        <Loader2 className="w-8 h-8 animate-spin text-sky-400" />
-        <p className="text-sm font-medium">Chargement du détail du module...</p>
-      </div>
-    );
+    return <ModuleDetailLoading />;
   }
 
   if (error || !moduleData) {
