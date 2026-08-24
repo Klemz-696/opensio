@@ -85,4 +85,13 @@ retirés, .gitattributes LF ajouté).
 - `pnpm build` : Build API (NestJS) et Web (Next.js 15) réussi sans erreur.
 - Migration initiale et Seed réappliqués et testés avec succès sur PostgreSQL Docker.
 
+## 2026-08-24 — Incident : main rouge après merge PR #2
 
+- PR #2 mergée avec CI rouge (tests PrismaService KO) → main cassé.
+- Cause racine : le postinstall de @prisma/client ne trouve pas le schéma en
+  monorepo pnpm ; le client n'était jamais généré en CI. Local vert car
+  `prisma migrate dev` avait généré le client.
+- Fix : étape `prisma generate` explicite dans ci.yml (PR #3, CI verte).
+- Hygiène : .claude/settings.local.json retiré du suivi Git.
+- Leçons : ne jamais merger sur CI rouge ; activer la protection de branche ;
+  un test vert en local ne prouve pas le vert en CI (environnement vierge).
