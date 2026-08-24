@@ -68,18 +68,22 @@ export class LabsService {
     }
 
     // Résumé sécurisé des indices (indices et coûts en % UNIQUEMENT, ZÉRO texte d'indice)
-    const hintsSummary: LabHintSummary[] = (labDef.hints || []).map((h, index) => ({
-      index: index + 1,
-      costPercent: h.cost_percent,
-    }));
+    const hintsSummary: LabHintSummary[] = (labDef.hints || []).map(
+      (h: { cost_percent: number; text: string }, index: number) => ({
+        index: index + 1,
+        costPercent: h.cost_percent,
+      })
+    );
 
     // Résumé public des vérifications (descriptions pédagogiques sans code de test)
-    const checksSummary: LabCheckSummary[] = (labDef.validation?.checks || []).map((c) => ({
-      id: c.id,
-      required: c.required,
-      points: c.points,
-      description: c.description,
-    }));
+    const checksSummary: LabCheckSummary[] = (labDef.validation?.checks || []).map(
+      (c: { id: string; required?: boolean; points: number; description?: string }) => ({
+        id: c.id,
+        required: c.required ?? false,
+        points: c.points,
+        description: c.description,
+      })
+    );
 
     // Enrichissement session active / meilleur score utilisateur
     let activeSessionId: string | null = null;
