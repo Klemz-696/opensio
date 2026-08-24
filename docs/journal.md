@@ -371,5 +371,76 @@ Implémentation complète du suivi de progression de l'étudiant et du tableau d
 - **Règle RM-03 de complétion de module** : Un module est considéré comme complété si et seulement si toutes ses leçons sont au statut `COMPLETED` ET (si le module comporte des quiz) au moins un quiz a été réussi (`passed = true`).
 - **Extraction du `userId` exclusivement depuis le JWT** : Conformément aux spécifications de sécurité (§29.2), aucun identifiant utilisateur n'est accepté dans le corps ou les paramètres de requête ; il est extrait de manière inviolable depuis le payload du token JWT validé par le `AuthGuard`.
 
+## [Lot 7] — Ateliers pratiques (Labs) & Runner de validation
+
+**Date** : 24/08/2026  
+**Branche** : `feat/b09-labs-runner`  
+**Objectif** : Ateliers pratiques (Labs) complets, cycle de vie des sessions avec machine à états stricte, intégration du runner simulé (`LAB_RUNNER=simulation`) derrière une interface découplée (`LabRunner`), validation serveur zéro-fuite, barème/indices pénalisés (RM-04 / RM-05), expiration TTL automatique (RM-09), interface apprenant Next.js 15 avec éditeur multi-fichiers, accordéon d'indices et verdict en temps réel.
+
+### Réalisations
+
+- **Architecture du Runner Découplé (`LabRunner` & `SimulationLabRunner`)** :
+  - Définition du contrat `LabRunner` (`runners/lab-runner.interface.ts`) avec token d'injection NestJS `LAB_RUNNER_TOKEN`.
+  - Implémentation `SimulationLabRunner` (`runners/simulation-lab-runner.service.ts`) :
+    - Création d'un répertoire temporaire sandbox isolé par session (`os.tmpdir()/opensio-labs/<sessionId>`).
+    - Copie des fichiers d'amorce (`files/`) et écriture des fichiers édités.
+    - Exécution du validateur `validator/validate.mjs` dans un sous-processus `node` isolé avec timeout strict (30s) et parsing du rapport JSON structuré.
+    - Nettoyage sécurisé du sandbox à la terminaison de la session.
+- **Sécurité Zéro-Fuite & Zéro Injection (RM-12 / §22.5 / §29.2)** :
+  - `GET /api/v1/labs/:slug` : Fournit uniquement les métadonnées publiques, le nombre d'indices et leur coût en pourcentage. ZÉRO texte d'indice, ZÉRO code de validateur, ZÉRO fixture de solution divulgués.
+  - Protection anti-path traversal stricte sur les fichiers sauvegardés (`..`, chemins absolus rejetés avec HTTP 400).
+  - Isolation inter-utilisateurs garantie : un utilisateur ne peut ni consulter, ni modifier, ni valider la session d'un autre utilisateur (HTTP 403 Forbidden).
+  - Extraction inviolable du `userId` exclusivement depuis le token JWT signé.
+- **Cycle de Vie & Machine à États des Sessions (`LabSessionsService`)** :
+  - États stricts gérés : `RUNNING` $\rightarrow$ `PASSED` / `FAILED` / `EXPIRED` / `CLEANED`.
+  - Démarrage de session (`POST /labs/:slug/sessions`) avec calcul du TTL (RM-09).
+  - Sauvegarde des fichiers de travail (`PUT /labs/:slug/sessions/:id/files`).
+  - Système d'indices pénalisés (`POST /labs/:slug/sessions/:id/hint`) : calcul du barème selon RM-05 (`cost_percent` déduit, plancher de score `floor_percent` respecté).
+  - Arrêt explicite de session (`POST /labs/:slug/sessions/:id/stop`).
+  - Découpage D-13 respecté : extraction du service de formatage des DTOs `LabSessionFormatterService` (`lab-session-formatter.service.ts`).
+- **Validation Serveur & Notation (`LabValidationService` & `LabScoringService`)** :
+  - Validation serveur complète (`POST /labs/:slug/sessions/:id/validate`) exécutée par le runner.
+  - Moteur de notation conforme à RM-04 (critères obligatoires requis, bonus optionnels) et RM-05 (déduction des pénalités d'indices sur le score final).
+  - Enregistrement des événements `LabEvent` (`VALIDATION_RUN`, `PASSED`, `FAILED`, `FILE_SAVED`, `HINT_USED`, `EXPIRED`, `CLEANUP`) et journalisation d'audit / activité (`ActivityEvent` `LAB_COMPLETED`).
+- **Endpoints REST API (`LabsController` — `/api/v1/labs`)** :
+  - `GET /labs/:slug` : Détail public d'un lab avec Zéro-Fuite.
+  - `POST /labs/:slug/sessions` : Démarrage / reprise d'une session active.
+  - `GET /labs/:slug/sessions/:id` : Consultation de l'état de la session et des fichiers.
+  - `PUT /labs/:slug/sessions/:id/files` : Sauvegarde des fichiers de travail.
+  - `POST /labs/:slug/sessions/:id/validate` : Soumission pour validation serveur par le runner.
+  - `POST /labs/:slug/sessions/:id/hint` : Déblocage du prochain indice avec pénalité.
+  - `POST /labs/:slug/sessions/:id/stop` : Abandon / nettoyage de session.
+- **Frontend Apprenant Next.js 15 (`apps/web`)** :
+  - Route `/catalogue/[moduleSlug]/labs/[labSlug]` : Page interactive complète avec breadcrumbs et gestion d'état réactive.
+  - `LabHeader` : En-tête avec badges de niveau, durée estimée, barème et statut de session en temps réel.
+  - `LabSessionControls` : Barre d'action avec compte à rebours TTL dynamique, boutons de sauvegarde, validation et abandon.
+  - `LabEditor` : Éditeur de code et fichiers tabulaire avec coloration, réinitialisation et indicateur d'enregistrement.
+  - `LabHints` : Accordéon d'indices pédagogiques avec avertissement de pénalité et confirmation de déblocage (RM-05).
+  - `LabVerdict` : Rapport d'évaluation détaillée affichant les points obtenus, les contrôles réussis/échoués et les retours explicatifs.
+  - `LabContext` : Scénario d'entreprise, objectifs pédagogiques cochables et critères d'évaluation.
+  - Squelette de chargement accessible (`loading.tsx`) avec attributs `role="status"` et `aria-busy="true"`.
+  - Intégration dans le catalogue (`ModuleLabsList`) avec liens d'accès directs aux labs et timeline d'activité (`DashboardActivity`) avec icônes de lab.
+- **Tests & Démonstration Réelle** :
+  - Suite de tests unitaires et d'intégration API (`lab-scoring.service.spec.ts`, `lab-sessions.service.spec.ts`, `labs.e2e.spec.ts`).
+  - Suite de tests frontend Web Vitest (`lab-hints.spec.tsx`, `lab-verdict.spec.tsx`, `lab-editor.spec.tsx`, `loading-skeletons.spec.tsx`).
+  - Script de démonstration réseau réelle HTTP (`apps/api/test/demo-lot7.ts`) validant l'ensemble du cycle avec 2 utilisateurs JWT, l'isolation inter-utilisateurs et le tableau de bord.
+  - 181 tests automatisés passants sur l'ensemble du monorepo (122 API, 41 Web, 18 Content-Schema).
+
+### Validations
+
+- `pnpm lint` : 100% vert (0 erreur, 0 avertissement sur l'ensemble du monorepo).
+- `pnpm typecheck` : 100% vert (0 erreur TypeScript).
+- `pnpm test` : 100% vert (181 tests unitaires, d'intégration et frontend passants).
+- `node scripts/check-file-size.mjs` : 100% conforme D-13 (205 fichiers analysés, 0 violation > 400 lignes).
+- `pnpm build` : Build de production Next.js 15 App Router et NestJS 11 réussi avec succès.
+- Démonstration HTTP de bout en bout exécutée et validée avec succès (`pnpm --filter @opensio/api exec tsx test/demo-lot7.ts`).
+
+### Décisions & Arbitrages (Lot 7)
+
+- **Abstraction et Découplage du Runner (`LabRunner`)** : En accord avec les spécifications (§19 et §22.5), l'exécution de la validation est complètement découplée du backend via l'interface `LabRunner` et le token d'injection `LAB_RUNNER_TOKEN`. L'implémentation par défaut `SimulationLabRunner` exécute les validateurs dans un bac à sable temporaire local avec sous-processus isolé. En v0.2+, une implémentation `DockerLabRunner` ou `MicrovmLabRunner` pourra remplacer ce service de manière transparente sans aucune modification des contrôleurs ou des services métier.
+- **Sécurité Zéro-Fuite Stricte (RM-12)** : Les routes publiques ne divulguent aucun texte d'indice ni aucun code de script validateur. Les indices ne sont débloqués qu'un par un à la demande expresse de l'utilisateur avec enregistrement de la pénalité de score en base.
+- **Isolation et Immuabilité Post-Validation** : Une fois la session validée avec succès (`PASSED`), aucune modification de fichier ou déblocage d'indice n'est autorisé. Toute tentative d'accès non autorisé par un tiers est rejetée par une erreur 403 Forbidden.
+
+
 
 
