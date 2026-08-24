@@ -6,6 +6,7 @@ import { LabsController } from './labs.controller';
 import { LabsService } from './services/labs.service';
 import { LabSessionsService } from './services/lab-sessions.service';
 import { LabSessionFormatterService } from './services/lab-session-formatter.service';
+import { LabSessionSweeperService } from './services/lab-session-sweeper.service';
 import { LabScoringService } from './services/lab-scoring.service';
 import { LabValidationService } from './services/lab-validation.service';
 import { SimulationLabRunner } from './runners/simulation-lab-runner.service';
@@ -18,6 +19,7 @@ import { LAB_RUNNER_TOKEN } from './runners/lab-runner.interface';
     LabsService,
     LabSessionsService,
     LabSessionFormatterService,
+    LabSessionSweeperService,
     LabScoringService,
     LabValidationService,
     SimulationLabRunner,
@@ -30,6 +32,7 @@ import { LAB_RUNNER_TOKEN } from './runners/lab-runner.interface';
     LabsService,
     LabSessionsService,
     LabSessionFormatterService,
+    LabSessionSweeperService,
     LabScoringService,
     LabValidationService,
     LAB_RUNNER_TOKEN,
