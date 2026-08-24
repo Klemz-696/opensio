@@ -1,17 +1,24 @@
 import { NestFactory } from '@nestjs/core';
+import cookieParser from 'cookie-parser';
 import { AppModule } from './app.module';
+import { validateEnv } from './config/env.validation';
+import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 
 async function bootstrap(): Promise<void> {
+  const env = validateEnv();
   const app = await NestFactory.create(AppModule);
-  const port = process.env.API_PORT ? parseInt(process.env.API_PORT, 10) : 4000;
+
+  app.use(cookieParser());
+  app.useGlobalFilters(new HttpExceptionFilter());
+  app.setGlobalPrefix('api/v1');
 
   app.enableCors({
-    origin: process.env.APP_URL || 'http://localhost:3000',
+    origin: env.APP_URL,
     credentials: true,
   });
 
-  await app.listen(port);
-  console.log(`🚀 [OpenSIO API] Démarré sur http://localhost:${port}`);
+  await app.listen(env.API_PORT);
+  console.log(`🚀 [OpenSIO API] Démarré sur http://localhost:${env.API_PORT}/api/v1`);
 }
 
 void bootstrap();
