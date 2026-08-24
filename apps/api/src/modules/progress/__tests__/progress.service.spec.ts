@@ -107,6 +107,33 @@ describe('ProgressService', () => {
       expect(result.status).toBe('completed');
       expect(result.timeSpentSeconds).toBe(120);
       expect(prismaMock.lessonProgress.update).toHaveBeenCalled();
+      expect(prismaMock.activityEvent.create).toHaveBeenCalledTimes(1);
+    });
+
+    it('ne consigne PAS de nouvel ActivityEvent si la leçon était déjà COMPLETED', async () => {
+      prismaMock.lesson.findUnique.mockResolvedValue(mockLesson);
+      prismaMock.lessonProgress.findUnique.mockResolvedValue({
+        userId: 'user-1',
+        lessonId: 'les-1',
+        status: LessonProgressStatus.COMPLETED,
+        timeSpentSeconds: 120,
+        completedAt: new Date('2026-08-24T10:00:00Z'),
+      });
+
+      const now = new Date();
+      prismaMock.lessonProgress.update.mockResolvedValue({
+        userId: 'user-1',
+        lessonId: 'les-1',
+        status: LessonProgressStatus.COMPLETED,
+        timeSpentSeconds: 120,
+        completedAt: new Date('2026-08-24T10:00:00Z'),
+        updatedAt: now,
+      });
+
+      await service.completeLesson('user-1', 'adressage-ipv4');
+
+      expect(prismaMock.lessonProgress.update).toHaveBeenCalled();
+      expect(prismaMock.activityEvent.create).not.toHaveBeenCalled();
     });
 
     it('lève une NotFoundException si la leçon est introuvable', async () => {
