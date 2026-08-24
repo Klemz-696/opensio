@@ -12,6 +12,8 @@
     "db:migrate": "pnpm --filter @opensio/api db:migrate",
     "db:generate": "pnpm --filter @opensio/api db:generate",
     "seed": "pnpm --filter @opensio/api db:seed",
+    "content:sync": "pnpm --filter @opensio/api content:sync",
+    "content:validate": "pnpm --filter @opensio/content-schema test",
     "check-file-size": "node scripts/check-file-size.mjs",
     "format": "prettier --write \"**/*.{ts,tsx,js,mjs,json,md,yml,yaml}\""
   },
