@@ -260,3 +260,56 @@ Implémentation de l'API Catalogue et de la lecture sécurisée des leçons Mark
 - `node scripts/check-file-size.mjs` : 100% conforme D-13 (118 fichiers analysés).
 - `pnpm build` : Build complet Next.js 15 (App Router) et NestJS 11 réussi avec succès.
 - Démarrage réel de l'API et réponse de `GET /api/v1/health` validés.
+
+---
+
+## 2026-08-24 — Lot 5 : Quiz interactifs (B07 / US-04, US-05)
+
+### Objectifs du lot
+
+Implémentation complète des quiz interactifs d'auto-évaluation conformément aux règles métier RM-01 (seuil de validation, tentatives illimitées), RM-06 (non-régression), RM-12 (audit), RM-13 / D-13 (taille de fichiers), §19, §22.3, §29.2 et §30 (zéro fuite de données confidentielles).
+
+### Réalisations
+
+- **API Quizzes (`apps/api/src/modules/quizzes/`) protégée par `AuthGuard` (§22.3 / §29.2)** :
+  - `GET /quizzes/:slug` : renvoie le quiz avec ses questions et choix ordonnés pour la passation.
+  - **Garantie Zéro-Fuite absolue** : exclusion stricte de `correctChoiceIds`, `correct_choice_ids` et `explanation` dans le DTO `QuizDetailDto` et les réponses d'erreur.
+  - `POST /quizzes/:slug/attempts` : soumission des réponses (`SubmitQuizAttemptDto`), correction stricte côté serveur, calcul du score en pourcentage et évaluation de la réussite par rapport au seuil (`passingScore`, défaut 80 %).
+  - `GET /quizzes/:slug/attempts` : consultation de l'historique complet des tentatives de l'étudiant connecté.
+- **Moteur de notation pur (`QuizScoringService`)** :
+  - Question `single` : validation exacte de la réponse unique.
+  - Question `multiple` : comparaison stricte des ensembles de choix (même cardinalité et inclusion mutuelle exacte). Choix partiel = 0 point ; choix avec intrus = 0 point.
+  - Score global : $\text{Math.round}((C / N) \times 100)$ et validation `passed = score >= quiz.passingScore`.
+  - Construction du DTO `QuizAttemptResultDto` incluant `isCorrect` et l'`explanation` pédagogique de chaque question (toujours sans `correctChoiceIds`).
+- **Idempotence & Protection anti-double soumission (`QuizIdempotencyService`)** :
+  - Prise en compte de l'en-tête `Idempotency-Key` ou déduplication automatique par hash du payload pour éviter les doublons d'essais lors de clics répétés ou retries réseau.
+  - Gestion des requêtes concurrentes en vol (attente de la promesse sans duplication de ligne en base).
+- **Journalisation d'audit (RM-12)** :
+  - Enregistrement de l'événement `QUIZ_ATTEMPT_SUBMITTED` via `AuditService` avec métadonnées (`score`, `passed`, `passingScore`, `quizSlug`, `attemptId`).
+- **Frontend Interactif Next.js 15 (`apps/web`)** :
+  - Activation de la passation depuis le détail du module (`ModuleQuizzesList` avec lien direct et bouton "Passer le quiz").
+  - Route `/catalogue/[moduleSlug]/quiz/[quizSlug]` avec protection `ProtectedRoute` et fil d'Ariane dynamique.
+  - Composant `QuizRunner` : questions rendues en Markdown via `MarkdownRenderer`, sélecteurs différenciés (`input` radio pour choix unique / checkbox pour choix multiples), barre de progression animée et bouton "Valider mes réponses" avec spinner et état désactivé pendant la soumission.
+  - Composant `QuizResultView` : bandeau de score dynamique avec jauge et badge de validation (vert émeraude) / échec (rose), explications pédagogiques détaillées pour chaque question, et bouton pour retenter immédiatement.
+  - Skeletons de chargement animés et accessibles (`QuizPageLoading` avec attributs `role="status"` et `aria-busy="true"`).
+- **Conformité stricte D-13 / RM-13** :
+  - 143 fichiers analysés, 0 avertissement (≥ 300 lignes), 0 violation (> 400 lignes).
+
+### Validations
+
+- `pnpm lint` : 100% vert (0 erreur, 0 avertissement sur l'ensemble du monorepo).
+- `pnpm typecheck` : 100% vert (0 erreur TypeScript).
+- `pnpm test` : 100% vert (109 tests unitaires, d'intégration, de démarrage et frontend passants).
+- `node scripts/check-file-size.mjs` : 100% conforme D-13 (143 fichiers analysés).
+- `pnpm build` : Build de production Next.js 15 App Router (`/catalogue/[moduleSlug]/quiz/[quizSlug]`) et NestJS 11 réussi avec succès.
+- Script de démonstration de bout en bout exécuté et validé avec succès (`pnpm --filter @opensio/api exec tsx test/demo-lot5.ts`).
+
+### Décisions & Arbitrages (Lot 5)
+
+- **Gestion des collisions d'idempotence** : Si une requête `POST /quizzes/:slug/attempts` arrive avec une `Idempotency-Key` déjà traitée :
+  - Si le corps de réponses est identique $\rightarrow$ renvoi immédiat du résultat d'origine mis en cache (status 200/201, 0 écriture en base).
+  - Si le corps de réponses est différent $\rightarrow$ rejet immédiat avec code **422 Unprocessable Entity** (RFC 7807) pour signaler l'incohérence des paramètres.
+  - Dans tous les cas, **aucune seconde tentative n'est créée en base sous la même clé**.
+- **Cache d'idempotence en mémoire vive (in-process)** : Le cache de déduplication réside en mémoire vive du processus API (TTL 5 min). En cas de redémarrage du conteneur API, le cache se vide et un retry réseau ultérieur créerait une nouvelle tentative en base. Cette limite est pleinement acceptée pour notre contexte homelab/LAN mono-instance et pédagogique (Redis et files distribuées étant réservés au jalon v0.2).
+
+
