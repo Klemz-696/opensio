@@ -27,6 +27,8 @@ jobs:
 
     env:
       DATABASE_URL: postgresql://opensio:ci@localhost:5432/opensio
+      JWT_SECRET: ci-dummy-secret-pour-tests-uniquement-pas-un-vrai-secret-64chars
+      REGISTRATION_ENABLED: "true"
 
     steps:
       - name: Checkout du code
