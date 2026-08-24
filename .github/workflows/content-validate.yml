@@ -1,0 +1,40 @@
+name: Validation du Contenu Pédagogique
+
+on:
+  pull_request:
+    paths:
+      - 'content/**'
+      - 'packages/content-schema/**'
+  push:
+    branches: [main]
+    paths:
+      - 'content/**'
+      - 'packages/content-schema/**'
+
+jobs:
+  validate-content:
+    name: Validation Zod du Contenu (Markdown / YAML)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout du code
+        uses: actions/checkout@v4
+
+      - name: Installation de pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11.23.0
+
+      - name: Configuration de Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: 'pnpm'
+
+      - name: Installation des dépendances
+        run: pnpm install --frozen-lockfile
+
+      - name: Génération du client Prisma
+        run: pnpm --filter @opensio/api exec prisma generate
+
+      - name: Tests des schémas et validation du contenu
+        run: pnpm content:validate

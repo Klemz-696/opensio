@@ -95,3 +95,68 @@ retirés, .gitattributes LF ajouté).
 - Hygiène : .claude/settings.local.json retiré du suivi Git.
 - Leçons : ne jamais merger sur CI rouge ; activer la protection de branche ;
   un test vert en local ne prouve pas le vert en CI (environnement vierge).
+
+---
+
+## [Lot 2] — Contenu & Synchronisation
+
+**Date** : 24/08/2026  
+**Branche** : `feat/b04-content-schema-sync`  
+**Objectif** : Schémas de validation Zod du contenu pédagogique (1 schéma = 1 fichier, D-13), moteur de synchronisation idempotent et tout-ou-rien (`content:sync`), module de démonstration unique (`reseaux-fondamentaux`) avec leçon, quiz, lab niveau 2 et validateur avec suite de tests.
+
+### Réalisations
+
+- **Package `@opensio/content-schema`** :
+  - Découpage strict en 1 schéma Zod par fichier :
+    - `track.ts` : schéma `TrackSchema` pour `track.yaml`.
+    - `module.ts` : schéma `ModuleSchema` pour `module.yaml`.
+    - `lesson.ts` : schéma `LessonFrontMatterSchema` pour le front matter Markdown.
+    - `quiz.ts` : schéma `QuizSchema` pour les quiz YAML (questions single/multiple).
+    - `lab.ts` : schéma `LabSchema` pour les labs YAML (niveaux 1 à 4, critères, barème, indices).
+  - Utilitaires de parsing sécurisé (`parser.ts`) et de formatage d'erreurs localisées (`formatter.ts`).
+  - Suite de tests unitaires Vitest (18 tests) couvrant les cas valides, invalides et les messages d'erreur.
+- **Module de démonstration unique** :
+  - `content/tracks/annee-1/track.yaml` : métadonnées de la 1ère année BTS SIO SISR.
+  - `content/tracks/annee-1/modules/reseaux-fondamentaux/` :
+    - `module.yaml` : métadonnées du module de fondamentaux réseaux.
+    - `lessons/01-adressage-ipv4.md` : leçon rédigée en français (structure IPv4, binaire, CIDR, RFC 1918, commandes).
+    - `quizzes/quiz-adressage.yaml` : quiz de 5 questions (QCM single/multiple avec explications).
+    - `labs/lab-plan-adressage/` : lab de niveau 2 complet avec `lab.yaml`, fichier initial `files/plan.csv`, validateur autonome `validator/validate.mjs`, documentation `validator/README.md`, suite de fixtures (`solutions/valid`, `solutions/invalid-overlap`, `solutions/invalid-capacity`) et tests automatisés.
+  - Aucun autre contenu ajouté (respect strict du périmètre).
+- **Moteur de synchronisation `content:sync`** :
+  - Architecture modulaire dans `apps/api/src/sync/` (scanner, validator, writer, writer-mappers, writer-cleanup, reporter, cli).
+  - Synchronisation atomique et transactionnelle via Prisma `$transaction` : upsert par slug des tables `tracks`, `modules`, `lessons`, `quizzes`, `quiz_questions`, `labs` et peuplement de `lesson_labs`.
+  - Nettoyage automatique des entités orphelines/obsolètes supprimées de Git.
+  - Comportement tout-ou-rien : validation stricte préalable sans altération de la base en cas d'erreur de contenu.
+- **Intégration & CI** :
+  - Workflow GitHub Actions `.github/workflows/content-validate.yml`.
+  - Scripts `content:sync` et `content:validate` au package.json racine et dans les applications.
+
+### Validations
+
+- `pnpm lint` : 100% vert (0 erreur, 0 avertissement).
+- `pnpm typecheck` : 100% vert (0 erreur TypeScript).
+- `pnpm test` : 100% vert (28 tests unitaires et d'intégration passants).
+- `node scripts/check-file-size.mjs` : 100% conforme D-13 (45 fichiers analysés, 0 violation, 0 avertissement).
+- `pnpm build` : Build complet (Next.js 15 App Router, NestJS 11, packages) réussi sans erreur.
+- `pnpm content:sync` exécuté consécutivement : 100% « inchangés » au 2e passage (idempotence réelle sans réinsertion ni régénération d'UUID).
+- Vérification SQL : IDs des `quiz_questions` strictement identiques avant et après le 2e passage.
+- Test avec fichier volontairement invalide : échec propre avec diagnostic précis (fichier + champ + erreur) et 0 modification en base.
+
+## 2026-08-24 — Revue Lot 2 : Idempotence stricte des relations enfants
+
+- **Problème identifié** : la synchronisation effectuait un delete/recreate sur `quiz_questions` et `lesson_labs`, régénérant les UUIDs des questions et affichant `+5 créés` / `+1 créés` au 2e run.
+- **Correction apportée** :
+  - Ajout de la contrainte unique `@@unique([quizId, position])` sur `QuizQuestion` et régénération propre de la migration initiale.
+  - Implémentation d'un upsert stable par clé naturelle/composite (`quizId_position` pour les questions, `lessonId_labId` pour les associations).
+  - Détection fine des changements : une entité non modifiée conserve son ID et est comptabilisée en `inchangés`.
+- **Résultat** : 100% des compteurs à `= inchangés` dès la 2e exécution, intégrité des références d'essais de quiz garantie.
+
+## 2026-08-24 — Fix CI : Service PostgreSQL & isolation propre des tests d'intégration
+
+- **Problème identifié** : En CI, `src/sync/sync.spec.ts` échouait avec `PrismaClientInitializationError P1012` car le hook `beforeAll` tentait de se connecter sans instance PostgreSQL active.
+- **Correction apportée** :
+  - Ajout du service conteneur `postgres:16-alpine` avec healthcheck dans `.github/workflows/ci.yml`.
+  - Définition de `DATABASE_URL` et exécution de `prisma migrate deploy` en CI avant les tests.
+  - Encapsulation des tests de base de données de `sync.spec.ts` dans `describe.skipIf(!process.env.DATABASE_URL)` avec gestion propre de la connexion/déconnexion, permettant d'exécuter les tests unitaires même avec PostgreSQL arrêté sans aucune erreur.
+

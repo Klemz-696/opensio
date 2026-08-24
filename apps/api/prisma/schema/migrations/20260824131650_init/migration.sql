@@ -277,6 +277,9 @@ CREATE INDEX "quizzes_module_id_idx" ON "quizzes"("module_id");
 CREATE INDEX "quiz_questions_quiz_id_idx" ON "quiz_questions"("quiz_id");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "quiz_questions_quiz_id_position_key" ON "quiz_questions"("quiz_id", "position");
+
+-- CreateIndex
 CREATE INDEX "lesson_labs_lab_id_idx" ON "lesson_labs"("lab_id");
 
 -- CreateIndex

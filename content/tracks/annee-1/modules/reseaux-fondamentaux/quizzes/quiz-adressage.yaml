@@ -1,0 +1,81 @@
+slug: quiz-adressage
+title: "Quiz — Adressage IPv4"
+passing_score: 80
+position: 1
+questions:
+  - kind: single
+    prompt: "Quelle est l'adresse réseau de l'hôte 192.168.1.77/26 ?"
+    choices:
+      - id: a
+        text: "192.168.1.0"
+      - id: b
+        text: "192.168.1.64"
+      - id: c
+        text: "192.168.1.72"
+      - id: d
+        text: "192.168.1.76"
+    correct:
+      - b
+    explanation: "Un /26 correspond à un pas de 64 adresses. Les réseaux sont 0, 64, 128... 77 est dans l'intervalle [64, 127], donc l'adresse réseau est 192.168.1.64."
+
+  - kind: single
+    prompt: "Combien d'adresses d'hôtes utilisables contient un sous-réseau en notation CIDR /27 ?"
+    choices:
+      - id: a
+        text: "32"
+      - id: b
+        text: "30"
+      - id: c
+        text: "28"
+      - id: d
+        text: "14"
+    correct:
+      - b
+    explanation: "Un /27 dispose de 5 bits pour les hôtes (32 - 27 = 5). Le nombre total d'adresses est 2^5 = 32. En soustrayant le réseau et le broadcast, on obtient 30 hôtes."
+
+  - kind: single
+    prompt: "Quel est le masque de sous-réseau décimal correspondant au préfixe /28 ?"
+    choices:
+      - id: a
+        text: "255.255.255.192"
+      - id: b
+        text: "255.255.255.224"
+      - id: c
+        text: "255.255.255.240"
+      - id: d
+        text: "255.255.255.248"
+    correct:
+      - c
+    explanation: "Le masque /28 comporte 4 bits à 1 dans le 4e octet : 128 + 64 + 32 + 16 = 240. Le masque est 255.255.255.240."
+
+  - kind: multiple
+    prompt: "Quelles adresses IPv4 font partie des plages d'adresses privées définies par la RFC 1918 ?"
+    choices:
+      - id: a
+        text: "10.20.0.1"
+      - id: b
+        text: "172.20.5.10"
+      - id: c
+        text: "192.168.100.254"
+      - id: d
+        text: "8.8.4.4"
+    correct:
+      - a
+      - b
+      - c
+    explanation: "Les plages RFC 1918 sont 10.0.0.0/8, 172.16.0.0/12 et 192.168.0.0/16. L'adresse 8.8.4.4 est une adresse publique (DNS Google)."
+
+  - kind: single
+    prompt: "Quelle est l'adresse de diffusion (broadcast) du sous-réseau 10.20.0.0/26 ?"
+    choices:
+      - id: a
+        text: "10.20.0.63"
+      - id: b
+        text: "10.20.0.64"
+      - id: c
+        text: "10.20.0.127"
+      - id: d
+        text: "10.20.0.255"
+    correct:
+      - a
+    explanation: "Un /26 a une taille de bloc de 64. La plage s'étend de 10.20.0.0 à 10.20.0.63, le broadcast étant la dernière adresse du bloc."
