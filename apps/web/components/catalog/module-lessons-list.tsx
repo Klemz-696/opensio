@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { BookOpen, Clock, ArrowRight } from 'lucide-react';
+import { BookOpen, Clock, ArrowRight, CheckCircle2 } from 'lucide-react';
 import type { LessonSummary } from '../../lib/api/catalog-api';
 import { formatDifficulty, formatDuration } from '../../lib/utils/formatters';
 
@@ -29,21 +29,45 @@ export function ModuleLessonsList({ moduleSlug, lessons }: ModuleLessonsListProp
           {lessons.map((lesson, index) => {
             const diff = formatDifficulty(lesson.difficulty);
             const lessonIndex = String(index + 1).padStart(2, '0');
+            const isCompleted = lesson.status === 'completed';
+            const isStarted = lesson.status === 'started';
 
             return (
               <Link
                 key={lesson.id}
                 href={`/catalogue/${moduleSlug}/${lesson.slug}`}
-                className="flex items-center justify-between p-4 rounded-xl bg-slate-900/60 hover:bg-slate-800/80 border border-slate-800/80 hover:border-sky-500/30 transition-all group cursor-pointer"
+                className={`flex items-center justify-between p-4 rounded-xl transition-all group cursor-pointer border ${
+                  isCompleted
+                    ? 'bg-slate-900/40 border-emerald-500/20 hover:border-emerald-500/40 hover:bg-slate-800/60'
+                    : 'bg-slate-900/60 hover:bg-slate-800/80 border-slate-800/80 hover:border-sky-500/30'
+                }`}
               >
                 <div className="flex items-center gap-4">
-                  <div className="w-8 h-8 rounded-lg bg-slate-800 border border-slate-700 text-sky-400 font-mono font-bold text-xs flex items-center justify-center group-hover:bg-sky-500 group-hover:text-white transition-colors">
-                    {lessonIndex}
+                  <div
+                    className={`w-8 h-8 rounded-lg border font-mono font-bold text-xs flex items-center justify-center transition-colors ${
+                      isCompleted
+                        ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
+                        : 'bg-slate-800 border-slate-700 text-sky-400 group-hover:bg-sky-500 group-hover:text-white'
+                    }`}
+                  >
+                    {isCompleted ? <CheckCircle2 className="w-4 h-4" /> : lessonIndex}
                   </div>
                   <div>
-                    <h3 className="text-sm font-semibold text-white group-hover:text-sky-300 transition-colors">
-                      {lesson.title}
-                    </h3>
+                    <div className="flex items-center gap-2">
+                      <h3 className="text-sm font-semibold text-white group-hover:text-sky-300 transition-colors">
+                        {lesson.title}
+                      </h3>
+                      {isCompleted && (
+                        <span className="text-[10px] font-semibold px-2 py-0.2 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+                          Terminée
+                        </span>
+                      )}
+                      {!isCompleted && isStarted && (
+                        <span className="text-[10px] font-semibold px-2 py-0.2 rounded-full bg-sky-500/10 text-sky-400 border border-sky-500/30">
+                          En cours
+                        </span>
+                      )}
+                    </div>
                     <div className="flex items-center gap-3 mt-1 text-xs text-slate-400">
                       <span className={`text-[10px] font-semibold px-2 py-0.2 rounded border ${diff.color}`}>
                         {diff.label}
@@ -57,7 +81,9 @@ export function ModuleLessonsList({ moduleSlug, lessons }: ModuleLessonsListProp
                 </div>
 
                 <div className="flex items-center gap-2 text-slate-400 group-hover:text-sky-400 transition-colors">
-                  <span className="text-xs hidden sm:inline font-medium">Lire la leçon</span>
+                  <span className="text-xs hidden sm:inline font-medium">
+                    {isCompleted ? 'Revoir la leçon' : 'Lire la leçon'}
+                  </span>
                   <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
                 </div>
               </Link>

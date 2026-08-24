@@ -7,8 +7,19 @@ import { AuthModule } from './modules/auth/auth.module';
 import { CatalogModule } from './modules/catalog/catalog.module';
 import { QuizzesModule } from './modules/quizzes/quizzes.module';
 
+import { ProgressModule } from './modules/progress/progress.module';
+import { DashboardModule } from './modules/dashboard/dashboard.module';
+
 @Module({
-  imports: [PrismaModule, AuditModule, AuthModule, CatalogModule, QuizzesModule],
+  imports: [
+    PrismaModule,
+    AuditModule,
+    AuthModule,
+    CatalogModule,
+    QuizzesModule,
+    ProgressModule,
+    DashboardModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

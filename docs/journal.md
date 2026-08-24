@@ -312,4 +312,64 @@ Implémentation complète des quiz interactifs d'auto-évaluation conformément 
   - Dans tous les cas, **aucune seconde tentative n'est créée en base sous la même clé**.
 - **Cache d'idempotence en mémoire vive (in-process)** : Le cache de déduplication réside en mémoire vive du processus API (TTL 5 min). En cas de redémarrage du conteneur API, le cache se vide et un retry réseau ultérieur créerait une nouvelle tentative en base. Cette limite est pleinement acceptée pour notre contexte homelab/LAN mono-instance et pédagogique (Redis et files distribuées étant réservés au jalon v0.2).
 
+---
+
+## 2026-08-24 — Lot 6 : Progression & Tableau de bord (B08 / US-06, US-07, US-08)
+
+### Objectifs du lot
+
+Implémentation complète du suivi de progression de l'étudiant et du tableau de bord personnel conformément aux règles métier RM-01, RM-02, RM-03 (règle de complétion de module), RM-12 (journalisation), RM-13 / D-13 (taille des fichiers), §19, §22.4 et §29.2 du Blueprint contractuel.
+
+### Réalisations
+
+- **Module de Progression (`apps/api/src/modules/progress/`)** :
+  - `POST /lessons/:slug/complete` : Marque une leçon comme terminée avec cumul de temps passé (`CompleteLessonDto`). Idempotent (upsert sur la clé composite `(userId, lessonId)`). Le `userId` provient **exclusivement du JWT** (aucun paramètre client).
+  - `POST /lessons/:slug/heartbeat` : Enregistrement incrémental du temps passé en lecture (paliers de 15 à 300 secondes).
+  - `GET /lessons/:slug/progress` : Consultation du statut de lecture et du temps passé sur une leçon donnée.
+  - `GET /me/progress` : Arbre complet de progression structuré en Tracks > Modules > Leçons avec pourcentages et indicateurs d'achèvement.
+  - `GET /me/activity` : Flux paginé des événements d'activité de l'utilisateur connecté.
+- **Service d'Agrégation Optimisé anti-N+1 (`ProgressAggregationService`)** :
+  - Requêtes groupées uniques sur `LessonProgress` et `QuizAttempt` par `userId`.
+  - Calcul en mémoire pure de l'arbre de progression : totaux, leçons terminées, quiz validés, modules complétés (RM-03) et temps total.
+  - Zéro boucle de requêtes N+1 en base.
+- **Enrichissement dynamique du Catalogue sans pollution de cache (`CatalogProgressEnricherService`)** :
+  - `CatalogCacheService` reste un cache process **global et statique** sans données utilisateur.
+  - `CatalogProgressEnricherService` décore à la volée les réponses du catalogue (`/tracks`, `/tracks/:slug/modules`, `/modules/:slug`, `/lessons/:slug`) avec la progression de l'utilisateur connecté lorsque le token JWT est présent.
+- **Moteur de Recommandations Pédagogiques (`RecommendationsService`)** :
+  - Détection des quiz échoués $\rightarrow$ suggestion de retenter le quiz (RM-01).
+  - Détection des modules dont toutes les leçons sont lues mais sans quiz validé $\rightarrow$ suggestion de passer le quiz (RM-03).
+  - Détection des modules en cours $\rightarrow$ suggestion de la prochaine leçon non terminée.
+- **Tableau de bord personnel (`apps/api/src/modules/dashboard/` & `GET /me/dashboard`)** :
+  - Vue synthétique consolidée : synthèse globale (`overview`), section « Reprendre où j'en étais » (`resume`), progression par cursus/année (`tracksProgress`), derniers résultats de quiz (`recentQuizzes`), flux d'activité récente (`recentActivity`), et recommandations personnalisées (`recommendations`).
+- **Journalisation de l'Activité (`ActivityEvent`)** :
+  - Enregistrement des événements `LESSON_STARTED`, `LESSON_COMPLETED`, `QUIZ_PASSED`, `QUIZ_ATTEMPTED` pour alimenter le flux chronologique.
+- **Frontend Interactif & Dashboard Next.js 15 (`apps/web`)** :
+  - Route `/dashboard` : Page d'accueil apprenant complète, protégée par `ProtectedRoute`, avec squelettes de chargement accessibles (`role="status"`, `aria-busy="true"`).
+  - Composants modulaires (`DashboardHeader`, `DashboardStats`, `DashboardResume`, `DashboardRecommendations`, `DashboardTracks`, `DashboardQuizzes`, `DashboardActivity`).
+  - Composant `LessonCompleteButton` (`apps/web/components/lessons/lesson-complete-button.tsx`) : Bouton d'action interactif avec état visuel validé (vert émeraude, date de validation, icône check) et gestion des erreurs.
+  - Hook `useLessonHeartbeat` (`apps/web/lib/hooks/use-lesson-heartbeat.ts`) : Envoi automatique du signal de présence toutes les 30s lors de la lecture active.
+  - Intégration du catalogue : Jauges de progression et badges « Validé » dans `ModuleCard`, coches vertes dans `ModuleLessonsList`, et scores dans `ModuleQuizzesList`.
+  - Navigation : Ajout de « Tableau de bord » dans `Navbar` et redirection automatique vers `/dashboard` pour les utilisateurs connectés sur `/`.
+- **Tests & Robustesse** :
+  - Tests d'isolation inter-utilisateurs stricte (User A vs User B) validés dans `progress.e2e.spec.ts`.
+  - 154 tests automatisés passants sur l'ensemble du monorepo (103 API, 33 Web, 18 Content-Schema).
+- **Conformité stricte D-13 / RM-13** :
+  - 177 fichiers analysés, 0 avertissement (≥ 300 lignes), 0 violation (> 400 lignes).
+
+### Validations
+
+- `pnpm lint` : 100% vert (0 erreur, 0 avertissement sur l'ensemble du monorepo).
+- `pnpm typecheck` : 100% vert (0 erreur TypeScript).
+- `pnpm test` : 100% vert (154 tests unitaires, d'intégration et frontend passants).
+- `node scripts/check-file-size.mjs` : 100% conforme D-13 (177 fichiers analysés).
+- `pnpm build` : Build de production Next.js 15 App Router (`/dashboard`, `/catalogue`, etc.) et NestJS 11 réussi avec succès.
+- Script de démonstration de bout en bout exécuté et validé avec succès (`pnpm --filter @opensio/api exec tsx test/demo-lot6.ts`).
+
+### Décisions & Arbitrages (Lot 6)
+
+- **Séparation Stricte du Cache Global et de la Progression Utilisateur** : Le cache `CatalogCacheService` stocke les objets du catalogue avec `progress: null` pour servir de référence rapide partagée entre tous les processus et utilisateurs. L'enrichissement avec les données de progression utilisateur se fait systématiquement hors du cache par `CatalogProgressEnricherService`, garantissant l'absence totale de fuite de données inter-utilisateurs par effet de cache.
+- **Règle RM-03 de complétion de module** : Un module est considéré comme complété si et seulement si toutes ses leçons sont au statut `COMPLETED` ET (si le module comporte des quiz) au moins un quiz a été réussi (`passed = true`).
+- **Extraction du `userId` exclusivement depuis le JWT** : Conformément aux spécifications de sécurité (§29.2), aucun identifiant utilisateur n'est accepté dans le corps ou les paramètres de requête ; il est extrait de manière inviolable depuis le payload du token JWT validé par le `AuthGuard`.
+
+
 

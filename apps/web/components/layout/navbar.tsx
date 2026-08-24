@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { BookOpen, LogOut, ShieldCheck, Terminal, User as UserIcon } from 'lucide-react';
+import { BookOpen, LayoutDashboard, LogOut, ShieldCheck, Terminal, User as UserIcon } from 'lucide-react';
 import { useAuth } from '../../lib/auth/use-auth';
 
 export function Navbar() {
@@ -35,11 +35,18 @@ export function Navbar() {
 
           <nav className="hidden md:flex items-center gap-1 pl-4 border-l border-slate-800">
             <Link
+              href="/dashboard"
+              className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/60 transition-colors"
+            >
+              <LayoutDashboard className="w-4 h-4 text-sky-400" />
+              <span>Tableau de bord</span>
+            </Link>
+            <Link
               href="/catalogue"
               className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/60 transition-colors"
             >
               <BookOpen className="w-4 h-4 text-sky-400" />
-              <span>Catalogue des Cours</span>
+              <span>Catalogue</span>
             </Link>
           </nav>
         </div>
