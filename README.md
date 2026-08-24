@@ -41,7 +41,7 @@ Projet réalisé dans le cadre du BTS SIO : l'architecture, la sécurité et la 
 
 | Catalogue | Leçon |
 |:---:|:---:|
-| ![Catalogue](docs/assets/catalogue.png) | ![Leçon](docs/assets/lesson.gif) |
+| ![Catalogue](docs/assets/catalogue.png) | ![Leçon OpenSIO](docs/assets/lecon.gif) |
 
 | Quiz en cours | Résultat corrigé |
 |:---:|:---:|
