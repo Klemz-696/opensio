@@ -1,7 +1,8 @@
 import { PrismaClient, Prisma } from '@prisma/client';
 import type { ScannedContent, SyncReport } from './types.js';
-import { createInitialStats, mapLabLevel, mapQuestionKind } from './writer-mappers.js';
+import { createInitialStats, mapLabLevel } from './writer-mappers.js';
 import { cleanupObsoleteEntities } from './writer-cleanup.js';
+import { syncQuizQuestions, syncLessonLabAssociations } from './writer-quiz-labs.js';
 
 export async function writeScannedContentToDatabase(
   prisma: PrismaClient,
@@ -224,22 +225,7 @@ export async function writeScannedContentToDatabase(
               }
             }
 
-            await tx.quizQuestion.deleteMany({ where: { quizId: quizRecord.id } });
-            for (let qIdx = 0; qIdx < sq.quiz.questions.length; qIdx++) {
-              const q = sq.quiz.questions[qIdx];
-              await tx.quizQuestion.create({
-                data: {
-                  quizId: quizRecord.id,
-                  kind: mapQuestionKind(q.kind),
-                  prompt: q.prompt,
-                  choices: q.choices,
-                  correctChoiceIds: q.correct,
-                  explanation: q.explanation ?? null,
-                  position: q.position ?? qIdx + 1,
-                },
-              });
-              stats.quizQuestions.created++;
-            }
+            await syncQuizQuestions(tx, quizRecord.id, sq, stats);
           }
         }
       }
@@ -251,23 +237,7 @@ export async function writeScannedContentToDatabase(
             const lesson = await tx.lesson.findUnique({ where: { slug: sl.frontMatter.slug } });
             if (!lesson) continue;
 
-            await tx.lessonLab.deleteMany({ where: { lessonId: lesson.id } });
-
-            for (let i = 0; i < sl.frontMatter.labs.length; i++) {
-              const labRef = sl.frontMatter.labs[i];
-              const lab = await tx.lab.findUnique({ where: { slug: labRef.slug } });
-              if (lab) {
-                await tx.lessonLab.create({
-                  data: {
-                    lessonId: lesson.id,
-                    labId: lab.id,
-                    required: labRef.required,
-                    position: labRef.position ?? i + 1,
-                  },
-                });
-                stats.lessonLabs.created++;
-              }
-            }
+            await syncLessonLabAssociations(tx, lesson, sl, stats);
           }
         }
       }

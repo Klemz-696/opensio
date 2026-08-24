@@ -120,26 +120,47 @@ describe('Moteur de Synchronisation de Contenu', () => {
       const firstReport = await executeContentSync(prisma, contentDir);
       expect(firstReport.success).toBe(true);
 
+      const questionsBefore = await prisma.quizQuestion.findMany({
+        orderBy: { position: 'asc' },
+        select: { id: true, position: true, prompt: true },
+      });
+
       const secondReport = await executeContentSync(prisma, contentDir);
       expect(secondReport.success).toBe(true);
       expect(secondReport.stats.tracks.created).toBe(0);
       expect(secondReport.stats.modules.created).toBe(0);
       expect(secondReport.stats.lessons.created).toBe(0);
       expect(secondReport.stats.quizzes.created).toBe(0);
+      expect(secondReport.stats.quizQuestions.created).toBe(0);
+      expect(secondReport.stats.quizQuestions.unchanged).toBe(5);
       expect(secondReport.stats.labs.created).toBe(0);
+      expect(secondReport.stats.lessonLabs.created).toBe(0);
+      expect(secondReport.stats.lessonLabs.unchanged).toBe(1);
+
+      const questionsAfter = await prisma.quizQuestion.findMany({
+        orderBy: { position: 'asc' },
+        select: { id: true, position: true, prompt: true },
+      });
+
+      // Vérifier que les IDs des questions n'ont absolument pas changé
+      expect(questionsAfter).toEqual(questionsBefore);
 
       // Le nombre d'éléments en base n'a pas changé
       const tracksCount = await prisma.track.count();
       const modulesCount = await prisma.module.count();
       const lessonsCount = await prisma.lesson.count();
       const quizzesCount = await prisma.quiz.count();
+      const questionsCount = await prisma.quizQuestion.count();
       const labsCount = await prisma.lab.count();
+      const lessonLabsCount = await prisma.lessonLab.count();
 
       expect(tracksCount).toBe(1);
       expect(modulesCount).toBe(1);
       expect(lessonsCount).toBe(1);
       expect(quizzesCount).toBe(1);
+      expect(questionsCount).toBe(5);
       expect(labsCount).toBe(1);
+      expect(lessonLabsCount).toBe(1);
     });
   });
 });

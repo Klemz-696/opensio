@@ -89,6 +89,7 @@ model QuizQuestion {
   explanation      String?
   position         Int              @default(0)
 
+  @@unique([quizId, position])
   @@index([quizId])
   @@map("quiz_questions")
 }

@@ -137,7 +137,17 @@ retirés, .gitattributes LF ajouté).
 - `pnpm lint` : 100% vert (0 erreur, 0 avertissement).
 - `pnpm typecheck` : 100% vert (0 erreur TypeScript).
 - `pnpm test` : 100% vert (28 tests unitaires et d'intégration passants).
-- `node scripts/check-file-size.mjs` : 100% conforme D-13 (44 fichiers analysés, 0 violation, 0 avertissement).
+- `node scripts/check-file-size.mjs` : 100% conforme D-13 (45 fichiers analysés, 0 violation, 0 avertissement).
 - `pnpm build` : Build complet (Next.js 15 App Router, NestJS 11, packages) réussi sans erreur.
-- `pnpm content:sync` exécuté deux fois avec succès (démonstration de l'idempotence : `=1 inchangés`).
+- `pnpm content:sync` exécuté consécutivement : 100% « inchangés » au 2e passage (idempotence réelle sans réinsertion ni régénération d'UUID).
+- Vérification SQL : IDs des `quiz_questions` strictement identiques avant et après le 2e passage.
 - Test avec fichier volontairement invalide : échec propre avec diagnostic précis (fichier + champ + erreur) et 0 modification en base.
+
+## 2026-08-24 — Revue Lot 2 : Idempotence stricte des relations enfants
+
+- **Problème identifié** : la synchronisation effectuait un delete/recreate sur `quiz_questions` et `lesson_labs`, régénérant les UUIDs des questions et affichant `+5 créés` / `+1 créés` au 2e run.
+- **Correction apportée** :
+  - Ajout de la contrainte unique `@@unique([quizId, position])` sur `QuizQuestion` et régénération propre de la migration initiale.
+  - Implémentation d'un upsert stable par clé naturelle/composite (`quizId_position` pour les questions, `lessonId_labId` pour les associations).
+  - Détection fine des changements : une entité non modifiée conserve son ID et est comptabilisée en `inchangés`.
+- **Résultat** : 100% des compteurs à `= inchangés` dès la 2e exécution, intégrité des références d'essais de quiz garantie.
