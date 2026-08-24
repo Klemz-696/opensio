@@ -6,6 +6,7 @@ import {
 import { PrismaService } from '../../prisma/prisma.service';
 import { CatalogCacheService } from './catalog-cache.service';
 import { LessonReaderService } from './lesson-reader.service';
+import { CatalogProgressEnricherService } from './catalog-progress-enricher.service';
 import type {
   LessonDetailDto,
   ModuleDetailDto,
@@ -19,278 +20,274 @@ export class CatalogService {
     @Inject(PrismaService) private readonly prisma: PrismaService,
     @Inject(CatalogCacheService) private readonly cache: CatalogCacheService,
     @Inject(LessonReaderService) private readonly lessonReader: LessonReaderService,
+    @Inject(CatalogProgressEnricherService)
+    private readonly enricher: CatalogProgressEnricherService,
   ) {}
 
   /**
-   * Récupère toutes les années de formation (tracks) ordonnées par position.
-   * Note Lot 4 : La progression agrégée arrive au Lot 6 (B08).
-   * La structure est livrée sans calcul de pourcentages.
+   * Récupère toutes les années de formation avec la progression personnalisée.
    */
-  async getTracks(): Promise<TrackSummaryDto[]> {
+  async getTracks(userId?: string): Promise<TrackSummaryDto[]> {
     const cacheKey = 'tracks:all';
-    const cached = this.cache.get<TrackSummaryDto[]>(cacheKey);
-    if (cached) {
-      return cached;
+    let tracks = this.cache.get<TrackSummaryDto[]>(cacheKey);
+
+    if (!tracks) {
+      const dbTracks = await this.prisma.track.findMany({
+        orderBy: { position: 'asc' },
+        include: {
+          _count: { select: { modules: true } },
+        },
+      });
+
+      tracks = dbTracks.map((track) => ({
+        id: track.id,
+        slug: track.slug,
+        title: track.title,
+        description: track.description,
+        position: track.position,
+        modulesCount: track._count.modules,
+        progress: null,
+      }));
+
+      this.cache.set(cacheKey, tracks);
     }
 
-    const tracks = await this.prisma.track.findMany({
-      orderBy: { position: 'asc' },
-      include: {
-        _count: {
-          select: { modules: true },
-        },
-      },
-    });
-
-    const result: TrackSummaryDto[] = tracks.map((track) => ({
-      id: track.id,
-      slug: track.slug,
-      title: track.title,
-      description: track.description,
-      position: track.position,
-      modulesCount: track._count.modules,
-      progress: null,
-    }));
-
-    this.cache.set(cacheKey, result);
-    return result;
+    return userId ? this.enricher.enrichTracks(tracks, userId) : tracks;
   }
 
   /**
-   * Récupère tous les modules d'une année de formation spécifique.
+   * Récupère tous les modules d'une année avec état de progression personnalisé.
    */
-  async getModulesByTrack(trackSlug: string): Promise<ModuleSummaryDto[]> {
+  async getModulesByTrack(
+    trackSlug: string,
+    userId?: string,
+  ): Promise<ModuleSummaryDto[]> {
     const normalizedSlug = trackSlug.toLowerCase().trim();
     const cacheKey = `track_modules:${normalizedSlug}`;
-    const cached = this.cache.get<ModuleSummaryDto[]>(cacheKey);
-    if (cached) {
-      return cached;
-    }
+    let modules = this.cache.get<ModuleSummaryDto[]>(cacheKey);
 
-    const track = await this.prisma.track.findUnique({
-      where: { slug: normalizedSlug },
-    });
+    if (!modules) {
+      const track = await this.prisma.track.findUnique({
+        where: { slug: normalizedSlug },
+      });
 
-    if (!track) {
-      throw new NotFoundException(`Année de formation introuvable : ${trackSlug}`);
-    }
+      if (!track) {
+        throw new NotFoundException(`Année de formation introuvable : ${trackSlug}`);
+      }
 
-    const modules = await this.prisma.module.findMany({
-      where: { trackId: track.id },
-      orderBy: { position: 'asc' },
-      include: {
-        _count: {
-          select: { lessons: true },
+      const dbModules = await this.prisma.module.findMany({
+        where: { trackId: track.id },
+        orderBy: { position: 'asc' },
+        include: {
+          _count: { select: { lessons: true } },
         },
-      },
-    });
+      });
 
-    const result: ModuleSummaryDto[] = modules.map((mod) => ({
-      id: mod.id,
-      slug: mod.slug,
-      title: mod.title,
-      description: mod.description,
-      position: mod.position,
-      difficulty: mod.difficulty,
-      estimatedMinutes: mod.estimatedMinutes,
-      competencyRefs: (mod.competencyRefs as string[]) || [],
-      trackSlug: track.slug,
-      lessonsCount: mod._count.lessons,
-    }));
+      modules = dbModules.map((mod) => ({
+        id: mod.id,
+        slug: mod.slug,
+        title: mod.title,
+        description: mod.description,
+        position: mod.position,
+        difficulty: mod.difficulty,
+        estimatedMinutes: mod.estimatedMinutes,
+        competencyRefs: (mod.competencyRefs as string[]) || [],
+        trackSlug: track.slug,
+        lessonsCount: mod._count.lessons,
+        progress: null,
+      }));
 
-    this.cache.set(cacheKey, result);
-    return result;
+      this.cache.set(cacheKey, modules);
+    }
+
+    return userId
+      ? this.enricher.enrichModules(modules, normalizedSlug, userId)
+      : modules;
   }
 
   /**
-   * Récupère le détail d'un module par son slug (leçons, quiz, labs).
+   * Récupère le détail d'un module par son slug (leçons ordonnées, quiz, labs, statuts).
    */
-  async getModuleBySlug(moduleSlug: string): Promise<ModuleDetailDto> {
+  async getModuleBySlug(
+    moduleSlug: string,
+    userId?: string,
+  ): Promise<ModuleDetailDto> {
     const normalizedSlug = moduleSlug.toLowerCase().trim();
     const cacheKey = `module_detail:${normalizedSlug}`;
-    const cached = this.cache.get<ModuleDetailDto>(cacheKey);
-    if (cached) {
-      return cached;
-    }
+    let detail = this.cache.get<ModuleDetailDto>(cacheKey);
 
-    const mod = await this.prisma.module.findUnique({
-      where: { slug: normalizedSlug },
-      include: {
-        track: {
-          select: {
-            id: true,
-            slug: true,
-            title: true,
+    if (!detail) {
+      const mod = await this.prisma.module.findUnique({
+        where: { slug: normalizedSlug },
+        include: {
+          track: { select: { id: true, slug: true, title: true } },
+          lessons: {
+            orderBy: { position: 'asc' },
+            select: {
+              id: true,
+              slug: true,
+              title: true,
+              difficulty: true,
+              estimatedMinutes: true,
+              position: true,
+            },
           },
-        },
-        lessons: {
-          orderBy: { position: 'asc' },
-          select: {
-            id: true,
-            slug: true,
-            title: true,
-            difficulty: true,
-            estimatedMinutes: true,
-            position: true,
+          quizzes: {
+            orderBy: { position: 'asc' },
+            select: {
+              id: true,
+              slug: true,
+              title: true,
+              passingScore: true,
+              position: true,
+              _count: { select: { questions: true } },
+            },
           },
-        },
-        quizzes: {
-          orderBy: { position: 'asc' },
-          select: {
-            id: true,
-            slug: true,
-            title: true,
-            passingScore: true,
-            position: true,
-            _count: {
-              select: { questions: true },
+          labs: {
+            orderBy: { slug: 'asc' },
+            select: {
+              id: true,
+              slug: true,
+              title: true,
+              level: true,
+              maxScore: true,
+              estimatedMinutes: true,
             },
           },
         },
-        labs: {
-          orderBy: { slug: 'asc' },
-          select: {
-            id: true,
-            slug: true,
-            title: true,
-            level: true,
-            maxScore: true,
-            estimatedMinutes: true,
-          },
-        },
-      },
-    });
+      });
 
-    if (!mod) {
-      throw new NotFoundException(`Module introuvable : ${moduleSlug}`);
+      if (!mod) {
+        throw new NotFoundException(`Module introuvable : ${moduleSlug}`);
+      }
+
+      detail = {
+        id: mod.id,
+        slug: mod.slug,
+        title: mod.title,
+        description: mod.description,
+        position: mod.position,
+        difficulty: mod.difficulty,
+        estimatedMinutes: mod.estimatedMinutes,
+        competencyRefs: (mod.competencyRefs as string[]) || [],
+        track: {
+          id: mod.track.id,
+          slug: mod.track.slug,
+          title: mod.track.title,
+        },
+        lessons: mod.lessons.map((lesson) => ({
+          id: lesson.id,
+          slug: lesson.slug,
+          title: lesson.title,
+          difficulty: lesson.difficulty,
+          estimatedMinutes: lesson.estimatedMinutes,
+          position: lesson.position,
+        })),
+        quizzes: mod.quizzes.map((quiz) => ({
+          id: quiz.id,
+          slug: quiz.slug,
+          title: quiz.title,
+          passingScore: quiz.passingScore,
+          position: quiz.position,
+          questionsCount: quiz._count.questions,
+        })),
+        labs: mod.labs.map((lab) => ({
+          id: lab.id,
+          slug: lab.slug,
+          title: lab.title,
+          level: lab.level,
+          maxScore: lab.maxScore,
+          estimatedMinutes: lab.estimatedMinutes,
+        })),
+      };
+
+      this.cache.set(cacheKey, detail);
     }
 
-    const result: ModuleDetailDto = {
-      id: mod.id,
-      slug: mod.slug,
-      title: mod.title,
-      description: mod.description,
-      position: mod.position,
-      difficulty: mod.difficulty,
-      estimatedMinutes: mod.estimatedMinutes,
-      competencyRefs: (mod.competencyRefs as string[]) || [],
-      track: {
-        id: mod.track.id,
-        slug: mod.track.slug,
-        title: mod.track.title,
-      },
-      lessons: mod.lessons.map((lesson) => ({
+    return userId ? this.enricher.enrichModuleDetail(detail, userId) : detail;
+  }
+
+  /**
+   * Récupère une leçon complète avec son contenu Markdown et statut de progression.
+   */
+  async getLessonBySlug(
+    lessonSlug: string,
+    userId?: string,
+  ): Promise<LessonDetailDto> {
+    const normalizedSlug = lessonSlug.toLowerCase().trim();
+    const cacheKey = `lesson_detail:${normalizedSlug}`;
+    let detail = this.cache.get<LessonDetailDto>(cacheKey);
+
+    if (!detail) {
+      const lesson = await this.prisma.lesson.findUnique({
+        where: { slug: normalizedSlug },
+        include: {
+          module: {
+            select: {
+              id: true,
+              slug: true,
+              title: true,
+              track: { select: { slug: true } },
+            },
+          },
+          lessonLabs: {
+            orderBy: { position: 'asc' },
+            include: {
+              lab: {
+                select: {
+                  id: true,
+                  slug: true,
+                  title: true,
+                  level: true,
+                  maxScore: true,
+                  estimatedMinutes: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      if (!lesson) {
+        throw new NotFoundException(`Leçon introuvable : ${lessonSlug}`);
+      }
+
+      const markdownContent = await this.lessonReader.readLessonMarkdown(
+        lesson.contentPath,
+      );
+
+      detail = {
         id: lesson.id,
         slug: lesson.slug,
         title: lesson.title,
         difficulty: lesson.difficulty,
         estimatedMinutes: lesson.estimatedMinutes,
         position: lesson.position,
-      })),
-      quizzes: mod.quizzes.map((quiz) => ({
-        id: quiz.id,
-        slug: quiz.slug,
-        title: quiz.title,
-        passingScore: quiz.passingScore,
-        position: quiz.position,
-        questionsCount: quiz._count.questions,
-      })),
-      labs: mod.labs.map((lab) => ({
-        id: lab.id,
-        slug: lab.slug,
-        title: lab.title,
-        level: lab.level,
-        maxScore: lab.maxScore,
-        estimatedMinutes: lab.estimatedMinutes,
-      })),
-    };
-
-    this.cache.set(cacheKey, result);
-    return result;
-  }
-
-  /**
-   * Récupère une leçon complète avec son contenu Markdown lu de manière sécurisée.
-   */
-  async getLessonBySlug(lessonSlug: string): Promise<LessonDetailDto> {
-    const normalizedSlug = lessonSlug.toLowerCase().trim();
-    const cacheKey = `lesson_detail:${normalizedSlug}`;
-    const cached = this.cache.get<LessonDetailDto>(cacheKey);
-    if (cached) {
-      return cached;
-    }
-
-    const lesson = await this.prisma.lesson.findUnique({
-      where: { slug: normalizedSlug },
-      include: {
+        objectives: (lesson.objectives as string[]) || [],
+        prerequisites: (lesson.prerequisites as string[]) || [],
+        competencyRefs: (lesson.successCriteria as string[]) || [],
+        successCriteria: (lesson.successCriteria as string[]) || [],
+        content: markdownContent,
         module: {
-          select: {
-            id: true,
-            slug: true,
-            title: true,
-            track: {
-              select: {
-                slug: true,
-              },
-            },
-          },
+          id: lesson.module.id,
+          slug: lesson.module.slug,
+          title: lesson.module.title,
+          trackSlug: lesson.module.track.slug,
         },
-        lessonLabs: {
-          orderBy: { position: 'asc' },
-          include: {
-            lab: {
-              select: {
-                id: true,
-                slug: true,
-                title: true,
-                level: true,
-                maxScore: true,
-                estimatedMinutes: true,
-              },
-            },
-          },
-        },
-      },
-    });
+        relatedLabs: lesson.lessonLabs.map((ll) => ({
+          id: ll.lab.id,
+          slug: ll.lab.slug,
+          title: ll.lab.title,
+          level: ll.lab.level,
+          maxScore: ll.lab.maxScore,
+          estimatedMinutes: ll.lab.estimatedMinutes,
+        })),
+        progress: null,
+      };
 
-    if (!lesson) {
-      throw new NotFoundException(`Leçon introuvable : ${lessonSlug}`);
+      this.cache.set(cacheKey, detail);
     }
 
-    // Lecture sécurisée du contenu Markdown sur le système de fichiers
-    const markdownContent = await this.lessonReader.readLessonMarkdown(
-      lesson.contentPath,
-    );
-
-    const result: LessonDetailDto = {
-      id: lesson.id,
-      slug: lesson.slug,
-      title: lesson.title,
-      difficulty: lesson.difficulty,
-      estimatedMinutes: lesson.estimatedMinutes,
-      position: lesson.position,
-      objectives: (lesson.objectives as string[]) || [],
-      prerequisites: (lesson.prerequisites as string[]) || [],
-      competencyRefs: (lesson.successCriteria as string[]) || [],
-      successCriteria: (lesson.successCriteria as string[]) || [],
-      content: markdownContent,
-      module: {
-        id: lesson.module.id,
-        slug: lesson.module.slug,
-        title: lesson.module.title,
-        trackSlug: lesson.module.track.slug,
-      },
-      relatedLabs: lesson.lessonLabs.map((ll) => ({
-        id: ll.lab.id,
-        slug: ll.lab.slug,
-        title: ll.lab.title,
-        level: ll.lab.level,
-        maxScore: ll.lab.maxScore,
-        estimatedMinutes: ll.lab.estimatedMinutes,
-      })),
-    };
-
-    this.cache.set(cacheKey, result);
-    return result;
+    return userId ? this.enricher.enrichLessonDetail(detail, userId) : detail;
   }
 }

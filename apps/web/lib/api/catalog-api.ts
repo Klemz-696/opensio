@@ -1,5 +1,11 @@
 import { apiFetch } from './api-client';
 
+export interface TrackProgressSummary {
+  totalLessons: number;
+  completedLessons: number;
+  progressPercentage: number;
+}
+
 export interface TrackSummary {
   id: string;
   slug: string;
@@ -7,7 +13,14 @@ export interface TrackSummary {
   description: string | null;
   position: number;
   modulesCount: number;
-  progress?: null;
+  progress?: TrackProgressSummary | null;
+}
+
+export interface ModuleProgressSummary {
+  totalLessons: number;
+  completedLessons: number;
+  progressPercentage: number;
+  isCompleted: boolean;
 }
 
 export interface ModuleSummary {
@@ -21,6 +34,7 @@ export interface ModuleSummary {
   competencyRefs: string[];
   trackSlug: string;
   lessonsCount: number;
+  progress?: ModuleProgressSummary | null;
 }
 
 export interface LessonSummary {
@@ -30,6 +44,7 @@ export interface LessonSummary {
   difficulty: number;
   estimatedMinutes: number;
   position: number;
+  status?: 'started' | 'completed' | null;
 }
 
 export interface QuizSummary {
@@ -39,6 +54,8 @@ export interface QuizSummary {
   passingScore: number;
   position: number;
   questionsCount: number;
+  passed?: boolean;
+  bestScore?: number | null;
 }
 
 export interface LabSummary {
@@ -67,6 +84,7 @@ export interface ModuleDetail {
   lessons: LessonSummary[];
   quizzes: QuizSummary[];
   labs: LabSummary[];
+  progress?: ModuleProgressSummary | null;
 }
 
 export interface LessonDetail {
@@ -88,6 +106,11 @@ export interface LessonDetail {
     trackSlug: string;
   };
   relatedLabs: LabSummary[];
+  progress?: {
+    status: 'started' | 'completed';
+    timeSpentSeconds: number;
+    completedAt: string | null;
+  } | null;
 }
 
 export async function fetchTracks(token: string | null): Promise<TrackSummary[]> {

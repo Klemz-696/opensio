@@ -1,5 +1,11 @@
 import { LabLevel } from '@prisma/client';
 
+export interface TrackProgressSummaryDto {
+  totalLessons: number;
+  completedLessons: number;
+  progressPercentage: number;
+}
+
 export interface TrackSummaryDto {
   id: string;
   slug: string;
@@ -7,11 +13,14 @@ export interface TrackSummaryDto {
   description: string | null;
   position: number;
   modulesCount: number;
-  /**
-   * Note Lot 4 : La progression agrégée arrive au Lot 6 (B08).
-   * La structure est livrée sans calcul de pourcentages.
-   */
-  progress?: null;
+  progress?: TrackProgressSummaryDto | null;
+}
+
+export interface ModuleProgressSummaryDto {
+  totalLessons: number;
+  completedLessons: number;
+  progressPercentage: number;
+  isCompleted: boolean;
 }
 
 export interface ModuleSummaryDto {
@@ -25,6 +34,7 @@ export interface ModuleSummaryDto {
   competencyRefs: string[];
   trackSlug: string;
   lessonsCount: number;
+  progress?: ModuleProgressSummaryDto | null;
 }
 
 export interface LessonSummaryDto {
@@ -34,6 +44,7 @@ export interface LessonSummaryDto {
   difficulty: number;
   estimatedMinutes: number;
   position: number;
+  status?: 'started' | 'completed' | null;
 }
 
 export interface QuizSummaryDto {
@@ -43,6 +54,8 @@ export interface QuizSummaryDto {
   passingScore: number;
   position: number;
   questionsCount: number;
+  passed?: boolean;
+  bestScore?: number | null;
 }
 
 export interface LabSummaryDto {
@@ -71,6 +84,7 @@ export interface ModuleDetailDto {
   lessons: LessonSummaryDto[];
   quizzes: QuizSummaryDto[];
   labs: LabSummaryDto[];
+  progress?: ModuleProgressSummaryDto | null;
 }
 
 export interface LessonDetailDto {
@@ -92,4 +106,9 @@ export interface LessonDetailDto {
     trackSlug: string;
   };
   relatedLabs: LabSummaryDto[];
+  progress?: {
+    status: 'started' | 'completed';
+    timeSpentSeconds: number;
+    completedAt: string | null;
+  } | null;
 }
