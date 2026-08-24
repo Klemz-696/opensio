@@ -13,9 +13,19 @@ const ARGON2_OPTIONS: argon2.Options = {
 async function main(): Promise<void> {
   console.log('🌱 [OpenSIO] Amorçage de la base de données (Seed)...');
 
+  const isDev = process.env.NODE_ENV !== 'production';
+
   // Compte Administrateur
   const adminEmail = 'admin@opensio.local';
-  const adminPassword = process.env.ADMIN_INITIAL_PASSWORD || 'AdminOpenSIO2026!';
+  let adminPassword = process.env.SEED_ADMIN_PASSWORD;
+  if (!adminPassword) {
+    if (!isDev) {
+      console.warn(
+        '⚠️ [ATTENTION] Variable SEED_ADMIN_PASSWORD non définie hors environnement de développement ! Utilisation du mot de passe de secours.'
+      );
+    }
+    adminPassword = 'AdminOpenSIO2026!';
+  }
   const adminPasswordHash = await argon2.hash(adminPassword, ARGON2_OPTIONS);
 
   const admin = await prisma.user.upsert({
@@ -40,7 +50,15 @@ async function main(): Promise<void> {
 
   // Compte Étudiant de Démonstration
   const studentEmail = 'student@opensio.local';
-  const studentPassword = process.env.STUDENT_INITIAL_PASSWORD || 'StudentOpenSIO2026!';
+  let studentPassword = process.env.SEED_STUDENT_PASSWORD;
+  if (!studentPassword) {
+    if (!isDev) {
+      console.warn(
+        '⚠️ [ATTENTION] Variable SEED_STUDENT_PASSWORD non définie hors environnement de développement ! Utilisation du mot de passe de secours.'
+      );
+    }
+    studentPassword = 'StudentOpenSIO2026!';
+  }
   const studentPasswordHash = await argon2.hash(studentPassword, ARGON2_OPTIONS);
 
   const student = await prisma.user.upsert({

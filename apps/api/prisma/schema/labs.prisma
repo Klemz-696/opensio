@@ -43,7 +43,8 @@ model Lab {
   estimatedMinutes Int      @default(0) @map("estimated_minutes")
   gitHash          String?  @map("git_hash")
 
-  sessions LabSession[]
+  sessions   LabSession[]
+  lessonLabs LessonLab[]
 
   @@index([moduleId])
   @@map("labs")
