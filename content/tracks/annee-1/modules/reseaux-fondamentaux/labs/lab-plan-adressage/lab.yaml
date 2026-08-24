@@ -1,0 +1,55 @@
+slug: plan-adressage-pme
+title: "Plan d'adressage d'une PME"
+level: 2_files
+max_score: 100
+estimated_minutes: 40
+context: |
+  Une PME dispose de 3 services :
+  - Production : 50 postes
+  - Invités : 20 postes
+  - Comptabilité : 10 postes
+
+  L'adresse globale allouée pour l'ensemble du site est 10.20.0.0/24.
+  Vous devez concevoir le plan d'adressage VLSM optimisé et renseigner le fichier plan.csv.
+
+objectives:
+  - "Découper 10.20.0.0/24 en 3 sous-réseaux adaptés selon la méthode VLSM"
+  - "Documenter chaque sous-réseau (réseau, préfixe, passerelle, première et dernière adresse hôte, broadcast)"
+  - "Garantir l'absence totale de chevauchement entre sous-réseaux"
+
+prerequisites:
+  - adressage-ipv4
+
+topology: null
+
+files:
+  editable:
+    - path: plan.csv
+      description: "service,network,prefix,gateway,first_host,last_host,broadcast"
+
+hints:
+  - cost_percent: 10
+    text: "Commencez par le plus gros besoin (Production : 50 postes -> préfixe /26, 62 hôtes utilisables)."
+  - cost_percent: 10
+    text: "Poursuivez avec les Invités (20 postes -> /27) puis la Comptabilité (10 postes -> /28)."
+
+validation:
+  type: script
+  image: opensio/validator-csv:latest
+  timeout_seconds: 30
+  checks:
+    - id: subnets_valid
+      required: true
+      points: 60
+      description: "Découpage VLSM et masques adaptés à chaque service"
+    - id: no_overlap
+      required: true
+      points: 25
+      description: "Aucun chevauchement d'adresses entre les sous-réseaux"
+    - id: doc_complete
+      required: false
+      points: 15
+      description: "Toutes les adresses (passerelle, 1ère, dernière, broadcast) sont cohérentes"
+
+scoring:
+  floor_percent: 50

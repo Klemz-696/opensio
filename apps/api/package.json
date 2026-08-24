@@ -12,7 +12,8 @@
     "test": "vitest run",
     "db:migrate": "prisma migrate dev --schema=prisma/schema",
     "db:generate": "prisma generate --schema=prisma/schema",
-    "db:seed": "prisma db seed"
+    "db:seed": "prisma db seed",
+    "content:sync": "tsx src/sync/cli.ts"
   },
   "prisma": {
     "schema": "prisma/schema",
@@ -22,6 +23,7 @@
     "@nestjs/common": "^11.0.10",
     "@nestjs/core": "^11.0.10",
     "@nestjs/platform-express": "^11.0.10",
+    "@opensio/content-schema": "workspace:*",
     "@prisma/client": "^6.19.3",
     "argon2": "^0.45.1",
     "reflect-metadata": "^0.2.2",
