@@ -33,7 +33,8 @@ describe.skipIf(!process.env.DATABASE_URL)(
         isDbConnected = true;
 
         cacheService = new CatalogCacheService();
-        lessonReader = new LessonReaderService(contentDir);
+        process.env.CONTENT_PATH = contentDir;
+        lessonReader = new LessonReaderService();
         catalogService = new CatalogService(prisma, cacheService, lessonReader);
         controller = new CatalogController(catalogService);
 

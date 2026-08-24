@@ -82,6 +82,9 @@ export function CodeBlock({ code, language = 'text' }: CodeBlockProps) {
         </button>
       </div>
 
+      {/* Sécurité (§30) : le HTML injecté provient exclusivement de codeToHtml (Shiki),
+          qui échappe le contenu texte par construction. Aucun HTML brut issu du Markdown
+          n'entre dans ce composant. Ne jamais passer ici du HTML non généré par Shiki. */}
       <div className="p-4 overflow-x-auto text-sm font-mono leading-relaxed">
         {highlightedHtml ? (
           <div

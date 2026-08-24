@@ -10,8 +10,8 @@ import * as path from 'path';
 export class LessonReaderService {
   private readonly contentRoot: string;
 
-  constructor(customContentRoot?: string) {
-    const rawRoot = customContentRoot ?? process.env.CONTENT_PATH ?? './content';
+  constructor() {
+    const rawRoot = process.env.CONTENT_PATH ?? './content';
     let resolved = path.resolve(process.cwd(), rawRoot);
 
     // Résolution de repli si exécuté depuis apps/api
