@@ -4,6 +4,7 @@ import React from 'react';
 import CatalogueLoading from '../app/catalogue/loading';
 import ModuleDetailLoading from '../app/catalogue/[moduleSlug]/loading';
 import LessonDetailLoading from '../app/catalogue/[moduleSlug]/[lessonSlug]/loading';
+import QuizPageLoading from '../app/catalogue/[moduleSlug]/quiz/[quizSlug]/loading';
 
 describe('Skeletons de chargement Next.js App Router (Accessibilité & Structure)', () => {
   it('CatalogueLoading rend le skeleton avec les attributs d\'accessibilité', () => {
@@ -28,5 +29,13 @@ describe('Skeletons de chargement Next.js App Router (Accessibilité & Structure
     expect(status).toBeDefined();
     expect(status.getAttribute('aria-busy')).toBe('true');
     expect(status.getAttribute('aria-label')).toContain('leçon');
+  });
+
+  it('QuizPageLoading rend le skeleton du quiz avec les attributs d\'accessibilité', () => {
+    render(<QuizPageLoading />);
+    const status = screen.getByRole('status');
+    expect(status).toBeDefined();
+    expect(status.getAttribute('aria-busy')).toBe('true');
+    expect(status.getAttribute('aria-label')).toContain('quiz');
   });
 });
