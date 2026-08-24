@@ -12,6 +12,7 @@ import type {
   RuntimeRef,
   RuntimeStatus,
 } from './lab-runner.interface';
+import { resolveContentFilePath } from '../../../common/utils/content-path.util';
 
 const execFileAsync = promisify(execFile);
 
@@ -201,11 +202,8 @@ export class SimulationLabRunner implements LabRunner {
    * Résout le chemin absolu du dossier racine du lab.
    */
   private resolveLabDir(definitionPath: string): string {
-    if (path.isAbsolute(definitionPath)) {
-      return path.dirname(definitionPath);
-    }
-    const contentBase = process.env.CONTENT_PATH || path.resolve(process.cwd(), '../../content');
-    return path.dirname(path.resolve(contentBase, definitionPath));
+    const fullPath = resolveContentFilePath(definitionPath);
+    return path.dirname(fullPath);
   }
 
   /**

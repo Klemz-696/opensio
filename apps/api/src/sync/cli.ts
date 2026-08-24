@@ -1,35 +1,10 @@
-import { resolve } from 'node:path';
-import { existsSync } from 'node:fs';
 import { PrismaClient } from '@prisma/client';
 import { executeContentSync } from './sync.service.js';
 import { printSyncReport } from './reporter.js';
-
-function resolveContentDirectory(): string {
-  const envPath = process.env.CONTENT_PATH;
-  if (envPath) {
-    const directPath = resolve(process.cwd(), envPath);
-    if (existsSync(directPath)) return directPath;
-    const repoRelPath = resolve(process.cwd(), '../..', envPath);
-    if (existsSync(repoRelPath)) return repoRelPath;
-  }
-
-  const candidatePaths = [
-    resolve(process.cwd(), 'content'),
-    resolve(process.cwd(), '../../content'),
-    resolve(process.cwd(), '../content'),
-  ];
-
-  for (const p of candidatePaths) {
-    if (existsSync(p) && existsSync(resolve(p, 'tracks'))) {
-      return p;
-    }
-  }
-
-  return resolve(process.cwd(), 'content');
-}
+import { resolveContentRoot } from '../common/utils/content-path.util.js';
 
 async function main() {
-  const targetDir = resolveContentDirectory();
+  const targetDir = resolveContentRoot();
 
   const prisma = new PrismaClient();
 

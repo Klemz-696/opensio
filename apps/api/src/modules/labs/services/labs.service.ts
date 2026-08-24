@@ -8,6 +8,7 @@ import {
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { PrismaService } from '../../../prisma/prisma.service';
+import { resolveContentFilePath } from '../../../common/utils/content-path.util';
 import { LabSchema, type Lab } from '@opensio/content-schema';
 import { parseYamlContent } from '@opensio/content-schema';
 import type {
@@ -127,7 +128,7 @@ export class LabsService {
    * Charge la définition complète du lab pour un usage backend interne.
    */
   loadLabDefinition(definitionPath: string): Lab {
-    const fullPath = this.resolveFullPath(definitionPath);
+    const fullPath = this.resolveContentFilePath(definitionPath);
     if (!fs.existsSync(fullPath)) {
       throw new NotFoundException(`Fichier de définition du lab introuvable: ${definitionPath}`);
     }
@@ -147,15 +148,11 @@ export class LabsService {
    * Résout le chemin absolu du dossier racine du lab.
    */
   resolveLabDir(definitionPath: string): string {
-    const fullPath = this.resolveFullPath(definitionPath);
+    const fullPath = this.resolveContentFilePath(definitionPath);
     return path.dirname(fullPath);
   }
 
-  private resolveFullPath(definitionPath: string): string {
-    if (path.isAbsolute(definitionPath)) {
-      return definitionPath;
-    }
-    const contentBase = process.env.CONTENT_PATH || path.resolve(process.cwd(), '../../content');
-    return path.resolve(contentBase, definitionPath);
+  private resolveContentFilePath(definitionPath: string): string {
+    return resolveContentFilePath(definitionPath);
   }
 }

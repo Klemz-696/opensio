@@ -442,6 +442,19 @@ Implémentation complète du suivi de progression de l'étudiant et du tableau d
 - **Isolation et Immuabilité Post-Validation** : Une fois la session validée avec succès (`PASSED`), aucune modification de fichier ou déblocage d'indice n'est autorisé. Toute tentative d'accès non autorisé par un tiers est rejetée par une erreur 403 Forbidden.
 - **Gestion des Sandboxes Orphelines & Sweeper Périodique (`LabSessionSweeperService`)** : Pour éviter l'accumulation de dossiers temporaires sur le disque (`os.tmpdir()/opensio-labs/<sessionId>`) en cas d'abandon de session sans appel à `/stop` (ou si l'apprenant ne revient jamais sur la plateforme), un service dédié `LabSessionSweeperService` effectue un balayage proactif au démarrage puis toutes les 5 minutes. Toutes les sessions en statut `RUNNING` dont le TTL est dépassé sont basculées en statut `EXPIRED` et leur bac à sable sur disque est immédiatement purgé par le runner.
 
+## 2026-08-24 — Incident : Résolution runtime de `@opensio/content-schema` non compilé
+
+- **Symptôme** : Au lancement de l'API (`nest start --watch` ou `node dist/main.js`), échec avec `ERR_MODULE_NOT_FOUND` sur `packages/content-schema/src/track.js` importé depuis `src/index.ts`.
+- **Diagnostic** : Le Lot 7 a introduit le premier import *runtime* de `@opensio/content-schema` dans l'API NestJS (`LabsService` chargeant `LabSchema` pour validation Zod). Le package était configuré avec `build = tsc --noEmit` sans émission `dist/` et ses imports relatifs ESM en `.js` n'étaient pas résolubles par Node en exécution standard. Les outils de test/dev à la volée (`tsx`, `vitest`) masquaient cette anomalie en compilant les sources TypeScript à la volée.
+- **Correction appliquée** :
+  1. `packages/content-schema` : Ajout d'une compilation TypeScript réelle (`tsconfig.build.json`) émettant `.js`, `.d.ts` et sourcemaps vers `dist/`.
+  2. `packages/content-schema/package.json` : Pointage de `main`, `types` et `exports` vers `./dist/index.js` et `./dist/index.d.ts`.
+  3. `turbo.json` : La tâche `dev` de l'API et du monorepo dépend désormais explicitement de la compilation des packages internes amont (`^build`).
+  4. `apps/api` : Ajout de `tsconfig.build.json` ciblant `rootDir: ./src` pour produire un artefact propre `dist/main.js` sans pollution des fichiers de tests.
+- **Note de Backlog (Qualité & CI)** :
+  - Ajouter une étape de smoke test en CI exécutant directement l'artefact compilé de production (`node dist/main.js` + interrogation du endpoint `GET /health` ou `GET /api/v1/health`) afin de bloquer systématiquement toute régression liée à la résolution des modules compilés.
+
+
 
 
 
