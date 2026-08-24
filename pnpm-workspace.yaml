@@ -5,6 +5,6 @@ packages:
 onlyBuiltDependencies:
   - "@nestjs/core"
   - "@swc/core"
-  - "esbuild"
-  - "sharp"
-  - "unplugin-swc"
+  - esbuild
+  - sharp
+  - unplugin-swc
