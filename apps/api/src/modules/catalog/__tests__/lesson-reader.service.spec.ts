@@ -8,7 +8,8 @@ describe('LessonReaderService (RM-13 / Sécurité)', () => {
   const testContentRoot = path.resolve(__dirname, '../../../../../../content');
 
   beforeAll(() => {
-    service = new LessonReaderService(testContentRoot);
+    process.env.CONTENT_PATH = testContentRoot;
+    service = new LessonReaderService();
   });
 
   it('lit correctement une leçon valide et extrait le corps Markdown sans frontmatter', async () => {

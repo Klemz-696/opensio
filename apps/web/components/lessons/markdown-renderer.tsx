@@ -15,7 +15,7 @@ const customSanitizeSchema = {
   attributes: {
     ...defaultSchema.attributes,
     code: [...(defaultSchema.attributes?.code || []), 'className'],
-    span: [...(defaultSchema.attributes?.span || []), 'className', 'style'],
+    span: [...(defaultSchema.attributes?.span || []), 'className'],
     div: [...(defaultSchema.attributes?.div || []), 'className'],
     a: [...(defaultSchema.attributes?.a || []), 'target', 'rel', 'href'],
   },
