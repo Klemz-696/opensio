@@ -44,6 +44,7 @@ export class ProgressService {
 
     const now = new Date();
     const additionalTime = Math.max(0, timeSpentSeconds ?? 0);
+    const wasAlreadyCompleted = existing?.status === LessonProgressStatus.COMPLETED;
 
     let progress;
     if (existing) {
@@ -73,22 +74,24 @@ export class ProgressService {
       });
     }
 
-    // Journalisation de l'événement d'activité
-    await this.prisma.activityEvent.create({
-      data: {
-        userId,
-        kind: 'LESSON_COMPLETED',
-        entityType: 'lesson',
-        entityId: lesson.id,
-        metadata: {
-          lessonSlug: lesson.slug,
-          lessonTitle: lesson.title,
-          moduleSlug: lesson.module.slug,
-          moduleTitle: lesson.module.title,
-          trackSlug: lesson.module.track.slug,
+    // Journalisation de l'événement d'activité UNIQUEMENT lors de la première complétion (transition réelle)
+    if (!wasAlreadyCompleted) {
+      await this.prisma.activityEvent.create({
+        data: {
+          userId,
+          kind: 'LESSON_COMPLETED',
+          entityType: 'lesson',
+          entityId: lesson.id,
+          metadata: {
+            lessonSlug: lesson.slug,
+            lessonTitle: lesson.title,
+            moduleSlug: lesson.module.slug,
+            moduleTitle: lesson.module.title,
+            trackSlug: lesson.module.track.slug,
+          },
         },
-      },
-    });
+      });
+    }
 
     return {
       lessonId: lesson.id,

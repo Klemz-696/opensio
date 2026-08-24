@@ -185,6 +185,15 @@ describe.skipIf(!process.env.DATABASE_URL)(
         where: { userId: userA.id },
       });
       expect(rows).toHaveLength(1);
+
+      // Vérification qu'il n'y a qu'un seul événement LESSON_COMPLETED consigné (pas de doublon d'activité)
+      const completedEvents = await prisma.activityEvent.findMany({
+        where: {
+          userId: userA.id,
+          kind: 'LESSON_COMPLETED',
+        },
+      });
+      expect(completedEvents).toHaveLength(1);
     });
 
     it('4. Dashboard User A vs Dashboard User B : agrégats, reprise et timeline isolés', async () => {
