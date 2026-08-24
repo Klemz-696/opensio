@@ -1,0 +1,108 @@
+enum QuizQuestionKind {
+  SINGLE   @map("single")
+  MULTIPLE @map("multiple")
+
+  @@map("quiz_question_kind")
+}
+
+model Track {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  slug        String    @unique @db.Citext
+  title       String
+  description String?
+  position    Int       @default(0)
+  gitHash     String?   @map("git_hash")
+  syncedAt    DateTime? @map("synced_at") @db.Timestamptz(6)
+
+  modules Module[]
+
+  @@map("tracks")
+}
+
+model Module {
+  id               String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  trackId          String   @map("track_id") @db.Uuid
+  track            Track    @relation(fields: [trackId], references: [id], onDelete: Cascade)
+  slug             String   @unique @db.Citext
+  title            String
+  description      String?
+  position         Int      @default(0)
+  difficulty       Int      @default(1)
+  estimatedMinutes Int      @default(0) @map("estimated_minutes")
+  competencyRefs   Json     @default("[]") @map("competency_refs")
+  gitHash          String?  @map("git_hash")
+
+  lessons Lesson[]
+  quizzes Quiz[]
+  labs    Lab[]
+
+  @@index([trackId])
+  @@map("modules")
+}
+
+model Lesson {
+  id               String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  moduleId         String   @map("module_id") @db.Uuid
+  module           Module   @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  slug             String   @unique @db.Citext
+  title            String
+  objectives       Json     @default("[]")
+  prerequisites    Json     @default("[]")
+  difficulty       Int      @default(1)
+  estimatedMinutes Int      @default(0) @map("estimated_minutes")
+  contentPath      String   @map("content_path")
+  successCriteria  Json     @default("[]") @map("success_criteria")
+  position         Int      @default(0)
+  gitHash          String?  @map("git_hash")
+
+  lessonProgress LessonProgress[]
+  lessonLabs     LessonLab[]
+
+  @@index([moduleId])
+  @@map("lessons")
+}
+
+model Quiz {
+  id           String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  moduleId     String  @map("module_id") @db.Uuid
+  module       Module  @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  slug         String  @unique @db.Citext
+  title        String
+  passingScore Int     @default(80) @map("passing_score")
+  position     Int     @default(0)
+
+  questions QuizQuestion[]
+  attempts  QuizAttempt[]
+
+  @@index([moduleId])
+  @@map("quizzes")
+}
+
+model QuizQuestion {
+  id               String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  quizId           String           @map("quiz_id") @db.Uuid
+  quiz             Quiz             @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  kind             QuizQuestionKind @default(SINGLE)
+  prompt           String
+  choices          Json
+  correctChoiceIds Json             @map("correct_choice_ids")
+  explanation      String?
+  position         Int              @default(0)
+
+  @@index([quizId])
+  @@map("quiz_questions")
+}
+
+model LessonLab {
+  lessonId String  @map("lesson_id") @db.Uuid
+  lesson   Lesson  @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  labId    String  @map("lab_id") @db.Uuid
+  lab      Lab     @relation(fields: [labId], references: [id], onDelete: Cascade)
+  required Boolean @default(false)
+  position Int     @default(0)
+
+  @@id([lessonId, labId])
+  @@index([labId])
+  @@map("lesson_labs")
+}
+
