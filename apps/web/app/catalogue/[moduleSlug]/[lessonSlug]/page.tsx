@@ -2,13 +2,14 @@
 
 import React, { useEffect, useState, use } from 'react';
 import Link from 'next/link';
-import { Loader2, AlertCircle, RefreshCw, ArrowLeft, BookCheck } from 'lucide-react';
+import { AlertCircle, RefreshCw, ArrowLeft, BookCheck } from 'lucide-react';
 import { useAuth } from '../../../../lib/auth/use-auth';
 import { fetchLesson, type LessonDetail } from '../../../../lib/api/catalog-api';
 import { Breadcrumbs } from '../../../../components/layout/breadcrumbs';
 import { LessonHeader } from '../../../../components/lessons/lesson-header';
 import { LessonMetadata } from '../../../../components/lessons/lesson-metadata';
 import { MarkdownRenderer } from '../../../../components/lessons/markdown-renderer';
+import LessonDetailLoading from './loading';
 
 interface LessonPageProps {
   params: Promise<{
@@ -46,12 +47,7 @@ export default function LessonDetailPage({ params }: LessonPageProps) {
   }, [accessToken, lessonSlug]);
 
   if (isLoading) {
-    return (
-      <div className="py-20 flex flex-col items-center justify-center gap-4 text-slate-400">
-        <Loader2 className="w-8 h-8 animate-spin text-sky-400" />
-        <p className="text-sm font-medium">Chargement du contenu de la leçon...</p>
-      </div>
-    );
+    return <LessonDetailLoading />;
   }
 
   if (error || !lessonData) {

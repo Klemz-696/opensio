@@ -1,10 +1,11 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { BookOpen, Loader2, AlertCircle, RefreshCw } from 'lucide-react';
+import { BookOpen, AlertCircle, RefreshCw } from 'lucide-react';
 import { useAuth } from '../../lib/auth/use-auth';
 import { fetchTracks, fetchTrackModules, type TrackSummary, type ModuleSummary } from '../../lib/api/catalog-api';
 import { TrackSection } from '../../components/catalog/track-section';
+import CatalogueLoading from './loading';
 
 interface TrackWithModules {
   track: TrackSummary;
@@ -60,10 +61,7 @@ export default function CataloguePage() {
       </div>
 
       {isLoading ? (
-        <div className="py-20 flex flex-col items-center justify-center gap-4 text-slate-400">
-          <Loader2 className="w-8 h-8 animate-spin text-sky-400" />
-          <p className="text-sm font-medium">Chargement des modules du catalogue...</p>
-        </div>
+        <CatalogueLoading />
       ) : error ? (
         <div className="p-6 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-300 flex items-start gap-4">
           <AlertCircle className="w-6 h-6 text-rose-400 shrink-0 mt-0.5" />
