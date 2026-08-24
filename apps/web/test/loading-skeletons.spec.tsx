@@ -47,4 +47,12 @@ describe('Skeletons de chargement Next.js App Router (Accessibilité & Structure
     expect(status.getAttribute('aria-busy')).toBe('true');
     expect(status.getAttribute('aria-label')).toContain('tableau de bord');
   });
+
+  it('LabDetailLoading rend le skeleton de lab avec les attributs d\'accessibilité', async () => {
+    const LabDetailLoading = (await import('../app/catalogue/[moduleSlug]/labs/[labSlug]/loading')).default;
+    render(<LabDetailLoading />);
+    const status = screen.getByRole('status');
+    expect(status).toBeDefined();
+    expect(status.getAttribute('aria-busy')).toBe('true');
+  });
 });
