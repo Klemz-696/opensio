@@ -1,11 +1,30 @@
 import { render, screen } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import HomePage from '../app/page';
 
-describe('HomePage (Lot 0 baseline)', () => {
-  it('renders OpenSIO heading and Lot 0 badge', () => {
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({
+    push: vi.fn(),
+  }),
+}));
+
+vi.mock('../lib/auth/use-auth', () => ({
+  useAuth: () => ({
+    user: null,
+    accessToken: null,
+    isLoading: false,
+    isAuthenticated: false,
+    login: vi.fn(),
+    logout: vi.fn(),
+    setAccessToken: vi.fn(),
+  }),
+}));
+
+describe('HomePage', () => {
+  it('renders heading and catalogue access links', () => {
     render(<HomePage />);
-    expect(screen.getByRole('heading', { name: 'OpenSIO', level: 1 })).toBeDefined();
-    expect(screen.getByText(/Lot 0 — Socle Monorepo/i)).toBeDefined();
+    expect(screen.getByRole('heading', { level: 1 })).toBeDefined();
+    expect(screen.getByText(/Accéder au Catalogue/i)).toBeDefined();
+    expect(screen.getByText(/Se connecter/i)).toBeDefined();
   });
 });

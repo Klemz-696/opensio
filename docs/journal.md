@@ -205,4 +205,58 @@ retirés, .gitattributes LF ajouté).
 - `pnpm build` : Build complet (Next.js 15, NestJS 11, packages) réussi sans erreur.
 - Démonstration manuelle de bout en bout validée (`apps/api/test/demo-auth.ts`).
 
+## Déviations acceptées (Lot 3)
 
+- Token CSRF double-soumission (§30) non implémenté : mitigé par SameSite=Lax
+  (le navigateur n'envoie pas le cookie sur POST cross-site) + API JSON pure.
+  À réévaluer en v0.2 si surface d'attaque accrue.
+- Rate limiting global 100 req/min/IP (§30) non implémenté : limites par route
+  sensible (5/min) uniquement. Justification : homelab mono-instance, LAN/VPN.
+
+---
+
+## 2026-08-24 — Lot 4 : Catalogue & Leçons (B06 / US-02, US-03)
+
+### Objectifs du lot
+
+Implémentation de l'API Catalogue et de la lecture sécurisée des leçons Markdown côté backend NestJS, mise en place de l'authentification frontend minimale en mémoire (D-09) avec Next.js 15 App Router, et création des pages de consultation de catalogue, de détail de module et de lecture de leçon avec coloration Shiki et sanitization stricte (§30).
+
+### Réalisations
+
+- **API Catalogue (`apps/api/src/modules/catalog/`) protégée par `AuthGuard` (§22.2 / §29.2)** :
+  - `GET /tracks` : Liste ordonnée des années de formation (`TrackSummaryDto`, progression agrégée réservée au Lot 6 avec `progress: null` documenté).
+  - `GET /tracks/:slug/modules` : Modules d'une année ordonnés par position avec métadonnées complètes (`difficulty`, `estimatedMinutes`, `competencyRefs`).
+  - `GET /modules/:slug` : Détail d'un module avec leçons ordonnées, quiz (sans réponses correctes) et labs associés.
+  - `GET /lessons/:slug` : Métadonnées complètes de la leçon et contenu Markdown lu de manière sécurisée.
+- **Sécurité anti-traversée de chemin (`LessonReaderService`)** :
+  - Confinement strict dans `CONTENT_PATH` : résolution absolue, normalisation, rejet des `..`, détection et rejet des injections de caractères nuls (`\0`).
+  - Constructeur sans injection de primitive afin d'assurer l'instanciation propre par le conteneur DI NestJS.
+  - Extraction automatique du corps Markdown et élimination du frontmatter YAML pour un affichage propre côté client.
+- **Cache mémoire process (`CatalogCacheService` — §41)** :
+  - Mise en cache in-memory des tracks, modules et leçons pour respecter le budget de latence LAN < 1.5s / API p95 < 300ms.
+  - Invalidation globale du cache branchée lors de la synchronisation de contenu (`executeContentSync`).
+- **Frontend Authentification minimale (`apps/web/lib/auth/`)** :
+  - `AuthContext` : Access token stocké en **MÉMOIRE VIVE UNIQUEMENT** (D-09, jamais dans `localStorage` ni `sessionStorage`).
+  - Restauration de session transparente au montage via `POST /api/v1/auth/refresh` (cookie `SameSite=Lax` transmis automatiquement).
+  - Rewrites proxy Next.js (`next.config.ts`) : `/api/:path*` réécrit vers le backend pour assurer le fonctionnement same-origin sans CORS complexe.
+  - `LoginForm` (`apps/web/components/auth/login-form.tsx`) : Validation React Hook Form + Zod, affichage des erreurs RFC 7807 (`application/problem+json`).
+  - `ProtectedRoute` (`apps/web/components/auth/protected-route.tsx`) : Redirection automatique vers `/login` avec conservation de l'URL de redirection en cas d'absence de session.
+- **Pages Catalogue & Rendu Markdown sécurisé (`apps/web`)** :
+  - `/catalogue` : Navigation par année avec cartes de modules (`ModuleCard`), badges de difficulté, durées et codes du référentiel BTS.
+  - `/catalogue/[moduleSlug]` : Page de détail du module (`ModuleHeader`, `ModuleLessonsList`, `ModuleQuizzesList`, `ModuleLabsList`).
+  - `/catalogue/[moduleSlug]/[lessonSlug]` : Rendu du cours avec `react-markdown` + `rehype-sanitize` (liste blanche stricte de balises autorisées), coloration syntaxique avec `shiki` (`CodeBlock` avec bouton copie), liens externes en `target="_blank" rel="noopener noreferrer"`.
+  - Exception documentée au §30 : `dangerouslySetInnerHTML` dans `CodeBlock` alimenté exclusivement par `codeToHtml` (Shiki) qui échappe le contenu texte par construction ; aucun HTML brut issu du Markdown n'entre dans ce composant.
+  - Layout & Navigation (`Navbar`, `Breadcrumbs`) avec statut d'authentification et déconnexion.
+- **Tests & Robustesse** :
+  - Ajout de `app-boot.e2e.spec.ts` pour valider la compilation et l'initialisation du conteneur DI complet (`AppModule`).
+- **Conformité stricte D-13 / RM-13** :
+  - 118 fichiers analysés, 0 avertissement (≥ 300 lignes), 0 violation (> 400 lignes).
+
+### Validations
+
+- `pnpm lint` : 100% vert (0 erreur, 0 avertissement sur l'ensemble du monorepo).
+- `pnpm typecheck` : 100% vert (0 erreur TypeScript).
+- `pnpm test` : 100% vert (88 tests unitaires, d'intégration et de démarrage passants).
+- `node scripts/check-file-size.mjs` : 100% conforme D-13 (118 fichiers analysés).
+- `pnpm build` : Build complet Next.js 15 (App Router) et NestJS 11 réussi avec succès.
+- Démarrage réel de l'API et réponse de `GET /api/v1/health` validés.

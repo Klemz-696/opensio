@@ -59,7 +59,9 @@ Ce projet fournit une solution complète pour apprendre et réviser le référen
 | `pnpm build` | Construit les applications et packages du monorepo |
 | `pnpm lint` | Exécute ESLint sur tous les projets |
 | `pnpm typecheck` | Vérifie la cohérence des types TypeScript |
-| `pnpm test` | Exécute les suites de tests unitaires (Vitest) |
+| `pnpm test` | Exécute les suites de tests unitaires et d'intégration (Vitest) |
+| `pnpm content:sync` | Synchronise le contenu Markdown/YAML dans PostgreSQL |
+| `pnpm seed` | Amorce les comptes administrateur et étudiant de démonstration |
 | `pnpm check-file-size` | Contrôle la conformité D-13 (aucun fichier source > 400 lignes) |
 
 ---
