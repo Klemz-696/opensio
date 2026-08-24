@@ -2,7 +2,7 @@
 
 # 🎓 OpenSIO
 
-![Accueil](docs/assets/accueil.png)
+![Page d'accueil OpenSIO](docs/assets/accueil.png)
 
 **La plateforme d'entraînement pour le BTS SIO option SISR**
 
