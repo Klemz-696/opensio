@@ -2,9 +2,7 @@ packages:
   - "apps/*"
   - "packages/*"
 
-onlyBuiltDependencies:
-  - "@nestjs/core"
-  - "@swc/core"
-  - esbuild
-  - sharp
-  - unplugin-swc
+allowBuilds:
+  '@swc/core': true
+  esbuild: true
+  sharp: true
