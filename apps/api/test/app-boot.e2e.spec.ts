@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
+import { WsAdapter } from '@nestjs/platform-ws';
 import { AppModule } from '../src/app.module';
 
 describe.skipIf(!process.env.DATABASE_URL)(
@@ -18,6 +19,7 @@ describe.skipIf(!process.env.DATABASE_URL)(
       }).compile();
 
       app = moduleRef.createNestApplication();
+      app.useWebSocketAdapter(new WsAdapter(app));
       await app.init();
     });
 
