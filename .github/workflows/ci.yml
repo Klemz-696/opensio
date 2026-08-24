@@ -9,6 +9,25 @@ jobs:
   validate:
     name: Validation globale (Lint, Types, Taille D-13, Tests, Build)
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: opensio
+          POSTGRES_USER: opensio
+          POSTGRES_PASSWORD: ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DATABASE_URL: postgresql://opensio:ci@localhost:5432/opensio
+
     steps:
       - name: Checkout du code
         uses: actions/checkout@v4
@@ -30,6 +49,9 @@ jobs:
       - name: Génération du client Prisma
         run: pnpm --filter @opensio/api exec prisma generate
 
+      - name: Application des migrations PostgreSQL
+        run: pnpm --filter @opensio/api exec prisma migrate deploy
+
       - name: Contrôle de la taille des fichiers (Règle D-13 / RM-13)
         run: node scripts/check-file-size.mjs
 
@@ -39,7 +61,7 @@ jobs:
       - name: Vérification des types TypeScript
         run: pnpm typecheck
 
-      - name: Tests unitaires
+      - name: Tests unitaires et d'intégration
         run: pnpm test
 
       - name: Build des applications et packages
