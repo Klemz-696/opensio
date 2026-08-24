@@ -4,12 +4,13 @@
   "private": true,
   "description": "Frontend Next.js 15 (App Router) pour OpenSIO",
   "scripts": {
-    "dev": "next dev --port 3000",
     "build": "next build",
     "start": "next start --port 3000",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "dev": "next dev --turbopack"
+
   },
   "dependencies": {
     "@hookform/resolvers": "^5.9.1",
