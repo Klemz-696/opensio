@@ -27,7 +27,8 @@ export const envSchema = z.object({
     .or(z.boolean())
     .default(true),
   AI_PROVIDER: z.enum(['openai-compatible', 'null']).default('openai-compatible'),
-  AI_BASE_URL: z.string().default('http://localhost:11434/v1'),
+  OLLAMA_BASE_URL: z.string().optional(),
+  AI_BASE_URL: z.string().optional().default('http://localhost:11434/v1'),
   AI_MODEL: z.string().default('llama3.1:8b'),
   AI_API_KEY: z.string().optional(),
   AI_RATE_LIMIT_HOURLY: z.coerce.number().int().positive().default(20),
