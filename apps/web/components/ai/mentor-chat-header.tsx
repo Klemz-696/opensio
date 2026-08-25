@@ -9,6 +9,8 @@ import {
   Globe,
   MessageSquare,
   Settings,
+  Sparkles,
+  BookOpen,
 } from 'lucide-react';
 import type { ChatStatus, PageContext } from '../../lib/api/chat-api';
 
@@ -42,11 +44,21 @@ export function MentorChatHeader({
         <div>
           <h3 className="font-semibold text-white text-sm flex items-center gap-2">
             Mentor OpenSIO
-            {resolvedPageContext.isEvaluated && (
+            {resolvedPageContext.isEvaluated ? (
               <span className="text-[10px] font-normal px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">
                 Évaluation Active (Socratique)
               </span>
-            )}
+            ) : resolvedPageContext.pageType === 'quiz-coaching' ? (
+              <span className="inline-flex items-center gap-1 text-[10px] font-normal px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                <Sparkles className="w-2.5 h-2.5" />
+                Coaching Quiz
+              </span>
+            ) : resolvedPageContext.lessonSlug ? (
+              <span className="inline-flex items-center gap-1 text-[10px] font-normal px-2 py-0.5 rounded-full bg-sky-500/20 text-sky-300 border border-sky-500/30 truncate max-w-[130px]">
+                <BookOpen className="w-2.5 h-2.5 shrink-0" />
+                <span className="truncate">{resolvedPageContext.lessonSlug}</span>
+              </span>
+            ) : null}
           </h3>
           <div className="flex items-center gap-2 text-xs text-slate-400 mt-0.5">
             <span className="text-slate-300 text-[11px] font-mono">{status?.model || 'llama3.1:8b'}</span>

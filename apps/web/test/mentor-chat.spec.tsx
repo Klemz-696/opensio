@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import React from 'react';
 import { MentorChatDrawer } from '../components/ai/mentor-chat-drawer';
 import * as chatApi from '../lib/api/chat-api';
@@ -257,7 +257,6 @@ describe('MentorChatDrawer (Assistant IA Frontend — Lot C3)', () => {
     const deleteBtn = screen.getByRole('button', { name: /supprimer discussion réseau/i });
     fireEvent.click(deleteBtn);
 
-    // Vérifie affichage de la confirmation
     expect(screen.getByText(/supprimer définitivement \?/i)).toBeDefined();
     const confirmBtn = screen.getByRole('button', { name: /confirmer la suppression de discussion réseau/i });
     fireEvent.click(confirmBtn);
@@ -291,5 +290,57 @@ describe('MentorChatDrawer (Assistant IA Frontend — Lot C3)', () => {
         expect(chatApi.updateAiPreferences).toHaveBeenCalledWith({ freeMode: true }, 'valid-jwt-token');
       });
     }
+  });
+
+  it('9. Affiche discrètement le contexte de la leçon courante dans le header', async () => {
+    render(
+      <MentorChatDrawer
+        currentContext={{
+          pageType: 'lesson',
+          lessonSlug: 'routage-statique',
+          moduleSlug: 'administration-reseau',
+          isEvaluated: false,
+        }}
+      />
+    );
+    fireEvent.click(screen.getByRole('button', { name: /ouvrir l'assistant mentor ia/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText('routage-statique')).toBeDefined();
+    });
+  });
+
+  it('10. Reçoit l’événement opensio:open-mentor pour le coaching quiz et déclenche l’appel IA', async () => {
+    render(<MentorChatDrawer />);
+
+    await act(async () => {
+      const event = new CustomEvent('opensio:open-mentor', {
+        detail: {
+          initialMessage: 'Pourquoi le masque /26 ne correspond pas à 255.255.255.128 ?',
+          title: 'Coaching : quiz-cidr (Q1)',
+          context: {
+            pageType: 'quiz-coaching',
+            quizSlug: 'quiz-cidr',
+            questionPrompt: 'Masque pour /26 ?',
+            userAnswer: '255.255.255.128',
+          },
+        },
+      });
+      window.dispatchEvent(event);
+    });
+
+    await waitFor(() => {
+      expect(screen.getByRole('dialog', { name: /assistant mentor ia/i })).toBeDefined();
+      expect(chatApi.createConversation).toHaveBeenCalledWith('valid-jwt-token', {
+        title: 'Coaching : quiz-cidr (Q1)',
+        context: {
+          pageType: 'quiz-coaching',
+          quizSlug: 'quiz-cidr',
+          questionPrompt: 'Masque pour /26 ?',
+          userAnswer: '255.255.255.128',
+        },
+      });
+      expect(chatApi.sendChatMessage).toHaveBeenCalled();
+    });
   });
 });
