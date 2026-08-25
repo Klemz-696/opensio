@@ -2,16 +2,7 @@
 
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { usePathname } from 'next/navigation';
-import {
-  Bot,
-  X,
-  Plus,
-  ShieldCheck,
-  Globe,
-  AlertCircle,
-  MessageSquare,
-  Settings,
-} from 'lucide-react';
+import { Bot, AlertCircle, MessageSquare } from 'lucide-react';
 import { useAuth } from '../../lib/auth/use-auth';
 import {
   fetchChatStatus,
@@ -20,6 +11,8 @@ import {
   updateAiPreferences,
   fetchConversations,
   createConversation,
+  updateConversation,
+  deleteConversation,
   fetchMessages,
   sendChatMessage,
   type ChatStatus,
@@ -28,9 +21,11 @@ import {
   type PageContext,
   type AiPreferences,
 } from '../../lib/api/chat-api';
+import { MentorChatHeader } from './mentor-chat-header';
 import { MentorChatMessages } from './mentor-chat-messages';
 import { MentorChatInput } from './mentor-chat-input';
 import { MentorChatSettings } from './mentor-chat-settings';
+import { MentorConversationSidebar } from './mentor-conversation-sidebar';
 
 interface MentorChatDrawerProps {
   currentContext?: PageContext;
@@ -42,6 +37,7 @@ export function MentorChatDrawer({ currentContext }: MentorChatDrawerProps) {
 
   const [isOpen, setIsOpen] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [showSidebar, setShowSidebar] = useState(false);
   const [status, setStatus] = useState<ChatStatus | null>(null);
   const [preferences, setPreferences] = useState<AiPreferences>({ preferredModel: null, freeMode: false });
   const [availableModels, setAvailableModels] = useState<string[]>(['llama3.1:8b']);
@@ -75,7 +71,6 @@ export function MentorChatDrawer({ currentContext }: MentorChatDrawerProps) {
     return { pageType: 'general', isEvaluated: false };
   }, [pathname, currentContext]);
 
-  // Charger le statut, les préférences et les conversations à l'ouverture
   useEffect(() => {
     if (isOpen && accessToken) {
       void loadInitialData();
@@ -90,7 +85,7 @@ export function MentorChatDrawer({ currentContext }: MentorChatDrawerProps) {
         fetchChatStatus(accessToken),
         fetchAiModels(accessToken),
         fetchAiPreferences(accessToken),
-        fetchConversations(accessToken),
+        fetchConversations(accessToken, 'all'),
       ]);
 
       setStatus(st);
@@ -98,10 +93,12 @@ export function MentorChatDrawer({ currentContext }: MentorChatDrawerProps) {
       setPreferences(prefs);
       setConversations(convs);
 
-      if (convs.length > 0) {
-        const firstConv = convs[0];
-        setActiveConvId(firstConv.id);
-        const msgs = await fetchMessages(firstConv.id, accessToken);
+      const activeConvs = convs.filter((c) => !c.archivedAt);
+      const targetConv = activeConvs.length > 0 ? activeConvs[0] : convs[0];
+
+      if (targetConv) {
+        setActiveConvId(targetConv.id);
+        const msgs = await fetchMessages(targetConv.id, accessToken);
         setMessages(msgs);
       } else {
         const newConv = await createConversation(accessToken, {
@@ -152,8 +149,56 @@ export function MentorChatDrawer({ currentContext }: MentorChatDrawerProps) {
       setConversations((prev) => [newConv, ...prev]);
       setActiveConvId(newConv.id);
       setMessages([]);
+      setShowSidebar(false);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Impossible de créer une discussion.');
+    }
+  };
+
+  const handleRenameConversation = async (convId: string, newTitle: string) => {
+    if (!accessToken) return;
+    try {
+      const updated = await updateConversation(convId, { title: newTitle }, accessToken);
+      setConversations((prev) =>
+        prev.map((c) => (c.id === convId ? { ...c, title: updated.title, isCustomTitle: true } : c))
+      );
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Échec du renommage.');
+    }
+  };
+
+  const handleArchiveConversation = async (convId: string, isArchived: boolean) => {
+    if (!accessToken) return;
+    try {
+      const updated = await updateConversation(convId, { isArchived }, accessToken);
+      setConversations((prev) =>
+        prev.map((c) => (c.id === convId ? { ...c, archivedAt: updated.archivedAt } : c))
+      );
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Échec de l’archivage.');
+    }
+  };
+
+  const handleDeleteConversation = async (convId: string) => {
+    if (!accessToken) return;
+    try {
+      await deleteConversation(convId, accessToken);
+      const remaining = conversations.filter((c) => c.id !== convId);
+      setConversations(remaining);
+
+      if (activeConvId === convId) {
+        const nextActive = remaining.find((c) => !c.archivedAt) || remaining[0];
+        if (nextActive) {
+          setActiveConvId(nextActive.id);
+          const msgs = await fetchMessages(nextActive.id, accessToken);
+          setMessages(msgs);
+        } else {
+          setActiveConvId(null);
+          setMessages([]);
+        }
+      }
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Échec de la suppression.');
     }
   };
 
@@ -190,7 +235,6 @@ export function MentorChatDrawer({ currentContext }: MentorChatDrawerProps) {
     setIsLoading(true);
     setError(null);
 
-    // Message utilisateur optimiste temporaire avec ID garanti unique
     const tempUserMsg: ChatMessageItem = {
       id: tempId,
       conversationId: activeConvId,
@@ -203,7 +247,6 @@ export function MentorChatDrawer({ currentContext }: MentorChatDrawerProps) {
 
     try {
       const res = await sendChatMessage(activeConvId, content, accessToken, resolvedPageContext);
-      // Réconciliation des IDs sans risque de duplication de clé
       setMessages((prev) => [
         ...prev.filter((m) => m.id !== tempId),
         res.userMessage,
@@ -211,6 +254,11 @@ export function MentorChatDrawer({ currentContext }: MentorChatDrawerProps) {
       ]);
       if (status) {
         setStatus({ ...status, remainingQuota: res.remainingQuota });
+      }
+
+      if (messages.length === 0) {
+        const updatedList = await fetchConversations(accessToken, 'all');
+        setConversations(updatedList);
       }
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Erreur lors de l’envoi du message.');
@@ -221,9 +269,10 @@ export function MentorChatDrawer({ currentContext }: MentorChatDrawerProps) {
 
   if (!user) return null;
 
+  const currentConv = conversations.find((c) => c.id === activeConvId);
+
   return (
     <>
-      {/* Bouton flottant d'ouverture du chat */}
       <button
         type="button"
         onClick={() => setIsOpen(true)}
@@ -235,7 +284,6 @@ export function MentorChatDrawer({ currentContext }: MentorChatDrawerProps) {
         <span className="w-2 h-2 rounded-full bg-emerald-400" />
       </button>
 
-      {/* Panneau latéral (Drawer) */}
       {isOpen && (
         <div
           role="dialog"
@@ -243,67 +291,36 @@ export function MentorChatDrawer({ currentContext }: MentorChatDrawerProps) {
           aria-label="Assistant Mentor IA"
           className="fixed inset-y-0 right-0 z-50 w-full sm:w-[460px] bg-slate-950 border-l border-slate-800 shadow-2xl flex flex-col animate-in slide-in-from-right duration-200"
         >
-          {/* Header du Drawer */}
-          <div className="p-4 bg-slate-900 border-b border-slate-800 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center text-indigo-400">
-                <Bot className="w-5 h-5" />
-              </div>
-              <div>
-                <h3 className="font-semibold text-white text-sm flex items-center gap-2">
-                  Mentor OpenSIO
-                  {resolvedPageContext.isEvaluated && (
-                    <span className="text-[10px] font-normal px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">
-                      Évaluation Active (Socratique)
-                    </span>
-                  )}
-                </h3>
-                <div className="flex items-center gap-2 text-xs text-slate-400 mt-0.5">
-                  <span className="text-slate-300 text-[11px] font-mono">{status?.model || 'llama3.1:8b'}</span>
-                  {status?.mode === 'local' ? (
-                    <span className="flex items-center gap-1 text-emerald-400 text-[11px]">
-                      <ShieldCheck className="w-3 h-3" /> Ollama Local (0 fuite)
-                    </span>
-                  ) : (
-                    <span className="flex items-center gap-1 text-blue-400 text-[11px]">
-                      <Globe className="w-3 h-3" /> Distant Chiffré
-                    </span>
-                  )}
-                </div>
-              </div>
-            </div>
+          <MentorChatHeader
+            status={status}
+            resolvedPageContext={resolvedPageContext}
+            showSidebar={showSidebar}
+            showSettings={showSettings}
+            onToggleSidebar={() => {
+              setShowSidebar((v) => !v);
+              setShowSettings(false);
+            }}
+            onToggleSettings={() => {
+              setShowSettings((v) => !v);
+              setShowSidebar(false);
+            }}
+            onNewConversation={() => void handleNewConversation()}
+            onClose={() => setIsOpen(false)}
+          />
 
-            <div className="flex items-center gap-1">
-              <button
-                type="button"
-                onClick={() => setShowSettings((v) => !v)}
-                title="Préférences IA"
-                className={`p-2 rounded-xl transition-colors cursor-pointer ${
-                  showSettings ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:text-white hover:bg-slate-800'
-                }`}
-              >
-                <Settings className="w-4 h-4" />
-              </button>
-              <button
-                type="button"
-                onClick={() => void handleNewConversation()}
-                title="Nouvelle discussion"
-                className="p-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-colors cursor-pointer"
-              >
-                <Plus className="w-4 h-4" />
-              </button>
-              <button
-                type="button"
-                onClick={() => setIsOpen(false)}
-                aria-label="Fermer l'assistant"
-                className="p-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-colors cursor-pointer"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
+          {showSidebar && (
+            <MentorConversationSidebar
+              conversations={conversations}
+              activeConvId={activeConvId}
+              onSelectConversation={(id) => void handleSelectConversation(id)}
+              onNewConversation={() => void handleNewConversation()}
+              onRenameConversation={handleRenameConversation}
+              onArchiveConversation={handleArchiveConversation}
+              onDeleteConversation={handleDeleteConversation}
+              onCloseSidebar={() => setShowSidebar(false)}
+            />
+          )}
 
-          {/* Panneau rétractable des préférences étudiant */}
           {showSettings && (
             <MentorChatSettings
               availableModels={availableModels}
@@ -314,24 +331,24 @@ export function MentorChatDrawer({ currentContext }: MentorChatDrawerProps) {
             />
           )}
 
-          {/* Sélecteur de discussions */}
-          {conversations.length > 1 && (
-            <div className="px-3 py-2 bg-slate-900/60 border-b border-slate-800/80 flex items-center gap-1.5 overflow-x-auto text-xs">
-              <MessageSquare className="w-3.5 h-3.5 text-slate-500 shrink-0" />
-              {conversations.map((c) => (
-                <button
-                  key={c.id}
-                  type="button"
-                  onClick={() => void handleSelectConversation(c.id)}
-                  className={`px-2.5 py-1 rounded-lg transition-colors whitespace-nowrap cursor-pointer text-xs ${
-                    c.id === activeConvId
-                      ? 'bg-indigo-600/30 text-indigo-200 border border-indigo-500/40 font-medium'
-                      : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/80'
-                  }`}
-                >
-                  {c.title}
-                </button>
-              ))}
+          {!showSidebar && currentConv && (
+            <div className="px-4 py-2 bg-slate-900/60 border-b border-slate-800/80 flex items-center justify-between text-xs">
+              <div className="flex items-center gap-2 truncate text-slate-300">
+                <MessageSquare className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
+                <span className="font-semibold truncate">{currentConv.title}</span>
+                {currentConv.archivedAt && (
+                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                    Archivée
+                  </span>
+                )}
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowSidebar(true)}
+                className="text-[11px] text-indigo-400 hover:text-indigo-300 underline cursor-pointer shrink-0 ml-2"
+              >
+                Changer
+              </button>
             </div>
           )}
 
@@ -342,14 +359,12 @@ export function MentorChatDrawer({ currentContext }: MentorChatDrawerProps) {
             </div>
           )}
 
-          {/* Liste des messages avec clés garanties uniques */}
           <MentorChatMessages
             messages={messages}
             isLoading={isLoading}
             messagesEndRef={messagesEndRef}
           />
 
-          {/* Zone de saisie */}
           <MentorChatInput
             inputMessage={inputMessage}
             setInputMessage={setInputMessage}
