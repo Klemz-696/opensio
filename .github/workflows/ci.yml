@@ -12,7 +12,7 @@ jobs:
 
     services:
       postgres:
-        image: postgres:16-alpine
+        image: postgres:18-alpine
         env:
           POSTGRES_DB: opensio
           POSTGRES_USER: opensio
@@ -66,5 +66,13 @@ jobs:
       - name: Tests unitaires et d'intégration
         run: pnpm test
 
-      - name: Build des applications et packages
+      - name: Vérification de la syntaxe des scripts shell (ShellCheck)
+        uses: ludeeus/action-shellcheck@master
+        with:
+          scandir: './scripts'
+
+      - name: Build des applications et packages (Monorepo)
         run: pnpm build
+
+      - name: Validation du build des images Docker de production
+        run: docker compose -f docker-compose.prod.yml build

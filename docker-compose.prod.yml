@@ -1,0 +1,190 @@
+# ==============================================================================
+# OpenSIO — Docker Compose Production Durci (D-06, D-17, D-18)
+# ==============================================================================
+
+services:
+  # Reverse Proxy HTTPS avec CA TLS interne
+  caddy:
+    image: caddy:2.9-alpine
+    container_name: opensio-caddy
+    restart: unless-stopped
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - ./infra/docker/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - edge
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_BIND_SERVICE
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 128M
+    depends_on:
+      web:
+        condition: service_healthy
+      api:
+        condition: service_healthy
+
+  # Frontend Next.js 15 (App Router)
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    image: opensio/web:latest
+    container_name: opensio-web
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - API_INTERNAL_URL=http://api:4000
+    read_only: true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=64m
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    networks:
+      - edge
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+    depends_on:
+      api:
+        condition: service_healthy
+
+  # Backend API NestJS 11 + Prisma
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    image: opensio/api:latest
+    container_name: opensio-api
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=production
+      - API_PORT=4000
+    volumes:
+      - ./content:/app/content:ro
+    read_only: true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=128m
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    networks:
+      - edge
+      - backend
+    deploy:
+      resources:
+        limits:
+          cpus: '1.5'
+          memory: 1024M
+    depends_on:
+      db:
+        condition: service_healthy
+
+  # Base de données PostgreSQL 18 (Réseau backend interne isolé, non exposé sur l'hôte)
+  db:
+    image: postgres:18-alpine
+    container_name: opensio-db-prod
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: opensio
+      POSTGRES_USER: opensio
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      PGDATA: /var/lib/postgresql/data
+    volumes:
+      - pgdata_prod:/var/lib/postgresql/data
+    networks:
+      - backend
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U opensio -d opensio']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+
+  # Service de Sauvegarde Quotidienne Chiffrée (D-18)
+  backup:
+    build:
+      context: .
+      dockerfile: infra/docker/backup/Dockerfile
+    image: opensio/backup:latest
+    container_name: opensio-backup
+    restart: unless-stopped
+    environment:
+      - PGHOST=db
+      - PGPORT=5432
+      - PGUSER=opensio
+      - PGDATABASE=opensio
+      - PGPASSWORD=${DB_PASSWORD}
+      - BACKUP_ENCRYPTION_KEY=${BACKUP_ENCRYPTION_KEY:-${JWT_SECRET}}
+      - BACKUP_RETENTION_DAYS=7
+      - BACKUP_CRON=0 2 * * *
+    volumes:
+      - backups_data:/backups
+    networks:
+      - backend
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 128M
+    depends_on:
+      db:
+        condition: service_healthy
+
+  # Assistant IA Ollama Local (Profil optionnel --profile ai)
+  ollama:
+    image: ollama/ollama:latest
+    container_name: opensio-ollama
+    profiles:
+      - ai
+    restart: unless-stopped
+    volumes:
+      - ollama_data:/root/.ollama
+    networks:
+      - backend
+      - edge
+    deploy:
+      resources:
+        limits:
+          cpus: '4.0'
+          memory: 4096M
+
+networks:
+  edge:
+    driver: bridge
+  backend:
+    internal: true
+
+volumes:
+  caddy_data:
+  caddy_config:
+  pgdata_prod:
+  backups_data:
+  ollama_data:

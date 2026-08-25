@@ -32,7 +32,25 @@ export const envSchema = z.object({
   AI_API_KEY: z.string().optional(),
   AI_RATE_LIMIT_HOURLY: z.coerce.number().int().positive().default(20),
   AI_TIMEOUT_MS: z.coerce.number().int().positive().default(120000),
-});
+}).refine(
+  (data) => {
+    if (data.NODE_ENV === 'test') {
+      return true;
+    }
+    const secret = data.JWT_SECRET.toLowerCase();
+    const isDefault =
+      secret === 'change-this-to-a-very-secure-random-64-bytes-secret-key-for-jwt-signing' ||
+      secret === 'generate-64-random-bytes';
+    const hasTemplateKeyword =
+      secret.includes('change-me') || secret.includes('change-this');
+    return !isDefault && !hasTemplateKeyword;
+  },
+  {
+    message:
+      'JWT_SECRET non sécurisé : les valeurs par défaut de template ("change-this", "change-me") sont interdites. Générez un secret aléatoire de 64 octets minimum.',
+    path: ['JWT_SECRET'],
+  }
+);
 
 export type EnvConfig = z.infer<typeof envSchema>;
 
