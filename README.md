@@ -6,16 +6,34 @@
 
 **La plateforme d'entraînement et d'auto-évaluation pour le BTS SIO option SISR**
 
-[![Version](https://img.shields.io/badge/version-v0.1.0--mvp-blue.svg)](package.json)
+[![Version](https://img.shields.io/badge/version-v0.2.0--distribution-blue.svg)](package.json)
 [![CI](https://github.com/Klemz-696/opensio/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Klemz-696/opensio/actions/workflows/ci.yml)
 [![Licence MIT](https://img.shields.io/badge/Licence-MIT-green.svg)](LICENSE)
 [![Next.js](https://img.shields.io/badge/Next.js-15-black?logo=next.js)](https://nextjs.org)
 [![NestJS](https://img.shields.io/badge/NestJS-11-E0234E?logo=nestjs)](https://nestjs.com)
-[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?logo=postgresql&logoColor=white)](https://www.postgresql.org)
-[![Prisma](https://img.shields.io/badge/Prisma-6-2D3748?logo=prisma)](https://www.prisma.io)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-18-4169E1?logo=postgresql&logoColor=white)](https://www.postgresql.org)
+[![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?logo=docker&logoColor=white)](docker-compose.prod.yml)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
 
 </div>
+
+---
+
+## ⚡ Installation en une commande
+
+N'importe qui peut installer et démarrer OpenSIO — sur un PC de développement ou sur un serveur de production — via **une seule commande interactive** qui vérifie tous les prérequis :
+
+### 🪟 Windows (PowerShell)
+```powershell
+irm https://raw.githubusercontent.com/Klemz-696/opensio/main/scripts/install.ps1 | iex
+```
+
+### 🐧 Linux & 🍎 macOS (Bash / Zsh)
+```bash
+curl -fsSL https://raw.githubusercontent.com/Klemz-696/opensio/main/scripts/install.sh | bash
+```
+
+> 📖 Consultez le **[Guide d'installation complet](docs/installation.md)** et le **[Guide de déploiement Homelab / Proxmox](docs/deployment.md)** pour les détails d'exploitation.
 
 ---
 
