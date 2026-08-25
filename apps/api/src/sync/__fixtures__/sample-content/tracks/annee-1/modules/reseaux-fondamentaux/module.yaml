@@ -1,0 +1,14 @@
+slug: reseaux-fondamentaux
+title: "Réseaux : fondamentaux"
+description: "Adressage IPv4, masques, sous-réseaux, classes et calculs binaires."
+position: 1
+difficulty: 2
+estimated_minutes: 240
+competency_refs:
+  - "B2.1"
+lessons:
+  - adressage-ipv4
+quizzes:
+  - quiz-adressage
+labs:
+  - plan-adressage-pme
