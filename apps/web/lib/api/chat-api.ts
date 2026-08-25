@@ -15,7 +15,12 @@ export interface PageContext {
   lessonSlug?: string;
   quizSlug?: string;
   moduleSlug?: string;
+  moduleTitle?: string;
+  title?: string;
   isEvaluated?: boolean;
+  questionPrompt?: string;
+  userAnswer?: string;
+  choices?: string[];
 }
 
 export interface ChatConversationItem {

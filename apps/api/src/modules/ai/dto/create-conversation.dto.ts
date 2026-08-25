@@ -10,6 +10,9 @@ export const createConversationSchema = z.object({
       lessonSlug: z.string().optional(),
       quizSlug: z.string().optional(),
       moduleSlug: z.string().optional(),
+      questionPrompt: z.string().optional(),
+      userAnswer: z.string().optional(),
+      choices: z.array(z.string()).optional(),
     })
     .optional(),
 });
