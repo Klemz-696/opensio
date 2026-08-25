@@ -6,6 +6,10 @@ estimated_minutes: 45
 context: |
   Vous devez concevoir un script PowerShell d'automatisation (promote-dc.ps1) permettant d'installer les services de domaine Active Directory (AD DS) et de promouvoir le serveur en premier contrôleur de domaine d'une nouvelle forêt d'entreprise.
 
+  Prérequis réseau en amont (hors script) :
+  - Le serveur doit disposer d'une adresse IP statique configurée
+  - Son client DNS doit pointer sur lui-même (127.0.0.1) avant la promotion
+
   Spécifications du déploiement :
   - Installation du rôle AD-Domain-Services avec ses consoles et outils de gestion (-IncludeManagementTools)
   - Nom FQDN du domaine racine : entreprise.lan
@@ -37,7 +41,7 @@ hints:
   - cost_percent: 10
     text: "Utilisez Install-WindowsFeature -Name AD-Domain-Services -IncludeManagementTools pour installer les binaires."
   - cost_percent: 10
-    text: "Générez le mot de passe DSRM avec : $dsrm = ConvertTo-SecureString 'MotDePasse!2026' -AsPlainText -Force."
+    text: "Générez le mot de passe DSRM avec : $dsrm = ConvertTo-SecureString 'MotDePasse!2026' -AsPlainText -Force. (En clair dans ce labo uniquement — jamais en production.)"
 
 validation:
   type: script
