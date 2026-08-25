@@ -98,13 +98,24 @@ check_prerequisites() {
   # 2. Node.js (>= 22)
   if command -v node &>/dev/null; then
     NODE_RAW=$(node -v 2>/dev/null || echo "v0.0.0")
-    NODE_VER=$(echo "$NODE_RAW" | sed 's/v//' | cut -d'.' -f1)
+    NODE_VER_CLEAN="${NODE_RAW#v}"
+    NODE_VER="${NODE_VER_CLEAN%%.*}"
     if [ "$NODE_VER" -ge 22 ]; then log_success "Node.js détecté : $NODE_RAW"
     else log_error "Node.js $NODE_RAW insuffisant (version ≥ 22 requise)."; exit 1; fi
   else log_error "Node.js n'est pas installé (version ≥ 22 requise)."; exit 1; fi
-  # 3. pnpm
+  # 3. pnpm (>= 9)
   if command -v pnpm &>/dev/null; then
-    log_success "pnpm détecté : $(pnpm -v 2>/dev/null || echo 'OK')"
+    PNPM_RAW=$(pnpm -v 2>/dev/null || echo "0.0.0")
+    PNPM_VER_CLEAN="${PNPM_RAW#v}"
+    PNPM_MAJOR="${PNPM_VER_CLEAN%%.*}"
+    if [ "$PNPM_MAJOR" -ge 9 ]; then
+      log_success "pnpm détecté : v$PNPM_VER_CLEAN"
+    else
+      log_warn "pnpm v$PNPM_VER_CLEAN est insuffisant (version ≥ 9 requise)."
+      if ask_confirm "Mettre à jour pnpm vers 11.23.0 ?" "Y"; then
+        npm install -g pnpm@11.23.0 || corepack enable; log_success "pnpm mis à jour."
+      else log_error "pnpm ≥ 9 est requis pour gérer le monorepo. Arrêt."; exit 1; fi
+    fi
   else
     log_warn "pnpm n'est pas installé."
     if ask_confirm "Installer pnpm via npm/corepack ?" "Y"; then

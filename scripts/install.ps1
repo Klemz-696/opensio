@@ -35,8 +35,8 @@ function Get-SafeCommandOutput {
     param([string]$Command, [string]$Arguments = "")
     try {
         $pinfo = New-Object System.Diagnostics.ProcessStartInfo -Property @{
-            FileName               = $Command
-            Arguments              = $Arguments
+            FileName               = "cmd.exe"
+            Arguments              = ("/c " + $Command + " " + $Arguments).Trim()
             RedirectStandardOutput = $true
             RedirectStandardError  = $true
             UseShellExecute        = $false
@@ -106,9 +106,25 @@ function Check-Prerequisites {
         if (Ask-Confirm "Installer Node.js via winget ?" "Y") { winget install OpenJS.NodeJS.LTS -e }
         else { Write-Err "Node.js >= 22 est requis. Arret."; exit 1 }
     }
-    # 3. pnpm
+    # 3. pnpm (>= 9)
     if (Get-Command pnpm -ErrorAction SilentlyContinue) {
-        $pnpmRes = Get-SafeCommandOutput "pnpm" "-v"; Write-Success "pnpm detecte : v$($pnpmRes.Output)"
+        $pnpmRes = Get-SafeCommandOutput "pnpm" "-v"
+        if ($pnpmRes.Success -and -not [string]::IsNullOrWhiteSpace($pnpmRes.Output)) {
+            $pnpmVerStr = $pnpmRes.Output.TrimStart('v')
+            $pnpmMajor = [int]($pnpmVerStr.Split('.')[0])
+            if ($pnpmMajor -ge 9) {
+                Write-Success "pnpm detecte : v$pnpmVerStr"
+            } else {
+                Write-Warn "pnpm v$pnpmVerStr est insuffisant (version >= 9.0.0 requise)."
+                if (Ask-Confirm "Mettre a jour pnpm vers la version 11.23.0 ?" "Y") {
+                    npm install -g pnpm@11.23.0; Write-Success "pnpm mis a jour."
+                } else {
+                    Write-Err "pnpm >= 9 est requis pour gerer le monorepo. Arret."; exit 1
+                }
+            }
+        } else {
+            Write-Success "pnpm detecte."
+        }
     } else {
         Write-Warn "pnpm n'est pas installe."
         if (Ask-Confirm "Installer pnpm ?" "Y") {
