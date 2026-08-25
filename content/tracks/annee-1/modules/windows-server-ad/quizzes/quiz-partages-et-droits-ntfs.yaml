@@ -1,0 +1,96 @@
+slug: quiz-partages-et-droits-ntfs
+title: "Quiz — Partages et Droits NTFS"
+passing_score: 80
+position: 6
+questions:
+  - kind: single
+    prompt: "Un utilisateur accède via le réseau à un dossier partagé. Les permissions de Partage SMB lui accordent 'Lecture' et les permissions NTFS lui accordent 'Contrôle total'. Quel est son droit effectif réel ?"
+    choices:
+      - id: a
+        text: "Contrôle total"
+      - id: b
+        text: "Lecture uniquement"
+      - id: c
+        text: "Modification"
+      - id: d
+        text: "Accès refusé"
+    correct:
+      - b
+    explanation: "Lors d'un accès réseau, le système applique la règle du plus restrictif entre le Partage et le système de fichiers NTFS. L'autorisation de Partage étant limitée à la 'Lecture', l'utilisateur ne pourra que lire les fichiers malgré ses droits NTFS élevés."
+
+  - kind: single
+    prompt: "Quelle est la principale différence entre le droit NTFS 'Modification' (Modify) et le droit 'Contrôle total' (Full Control) ?"
+    choices:
+      - id: a
+        text: "Le droit 'Modification' ne permet pas de supprimer des fichiers"
+      - id: b
+        text: "Le droit 'Contrôle total' permet en plus de modifier les autorisations de sécurité (ACL) et de s'approprier le fichier ou dossier"
+      - id: c
+        text: "Le droit 'Modification' est réservé aux administrateurs"
+      - id: d
+        text: "Il n'y a aucune différence technique entre les deux"
+    correct:
+      - b
+    explanation: "'Modification' permet de lire, créer, modifier et supprimer des données. 'Contrôle total' y ajoute les droits administratifs de modifier les permissions NTFS (Take Ownership / Change Permissions)."
+
+  - kind: multiple
+    prompt: "Dans le cadre d'un déploiement conforme à la méthodologie AGDLP sur un serveur de fichiers, quelles règles doivent être appliquées ?"
+    choices:
+      - id: a
+        text: "Les permissions NTFS sont attribuées directement à des Groupes de Domaine Local (GDL)"
+      - id: b
+        text: "Les utilisateurs sont membres de Groupes Globaux (GG) représentant leur métier"
+      - id: c
+        text: "Les Groupes Globaux sont imbriqués dans les Groupes de Domaine Local"
+      - id: d
+        text: "Les comptes utilisateurs individuels sont directement ajoutés sur l'onglet Sécurité NTFS"
+    correct:
+      - a
+      - b
+      - c
+    explanation: "AGDLP exige que les comptes soient dans des GG, les GG dans des GDL, et que les permissions NTFS soient exclusivement portées par les GDL. Ajouter des utilisateurs directement dans les ACL NTFS viole le principe AGDLP."
+
+  - kind: single
+    prompt: "Que signifient les indicateurs d'héritage '(OI)(CI)' dans la commande 'icacls C:\\Dossier /grant GDL_Groupe:(OI)(CI)(M)' ?"
+    choices:
+      - id: a
+        text: "Opération Interdite et Configuration Invalide"
+      - id: b
+        text: "Object Inherit (héritage aux fichiers) et Container Inherit (héritage aux sous-dossiers)"
+      - id: c
+        text: "Ouverture Immédiate et Clôture Immédiate"
+      - id: d
+        text: "Option Internet et Configuration IP"
+    correct:
+      - b
+    explanation: "Dans l'utilitaire icacls, (OI) correspond à Object Inherit (les fichiers enfants héritent de la permission) et (CI) correspond à Container Inherit (les sous-dossiers enfants héritent de la permission)."
+
+  - kind: single
+    prompt: "Que se passe-t-il si un utilisateur appartient à deux groupes dont l'un a une permission 'Autoriser la modification' et l'autre a une permission 'Refuser la lecture' (Deny) sur un même dossier ?"
+    choices:
+      - id: a
+        text: "L'autorisation l'emporte et l'utilisateur peut modifier"
+      - id: b
+        text: "Le refus explicite (Deny) l'emporte toujours et l'accès est totalement bloqué"
+      - id: c
+        text: "Une moyenne des droits est calculée"
+      - id: d
+        text: "Le fichier est temporairement verrouillé"
+    correct:
+      - b
+    explanation: "En sécurité Windows NTFS, un refus explicite (Deny) est prioritaire sur toutes les autorisations cumulées (Allow), quel que soit le niveau des groupes."
+
+  - kind: single
+    prompt: "Quelle applet de commande PowerShell permet de créer un nouveau partage réseau SMB sur Windows Server ?"
+    choices:
+      - id: a
+        text: "New-SmbShare"
+      - id: b
+        text: "Add-NetworkFolder"
+      - id: c
+        text: "Set-FileShare"
+      - id: d
+        text: "New-NTFSShare"
+    correct:
+      - a
+    explanation: "'New-SmbShare' (du module SmbShare) est la cmdlet standard permettant de publier un répertoire du système de fichiers en partage réseau SMB avec ses paramètres d'accès."

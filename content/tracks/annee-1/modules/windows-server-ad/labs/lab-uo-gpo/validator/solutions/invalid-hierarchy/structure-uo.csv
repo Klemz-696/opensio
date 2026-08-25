@@ -1,0 +1,4 @@
+ou_path,description,gpo_linked,gpo_enforced,block_inheritance
+OU=Entreprise,DC=entreprise,DC=lan,Racine de l'organisation,GPO_Securite_Globale,false,false
+OU=Utilisateurs,OU=Entreprise,DC=entreprise,DC=lan,Comptes utilisateurs,GPO_Environnement_Utilisateur,false,false
+OU=Direction,DC=entreprise,DC=lan,Comptes Direction,GPO_Direction_Lecteurs,false,false

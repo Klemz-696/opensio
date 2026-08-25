@@ -1,0 +1,9 @@
+ou_path,description,gpo_linked,gpo_enforced,block_inheritance
+OU=Entreprise,DC=entreprise,DC=lan,Racine de l'organisation,GPO_Invalide,false,false
+OU=Utilisateurs,OU=Entreprise,DC=entreprise,DC=lan,Comptes utilisateurs,GPO_Invalide,false,false
+OU=Direction,OU=Utilisateurs,OU=Entreprise,DC=entreprise,DC=lan,Comptes Direction,GPO_Invalide,false,false
+OU=Comptabilite,OU=Utilisateurs,OU=Entreprise,DC=entreprise,DC=lan,Comptes Comptabilite,GPO_Invalide,false,false
+OU=Technique,OU=Utilisateurs,OU=Entreprise,DC=entreprise,DC=lan,Comptes Equipe Technique,GPO_Invalide,false,false
+OU=Ordinateurs,OU=Entreprise,DC=entreprise,DC=lan,Postes clients du parc,GPO_Invalide,false,false
+OU=Portables,OU=Ordinateurs,OU=Entreprise,DC=entreprise,DC=lan,Ordinateurs portables nomades,GPO_Invalide,false,false
+OU=Serveurs,OU=Entreprise,DC=entreprise,DC=lan,Serveurs membres d'infrastructure,GPO_Invalide,false,false
