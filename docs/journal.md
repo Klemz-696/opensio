@@ -589,6 +589,41 @@ Implémentation complète du suivi de progression de l'étudiant et du tableau d
   - Exécution réelle du script de sauvegarde chiffrée `backup.sh` (génération de l'archive chiffrée AES-256 et de la somme SHA256).
   - Exécution réelle du script de restauration `restore.sh` avec vérification d'intégrité SHA256 et réinjection sans perte.
 
+---
+
+## 2026-08-25 — Correctifs & Durcissement Post-Tests Réels (Lot v0.2)
+
+**Branche** : `feat/b11-deploiement`  
+**Contexte** : Suite aux premiers tests d'installation en conditions réelles sur machine Windows (démon Docker arrêté, mise à jour d'un environnement existant avec secrets), quatre défauts ont été identifiés et corrigés :
+
+### 1. Robustesse — Démon Docker injoignable & Encapsulation des commandes
+- **Constat** : Lorsque Docker Desktop est installé mais arrêté (ou moteur planté / erreur 500 sur le named pipe), `install.ps1` plantait brutalement sur une `NativeCommandError` PowerShell.
+- **Correction** :
+  - Encapsulation de tous les appels système (`git`, `node`, `pnpm`, `docker`, `ollama`) via un exécuteur sécurisé (`Get-SafeCommandOutput` sous Windows et redirections protégées sous Bash).
+  - Distinction formelle entre *« Docker non installé »* et *« Docker présent mais démon injoignable »*.
+  - Dans le second cas : message clair, remédiation guidée selon l'OS (lancer Docker Desktop / `systemctl start docker`), et boucle d'attente animée avec retry et timeout (90s) avec reprise transparente du parcours d'installation.
+  - Zéro stack trace brute atteignant l'utilisateur.
+
+### 2. Déduplication des fichiers Compose
+- **Constat** : `docker-compose.prod.yml` existait à la fois à la racine et dans `infra/docker/` avec un contenu redondant.
+- **Correction** : Suppression du fichier doublon `infra/docker/docker-compose.prod.yml`. Le fichier racine `docker-compose.prod.yml` constitue désormais l'unique source de vérité canonique pour la production. Mise à jour de toutes les références dans les scripts, documentations et workflows CI.
+
+### 3. Protection des secrets existants & Rotation consentie
+- **Constat (Incident réel)** : L'installeur réécrivait inconditionnellement `DATABASE_URL` et `DB_PASSWORD` dans `.env` sans appliquer le changement à la base PostgreSQL vivante, provoquant une erreur d'authentification Prisma P1000 au boot suivant.
+- **Correction** :
+  - Sur une installation existante (`.env` présent), l'installeur préserve strictement tous les secrets existants (`DATABASE_URL`, `DB_PASSWORD`, `JWT_SECRET`, `BACKUP_ENCRYPTION_KEY`).
+  - Toute régénération de secrets requiert désormais un consentement explicite avec avertissement d'impact.
+  - En cas de régénération validée, l'installeur propose automatiquement d'appliquer le mot de passe à la base active via `ALTER USER` (`docker exec`), de réinitialiser le volume de données, ou de laisser l'administrateur gérer l'alignement.
+  - Synchronisation automatique avec `apps/api/.env` si présent.
+
+### 4. Parité stricte PostgreSQL 18 & Procédure de bascule Dev
+- **Constat** : Le conteneur de dev était historiquement documenté en PostgreSQL 16 alors que la CI et la production tournent sous PostgreSQL 18 Alpine.
+- **Correction** :
+  - Alignement de `infra/docker/docker-compose.dev.yml` sur `postgres:18-alpine`.
+  - Documentation dans `docs/installation.md` de la procédure de bascule dev (les données étant 100 % reproductibles via `pnpm db:migrate`, `pnpm seed` et `pnpm content:sync`).
+  - Alignement de `README.md`.
+
+
 
 
 

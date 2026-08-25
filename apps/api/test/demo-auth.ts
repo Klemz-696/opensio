@@ -4,6 +4,7 @@
  */
 
 import { NestFactory } from '@nestjs/core';
+import { WsAdapter } from '@nestjs/platform-ws';
 import cookieParser from 'cookie-parser';
 import { AppModule } from '../src/app.module';
 import { HttpExceptionFilter } from '../src/common/filters/http-exception.filter';
@@ -13,8 +14,6 @@ process.env.APP_URL = 'http://localhost:3000';
 process.env.API_PORT = '4099';
 process.env.JWT_SECRET = 'd'.repeat(64);
 process.env.REGISTRATION_ENABLED = 'true';
-process.env.DATABASE_URL =
-  process.env.DATABASE_URL || 'postgresql://opensio:change-me@localhost:5432/opensio';
 
 const BASE_URL = 'http://localhost:4099/api/v1';
 
@@ -36,6 +35,7 @@ async function runDemo() {
   const app = await NestFactory.create(AppModule, { logger: false });
   app.use(cookieParser());
   app.useGlobalFilters(new HttpExceptionFilter());
+  app.useWebSocketAdapter(new WsAdapter(app));
   app.setGlobalPrefix('api/v1');
   await app.listen(4099);
   console.log('✅ Serveur de démonstration en écoute sur http://localhost:4099/api/v1\n');

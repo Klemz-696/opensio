@@ -87,3 +87,21 @@ Sous Windows, Node.js 18+ résout parfois `localhost` vers `::1` (IPv6). Si Olla
 Le modèle `llama3.1:8b` requiert environ 5 Go de mémoire RAM disponible. Si votre PC dispose de moins de 16 Go de RAM :
 - Téléchargez un modèle plus léger comme `ollama pull llama3.2:3b` ou `qwen2.5-coder:7b`.
 - Renseignez `AI_MODEL=llama3.2:3b` dans votre `.env`.
+
+### 5. Procédure de bascule PostgreSQL 16 → 18 en Développement Local
+Pour aligner un environnement de développement existant sur PostgreSQL 18 Alpine (parité stricte avec la CI et la production) :
+Les données de développement étant 100 % reproductibles (schéma Prisma, comptes de test hachés Argon2id et catalogue pédagogique Git), la bascule s'effectue en réinitialisant le volume local :
+
+```bash
+# 1. Arrêter et purger l'ancien conteneur / volume de dev (PG16)
+docker compose -f infra/docker/docker-compose.dev.yml down -v
+
+# 2. Démarrer le nouveau conteneur PostgreSQL 18
+docker compose -f infra/docker/docker-compose.dev.yml up -d
+
+# 3. Réappliquer les migrations, amorcer les comptes de test et synchroniser le contenu
+pnpm db:migrate
+pnpm seed
+pnpm content:sync
+```
+

@@ -6,7 +6,8 @@ services:
     environment:
       POSTGRES_DB: opensio
       POSTGRES_USER: opensio
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-change-me}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-opensio-super-secure-dev-db-pass-2026!}
+      PGDATA: /var/lib/postgresql/data
     ports:
       - '5432:5432'
     volumes:
