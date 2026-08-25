@@ -47,8 +47,8 @@ probe_remote_ollama() {
   local tags_response
   if ! tags_response=$(curl -fsS -m 5 "${base_url}/api/tags" 2>/dev/null); then
     log_error "Impossible de joindre l'API Ollama à l'adresse : ${base_url}/api/tags"
-    echo -e "   ${C_CYAN}➜ Vérifiez que Ollama écoute bien sur 0.0.0.0 (OLLAMA_HOST=0.0.0.0)${C_RESET}"
-    echo -e "   ${C_CYAN}➜ Vérifiez les règles de pare-feu (UFW) sur la machine distante.${C_RESET}"
+    echo -e "   ${C_CYAN}--> Vérifiez que Ollama écoute bien sur 0.0.0.0 (OLLAMA_HOST=0.0.0.0)${C_RESET}"
+    echo -e "   ${C_CYAN}--> Vérifiez les règles de pare-feu (UFW) sur la machine distante.${C_RESET}"
     return 1
   fi
 

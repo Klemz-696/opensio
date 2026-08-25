@@ -19,10 +19,10 @@ NON_INTERACTIVE="0"
 TARGET_MODEL="llama3.1:8b"
 LAN_SUBNET="192.168.1.0/24"
 
-log_info()    { echo -e "${C_BLUE}ℹ${C_RESET}  $1"; }
-log_success() { echo -e "${C_GREEN}✔${C_RESET}  $1"; }
-log_warn()    { echo -e "${C_YELLOW}⚠${C_RESET}  $1"; }
-log_error()   { echo -e "${C_RED}✖  $1${C_RESET}"; }
+log_info()    { echo -e "${C_BLUE}[i]${C_RESET}  $1"; }
+log_success() { echo -e "${C_GREEN}[v]${C_RESET}  $1"; }
+log_warn()    { echo -e "${C_YELLOW}[!]${C_RESET}  $1"; }
+log_error()   { echo -e "${C_RED}[x]${C_RESET}  $1"; }
 log_dry()     { echo -e "${C_YELLOW}[DRY-RUN]${C_RESET} $1"; }
 
 execute_cmd() {
@@ -38,16 +38,16 @@ execute_cmd() {
 
 print_security_warning() {
   echo -e "${C_RED}${C_BOLD}"
-  echo "  ╔════════════════════════════════════════════════════════════════════════╗"
-  echo "  ║                   AVERTISSEMENT DE SÉCURITÉ MAJEUR                     ║"
-  echo "  ╠════════════════════════════════════════════════════════════════════════╣"
-  echo "  ║ Ollama ne dispose d'AUCUN mécanisme d'authentification native.         ║"
-  echo "  ║ Ce script configure Ollama pour écouter sur 0.0.0.0 (toutes interfaces)║"
-  echo "  ║ et restreint STRICTEMENT l'accès au port 11434 via le pare-feu UFW     ║"
-  echo "  ║ au sous-réseau local autorisé (${LAN_SUBNET}).                        ║"
-  echo "  ║                                                                        ║"
-  echo "  ║ NE JAMAIS EXPOSER LE PORT 11434 SUR INTERNET OU UN RÉSEAU PUBLIC.     ║"
-  echo "  ╚════════════════════════════════════════════════════════════════════════╝"
+  echo "  +------------------------------------------------------------------------+"
+  echo "  |                   AVERTISSEMENT DE SECURITE MAJEUR                     |"
+  echo "  +------------------------------------------------------------------------+"
+  echo "  | Ollama ne dispose d'AUCUN mecanisme d'authentification native.         |"
+  echo "  | Ce script configure Ollama pour ecouter sur 0.0.0.0 (toutes            |"
+  echo "  | interfaces) et restreint STRICTEMENT l'acces au port 11434 via UFW     |"
+  echo "  | au sous-reseau local autorise (${LAN_SUBNET}).                         |"
+  echo "  |                                                                        |"
+  echo "  | NE JAMAIS EXPOSER LE PORT 11434 SUR INTERNET OU UN RESEAU PUBLIC.     |"
+  echo "  +------------------------------------------------------------------------+"
   echo -e "${C_RESET}\n"
 }
 
@@ -185,7 +185,7 @@ configure_ufw_firewall() {
     log_success "Pare-feu UFW configuré : port 11434 accessible uniquement depuis ${LAN_SUBNET}."
   else
     log_warn "UFW n'est pas installé sur ce système."
-    echo -e "   ${C_CYAN}➜ Pensez à configurer votre pare-feu (nftables/iptables) pour restreindre le port 11434 au réseau ${LAN_SUBNET}.${C_RESET}"
+    echo -e "   ${C_CYAN}--> Pensez à configurer votre pare-feu (nftables/iptables) pour restreindre le port 11434 au réseau ${LAN_SUBNET}.${C_RESET}"
   fi
 }
 
@@ -194,12 +194,12 @@ print_final_summary() {
   host_ip=$(hostname -I 2>/dev/null | awk '{print $1}' || echo "IP_DE_CE_SERVEUR")
 
   echo -e "\n${C_GREEN}${C_BOLD}================================================================${C_RESET}"
-  echo -e "${C_GREEN}${C_BOLD}  🎉 Nœud IA Ollama OpenSIO configuré avec succès !${C_RESET}"
+  echo -e "${C_GREEN}${C_BOLD}  [v] Noeud IA Ollama OpenSIO configure avec succes !${C_RESET}"
   echo -e "${C_GREEN}${C_BOLD}================================================================${C_RESET}\n"
-  echo -e "  🤖 Modèle LLM installé    : ${C_CYAN}${TARGET_MODEL}${C_RESET}"
-  echo -e "  🔒 Restriction réseau      : ${C_CYAN}${LAN_SUBNET}${C_RESET}"
-  echo -e "  🌐 URL d'API pour OpenSIO : ${C_CYAN}http://${host_ip}:11434/v1${C_RESET}\n"
-  echo -e "  💡 Pour rattacher ce nœud à la stack OpenSIO :"
+  echo -e "  Modele LLM installe    : ${C_CYAN}${TARGET_MODEL}${C_RESET}"
+  echo -e "  Restriction reseau      : ${C_CYAN}${LAN_SUBNET}${C_RESET}"
+  echo -e "  URL d'API pour OpenSIO : ${C_CYAN}http://${host_ip}:11434/v1${C_RESET}\n"
+  echo -e "  Pour rattacher ce noeud a la stack OpenSIO :"
   echo -e "     1. Sur le serveur OpenSIO, lancez ./scripts/install.sh"
   echo -e "     2. Sélectionnez le choix [3] Machine distante pour l'IA"
   echo -e "     3. Indiquez l'URL : http://${host_ip}:11434/v1\n"

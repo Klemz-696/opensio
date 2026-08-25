@@ -32,10 +32,10 @@ print_banner() {
   echo -e "  ---------------------------------------------------------\n"
 }
 
-log_info()    { echo -e "${C_BLUE}ℹ${C_RESET}  $1"; }
-log_success() { echo -e "${C_GREEN}✔${C_RESET}  $1"; }
-log_warn()    { echo -e "${C_YELLOW}⚠${C_RESET}  $1"; }
-log_error()   { echo -e "${C_RED}✖  $1${C_RESET}"; }
+log_info()    { echo -e "${C_BLUE}[i]${C_RESET}  $1"; }
+log_success() { echo -e "${C_GREEN}[v]${C_RESET}  $1"; }
+log_warn()    { echo -e "${C_YELLOW}[!]${C_RESET}  $1"; }
+log_error()   { echo -e "${C_RED}[x]${C_RESET}  $1"; }
 log_dry()     { echo -e "${C_YELLOW}[DRY-RUN]${C_RESET} $1"; }
 
 # Pose une question Oui/Non (défaut 'Y' ou 'N')

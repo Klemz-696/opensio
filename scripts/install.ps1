@@ -240,7 +240,7 @@ function Setup-Development($seedChoice) {
     pnpm content:sync
 
     Write-Host "`n================================================================" -ForegroundColor Green
-    Write-Host "  OpenSIO est pret en Mode Developpement (Windows) !" -ForegroundColor Green
+    Write-Host "  [v] OpenSIO est pret en Mode Developpement (Windows) !" -ForegroundColor Green
     Write-Host "================================================================`n" -ForegroundColor Green
     Write-Host "  Frontend Web : http://localhost:3000" -ForegroundColor Cyan
     Write-Host "  API Backend  : http://localhost:4000/api/v1" -ForegroundColor Cyan

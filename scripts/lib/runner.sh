@@ -176,44 +176,44 @@ execute_prod_stack() {
 
 print_dev_final_summary() {
   echo -e "\n${C_GREEN}${C_BOLD}================================================================${C_RESET}"
-  echo -e "${C_GREEN}${C_BOLD}  🎉 OpenSIO est prêt en Mode Développement !${C_RESET}"
+  echo -e "${C_GREEN}${C_BOLD}  [v] OpenSIO est pret en Mode Developpement !${C_RESET}"
   echo -e "${C_GREEN}${C_BOLD}================================================================${C_RESET}\n"
-  echo -e "  🌐 Frontend Web : ${C_CYAN}http://localhost:3000${C_RESET}"
-  echo -e "  🔌 API Backend  : ${C_CYAN}http://localhost:4000/api/v1${C_RESET}"
+  echo -e "  Frontend Web : ${C_CYAN}http://localhost:3000${C_RESET}"
+  echo -e "  API Backend  : ${C_CYAN}http://localhost:4000/api/v1${C_RESET}"
   if [ "$CFG_AI_ENABLED" = "true" ]; then
-    echo -e "  🤖 Mentor IA    : ${C_GREEN}Activé (${CFG_AI_MODEL})${C_RESET}"
+    echo -e "  Mentor IA    : ${C_GREEN}Active (${CFG_AI_MODEL})${C_RESET}"
   else
-    echo -e "  🤖 Mentor IA    : ${C_YELLOW}Désactivé${C_RESET}"
+    echo -e "  Mentor IA    : ${C_YELLOW}Desactive${C_RESET}"
   fi
   if [ "$CFG_SEED_CHOICE" = "complet" ]; then
-    echo -e "\n  🔑 Comptes de test :"
+    echo -e "\n  Comptes de test :"
     echo -e "     - Admin   : ${C_CYAN}admin@opensio.local${C_RESET} (AdminOpenSIO2026!)"
-    echo -e "     - Étudiant: ${C_CYAN}student@opensio.local${C_RESET} (StudentOpenSIO2026!)"
+    echo -e "     - Etudiant: ${C_CYAN}student@opensio.local${C_RESET} (StudentOpenSIO2026!)"
   elif [ "$CFG_SEED_CHOICE" = "minimal" ]; then
-    echo -e "\n  🔑 Compte Administrateur : ${C_CYAN}admin@opensio.local${C_RESET} (AdminOpenSIO2026!)"
+    echo -e "\n  Compte Administrateur : ${C_CYAN}admin@opensio.local${C_RESET} (AdminOpenSIO2026!)"
   fi
-  echo -e "\n  🚀 Lancer la plateforme : ${C_CYAN}pnpm dev${C_RESET}\n"
+  echo -e "\n  Lancer la plateforme : ${C_CYAN}pnpm dev${C_RESET}\n"
 }
 
 print_prod_final_summary() {
   echo -e "\n${C_GREEN}${C_BOLD}================================================================${C_RESET}"
-  echo -e "${C_GREEN}${C_BOLD}  🚀 OpenSIO est déployé en Mode Production !${C_RESET}"
+  echo -e "${C_GREEN}${C_BOLD}  [v] OpenSIO est deploye en Mode Production !${C_RESET}"
   echo -e "${C_GREEN}${C_BOLD}================================================================${C_RESET}\n"
-  echo -e "  🌐 URL d'accès HTTPS : ${C_CYAN}https://${CFG_DOMAIN}${C_RESET}"
-  echo -e "  🔒 Reverse Proxy     : Caddy (${CFG_TLS_TYPE}) | Sauvegardes chiffrées : actives"
+  echo -e "  URL d'acces HTTPS : ${C_CYAN}https://${CFG_DOMAIN}${C_RESET}"
+  echo -e "  Reverse Proxy     : Caddy (${CFG_TLS_TYPE}) | Sauvegardes chiffrees : actives"
   if [ "$CFG_AI_ENABLED" = "true" ]; then
-    echo -e "  🤖 Assistant IA      : ${C_GREEN}Activé (Modèle: ${CFG_AI_MODEL})${C_RESET}"
+    echo -e "  Assistant IA      : ${C_GREEN}Active (Modele: ${CFG_AI_MODEL})${C_RESET}"
   else
-    echo -e "  🤖 Assistant IA      : ${C_YELLOW}Désactivé${C_RESET}"
+    echo -e "  Assistant IA      : ${C_YELLOW}Desactive${C_RESET}"
   fi
   if [ "$CFG_SEED_CHOICE" = "complet" ]; then
-    echo -e "\n  🔑 Identifiants de connexion :"
+    echo -e "\n  Identifiants de connexion :"
     echo -e "     - Administrateur : ${C_CYAN}admin@opensio.local${C_RESET} (AdminOpenSIO2026!)"
-    echo -e "     - Étudiant Démo  : ${C_CYAN}student@opensio.local${C_RESET} (StudentOpenSIO2026!)"
+    echo -e "     - Etudiant Demo  : ${C_CYAN}student@opensio.local${C_RESET} (StudentOpenSIO2026!)"
   elif [ "$CFG_SEED_CHOICE" = "minimal" ]; then
-    echo -e "\n  🔑 Administrateur initial : ${C_CYAN}admin@opensio.local${C_RESET} (AdminOpenSIO2026!)"
+    echo -e "\n  Administrateur initial : ${C_CYAN}admin@opensio.local${C_RESET} (AdminOpenSIO2026!)"
   fi
-  echo -e "\n  🛠 Commandes utiles :"
+  echo -e "\n  Commandes utiles :"
   echo -e "     - Consulter les journaux : ${C_CYAN}docker compose -f docker-compose.prod.yml logs -f${C_RESET}"
   echo -e "     - Sauvegarde manuelle    : ${C_CYAN}docker compose -f docker-compose.prod.yml exec backup /scripts/backup.sh${C_RESET}\n"
 }

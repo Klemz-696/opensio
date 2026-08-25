@@ -251,23 +251,23 @@ display_scenario_assessment() {
   ram_num="${ram_num:-0}"
 
   if [ "$ram_num" -ge "$req_ram" ]; then
-    log_success "Mémoire RAM : ${DETECTED_RAM_GB} Go disponible (Requis : ≥ ${req_ram} Go)"
+    log_success "Mémoire RAM : ${DETECTED_RAM_GB} Go disponible (Requis : >= ${req_ram} Go)"
   else
-    log_warn "Mémoire RAM insuffisante : ${DETECTED_RAM_GB} Go détecté (Recommandé : ≥ ${req_ram} Go pour ce scénario) !"
+    log_warn "Mémoire RAM insuffisante : ${DETECTED_RAM_GB} Go détecté (Recommandé : >= ${req_ram} Go pour ce scénario) !"
   fi
 
   if [ "$DETECTED_VCPU" -ge "$req_cpu" ]; then
-    log_success "Processeur : ${DETECTED_VCPU} vCPU disponible (Requis : ≥ ${req_cpu} vCPU)"
+    log_success "Processeur : ${DETECTED_VCPU} vCPU disponible (Requis : >= ${req_cpu} vCPU)"
   else
-    log_warn "Processeur modeste : ${DETECTED_VCPU} vCPU (Recommandé : ≥ ${req_cpu} vCPU)"
+    log_warn "Processeur modeste : ${DETECTED_VCPU} vCPU (Recommandé : >= ${req_cpu} vCPU)"
   fi
 
   local disk_num="${DETECTED_DISK_FREE_GB%%.*}"
   disk_num="${disk_num:-0}"
   if [ "$disk_num" -ge "$req_disk" ]; then
-    log_success "Espace disque : ${DETECTED_DISK_FREE_GB} Go libre (Requis : ≥ ${req_disk} Go)"
+    log_success "Espace disque : ${DETECTED_DISK_FREE_GB} Go libre (Requis : >= ${req_disk} Go)"
   else
-    log_warn "Espace disque restreint : ${DETECTED_DISK_FREE_GB} Go libre (Recommandé : ≥ ${req_disk} Go)"
+    log_warn "Espace disque restreint : ${DETECTED_DISK_FREE_GB} Go libre (Recommandé : >= ${req_disk} Go)"
   fi
 }
 
