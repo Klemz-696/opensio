@@ -35,11 +35,12 @@ export function MentorChatMessages({
 
   return (
     <div className="flex-1 p-4 overflow-y-auto space-y-4">
-      {messages.map((msg) => {
+      {messages.map((msg, idx) => {
         const isUser = msg.role.toLowerCase() === 'user';
+        const uniqueKey = msg.id ? `${msg.id}-${idx}` : `msg-${idx}-${Date.now()}`;
         return (
           <div
-            key={msg.id}
+            key={uniqueKey}
             className={`flex gap-3 ${isUser ? 'justify-end' : 'justify-start'}`}
           >
             {!isUser && (

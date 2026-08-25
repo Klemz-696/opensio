@@ -14,6 +14,10 @@ export class NullProvider implements AiProvider {
     return false;
   }
 
+  async listModels(): Promise<string[]> {
+    return ['none'];
+  }
+
   async chat(_messages: ChatMessage[], _options?: ChatOptions): Promise<ChatResult> {
     return {
       content:

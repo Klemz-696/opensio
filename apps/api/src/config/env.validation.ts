@@ -31,6 +31,7 @@ export const envSchema = z.object({
   AI_MODEL: z.string().default('llama3.1:8b'),
   AI_API_KEY: z.string().optional(),
   AI_RATE_LIMIT_HOURLY: z.coerce.number().int().positive().default(20),
+  AI_TIMEOUT_MS: z.coerce.number().int().positive().default(120000),
 });
 
 export type EnvConfig = z.infer<typeof envSchema>;

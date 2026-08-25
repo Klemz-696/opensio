@@ -492,6 +492,47 @@ Implémentation complète du suivi de progression de l'étudiant et du tableau d
 - `pnpm build` : Build de production Next.js 15 App Router et NestJS 11 validé avec succès.
 - Démonstration HTTP réelle `demo-lot8.ts` validée avec succès.
 
+---
+
+## [Lot 8 — Correctifs & Évolutions] Module IA : Timeout Configurable, Préférences Étudiant, Détection de Contournement & Mentor Global
+
+**Date** : 25/08/2026  
+**Branche** : `feat/b09-terminal-ai`  
+**Objectif** : Stabilisation et enrichissement du module IA : gestion fine du timeout et chargement de modèle en RAM, correction des clés React, résolution de contexte serveur, intégration du Mentor Global et des préférences utilisateur (modèle préféré, Mode Libre sécurisé, traçage d'audit).
+
+### Réalisations
+
+- **Correctif 1 — Timeout Configurable & Chargement en RAM (`AI_TIMEOUT_MS`)** :
+  - Ajout de `AI_TIMEOUT_MS` (défaut 120 000 ms = 120s) dans `env.validation.ts` et `.env.example`.
+  - Documentation du piège de résolution `localhost` vs `127.0.0.1` sous Windows (IPv6 `::1` vs IPv4 Ollama).
+  - Gestion distincte de l'`AbortError` / Timeout dans `OpenAiCompatibleProvider` avec message explicite de chargement en RAM et journalisation de la cause réelle de l'échec.
+- **Correctif 2 — Élimination du Warning React Duplicate Key** :
+  - Réconciliation optimiste des identifiants de messages dans `mentor-chat-drawer.tsx` et clés de rendu uniques composées (`key={`${msg.id}-${idx}`}`) dans `mentor-chat-messages.tsx`.
+- **Évolution 3 — Contexte Résolu Côté Serveur & Détection de Contournement (RM-11)** :
+  - Transmission des métadonnées de page (`pageType`, `pageSlug`, `labSlug`, `quizSlug`, `lessonSlug`, `moduleSlug`) par le client web.
+  - Résolution d'entité et association directe de la conversation en BDD par `AiContextSanitizerService`.
+  - Application stricte des règles socratiques et du filtre de solution RM-11 en contexte évalué (lab / quiz noté).
+  - Détection côté serveur des tentatives de contournement dans les conversations générales demandant la solution d'un lab du catalogue (`AiSolutionFilterService`), blocage automatique et journalisation de l'événement d'audit `AI_CIRCUMVENTION_ATTEMPT`.
+- **Évolution 4 — Mentor Global Hors Évaluation** :
+  - Disponibilité de l'assistant Mentor sur toutes les pages de la plateforme.
+  - En contexte non-évalué (cours, module, révision générale), le Mentor répond de manière fluide et pédagogique sans restriction socratique artificielle.
+- **Évolution 5 — Préférences Étudiant & Mode Libre Traçable** :
+  - Ajout de la table PostgreSQL `user_ai_preferences` (`userId`, `preferredModel`, `freeMode`).
+  - Endpoints REST : `GET /chat/models` (introspection dynamique via `/api/tags` d'Ollama ou `/models`), `GET /chat/preferences`, `PUT /chat/preferences`.
+  - Le Mode Libre permet des explications complètes et du code direct **exclusivement hors contexte évalué** (strictement verrouillé et ignoré en lab/quiz noté).
+  - Chaque bascule du Mode Libre est tracée dans l'audit log (`AI_FREE_MODE_TOGGLED`).
+  - Découpage D-13 exemplaire du composant `MentorChatSettings` (< 400 lignes).
+
+### Validations
+
+- `pnpm lint` : 100% vert (0 erreur, 0 avertissement).
+- `pnpm typecheck` : 100% vert (0 erreur TypeScript).
+- `pnpm test` : 100% vert (**235 tests automatisés** : 169 API, 48 Web, 18 Content-Schema).
+- `node scripts/check-file-size.mjs` : 100% conforme D-13 (252 fichiers analysés, 0 violation > 400 lignes).
+- `pnpm build` : Build Next.js 15 App Router et NestJS 11 validé avec succès.
+- Démonstration HTTP réelle `demo-lot8.ts` validée avec succès en 8 étapes complètes.
+
+
 
 
 

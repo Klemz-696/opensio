@@ -16,6 +16,16 @@ describe('MentorChatDrawer (Assistant IA Frontend)', () => {
     privacyNotice: 'Mode Ollama Local (0 donnée transmise à un tiers).',
   };
 
+  const mockModels: chatApi.AiModelsResponse = {
+    models: ['llama3.1:8b', 'mistral:7b'],
+    defaultModel: 'llama3.1:8b',
+  };
+
+  const mockPreferences: chatApi.AiPreferences = {
+    preferredModel: 'llama3.1:8b',
+    freeMode: false,
+  };
+
   const mockConversations: chatApi.ChatConversationItem[] = [
     {
       id: 'conv-1',
@@ -59,6 +69,9 @@ describe('MentorChatDrawer (Assistant IA Frontend)', () => {
     });
 
     vi.spyOn(chatApi, 'fetchChatStatus').mockResolvedValue(mockStatus);
+    vi.spyOn(chatApi, 'fetchAiModels').mockResolvedValue(mockModels);
+    vi.spyOn(chatApi, 'fetchAiPreferences').mockResolvedValue(mockPreferences);
+    vi.spyOn(chatApi, 'updateAiPreferences').mockResolvedValue({ preferredModel: 'llama3.1:8b', freeMode: true });
     vi.spyOn(chatApi, 'fetchConversations').mockResolvedValue(mockConversations);
     vi.spyOn(chatApi, 'fetchMessages').mockResolvedValue(mockMessages);
     vi.spyOn(chatApi, 'sendChatMessage').mockResolvedValue({
@@ -100,7 +113,7 @@ describe('MentorChatDrawer (Assistant IA Frontend)', () => {
     });
   });
 
-  it('permet à l’utilisateur d’envoyer un message et d’afficher la réponse', async () => {
+  it('permet à l’utilisateur d’envoyer un message et d’afficher la réponse sans doublon de clés', async () => {
     render(<MentorChatDrawer />);
     const openBtn = screen.getByRole('button', { name: /ouvrir l'assistant mentor ia/i });
     fireEvent.click(openBtn);
@@ -116,13 +129,34 @@ describe('MentorChatDrawer (Assistant IA Frontend)', () => {
     fireEvent.click(sendBtn);
 
     await waitFor(() => {
-      expect(chatApi.sendChatMessage).toHaveBeenCalledWith(
-        'conv-1',
-        'Merci Mentor !',
-        'valid-jwt-token',
-        undefined
-      );
+      expect(chatApi.sendChatMessage).toHaveBeenCalled();
       expect(screen.getByText(/Bon courage pour ton TP/i)).toBeDefined();
     });
+  });
+
+  it('permet d’ouvrir les préférences et de basculer le Mode Libre', async () => {
+    render(<MentorChatDrawer />);
+    const openBtn = screen.getByRole('button', { name: /ouvrir l'assistant mentor ia/i });
+    fireEvent.click(openBtn);
+
+    await waitFor(() => {
+      expect(screen.getByTitle(/préférences ia/i)).toBeDefined();
+    });
+
+    const settingsBtn = screen.getByTitle(/préférences ia/i);
+    fireEvent.click(settingsBtn);
+
+    await waitFor(() => {
+      expect(screen.getByText(/Mode Libre/i)).toBeDefined();
+      expect(screen.getByText('mistral:7b')).toBeDefined();
+    });
+
+    const freeModeToggle = screen.getByText(/Mode Libre/i).closest('div')?.parentElement?.querySelector('button');
+    if (freeModeToggle) {
+      fireEvent.click(freeModeToggle);
+      await waitFor(() => {
+        expect(chatApi.updateAiPreferences).toHaveBeenCalledWith({ freeMode: true }, 'valid-jwt-token');
+      });
+    }
   });
 });

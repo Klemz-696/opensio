@@ -1,10 +1,23 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
-import { Bot, X, Plus, ShieldCheck, Globe, AlertCircle, MessageSquare } from 'lucide-react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { usePathname } from 'next/navigation';
+import {
+  Bot,
+  X,
+  Plus,
+  ShieldCheck,
+  Globe,
+  AlertCircle,
+  MessageSquare,
+  Settings,
+} from 'lucide-react';
 import { useAuth } from '../../lib/auth/use-auth';
 import {
   fetchChatStatus,
+  fetchAiModels,
+  fetchAiPreferences,
+  updateAiPreferences,
   fetchConversations,
   createConversation,
   fetchMessages,
@@ -12,21 +25,26 @@ import {
   type ChatStatus,
   type ChatConversationItem,
   type ChatMessageItem,
+  type PageContext,
+  type AiPreferences,
 } from '../../lib/api/chat-api';
 import { MentorChatMessages } from './mentor-chat-messages';
 import { MentorChatInput } from './mentor-chat-input';
+import { MentorChatSettings } from './mentor-chat-settings';
 
 interface MentorChatDrawerProps {
-  currentContext?: {
-    labSlug?: string;
-    lessonSlug?: string;
-  };
+  currentContext?: PageContext;
 }
 
 export function MentorChatDrawer({ currentContext }: MentorChatDrawerProps) {
   const { accessToken, user } = useAuth();
+  const pathname = usePathname();
+
   const [isOpen, setIsOpen] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
   const [status, setStatus] = useState<ChatStatus | null>(null);
+  const [preferences, setPreferences] = useState<AiPreferences>({ preferredModel: null, freeMode: false });
+  const [availableModels, setAvailableModels] = useState<string[]>(['llama3.1:8b']);
   const [conversations, setConversations] = useState<ChatConversationItem[]>([]);
   const [activeConvId, setActiveConvId] = useState<string | null>(null);
   const [messages, setMessages] = useState<ChatMessageItem[]>([]);
@@ -36,7 +54,28 @@ export function MentorChatDrawer({ currentContext }: MentorChatDrawerProps) {
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Charger le statut IA et les conversations à l'ouverture
+  // Résolution automatique du contexte de la page courante
+  const resolvedPageContext = useMemo<PageContext>(() => {
+    if (currentContext) return currentContext;
+    if (!pathname) return { pageType: 'general' };
+    const parts = pathname.split('/').filter(Boolean);
+
+    if (parts[0] === 'catalogue' && parts[2] === 'labs' && parts[3]) {
+      return { pageType: 'lab', pageSlug: parts[3], labSlug: parts[3], moduleSlug: parts[1], isEvaluated: true };
+    }
+    if (parts[0] === 'catalogue' && parts[2] === 'quiz' && parts[3]) {
+      return { pageType: 'quiz', pageSlug: parts[3], quizSlug: parts[3], moduleSlug: parts[1], isEvaluated: true };
+    }
+    if (parts[0] === 'catalogue' && parts.length === 3) {
+      return { pageType: 'lesson', pageSlug: parts[2], lessonSlug: parts[2], moduleSlug: parts[1], isEvaluated: false };
+    }
+    if (parts[0] === 'catalogue' && parts.length === 2) {
+      return { pageType: 'module', pageSlug: parts[1], moduleSlug: parts[1], isEvaluated: false };
+    }
+    return { pageType: 'general', isEvaluated: false };
+  }, [pathname, currentContext]);
+
+  // Charger le statut, les préférences et les conversations à l'ouverture
   useEffect(() => {
     if (isOpen && accessToken) {
       void loadInitialData();
@@ -47,10 +86,16 @@ export function MentorChatDrawer({ currentContext }: MentorChatDrawerProps) {
     if (!accessToken) return;
     setError(null);
     try {
-      const st = await fetchChatStatus(accessToken);
-      setStatus(st);
+      const [st, modelsData, prefs, convs] = await Promise.all([
+        fetchChatStatus(accessToken),
+        fetchAiModels(accessToken),
+        fetchAiPreferences(accessToken),
+        fetchConversations(accessToken),
+      ]);
 
-      const convs = await fetchConversations(accessToken);
+      setStatus(st);
+      setAvailableModels(modelsData.models);
+      setPreferences(prefs);
       setConversations(convs);
 
       if (convs.length > 0) {
@@ -59,10 +104,15 @@ export function MentorChatDrawer({ currentContext }: MentorChatDrawerProps) {
         const msgs = await fetchMessages(firstConv.id, accessToken);
         setMessages(msgs);
       } else {
-        // Créer automatiquement une première conversation avec le contexte actuel
         const newConv = await createConversation(accessToken, {
-          title: currentContext?.labSlug ? `Lab : ${currentContext.labSlug}` : 'Discussion générale',
-          context: currentContext,
+          title: resolvedPageContext.labSlug
+            ? `Lab : ${resolvedPageContext.labSlug}`
+            : resolvedPageContext.quizSlug
+              ? `Quiz : ${resolvedPageContext.quizSlug}`
+              : resolvedPageContext.lessonSlug
+                ? `Cours : ${resolvedPageContext.lessonSlug}`
+                : 'Discussion générale',
+          context: resolvedPageContext,
         });
         setConversations([newConv]);
         setActiveConvId(newConv.id);
@@ -90,8 +140,14 @@ export function MentorChatDrawer({ currentContext }: MentorChatDrawerProps) {
     setError(null);
     try {
       const newConv = await createConversation(accessToken, {
-        title: currentContext?.labSlug ? `Lab : ${currentContext.labSlug}` : `Discussion #${conversations.length + 1}`,
-        context: currentContext,
+        title: resolvedPageContext.labSlug
+          ? `Lab : ${resolvedPageContext.labSlug}`
+          : resolvedPageContext.quizSlug
+            ? `Quiz : ${resolvedPageContext.quizSlug}`
+            : resolvedPageContext.lessonSlug
+              ? `Cours : ${resolvedPageContext.lessonSlug}`
+              : `Discussion #${conversations.length + 1}`,
+        context: resolvedPageContext,
       });
       setConversations((prev) => [newConv, ...prev]);
       setActiveConvId(newConv.id);
@@ -101,17 +157,42 @@ export function MentorChatDrawer({ currentContext }: MentorChatDrawerProps) {
     }
   };
 
+  const handleToggleFreeMode = async () => {
+    if (!accessToken) return;
+    const newFreeMode = !preferences.freeMode;
+    try {
+      const updated = await updateAiPreferences({ freeMode: newFreeMode }, accessToken);
+      setPreferences((prev) => ({ ...prev, freeMode: updated.freeMode }));
+    } catch {
+      setError('Échec de mise à jour du mode libre.');
+    }
+  };
+
+  const handleChangeModel = async (model: string) => {
+    if (!accessToken) return;
+    try {
+      const updated = await updateAiPreferences({ preferredModel: model }, accessToken);
+      setPreferences((prev) => ({ ...prev, preferredModel: updated.preferredModel }));
+      if (status) {
+        setStatus({ ...status, model });
+      }
+    } catch {
+      setError('Échec de sélection du modèle.');
+    }
+  };
+
   const handleSendMessage = async () => {
     if (!accessToken || !activeConvId || !inputMessage.trim() || isLoading) return;
 
     const content = inputMessage.trim();
+    const tempId = `temp-${Date.now()}`;
     setInputMessage('');
     setIsLoading(true);
     setError(null);
 
-    // Message utilisateur optimiste temporaire
+    // Message utilisateur optimiste temporaire avec ID garanti unique
     const tempUserMsg: ChatMessageItem = {
-      id: `temp-${Date.now()}`,
+      id: tempId,
       conversationId: activeConvId,
       role: 'USER',
       content,
@@ -121,8 +202,13 @@ export function MentorChatDrawer({ currentContext }: MentorChatDrawerProps) {
     setMessages((prev) => [...prev, tempUserMsg]);
 
     try {
-      const res = await sendChatMessage(activeConvId, content, accessToken, currentContext);
-      setMessages((prev) => [...prev.filter((m) => m.id !== tempUserMsg.id), res.userMessage, res.assistantMessage]);
+      const res = await sendChatMessage(activeConvId, content, accessToken, resolvedPageContext);
+      // Réconciliation des IDs sans risque de duplication de clé
+      setMessages((prev) => [
+        ...prev.filter((m) => m.id !== tempId),
+        res.userMessage,
+        res.assistantMessage,
+      ]);
       if (status) {
         setStatus({ ...status, remainingQuota: res.remainingQuota });
       }
@@ -155,7 +241,7 @@ export function MentorChatDrawer({ currentContext }: MentorChatDrawerProps) {
           role="dialog"
           aria-modal="true"
           aria-label="Assistant Mentor IA"
-          className="fixed inset-y-0 right-0 z-50 w-full sm:w-[450px] bg-slate-950 border-l border-slate-800 shadow-2xl flex flex-col animate-in slide-in-from-right duration-200"
+          className="fixed inset-y-0 right-0 z-50 w-full sm:w-[460px] bg-slate-950 border-l border-slate-800 shadow-2xl flex flex-col animate-in slide-in-from-right duration-200"
         >
           {/* Header du Drawer */}
           <div className="p-4 bg-slate-900 border-b border-slate-800 flex items-center justify-between">
@@ -166,18 +252,21 @@ export function MentorChatDrawer({ currentContext }: MentorChatDrawerProps) {
               <div>
                 <h3 className="font-semibold text-white text-sm flex items-center gap-2">
                   Mentor OpenSIO
-                  <span className="text-[10px] font-normal px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
-                    Tuteur SISR
-                  </span>
+                  {resolvedPageContext.isEvaluated && (
+                    <span className="text-[10px] font-normal px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                      Évaluation Active (Socratique)
+                    </span>
+                  )}
                 </h3>
-                <div className="flex items-center gap-1.5 text-xs text-slate-400 mt-0.5">
+                <div className="flex items-center gap-2 text-xs text-slate-400 mt-0.5">
+                  <span className="text-slate-300 text-[11px] font-mono">{status?.model || 'llama3.1:8b'}</span>
                   {status?.mode === 'local' ? (
                     <span className="flex items-center gap-1 text-emerald-400 text-[11px]">
-                      <ShieldCheck className="w-3.5 h-3.5" /> Ollama Local (0 donnée partagée)
+                      <ShieldCheck className="w-3 h-3" /> Ollama Local (0 fuite)
                     </span>
                   ) : (
                     <span className="flex items-center gap-1 text-blue-400 text-[11px]">
-                      <Globe className="w-3.5 h-3.5" /> Mode Distant Chiffré
+                      <Globe className="w-3 h-3" /> Distant Chiffré
                     </span>
                   )}
                 </div>
@@ -185,6 +274,16 @@ export function MentorChatDrawer({ currentContext }: MentorChatDrawerProps) {
             </div>
 
             <div className="flex items-center gap-1">
+              <button
+                type="button"
+                onClick={() => setShowSettings((v) => !v)}
+                title="Préférences IA"
+                className={`p-2 rounded-xl transition-colors cursor-pointer ${
+                  showSettings ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:text-white hover:bg-slate-800'
+                }`}
+              >
+                <Settings className="w-4 h-4" />
+              </button>
               <button
                 type="button"
                 onClick={() => void handleNewConversation()}
@@ -204,7 +303,18 @@ export function MentorChatDrawer({ currentContext }: MentorChatDrawerProps) {
             </div>
           </div>
 
-          {/* Bandeau d'information contextuel / sélecteur de discussions */}
+          {/* Panneau rétractable des préférences étudiant */}
+          {showSettings && (
+            <MentorChatSettings
+              availableModels={availableModels}
+              preferences={preferences}
+              currentModel={status?.model}
+              onSelectModel={(m) => void handleChangeModel(m)}
+              onToggleFreeMode={() => void handleToggleFreeMode()}
+            />
+          )}
+
+          {/* Sélecteur de discussions */}
           {conversations.length > 1 && (
             <div className="px-3 py-2 bg-slate-900/60 border-b border-slate-800/80 flex items-center gap-1.5 overflow-x-auto text-xs">
               <MessageSquare className="w-3.5 h-3.5 text-slate-500 shrink-0" />
@@ -232,7 +342,7 @@ export function MentorChatDrawer({ currentContext }: MentorChatDrawerProps) {
             </div>
           )}
 
-          {/* Liste des messages */}
+          {/* Liste des messages avec clés garanties uniques */}
           <MentorChatMessages
             messages={messages}
             isLoading={isLoading}

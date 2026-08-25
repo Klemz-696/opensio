@@ -23,7 +23,7 @@ describe('AiContextSanitizerService (Zéro-Fuite de Contexte)', () => {
 
     expect(result.systemPrompt).toContain('Tu es « Mentor »');
     expect(result.systemPrompt).toContain('Plan d’adressage IPv4');
-    expect(result.systemPrompt).toContain('Tu ne donnes JAMAIS la solution complète');
+    expect(result.systemPrompt).toContain('Tu ne donnes JAMAIS la réponse exacte');
 
     // SÉCURITÉ CRITIQUE : aucun validateur ou réponse ne doit figurer dans le prompt
     expect(result.systemPrompt).not.toContain('validate.mjs');

@@ -33,6 +33,7 @@ model User {
   activityEvents      ActivityEvent[]
   auditLogs           AuditLog[]
   chatConversations   ChatConversation[]
+  aiPreference        UserAiPreference?
 
   @@map("users")
 }
