@@ -34,12 +34,24 @@ describe('validateEnv', () => {
     ).toThrow('JWT_SECRET non sécurisé');
   });
 
-  it('devrait accepter un JWT_SECRET en mode test même avec des placeholders', () => {
+  it('devrait accepter un JWT_SECRET en mode test même avec des placeholders si DATABASE_URL est une base de test', () => {
     const config = validateEnv({
       ...validBaseConfig,
       NODE_ENV: 'test',
+      DATABASE_URL: 'postgresql://opensio:secret@localhost:5432/opensio_test',
       JWT_SECRET: 'ci-dummy-secret-pour-tests-uniquement-pas-un-vrai-secret-64chars',
     });
     expect(config.NODE_ENV).toBe('test');
+  });
+
+  it('devrait rejeter l’exécution en mode test si DATABASE_URL pointe sur la base de dev', () => {
+    expect(() =>
+      validateEnv({
+        ...validBaseConfig,
+        NODE_ENV: 'test',
+        DATABASE_URL: 'postgresql://opensio:secret@localhost:5432/opensio',
+        JWT_SECRET: 'ci-dummy-secret-pour-tests-uniquement-pas-un-vrai-secret-64chars',
+      })
+    ).toThrow('Garde-fou environnement de test');
   });
 });

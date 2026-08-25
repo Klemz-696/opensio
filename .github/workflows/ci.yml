@@ -51,8 +51,11 @@ jobs:
       - name: Génération du client Prisma
         run: pnpm --filter @opensio/api exec prisma generate
 
-      - name: Application des migrations PostgreSQL
-        run: pnpm --filter @opensio/api exec prisma migrate deploy
+      - name: Application des migrations PostgreSQL (Dev et Test)
+        run: |
+          pnpm --filter @opensio/api exec prisma migrate deploy
+          pnpm --filter @opensio/api exec tsx src/prisma/ensure-test-db.ts
+          DATABASE_URL=postgresql://opensio:ci@localhost:5432/opensio_test pnpm --filter @opensio/api exec prisma migrate deploy
 
       - name: Contrôle de la taille des fichiers (Règle D-13 / RM-13)
         run: node scripts/check-file-size.mjs
