@@ -217,6 +217,7 @@ function Setup-Development($seedChoice) {
 
     (Get-Content ".env") -replace 'AI_ENABLED=.*', "AI_ENABLED=$script:AiEnabled" |
         ForEach-Object { $_ -replace 'AI_BASE_URL=.*', "AI_BASE_URL=$script:AiUrl" } |
+        ForEach-Object { $_ -replace 'OLLAMA_BASE_URL=.*', "OLLAMA_BASE_URL=$script:AiUrl" } |
         Set-Content ".env"
 
     if (Test-Path "apps/api/.env") {

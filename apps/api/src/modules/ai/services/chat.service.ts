@@ -39,7 +39,7 @@ export class ChatService {
    */
   async getStatus(userId: string): Promise<ChatStatusResponse> {
     const isAiEnabled = process.env.AI_ENABLED !== 'false';
-    const baseUrl = process.env.AI_BASE_URL || 'http://127.0.0.1:11434/v1';
+    const baseUrl = process.env.OLLAMA_BASE_URL || process.env.AI_BASE_URL || 'http://127.0.0.1:11434/v1';
     const apiKey = process.env.AI_API_KEY;
     const isLocal =
       !apiKey &&
