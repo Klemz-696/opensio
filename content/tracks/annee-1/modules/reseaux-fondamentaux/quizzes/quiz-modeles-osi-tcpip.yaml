@@ -1,0 +1,97 @@
+slug: quiz-modeles-osi-tcpip
+title: "Quiz — Modèles OSI et TCP/IP"
+passing_score: 80
+position: 2
+questions:
+  - kind: single
+    prompt: "Quelle est l'unité de données de protocole (PDU) manipulée au niveau de la couche 2 (Liaison de données) du modèle OSI ?"
+    choices:
+      - id: a
+        text: "Le paquet"
+      - id: b
+        text: "Le segment"
+      - id: c
+        text: "La trame"
+      - id: d
+        text: "Le bit"
+    correct:
+      - c
+    explanation: "La couche 2 (Liaison de données) encapsule les paquets IP dans des trames (frames) contenant les adresses physiques MAC et le contrôle de redondance cyclique (FCS)."
+
+  - kind: single
+    prompt: "À quelle couche du modèle OSI correspond la couche 'Internet' du modèle TCP/IP ?"
+    choices:
+      - id: a
+        text: "Couche 2 (Liaison de données)"
+      - id: b
+        text: "Couche 3 (Réseau)"
+      - id: c
+        text: "Couche 4 (Transport)"
+      - id: d
+        text: "Couche 5 (Session)"
+    correct:
+      - b
+    explanation: "La couche Internet du modèle TCP/IP prend en charge l'adressage logique et le routage des paquets IP, ce qui correspond exactement à la couche 3 (Réseau) du modèle OSI."
+
+  - kind: multiple
+    prompt: "Quelles affirmations caractérisent le protocole TCP par rapport à UDP ?"
+    choices:
+      - id: a
+        text: "TCP garantit la remise ordonnée des données grâce aux numéros de séquence"
+      - id: b
+        text: "TCP établit une session via un mécanisme de poignée de main en trois étapes (SYN, SYN-ACK, ACK)"
+      - id: c
+        text: "TCP a un en-tête plus léger de seulement 8 octets"
+      - id: d
+        text: "TCP intègre un contrôle de flux par fenêtrage glissant"
+    correct:
+      - a
+      - b
+      - d
+    explanation: "TCP est un protocole fiable orienté connexion qui utilise le Three-Way Handshake, le fenêtrage et les séquences. L'en-tête de 8 octets est une caractéristique d'UDP (l'en-tête TCP fait au minimum 20 octets)."
+
+  - kind: single
+    prompt: "Quel port standard et protocole de transport sont utilisés par le protocole SSH pour l'administration distante sécurisée ?"
+    choices:
+      - id: a
+        text: "Port 21 en UDP"
+      - id: b
+        text: "Port 22 en TCP"
+      - id: c
+        text: "Port 23 en TCP"
+      - id: d
+        text: "Port 3389 en UDP"
+    correct:
+      - b
+    explanation: "SSH (Secure Shell) utilise par défaut le port standard 22 sur TCP. Le port 21 correspond à FTP, le port 23 à Telnet et 3389 à RDP."
+
+  - kind: single
+    prompt: "Sous Linux, quelle commande moderne permet de lister les ports TCP et UDP en écoute avec les noms des processus associés ?"
+    choices:
+      - id: a
+        text: "ss -tulnp"
+      - id: b
+        text: "ip route show"
+      - id: c
+        text: "ping -c 4 localhost"
+      - id: d
+        text: "traceroute -n"
+    correct:
+      - a
+    explanation: "La commande 'ss -tulnp' (TCP, UDP, Listening, Numeric, Process) est l'outil recommandé remplaçant 'netstat' sous Linux moderne pour inspecter les sockets ouverts."
+
+  - kind: multiple
+    prompt: "Parmi les services suivants, lesquels utilisent principalement le protocole UDP pour leurs requêtes standard ?"
+    choices:
+      - id: a
+        text: "DNS (résolution de nom standard)"
+      - id: b
+        text: "DHCP (attribution de bail réseau)"
+      - id: c
+        text: "HTTPS (navigation sécurisée)"
+      - id: d
+        text: "SSH (connexion terminal)"
+    correct:
+      - a
+      - b
+    explanation: "DNS (port 53) et DHCP (ports 67/68) utilisent UDP pour minimiser la latence lors de requêtes simples. HTTPS (443) et SSH (22) reposent sur TCP pour garantir l'intégrité et la fiabilité des flux."
