@@ -684,11 +684,54 @@ Implémentation complète du suivi de progression de l'étudiant et du tableau d
 - Règle D-13 / RM-13 : 100 % des fichiers <= 400 lignes.
 - Validation des 8 scénarios d'exécution du wizard en mode `--dry-run`.
 
+---
 
+## 2026-08-25 — Lot C1 : Enrichissement du Contenu Pédagogique (BTS SIO SISR)
 
+**Branche** : `feat/c1-contenu-pedagogique`  
+**Objectif** : Enrichir le catalogue OpenSIO avec 12 nouvelles leçons détaillées, 12 quiz d'évaluation approfondis (72 questions avec explications pédagogiques) et 6 ateliers pratiques complets (niveaux 2_files avec validateurs autonomes et suites de fixtures).
 
+### 1. Conventions d'Auteur & Outils de Validation (Étape 0)
+- Rédaction du guide d'auteur `content/README.md` formalisant la structure, les métadonnées requises et les formats contractuels (Markdown, YAML, CSV).
+- Création du script de validation autonome `content/validate.mjs` exécutant :
+  - La validation Zod de tous les parcours, modules, leçons, quiz et labs via `@opensio/content-schema`.
+  - La vérification de l'intégrité référentielle croisée (leçons liées, quiz, compétences B1/B2, labs requis).
+  - L'exécution automatique de chaque suite de fixtures de lab (`solutions/valid/`, `solutions/invalid-*/`).
 
+### 2. Module "Réseaux : Fondamentaux" (Étape 1)
+Complétion intégrale du module avec 7 leçons, 7 quiz et 4 ateliers pratiques :
+- **Leçons & Quiz associés (5+ questions par quiz)** :
+  - `01-adressage-ipv4.md` + `quiz-adressage.yaml` (Existant)
+  - `02-modeles-osi-tcpip.md` + `quiz-modeles-osi-tcpip.yaml` (Nouveau) : Couches OSI/TCP-IP, encapsulation, PDU, TCP vs UDP, ports d'écoute et commandes de diagnostic.
+  - `03-subnetting-vlsm.md` + `quiz-subnetting-vlsm.yaml` (Nouveau) : Calculs avancés de masques à longueur variable, optimisation de découpage, exercices pas-à-pas.
+  - `04-ipv6-essentiels.md` + `quiz-ipv6-essentiels.yaml` (Nouveau) : Structure 128 bits, règles de compression, types d'adresses (GUA, ULA, Link-Local), SLAAC, EUI-64 et protocole NDP.
+  - `05-vlan-segmentation.md` + `quiz-vlan-segmentation.yaml` (Nouveau) : Isolation niveau 2, modes Access vs Trunk, tag 802.1Q, VLAN natif, durcissement et commandes Cisco IOS.
+  - `06-routage-statique.md` + `quiz-routage-statique.yaml` (Nouveau) : Décision d'acheminement, Longest Prefix Match, routes par défaut/flottantes, Router-on-a-Stick, interfaces SVI et pannes de route retour.
+  - `07-dns-et-dhcp.md` + `quiz-dns-et-dhcp.yaml` (Nouveau) : Hiérarchie DNS, types d'enregistrements (A, AAAA, CNAME, MX, PTR), processus DORA, options DHCP (3, 6, 15), agent de relais IP Helper et commandes de diagnostic.
+- **Ateliers Pratiques (Labs de niveau 2_files avec validateurs)** :
+  - `lab-plan-adressage` (slug : `plan-adressage-pme`) (Existant)
+  - `lab-plan-vlsm` (slug : `plan-vlsm-complet`) (Nouveau) : Découpage VLSM d'une entreprise multi-sites sur `172.16.0.0/20` (500, 120, 60, 25, 2x2 postes) avec `plan.csv`.
+  - `lab-config-vlan` (slug : `config-vlan-switch`) (Nouveau) : Configuration Cisco IOS d'un commutateur Catalyst avec VLANs 10, 20, 30, SVI 99 et port Trunk 802.1Q dans `switch.cfg`.
+  - `lab-maquette-dns-dhcp` (slug : `maquette-dns-dhcp`) (Nouveau) : Déploiement combiné DNS/DHCP sur `192.168.50.0/24` avec domaine local, étendue dynamique, options et réservation d'imprimante dans `dnsmasq.conf`.
 
+### 3. Module "Windows Server & Active Directory" (Étape 2)
+Création complète du nouveau module `windows-server-ad` comprenant 6 leçons, 6 quiz et 3 ateliers pratiques :
+- **Leçons & Quiz associés** :
+  - `01-installation-et-roles.md` + `quiz-windows-installation-roles.yaml` : Éditions Standard vs Datacenter, Server Core vs Desktop Experience, rôles/fonctionnalités, RSAT, WinRM et automatisation PowerShell.
+  - `02-ad-ds-et-domaine.md` + `quiz-ad-ds-et-domaine.yaml` : Forêt, domaines, contrôleurs de domaine, NTDS.dit, SYSVOL, Catalogue Global, les 5 rôles FSMO et dépendance critique DNS.
+  - `03-utilisateurs-groupes-uo.md` + `quiz-utilisateurs-groupes-uo.yaml` : Arborescence d'UO, gestion du cycle de vie des identités, groupes (Sécurité vs Distribution, Global/Local/Universel), méthode AGDLP et délégation d'administration.
+  - `04-strategies-de-groupe-gpo.md` + `quiz-strategies-de-groupe-gpo.yaml` : Architecture GPC/GPT, hiérarchie LSDOU, blocage d'héritage, GPO Enforced, filtrage de sécurité, GPP Item-Level Targeting et dépannage (gpupdate, gpresult).
+  - `05-dns-dhcp-sous-windows.md` + `quiz-dns-dhcp-windows.yaml` : Zones DNS intégrées à AD, mises à jour dynamiques sécurisées, autorisation du serveur DHCP dans AD, basculement DHCP (Failover Load Balance / Hot Standby) et cmdlets PowerShell.
+  - `06-partages-et-droits-ntfs.md` + `quiz-partages-et-droits-ntfs.yaml` : Partage SMB vs NTFS, règle du plus restrictif, héritage/droits explicites, implémentation AGDLP et commandes `icacls`.
+- **Ateliers Pratiques** :
+  - `lab-promotion-dc` (slug : `promotion-controleur-domaine`) : Script PowerShell `promote-dc.ps1` d'installation du rôle AD DS et de promotion du DC racine de la forêt `entreprise.lan`.
+  - `lab-uo-gpo` (slug : `organisation-uo-et-gpo`) : Modélisation d'arborescence UO d'entreprise et liaisons GPO avec gestion de l'héritage dans `structure-uo.csv`.
+  - `lab-partage-ntfs` (slug : `partage-et-droits-ntfs`) : Matrice de sécurité des partages SMB et permissions NTFS selon la méthode AGDLP dans `plan.csv`.
 
-
-
+### 4. Bilan & Validations
+- `node content/validate.mjs` : 100 % valide (13 leçons, 13 quiz, 77 questions, 7 labs, 21/21 tests de validateurs passants).
+- `pnpm content:validate` : 100 % valide (18/18 tests de schéma Vitest passants).
+- `pnpm content:sync` : Synchronisation Prisma réussie (+12 leçons, +6 labs, +12 quiz, +72 questions).
+- `node scripts/check-file-size.mjs` : 100 % conforme D-13 (0 violation > 400 lignes).
+- `pnpm test` : 100 % vert (173 tests passants sur l'ensemble du monorepo).
+- Aucun emoji présent dans l'ensemble des fichiers de contenu et de code.
