@@ -136,11 +136,15 @@ function Detect-Ollama {
         } else {
             Write-Warn "Ollama installe mais 'llama3.1:8b' absent."
             if (Ask-Confirm "Telecharger 'llama3.1:8b' (~4.9 Go) ?" "Y") {
-                Write-Info "Telechargement en cours..."; ollama pull llama3.1:8b; $script:LlamaModelPresent = $true
+                Write-Info "Telechargement en cours (ollama pull llama3.1:8b)..."
+                ollama pull llama3.1:8b
+                $script:LlamaModelPresent = $true
             }
         }
     } else {
-        Write-Warn "Ollama non detecte. Mentor IA configure en mode desactive (AI_ENABLED=false)."
+        Write-Warn "Ollama n'est pas detecte en local."
+        Write-Host "   -> Note : Le Mentor IA sera configure en mode desactive (AI_ENABLED=false)." -ForegroundColor Cyan
+        Write-Host "   Vous pourrez l'activer plus tard en installant Ollama ou via une cle API distante." -ForegroundColor Gray
     }
 }
 
@@ -205,7 +209,9 @@ function Setup-Development($withSeed, $withAi) {
     Write-Host "  OpenSIO est pret en Mode Developpement !" -ForegroundColor Green
     Write-Host "================================================================`n" -ForegroundColor Green
     Write-Host "  Frontend Web : http://localhost:3000" -ForegroundColor Cyan
-    Write-Host "  API Backend  : http://localhost:4000/api/v1`n" -ForegroundColor Cyan
+    Write-Host "  API Backend  : http://localhost:4000/api/v1" -ForegroundColor Cyan
+    $aiDesc = if ($withAi) { "Active (modele: llama3.1:8b)" } else { "Desactive (AI_ENABLED=false)" }
+    Write-Host "  Mentor IA    : $aiDesc`n" -ForegroundColor $(if ($withAi) { "Green" } else { "Yellow" })
     if ($withSeed) {
         Write-Host "  Comptes de test : admin@opensio.local (AdminOpenSIO2026!) / student@opensio.local (StudentOpenSIO2026!)`n"
     }
@@ -257,8 +263,13 @@ function Setup-Production($domain, $withSeed, $withAi) {
         "AI_ENABLED=$aiVal`nAI_BASE_URL=http://host.docker.internal:11434/v1`nAI_MODEL=llama3.1:8b`n"
 
     Set-Content ".env" $prodEnv
-    Write-Info "Demarrage de la stack de production (docker-compose.prod.yml)..."
-    docker compose -f docker-compose.prod.yml up -d --build
+    if ($withAi -and (-not $script:OllamaAvailable) -and (-not $script:LlamaModelPresent)) {
+        Write-Info "Demarrage de la stack avec profil conteneur Ollama (--profile ai)..."
+        docker compose -f docker-compose.prod.yml --profile ai up -d --build
+    } else {
+        Write-Info "Demarrage de la stack de production (docker-compose.prod.yml)..."
+        docker compose -f docker-compose.prod.yml up -d --build
+    }
 
     if ($alterUserNeeded) {
         Write-Info "Mise a jour du mot de passe PostgreSQL via ALTER USER..."
@@ -270,7 +281,9 @@ function Setup-Production($domain, $withSeed, $withAi) {
     Write-Host "  OpenSIO est deploye en Mode Production !" -ForegroundColor Green
     Write-Host "================================================================`n" -ForegroundColor Green
     Write-Host "  Acces HTTPS   : https://$domain" -ForegroundColor Cyan
-    Write-Host "  Reverse Proxy : Caddy (TLS Interne) | Sauvegardes : Chiffrees D-18`n"
+    Write-Host "  Reverse Proxy : Caddy (TLS Interne) | Sauvegardes : Chiffrees D-18"
+    $aiDesc = if ($withAi) { "Active (modele: llama3.1:8b)" } else { "Desactive (AI_ENABLED=false)" }
+    Write-Host "  Mentor IA     : $aiDesc`n" -ForegroundColor $(if ($withAi) { "Green" } else { "Yellow" })
     if ($withSeed) {
         Write-Host "  Comptes de test : admin@opensio.local (AdminOpenSIO2026!) / student@opensio.local (StudentOpenSIO2026!)`n"
     }
@@ -292,8 +305,16 @@ function Main {
 
     $withSeed = Ask-Confirm "Inclure les donnees et comptes de demonstration (Seed) ?" "Y"
     $withAi = $false
-    if ($script:LlamaModelPresent) { $withAi = Ask-Confirm "Activer le Mentor IA local ?" "Y" }
-    else { $withAi = Ask-Confirm "Activer l'assistant IA (cle distante / Ollama) ?" "N" }
+    if ($script:OllamaAvailable -and $script:LlamaModelPresent) {
+        $withAi = Ask-Confirm "Activer le Mentor IA local (modele 'llama3.1:8b' detecte) ?" "Y"
+    } elseif ($script:OllamaAvailable) {
+        $withAi = Ask-Confirm "Ollama est present sans modele 'llama3.1:8b'. Activer le Mentor IA (cle distante / modele autre) ?" "N"
+    } else {
+        $withAi = Ask-Confirm "Ollama est absent : le Mentor IA sera inactif. Activer tout de meme (cle distante / Ollama ulterieur) ?" "N"
+    }
+
+    if ($withAi) { Write-Success "Mentor IA active (AI_ENABLED=true)." }
+    else { Write-Info "Mentor IA desactive (AI_ENABLED=false)." }
 
     if ($modeChoice -eq "2") {
         Write-Host -NoNewline "Nom de domaine ou hostname (defaut: opensio.home.lan) : "
