@@ -120,20 +120,29 @@ check_prerequisites() {
 
 detect_ollama() {
   log_info "Détection de l'assistant IA local (Ollama)..."
-  OLLAMA_AVAILABLE=false; LLAMA_MODEL_PRESENT=false
+  OLLAMA_AVAILABLE=false
+  LLAMA_MODEL_PRESENT=false
   if command -v ollama &>/dev/null; then
     OLLAMA_AVAILABLE=true
     if ollama list 2>/dev/null | grep -q "llama3.1:8b"; then
-      LLAMA_MODEL_PRESENT=true; log_success "Ollama détecté avec 'llama3.1:8b'."
+      LLAMA_MODEL_PRESENT=true
+      log_success "Ollama détecté avec le modèle 'llama3.1:8b'."
     else
-      log_warn "Ollama actif mais modèle 'llama3.1:8b' absent."
-      if ask_confirm "Télécharger 'llama3.1:8b' (~4.9 Go) ?" "Y"; then
-        log_info "Téléchargement en cours..."; ollama pull llama3.1:8b || log_warn "Échec téléchargement."
-        LLAMA_MODEL_PRESENT=true
+      log_warn "Ollama est présent mais le modèle 'llama3.1:8b' n'est pas téléchargé."
+      if ask_confirm "Télécharger le modèle 'llama3.1:8b' (~4.9 Go) ?" "Y"; then
+        log_info "Téléchargement en cours (ollama pull llama3.1:8b)..."
+        if ollama pull llama3.1:8b; then
+          LLAMA_MODEL_PRESENT=true
+          log_success "Modèle 'llama3.1:8b' prêt."
+        else
+          log_warn "Échec du téléchargement. Le Mentor IA pourra être configuré ultérieurement."
+        fi
       fi
     fi
   else
-    log_warn "Ollama non détecté. Mentor IA configuré en mode désactivé (AI_ENABLED=false)."
+    log_warn "Ollama n'est pas détecté en local."
+    echo -e "   ${C_CYAN}ℹ Le Mentor IA sera configuré en mode désactivé (AI_ENABLED=false).${C_RESET}"
+    echo -e "   Vous pourrez l'activer plus tard en installant Ollama ou via une clé API distante.\n"
   fi
 }
 
@@ -169,12 +178,11 @@ setup_development() {
     log_info "Fichier .env existant détecté : les secrets existants sont préservés."
   fi
 
-  if [ "$with_ai" = "true" ]; then sed -i "s|AI_ENABLED=.*|AI_ENABLED=true|g" .env
-  else sed -i "s|AI_ENABLED=.*|AI_ENABLED=false|g" .env; fi
-
+  local ai_val="false"
+  if [ "$with_ai" = "true" ]; then ai_val="true"; fi
+  sed -i "s|AI_ENABLED=.*|AI_ENABLED=${ai_val}|g" .env
   if [ -f "apps/api/.env" ]; then
-    if [ "$with_ai" = "true" ]; then sed -i "s|AI_ENABLED=.*|AI_ENABLED=true|g" apps/api/.env
-    else sed -i "s|AI_ENABLED=.*|AI_ENABLED=false|g" apps/api/.env; fi
+    sed -i "s|AI_ENABLED=.*|AI_ENABLED=${ai_val}|g" apps/api/.env
   fi
 
   log_info "Démarrage de PostgreSQL 18 (Docker)..."
@@ -191,7 +199,12 @@ setup_development() {
   echo -e "${C_GREEN}${C_BOLD}  🎉 OpenSIO est prêt en Mode Développement !${C_RESET}"
   echo -e "${C_GREEN}${C_BOLD}================================================================${C_RESET}\n"
   echo -e "  🌐 Frontend Web : ${C_CYAN}http://localhost:3000${C_RESET}"
-  echo -e "  🔌 API Backend  : ${C_CYAN}http://localhost:4000/api/v1${C_RESET}\n"
+  echo -e "  🔌 API Backend  : ${C_CYAN}http://localhost:4000/api/v1${C_RESET}"
+  if [ "$with_ai" = "true" ]; then
+    echo -e "  🤖 Mentor IA    : ${C_GREEN}Activé (modèle: llama3.1:8b)${C_RESET}\n"
+  else
+    echo -e "  🤖 Mentor IA    : ${C_YELLOW}Désactivé (AI_ENABLED=false)${C_RESET}\n"
+  fi
   if [ "$with_seed" = "true" ]; then
     echo -e "  🔑 Comptes de test : admin@opensio.local (AdminOpenSIO2026!) / student@opensio.local (StudentOpenSIO2026!)\n"
   fi
@@ -254,10 +267,11 @@ AI_BASE_URL=http://host.docker.internal:11434/v1
 AI_MODEL=llama3.1:8b
 EOF
 
-  log_info "Lancement de la stack de production (docker-compose.prod.yml)..."
-  if [ "$with_ai" = "true" ] && [ "$LLAMA_MODEL_PRESENT" = "false" ]; then
+  if [ "$with_ai" = "true" ] && [ "$OLLAMA_AVAILABLE" = "false" ] && [ "$LLAMA_MODEL_PRESENT" = "false" ]; then
+    log_info "Lancement de la stack avec profil conteneur Ollama (--profile ai)..."
     docker compose -f docker-compose.prod.yml --profile ai up -d --build
   else
+    log_info "Lancement de la stack de production (docker-compose.prod.yml)..."
     docker compose -f docker-compose.prod.yml up -d --build
   fi
 
@@ -271,7 +285,12 @@ EOF
   echo -e "${C_GREEN}${C_BOLD}  🚀 OpenSIO est déployé en Mode Production !${C_RESET}"
   echo -e "${C_GREEN}${C_BOLD}================================================================${C_RESET}\n"
   echo -e "  🌐 Accès HTTPS   : ${C_CYAN}https://${domain}${C_RESET}"
-  echo -e "  🔒 Reverse Proxy : Caddy (TLS Interne) | Sauvegardes : Chiffrées D-18\n"
+  echo -e "  🔒 Reverse Proxy : Caddy (TLS Interne) | Sauvegardes : Chiffrées D-18"
+  if [ "$with_ai" = "true" ]; then
+    echo -e "  🤖 Mentor IA    : ${C_GREEN}Activé (modèle: llama3.1:8b)${C_RESET}\n"
+  else
+    echo -e "  🤖 Mentor IA    : ${C_YELLOW}Désactivé (AI_ENABLED=false)${C_RESET}\n"
+  fi
   if [ "$with_seed" = "true" ]; then
     echo -e "  🔑 Comptes de test : admin@opensio.local (AdminOpenSIO2026!) / student@opensio.local (StudentOpenSIO2026!)\n"
   fi
@@ -295,10 +314,18 @@ main() {
   if ! ask_confirm "Inclure les données et comptes de démonstration (Seed) ?" "Y"; then WITH_SEED="false"; fi
 
   WITH_AI="false"
-  if [ "$LLAMA_MODEL_PRESENT" = "true" ]; then
-    if ask_confirm "Activer le Mentor IA local ?" "Y"; then WITH_AI="true"; fi
+  if [ "$OLLAMA_AVAILABLE" = "true" ] && [ "$LLAMA_MODEL_PRESENT" = "true" ]; then
+    if ask_confirm "Activer le Mentor IA local (modèle 'llama3.1:8b' détecté) ?" "Y"; then WITH_AI="true"; fi
+  elif [ "$OLLAMA_AVAILABLE" = "true" ]; then
+    if ask_confirm "Ollama est présent sans modèle 'llama3.1:8b'. Activer le Mentor IA (clé distante / modèle autre) ?" "N"; then WITH_AI="true"; fi
   else
-    if ask_confirm "Activer l'assistant IA (nécessitera clé distante / Ollama) ?" "N"; then WITH_AI="true"; fi
+    if ask_confirm "Ollama est absent : le Mentor IA sera inactif. Activer tout de même (nécessitera clé distante / Ollama ultérieur) ?" "N"; then WITH_AI="true"; fi
+  fi
+
+  if [ "$WITH_AI" = "true" ]; then
+    log_success "Mentor IA activé (AI_ENABLED=true)."
+  else
+    log_info "Mentor IA désactivé (AI_ENABLED=false)."
   fi
 
   if [ "$MODE_CHOICE" = "2" ]; then
