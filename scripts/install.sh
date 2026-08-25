@@ -31,15 +31,15 @@ load_modules() {
   if [ -n "$script_dir" ] && [ -d "${script_dir}/lib" ] && [ -f "${script_dir}/lib/common.sh" ]; then
     # Exécution locale depuis le dépôt cloné
     local lib_dir="${script_dir}/lib"
-    # shellcheck source=scripts/lib/common.sh
+    # shellcheck source=scripts/lib/common.sh disable=SC1091
     . "${lib_dir}/common.sh"
-    # shellcheck source=scripts/lib/detect.sh
+    # shellcheck source=scripts/lib/detect.sh disable=SC1091
     . "${lib_dir}/detect.sh"
-    # shellcheck source=scripts/lib/ollama.sh
+    # shellcheck source=scripts/lib/ollama.sh disable=SC1091
     . "${lib_dir}/ollama.sh"
-    # shellcheck source=scripts/lib/config.sh
+    # shellcheck source=scripts/lib/config.sh disable=SC1091
     . "${lib_dir}/config.sh"
-    # shellcheck source=scripts/lib/runner.sh
+    # shellcheck source=scripts/lib/runner.sh disable=SC1091
     . "${lib_dir}/runner.sh"
   else
     # Exécution distante via curl : téléchargement éphémère des modules
