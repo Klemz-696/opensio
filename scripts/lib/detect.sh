@@ -41,7 +41,7 @@ detect_os() {
 
     if [ "$is_supported" = "false" ]; then
       log_warn "La distribution '${pretty}' n'a pas été officiellement validée."
-      echo -e "   ${C_CYAN}ℹ Distributions officiellement supportées : Debian 12/13, Ubuntu 22.04+${C_RESET}"
+      echo -e "   ${C_CYAN}[i] Distributions officiellement supportées : Debian 12/13, Ubuntu 22.04+${C_RESET}"
       if ! ask_confirm "Souhaitez-vous continuer l'installation tout de même ?" "Y"; then
         log_error "Installation interrompue par l'utilisateur."
         exit 1
@@ -98,7 +98,7 @@ detect_hardware_resources() {
   local disk_int="${DETECTED_DISK_FREE_GB%%.*}"
   disk_int="${disk_int:-0}"
   if [ "$disk_int" -lt 20 ]; then
-    log_warn "Espace disque disponible faible (${DETECTED_DISK_FREE_GB} Go disponible, ≥ 20 Go recommandé)."
+    log_warn "Espace disque disponible faible (${DETECTED_DISK_FREE_GB} Go disponible, >= 20 Go recommandé)."
     if ! ask_confirm "Poursuivre malgré l'espace disque réduit ?" "Y"; then
       log_error "Arrêt de l'installation."
       exit 1
@@ -118,8 +118,8 @@ wait_for_docker_daemon() {
     return 0
   fi
   log_warn "Docker est installé mais le démon n'est pas joignable."
-  echo -e "   ${C_CYAN}➜ Sous Linux :${C_RESET} Exécutez 'sudo systemctl start docker'"
-  echo -e "   ${C_CYAN}➜ Sous macOS / Windows :${C_RESET} Démarrez Docker Desktop\n"
+  echo -e "   ${C_CYAN}--> Sous Linux :${C_RESET} Exécutez 'sudo systemctl start docker'"
+  echo -e "   ${C_CYAN}--> Sous macOS / Windows :${C_RESET} Démarrez Docker Desktop\n"
 
   if command -v systemctl &>/dev/null; then
     log_info "Tentative de démarrage automatique du service Docker..."
@@ -153,7 +153,7 @@ detect_tool_versions() {
   local target_mode="${1:-prod}"
   log_info "Vérification des versions logicielles requises..."
 
-  # 1. Git (≥ 2.30)
+  # 1. Git (>= 2.30)
   if command -v git &>/dev/null; then
     local git_raw
     git_raw=$(git --version 2>/dev/null || echo "git version 0.0.0")
@@ -161,7 +161,7 @@ detect_tool_versions() {
     if version_gte "$DETECTED_GIT_VERSION" "2.30"; then
       log_success "Git détecté : v${DETECTED_GIT_VERSION}"
     else
-      log_warn "Git v${DETECTED_GIT_VERSION} est obsolète (version ≥ 2.30 requise)."
+      log_warn "Git v${DETECTED_GIT_VERSION} est obsolète (version >= 2.30 requise)."
       if ask_confirm "Mettre à jour Git via le gestionnaire de paquets ?" "Y"; then
         if command -v apt-get &>/dev/null; then sudo apt-get update && sudo apt-get install -y git
         elif command -v dnf &>/dev/null; then sudo dnf install -y git
@@ -181,7 +181,7 @@ detect_tool_versions() {
     fi
   fi
 
-  # 2. Docker (≥ 24.0)
+  # 2. Docker (>= 24.0)
   if command -v docker &>/dev/null; then
     local docker_raw
     docker_raw=$(docker --version 2>/dev/null || echo "0.0.0")
@@ -189,7 +189,7 @@ detect_tool_versions() {
     if version_gte "$DETECTED_DOCKER_VERSION" "24.0"; then
       log_success "Docker Engine détecté : v${DETECTED_DOCKER_VERSION}"
     else
-      log_warn "Docker v${DETECTED_DOCKER_VERSION} est insuffisant (version ≥ 24.0 requise)."
+      log_warn "Docker v${DETECTED_DOCKER_VERSION} est insuffisant (version >= 24.0 requise)."
     fi
 
     if test_docker_daemon; then
@@ -199,11 +199,11 @@ detect_tool_versions() {
     fi
   else
     log_error "Docker n'est pas installé sur cette machine."
-    echo -e "   ${C_CYAN}➜ Guide officiel : https://docs.docker.com/engine/install/${C_RESET}"
+    echo -e "   ${C_CYAN}--> Guide officiel : https://docs.docker.com/engine/install/${C_RESET}"
     exit 1
   fi
 
-  # 3. Docker Compose plugin (≥ 2.20)
+  # 3. Docker Compose plugin (>= 2.20)
   if docker compose version &>/dev/null; then
     local compose_raw
     compose_raw=$(docker compose version 2>/dev/null || echo "0.0.0")
@@ -211,11 +211,11 @@ detect_tool_versions() {
     if version_gte "$DETECTED_COMPOSE_VERSION" "2.20"; then
       log_success "Docker Compose plugin détecté : v${DETECTED_COMPOSE_VERSION}"
     else
-      log_warn "Docker Compose v${DETECTED_COMPOSE_VERSION} est obsolète (version ≥ 2.20 requise)."
+      log_warn "Docker Compose v${DETECTED_COMPOSE_VERSION} est obsolète (version >= 2.20 requise)."
     fi
   else
     log_error "Le plugin 'docker compose' (Compose v2) est introuvable."
-    echo -e "   ${C_CYAN}➜ Installez 'docker-compose-plugin' via votre gestionnaire de paquets.${C_RESET}"
+    echo -e "   ${C_CYAN}--> Installez 'docker-compose-plugin' via votre gestionnaire de paquets.${C_RESET}"
     exit 1
   fi
 
@@ -228,7 +228,7 @@ detect_tool_versions() {
       if version_gte "$DETECTED_NODE_VERSION" "20.0"; then
         log_success "Node.js détecté : v${DETECTED_NODE_VERSION}"
       else
-        log_error "Node.js v${DETECTED_NODE_VERSION} insuffisant (version ≥ 20 requise en dev)."; exit 1
+        log_error "Node.js v${DETECTED_NODE_VERSION} insuffisant (version >= 20 requise en dev)."; exit 1
       fi
     else
       log_error "Node.js n'est pas installé (requis en mode développement)."; exit 1

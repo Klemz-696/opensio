@@ -11,7 +11,7 @@ const ARGON2_OPTIONS: argon2.Options = {
 };
 
 async function main(): Promise<void> {
-  console.log('🌱 [OpenSIO] Amorçage de la base de données (Seed)...');
+  console.log('[OpenSIO] Amorçage de la base de données (Seed)...');
 
   const isDev = process.env.NODE_ENV !== 'production';
 
@@ -21,7 +21,7 @@ async function main(): Promise<void> {
   if (!adminPassword) {
     if (!isDev) {
       console.warn(
-        '⚠️ [ATTENTION] Variable SEED_ADMIN_PASSWORD non définie hors environnement de développement ! Utilisation du mot de passe de secours.'
+        '[!] [ATTENTION] Variable SEED_ADMIN_PASSWORD non définie hors environnement de développement ! Utilisation du mot de passe de secours.'
       );
     }
     adminPassword = 'AdminOpenSIO2026!';
@@ -43,7 +43,7 @@ async function main(): Promise<void> {
     },
   });
 
-  console.log(`✅ Compte Administrateur configuré :`);
+  console.log(`[v] Compte Administrateur configuré :`);
   console.log(`   - Email       : ${admin.email}`);
   console.log(`   - Rôle        : ${admin.role}`);
   console.log(`   - Mot de passe: ${adminPassword}`);
@@ -51,7 +51,7 @@ async function main(): Promise<void> {
   const seedMode = process.env.SEED_MODE || 'full';
 
   if (seedMode === 'minimal') {
-    console.log('ℹ️ [OpenSIO] Mode Seed Minimal actif : création du compte étudiant ignorée.');
+    console.log('[i] [OpenSIO] Mode Seed Minimal actif : création du compte étudiant ignorée.');
   } else {
     // Compte Étudiant de Démonstration
     const studentEmail = 'student@opensio.local';
@@ -59,7 +59,7 @@ async function main(): Promise<void> {
     if (!studentPassword) {
       if (!isDev) {
         console.warn(
-          '⚠️ [ATTENTION] Variable SEED_STUDENT_PASSWORD non définie hors environnement de développement ! Utilisation du mot de passe de secours.'
+          '[!] [ATTENTION] Variable SEED_STUDENT_PASSWORD non définie hors environnement de développement ! Utilisation du mot de passe de secours.'
         );
       }
       studentPassword = 'StudentOpenSIO2026!';
@@ -81,18 +81,18 @@ async function main(): Promise<void> {
       },
     });
 
-    console.log(`✅ Compte Étudiant de démo configuré :`);
+    console.log(`[v] Compte Étudiant de démo configuré :`);
     console.log(`   - Email       : ${student.email}`);
     console.log(`   - Rôle        : ${student.role}`);
     console.log(`   - Mot de passe: ${studentPassword}`);
   }
 
-  console.log('🎉 [OpenSIO] Amorçage terminé avec succès.');
+  console.log('[v] [OpenSIO] Amorçage terminé avec succès.');
 }
 
 main()
   .catch((e) => {
-    console.error('❌ Erreur lors du seed :', e);
+    console.error('[x] Erreur lors du seed :', e);
     process.exit(1);
   })
   .finally(async () => {

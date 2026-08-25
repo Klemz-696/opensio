@@ -677,6 +677,8 @@ Implémentation complète du suivi de progression de l'étudiant et du tableau d
    - Section sécurité détaillée (isolation réseau d'Ollama, certificats TLS Caddy, gestion des secrets).
 
 ### Tests et Conformité
+- Contrôle strict des variables IA : vérification de la cohérence de `AI_BASE_URL` et `AI_ENABLED` entre le générateur `.env`, `apps/api/src/config/env.validation.ts` et les providers IA de l'API.
+- Formatage ASCII pur : suppression de tous les émojis et caractères unicode dans les scripts (`[v]`, `[i]`, `[!]`, `[x]`, `[DRY-RUN]`, `-->`).
 - `bash -n` sur tous les scripts Bash : 100 % valide.
 - `shellcheck` sur tous les scripts Bash : 100 % propre (0 erreur, 0 avertissement).
 - Règle D-13 / RM-13 : 100 % des fichiers <= 400 lignes.
