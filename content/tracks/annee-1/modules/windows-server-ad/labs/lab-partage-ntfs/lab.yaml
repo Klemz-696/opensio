@@ -1,0 +1,64 @@
+slug: partage-et-droits-ntfs
+title: "Sécurisation des partages SMB et permissions NTFS selon la méthode AGDLP"
+level: 2_files
+max_score: 100
+estimated_minutes: 50
+context: |
+  Vous devez formaliser la matrice de sécurité d'un serveur de fichiers Windows Server (plan.csv).
+  Le serveur héberge quatre répertoires partagés sur son volume D:\Partages :
+  - D:\Partages\Direction (Partage: Direction)
+  - D:\Partages\Comptabilite (Partage: Comptabilite)
+  - D:\Partages\Technique (Partage: Technique)
+  - D:\Partages\Commun (Partage: Commun)
+
+  Directives de sécurité d'entreprise :
+  1. Les autorisations de partage SMB doivent être positionnées sur 'Modifier' (Change) pour permettre un pilotage exclusif par les ACL NTFS.
+  2. Chaque dossier doit être sécurisé selon la méthode AGDLP en utilisant des Groupes de Domaine Local (GDL) dédiés :
+     - Groupe d'écriture/modification : GDL_Partage_<Service>_M
+     - Groupe de lecture seule : GDL_Partage_<Service>_L
+  3. L'héritage doit être désactivé (inheritance_disabled: true) sur les trois dossiers confidentiels (Direction, Comptabilite, Technique) pour isoler les accès, et conservé actif (inheritance_disabled: false) sur le dossier Commun.
+
+  Complétez le fichier plan.csv.
+
+objectives:
+  - "Définir une politique de partage SMB homogène et sécurisée"
+  - "Concevoir les Groupes de Domaine Local pour les permissions de Modification et de Lecture selon AGDLP"
+  - "Déterminer la politique d'héritage appropriée pour chaque niveau de confidentialité"
+
+prerequisites:
+  - partages-et-droits-ntfs
+  - utilisateurs-groupes-uo
+
+topology: null
+
+files:
+  editable:
+    - path: plan.csv
+      description: "folder_path,share_name,share_permissions,ntfs_group_rw,ntfs_group_ro,inheritance_disabled"
+
+hints:
+  - cost_percent: 10
+    text: "Positionnez share_permissions à 'Modifier' sur toutes les lignes."
+  - cost_percent: 10
+    text: "Pour les GDL : GDL_Partage_Direction_M / GDL_Partage_Direction_L, etc."
+
+validation:
+  type: script
+  image: opensio/validator-csv:latest
+  timeout_seconds: 30
+  checks:
+    - id: shares_valid
+      required: true
+      points: 35
+      description: "Nommage des partages SMB et autorisations de partage conformes"
+    - id: ntfs_groups_agdlp_valid
+      required: true
+      points: 45
+      description: "Groupes de Domaine Local de Modification (_M) et Lecture (_L) conformes à AGDLP"
+    - id: inheritance_policy_valid
+      required: false
+      points: 20
+      description: "Désactivation de l'héritage sur les dossiers confidentiels et maintien sur Commun"
+
+scoring:
+  floor_percent: 50

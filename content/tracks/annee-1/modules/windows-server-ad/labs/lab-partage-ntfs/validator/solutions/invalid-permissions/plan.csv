@@ -1,0 +1,5 @@
+folder_path,share_name,share_permissions,ntfs_group_rw,ntfs_group_ro,inheritance_disabled
+D:\Partages\Direction,Direction,Lecture,GDL_Partage_Direction_M,GDL_Partage_Direction_L,true
+D:\Partages\Comptabilite,Comptabilite,Lecture,GDL_Partage_Compta_M,GDL_Partage_Compta_L,true
+D:\Partages\Technique,Technique,Lecture,GDL_Partage_Technique_M,GDL_Partage_Technique_L,true
+D:\Partages\Commun,Commun,Lecture,GDL_Partage_Commun_M,GDL_Partage_Commun_L,false

@@ -1,0 +1,95 @@
+slug: quiz-dns-dhcp-windows
+title: "Quiz — DNS et DHCP sous Windows Server"
+passing_score: 80
+position: 5
+questions:
+  - kind: single
+    prompt: "Quel est le bénéfice majeur d'une zone DNS intégrée à Active Directory (AD-Integrated Zone) par rapport à une zone DNS standard sur fichier plat ?"
+    choices:
+      - id: a
+        text: "Elle supprime le besoin de cartes réseau sur le serveur"
+      - id: b
+        text: "Elle permet la réplication multi-maîtres et les mises à jour dynamiques sécurisées réservées aux machines du domaine"
+      - id: c
+        text: "Elle limite la taille de la zone à 10 enregistrements pour économiser la RAM"
+      - id: d
+        text: "Elle remplace le protocole TCP par le protocole ICMP"
+    correct:
+      - b
+    explanation: "Les zones intégrées à Active Directory sont stockées dans NTDS.dit et bénéficient de la réplication multi-maîtres chiffrée entre tous les DCs. Elles permettent d'activer le mode 'Mises à jour dynamiques sécurisées uniquement'."
+
+  - kind: single
+    prompt: "Que se passe-t-il si un serveur DHCP sous Windows Server membre d'un domaine n'a pas été autorisé dans Active Directory ?"
+    choices:
+      - id: a
+        text: "Il formate immédiatement son disque dur"
+      - id: b
+        text: "Le service DHCP refuse de démarrer ou s'arrête sans délivrer aucun bail d'adresse IP"
+      - id: c
+        text: "Il distribue uniquement des adresses IPv6"
+      - id: d
+        text: "Il bascule automatiquement en contrôleur de domaine"
+    correct:
+      - b
+    explanation: "Sous Windows Server, un serveur DHCP d'entreprise doit être préalablement autorisé dans Active Directory par un compte Enterprise Admin. À défaut, le service s'arrête pour protéger le réseau contre les serveurs DHCP pirates (Rogue DHCP)."
+
+  - kind: single
+    prompt: "Dans le mécanisme de basculement DHCP (DHCP Failover), quel mode permet de répartir dynamiquement la charge de délivrance des baux entre deux serveurs partenaires actifs ?"
+    choices:
+      - id: a
+        text: "Mode Veille active (Hot Standby)"
+      - id: b
+        text: "Mode Équilibrage de charge (Load Balance)"
+      - id: c
+        text: "Mode Round-Robin DNS"
+      - id: d
+        text: "Mode Broadcast unifié"
+    correct:
+      - b
+    explanation: "Le mode 'Load Balance' (Équilibrage de charge) permet à deux serveurs DHCP partenaires d'être simultanément actifs sur la même étendue en se partageant les baux selon un pourcentage défini (ex : 50/50)."
+
+  - kind: multiple
+    prompt: "Quelles applets de commande PowerShell permettent de créer une étendue IPv4 et d'y définir la passerelle par défaut (Option 3) ?"
+    choices:
+      - id: a
+        text: "Add-DhcpServerv4Scope"
+      - id: b
+        text: "Set-DhcpServerv4OptionValue"
+      - id: c
+        text: "New-DnsServerZone"
+      - id: d
+        text: "Install-ADDSForest"
+    correct:
+      - a
+      - b
+    explanation: "'Add-DhcpServerv4Scope' crée l'étendue avec ses bornes et son masque. 'Set-DhcpServerv4OptionValue' configure les options réseau associées (OptionId 3 pour le routeur/passerelle)."
+
+  - kind: single
+    prompt: "Si une option DNS (Option 6) est définie au niveau 'Serveur' (1.1.1.1) et qu'une option DNS différente est définie au niveau de l'Étendue' (192.168.10.10), quelle valeur sera reçue par le client DHCP ?"
+    choices:
+      - id: a
+        text: "L'option Serveur (1.1.1.1) car elle est plus globale"
+      - id: b
+        text: "L'option Étendue (192.168.10.10) car elle est plus spécifique et prioritaire"
+      - id: c
+        text: "Aucune des deux (erreur de conflit)"
+      - id: d
+        text: "Les deux adresses inversées"
+    correct:
+      - b
+    explanation: "Dans la hiérarchie des options DHCP Windows, les options les plus spécifiques (Étendue) écrasent systématiquement les options plus générales (Serveur)."
+
+  - kind: single
+    prompt: "Quel mécanisme DNS permet de rediriger les requêtes destinées spécifiquement au domaine d'une filiale 'filiale.local' vers son serveur DNS dédié (10.20.0.1) sans modifier la résolution des autres domaines ?"
+    choices:
+      - id: a
+        text: "Un enregistrement MX"
+      - id: b
+        text: "Un redirecteur conditionnel (Conditional Forwarder)"
+      - id: c
+        text: "Une zone de recherche inverse"
+      - id: d
+        text: "Le Catalogue Global"
+    correct:
+      - b
+    explanation: "Un redirecteur conditionnel (Conditional Forwarder) permet d'acheminer les requêtes DNS portant sur un espace de nommage précis vers un ou plusieurs serveurs DNS désignés."
