@@ -4,9 +4,11 @@ import {
   Get,
   Post,
   Put,
+  Patch,
   Delete,
   Param,
   Body,
+  Query,
   UseGuards,
   HttpCode,
   HttpStatus,
@@ -16,6 +18,8 @@ import { AuthGuard, type AuthenticatedUser } from '../../common/guards/auth.guar
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { ChatService } from './services/chat.service';
 import { createConversationSchema, type CreateConversationDto } from './dto/create-conversation.dto';
+import { updateConversationSchema, type UpdateConversationDto } from './dto/update-conversation.dto';
+import { listConversationsQuerySchema, type ListConversationsQueryDto } from './dto/list-conversations-query.dto';
 import { sendMessageSchema, type SendMessageDto } from './dto/send-message.dto';
 import { updateAiPreferencesSchema, type UpdateAiPreferencesDto } from './dto/update-preferences.dto';
 
@@ -69,11 +73,16 @@ export class AiController {
 
   /**
    * GET /api/v1/chat/conversations
-   * Liste les conversations de l'utilisateur.
+   * Liste les conversations de l'utilisateur avec filtre actif/archivé.
    */
   @Get('conversations')
-  async listConversations(@CurrentUser() user: AuthenticatedUser) {
-    return this.chatService.listConversations(user.id);
+  async listConversations(
+    @Query() query: ListConversationsQueryDto,
+    @CurrentUser() user: AuthenticatedUser
+  ) {
+    const parseResult = listConversationsQuerySchema.safeParse(query);
+    const status = parseResult.success && parseResult.data.status ? parseResult.data.status : 'active';
+    return this.chatService.listConversations(user.id, status);
   }
 
   /**
@@ -103,6 +112,23 @@ export class AiController {
     @CurrentUser() user: AuthenticatedUser
   ) {
     return this.chatService.getConversation(id, user.id);
+  }
+
+  /**
+   * PATCH /api/v1/chat/conversations/:id
+   * Renomme (title) et/ou archive/désarchive une conversation.
+   */
+  @Patch('conversations/:id')
+  async updateConversation(
+    @Param('id') id: string,
+    @Body() body: UpdateConversationDto,
+    @CurrentUser() user: AuthenticatedUser
+  ) {
+    const parseResult = updateConversationSchema.safeParse(body);
+    if (!parseResult.success) {
+      throw new BadRequestException('Format de mise à jour de conversation invalide.');
+    }
+    return this.chatService.updateConversation(id, user.id, parseResult.data);
   }
 
   /**

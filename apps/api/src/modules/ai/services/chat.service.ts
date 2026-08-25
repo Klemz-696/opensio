@@ -1,10 +1,4 @@
-import {
-  Injectable,
-  Inject,
-  NotFoundException,
-  ForbiddenException,
-  Logger,
-} from '@nestjs/common';
+import { Injectable, Inject, Logger } from '@nestjs/common';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { AuditService } from '../../audit/audit.service';
 import {
@@ -15,8 +9,11 @@ import {
 import { AiContextSanitizerService } from './ai-context-sanitizer.service';
 import { AiSolutionFilterService } from './ai-solution-filter.service';
 import { AiRateLimiterService } from './ai-rate-limiter.service';
-import { ChatRole } from '@prisma/client';
+import { ChatConversationService } from './chat-conversation.service';
+import { generateAutoConversationTitle } from '../utils/conversation-namer.util';
+import { ChatRole, Prisma } from '@prisma/client';
 import type { CreateConversationDto } from '../dto/create-conversation.dto';
+import type { UpdateConversationDto } from '../dto/update-conversation.dto';
 import type { SendMessageDto } from '../dto/send-message.dto';
 import type { ChatStatusResponse } from '../dto/chat-status-response.dto';
 import type { UpdateAiPreferencesDto } from '../dto/update-preferences.dto';
@@ -31,7 +28,8 @@ export class ChatService {
     @Inject(AI_PROVIDER_TOKEN) private readonly aiProvider: AiProvider,
     @Inject(AiContextSanitizerService) private readonly contextSanitizer: AiContextSanitizerService,
     @Inject(AiSolutionFilterService) private readonly solutionFilter: AiSolutionFilterService,
-    @Inject(AiRateLimiterService) private readonly rateLimiter: AiRateLimiterService
+    @Inject(AiRateLimiterService) private readonly rateLimiter: AiRateLimiterService,
+    @Inject(ChatConversationService) private readonly conversationService: ChatConversationService
   ) {}
 
   /**
@@ -144,18 +142,10 @@ export class ChatService {
   }
 
   /**
-   * Liste les conversations d'un utilisateur.
+   * Liste les conversations d'un utilisateur avec filtrage optionnel (active/archived/all).
    */
-  async listConversations(userId: string) {
-    return this.prisma.chatConversation.findMany({
-      where: { userId },
-      orderBy: { updatedAt: 'desc' },
-      include: {
-        _count: {
-          select: { messages: true },
-        },
-      },
-    });
+  async listConversations(userId: string, status: 'active' | 'archived' | 'all' = 'active') {
+    return this.conversationService.listConversations(userId, status);
   }
 
   /**
@@ -163,56 +153,37 @@ export class ChatService {
    */
   async createConversation(userId: string, dto: CreateConversationDto) {
     const { resolvedContext } = await this.contextSanitizer.buildSanitizedContext(dto.context);
-    const title =
-      dto.title ||
-      (resolvedContext.title
-        ? `${resolvedContext.pageType.toUpperCase()} : ${resolvedContext.title}`
-        : 'Discussion générale');
+    return this.conversationService.createConversation(userId, dto, resolvedContext);
+  }
 
-    return this.prisma.chatConversation.create({
-      data: {
-        userId,
-        title,
-        context: JSON.parse(JSON.stringify(resolvedContext)),
-      },
-    });
+  /**
+   * Met à jour une conversation (renommage ou archivage).
+   */
+  async updateConversation(
+    conversationId: string,
+    userId: string,
+    dto: UpdateConversationDto
+  ) {
+    return this.conversationService.updateConversation(conversationId, userId, dto);
   }
 
   /**
    * Récupère une conversation spécifique avec contrôle d'appartenance strict.
    */
   async getConversation(conversationId: string, userId: string) {
-    const conversation = await this.prisma.chatConversation.findUnique({
-      where: { id: conversationId },
-    });
-
-    if (!conversation) {
-      throw new NotFoundException(`Conversation ${conversationId} introuvable.`);
-    }
-
-    if (conversation.userId !== userId) {
-      throw new ForbiddenException("Vous n'êtes pas autorisé à consulter cette conversation.");
-    }
-
-    return conversation;
+    return this.conversationService.getConversation(conversationId, userId);
   }
 
   /**
    * Récupère les messages d'une conversation (les 20 derniers).
    */
   async getMessages(conversationId: string, userId: string) {
-    await this.getConversation(conversationId, userId);
-
-    return this.prisma.chatMessage.findMany({
-      where: { conversationId },
-      orderBy: { createdAt: 'asc' },
-      take: 20,
-    });
+    return this.conversationService.getMessages(conversationId, userId);
   }
 
   /**
    * Envoie un message dans la conversation, vérifie la tentative de contournement,
-   * applique les préférences étudiant et filtre la réponse.
+   * applique les préférences étudiant, auto-renomme si nécessaire et filtre la réponse.
    */
   async sendMessage(conversationId: string, userId: string, dto: SendMessageDto) {
     const conversation = await this.getConversation(conversationId, userId);
@@ -229,6 +200,11 @@ export class ChatService {
       contextMeta,
       userPref.freeMode
     );
+
+    // Compter les messages existants pour le renommage automatique
+    const existingMessagesCount = await this.prisma.chatMessage.count({
+      where: { conversationId: conversation.id },
+    });
 
     // 4. Enregistrer le message de l'utilisateur
     const userMsg = await this.prisma.chatMessage.create({
@@ -250,7 +226,6 @@ export class ChatService {
     let usedModel = userPref.preferredModel || process.env.AI_MODEL || 'llama3.1:8b';
 
     if (circumventionCheck.isCircumvention) {
-      // Trace de contournement dans l'audit
       await this.auditService.logEvent({
         actorId: userId,
         action: 'AI_CIRCUMVENTION_ATTEMPT',
@@ -309,13 +284,19 @@ export class ChatService {
       },
     });
 
-    // 10. Mettre à jour l'horodatage et le contexte résolu de la conversation
+    // 10. Mettre à jour l'horodatage, le contexte résolu et potentiellement le titre auto
+    const convUpdateData: Prisma.ChatConversationUpdateInput = {
+      updatedAt: new Date(),
+      context: JSON.parse(JSON.stringify(sanitized.resolvedContext)) as Prisma.InputJsonValue,
+    };
+
+    if (!conversation.isCustomTitle && existingMessagesCount === 0) {
+      convUpdateData.title = generateAutoConversationTitle(dto.content);
+    }
+
     await this.prisma.chatConversation.update({
       where: { id: conversation.id },
-      data: {
-        updatedAt: new Date(),
-        context: JSON.parse(JSON.stringify(sanitized.resolvedContext)),
-      },
+      data: convUpdateData,
     });
 
     // 11. Journalisation dans l'audit (§28 / RM-12)
@@ -347,10 +328,6 @@ export class ChatService {
    * Supprime une conversation.
    */
   async deleteConversation(conversationId: string, userId: string) {
-    const conversation = await this.getConversation(conversationId, userId);
-    await this.prisma.chatConversation.delete({
-      where: { id: conversation.id },
-    });
-    return { success: true };
+    return this.conversationService.deleteConversation(conversationId, userId);
   }
 }

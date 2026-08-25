@@ -2,6 +2,7 @@ import { describe, it, expect, beforeAll, afterAll, vi } from 'vitest';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { AuditService } from '../../audit/audit.service';
 import { ChatService } from '../services/chat.service';
+import { ChatConversationService } from '../services/chat-conversation.service';
 import { AiController } from '../ai.controller';
 import { AiContextSanitizerService } from '../services/ai-context-sanitizer.service';
 import { AiSolutionFilterService } from '../services/ai-solution-filter.service';
@@ -12,13 +13,14 @@ import type { AiProvider } from '../interfaces/ai-provider.interface';
 import type { AuthenticatedUser } from '../../../common/guards/auth.guard';
 
 describe.skipIf(!process.env.DATABASE_URL)(
-  'Chat / AI Module — Tests d’Intégration & Isolation (§22.6 / §28 / RM-11 / RM-12)',
+  'Chat / AI Module — Tests d’Intégration & Isolation (§22.6 / §28 / RM-11 / RM-12 / Lot C3)',
   () => {
     let prisma: PrismaService;
     let auditService: AuditService;
     let contextSanitizer: AiContextSanitizerService;
     let solutionFilter: AiSolutionFilterService;
     let rateLimiter: AiRateLimiterService;
+    let conversationService: ChatConversationService;
     let chatService: ChatService;
     let controller: AiController;
 
@@ -61,6 +63,7 @@ describe.skipIf(!process.env.DATABASE_URL)(
       contextSanitizer = new AiContextSanitizerService(prisma);
       solutionFilter = new AiSolutionFilterService();
       rateLimiter = new AiRateLimiterService();
+      conversationService = new ChatConversationService(prisma);
 
       chatService = new ChatService(
         prisma,
@@ -68,7 +71,8 @@ describe.skipIf(!process.env.DATABASE_URL)(
         mockAiProvider,
         contextSanitizer,
         solutionFilter,
-        rateLimiter
+        rateLimiter,
+        conversationService
       );
 
       controller = new AiController(chatService);
@@ -137,7 +141,7 @@ describe.skipIf(!process.env.DATABASE_URL)(
       expect(status.privacyNotice).toBeDefined();
     });
 
-    it('2. POST /chat/conversations : Lucas crée une discussion', async () => {
+    it('2. POST /chat/conversations : Lucas crée une discussion avec contexte', async () => {
       const conv = await controller.createConversation(
         {
           title: 'Questions Réseaux',
@@ -149,6 +153,8 @@ describe.skipIf(!process.env.DATABASE_URL)(
       expect(conv.id).toBeDefined();
       expect(conv.userId).toBe(lucasUser.id);
       expect(conv.title).toBe('Questions Réseaux');
+      expect(conv.isCustomTitle).toBe(true);
+      expect(conv.archivedAt).toBeNull();
     });
 
     it('3. POST /chat/conversations/:id/messages : échange pédagogique avec l’assistant', async () => {
@@ -178,7 +184,76 @@ describe.skipIf(!process.env.DATABASE_URL)(
       expect(audit).toBeDefined();
     });
 
-    it('4. SÉCURITÉ PÉDAGOGIQUE (RM-11) : tentative d’obtenir la solution filtrée par le garde-fou', async () => {
+    it('4. GESTION CONVERSATIONS (Lot C3) : Renommage manuel et archivage/désarchivage via PATCH', async () => {
+      const conv = await controller.createConversation({}, lucasAuth);
+      expect(conv.isCustomTitle).toBe(false);
+
+      // Renommer
+      const renamed = await controller.updateConversation(
+        conv.id,
+        { title: 'Nouveau titre manuel' },
+        lucasAuth
+      );
+      expect(renamed.title).toBe('Nouveau titre manuel');
+      expect(renamed.isCustomTitle).toBe(true);
+
+      // Archiver
+      const archived = await controller.updateConversation(
+        conv.id,
+        { isArchived: true },
+        lucasAuth
+      );
+      expect(archived.archivedAt).not.toBeNull();
+
+      // Désarchiver
+      const unarchived = await controller.updateConversation(
+        conv.id,
+        { isArchived: false },
+        lucasAuth
+      );
+      expect(unarchived.archivedAt).toBeNull();
+    });
+
+    it('5. GESTION CONVERSATIONS (Lot C3) : Filtrage des conversations actives et archivées', async () => {
+      const convActive = await controller.createConversation({ title: 'Discussion Active' }, lucasAuth);
+      const convArchived = await controller.createConversation({ title: 'Discussion Archivée' }, lucasAuth);
+      await controller.updateConversation(convArchived.id, { isArchived: true }, lucasAuth);
+
+      // Liste active
+      const activeList = await controller.listConversations({ status: 'active' }, lucasAuth);
+      const activeIds = activeList.map((c) => c.id);
+      expect(activeIds).toContain(convActive.id);
+      expect(activeIds).not.toContain(convArchived.id);
+
+      // Liste archivée
+      const archivedList = await controller.listConversations({ status: 'archived' }, lucasAuth);
+      const archivedIds = archivedList.map((c) => c.id);
+      expect(archivedIds).toContain(convArchived.id);
+      expect(archivedIds).not.toContain(convActive.id);
+
+      // Liste globale (all)
+      const allList = await controller.listConversations({ status: 'all' }, lucasAuth);
+      const allIds = allList.map((c) => c.id);
+      expect(allIds).toContain(convActive.id);
+      expect(allIds).toContain(convArchived.id);
+    });
+
+    it('6. RENOMMAGE AUTOMATIQUE (Lot C3) : Génération du titre lors du premier message si non personnalisé', async () => {
+      const conv = await controller.createConversation({}, lucasAuth);
+      expect(conv.isCustomTitle).toBe(false);
+
+      await controller.sendMessage(
+        conv.id,
+        { content: 'Quels sont les rôles des protocoles TCP et UDP dans le modèle OSI ?' },
+        lucasAuth
+      );
+
+      const updated = await controller.getConversation(conv.id, lucasAuth);
+      expect(updated.title).toContain('Quels sont les rôles des protocoles TCP');
+      expect(updated.isCustomTitle).toBe(false);
+    });
+
+    it('7. SÉCURITÉ PÉDAGOGIQUE (RM-11) : tentative d’obtenir la solution filtrée par le garde-fou', async () => {
       const conv = await controller.createConversation(
         { title: 'Tentative Solution' },
         lucasAuth
@@ -194,7 +269,7 @@ describe.skipIf(!process.env.DATABASE_URL)(
       expect(result.assistantMessage.content).not.toContain('Voici la solution complète pour ton TP');
     });
 
-    it('5. PRÉFÉRENCES & MODÈLES : gestion des modèles et traçage du mode libre dans l’audit', async () => {
+    it('8. PRÉFÉRENCES & MODÈLES : gestion des modèles et traçage du mode libre dans l’audit', async () => {
       const models = await controller.getModels();
       expect(models.models).toBeDefined();
 
@@ -219,7 +294,7 @@ describe.skipIf(!process.env.DATABASE_URL)(
       expect(auditToggle).toBeDefined();
     });
 
-    it('6. ISOLATION STRICTE : Emma ne peut pas accéder aux conversations ou messages de Lucas (403/404)', async () => {
+    it('9. ISOLATION STRICTE (Lot C3) : Emma ne peut pas accéder, modifier ou supprimer les conversations de Lucas', async () => {
       const lucasConv = await controller.createConversation(
         { title: 'Secret Lucas' },
         lucasAuth
@@ -229,6 +304,16 @@ describe.skipIf(!process.env.DATABASE_URL)(
       await expect(controller.getConversation(lucasConv.id, emmaAuth)).rejects.toThrow(
         ForbiddenException
       );
+
+      // Emma tente de modifier / renommer la conversation de Lucas
+      await expect(
+        controller.updateConversation(lucasConv.id, { title: 'Piratage Titre' }, emmaAuth)
+      ).rejects.toThrow(ForbiddenException);
+
+      // Emma tente d'archiver la conversation de Lucas
+      await expect(
+        controller.updateConversation(lucasConv.id, { isArchived: true }, emmaAuth)
+      ).rejects.toThrow(ForbiddenException);
 
       // Emma tente de lire les messages de Lucas
       await expect(controller.getMessages(lucasConv.id, emmaAuth)).rejects.toThrow(
@@ -250,9 +335,13 @@ describe.skipIf(!process.env.DATABASE_URL)(
       ).rejects.toThrow(ForbiddenException);
     });
 
-    it('7. Lève NotFoundException pour une conversation inexistante', async () => {
+    it('10. Lève NotFoundException pour une conversation inexistante', async () => {
       await expect(
         controller.getConversation('00000000-0000-0000-0000-000000000000', lucasAuth)
+      ).rejects.toThrow(NotFoundException);
+
+      await expect(
+        controller.updateConversation('00000000-0000-0000-0000-000000000000', { title: 'Test' }, lucasAuth)
       ).rejects.toThrow(NotFoundException);
     });
   }
