@@ -627,8 +627,62 @@ Implémentation complète du suivi de progression de l'étudiant et du tableau d
 - **Constat** : Sous Windows, `pnpm` est installé sous forme de script externe (`pnpm.cmd` / `pnpm.ps1`). L'appel direct via `System.Diagnostics.Process` échouait silencieusement dans `Get-SafeCommandOutput`, produisant un affichage vide `[v] pnpm detecte : v`.
 - **Correction** :
   - Encapsulation des commandes via `cmd.exe /c` dans `Get-SafeCommandOutput` pour résoudre correctement les scripts `.cmd`/`.bat`/`.ps1` et la variable `PATHEXT`.
-  - Parsing robuste de la version avec suppression du préfixe éventuel `v` et contrôle de version majeure $\ge 9$ (avec affichage conforme `v11.23.0` et proposition de mise à jour si la version est obsolète).
+  - Parsing robuste de la version avec suppression du préfixe éventuel `v` et contrôle de version majeure >= 9 (avec affichage conforme `v11.23.0` et proposition de mise à jour si la version est obsolète).
   - Aligné sur `scripts/install.sh` avec conformité ShellCheck 100 %.
+
+---
+
+## 2026-08-25 — Lot B12 : Refonte du Déploiement en Wizard Interactif 3 Phases
+
+**Branche** : `feat/b12-wizard-installation`  
+**Objectif** : Transformer l'installation d'OpenSIO en un parcours interactif complet structuré en trois phases (Analyse -> Configuration -> Exécution), avec support des 4 scénarios d'inférence IA, découpage modulaire sous `scripts/lib/` (conformité D-13), script dédié pour nœud Ollama distant, mode non interactif et mode simulation (`--dry-run`).
+
+### Réalisations techniques
+
+1. **Refonte modulaire de `scripts/install.sh`** :
+   - Découpage par responsabilité sous `scripts/lib/` (chaque fichier respectant strictement la règle D-13 <= 400 lignes) :
+     - `common.sh` : utilitaires de journalisation, prompts interactifs, comparateur sémantique de versions, générateur de secrets cryptographiques, exécuteur sécurisé compatible `--dry-run`.
+     - `detect.sh` : Phase 1 — détection du système d'exploitation (Debian 12/13, Ubuntu 22.04+), vérification des prérequis avec le pattern détection -> affichage -> comparaison -> avertissement/remédiation (Docker >= 24.0, Compose >= 2.20, Git >= 2.30, Node >= 20, pnpm >= 9), analyse des ressources matérielles (RAM, vCPU, espace disque), sondage de disponibilité des ports réseau (5432, 6379, 3000, 4000, 80, 443) et détection d'installation existante.
+     - `ollama.sh` : détection d'Ollama local sur l'hôte, sondage de nœuds distants via `GET /api/tags` avec timeout strict, vérification de présence du modèle (`llama3.1:8b`) et déclencheur de téléchargement distant via `POST /api/pull`.
+     - `config.sh` : Phase 2 — questions interactives avec valeurs par défaut entre crochets, sélection du mode (dev/prod), 4 choix d'intégration Ollama (hôte, conteneur profil `ai`, distant, sans IA), domaine et certificat TLS (interne ou public ACME), ports personnalisables, gestion des mots de passe, politique de seed (complet, minimal, aucun), évaluation des ressources par scénario et récapitulatif tabulaire avant confirmation.
+     - `runner.sh` : Phase 3 — exécution séquentielle sans interruption : clone/pull, génération du `.env`, démarrage des conteneurs Compose, attente des healthchecks (db, api, web), exécution des migrations Prisma, amorçage du seed choisi et synchronisation du référentiel pédagogique (D-02).
+   - Point d'entrée `scripts/install.sh` optimisé avec téléchargement éphémère automatique des modules de `lib/` en cas d'exécution distante via pipe (`curl ... | bash`).
+   - Support complet du mode non interactif (`OPENSIO_NONINTERACTIVE=1`) et du mode simulation (`--dry-run`).
+
+2. **Nouveau script de préparation de nœud Ollama dédié (`scripts/setup-ollama-node.sh`)** :
+   - Installation automatique d'Ollama sur machine Linux distante.
+   - Configuration de l'override systemd `Environment="OLLAMA_HOST=0.0.0.0"`.
+   - Téléchargement du modèle de langage demandé (`llama3.1:8b` par défaut).
+   - Configuration du pare-feu UFW pour restreindre l'accès au port 11434 uniquement au sous-réseau LAN spécifié.
+   - Avertissement de sécurité bien visible rappelant l'absence d'authentification native dans Ollama.
+
+3. **Durcissement Docker Compose Prod (`docker-compose.prod.yml`)** :
+   - Paramétrage des ports du service `caddy` via variables d'environnement (`${HTTP_PORT:-80}:80` et `${HTTPS_PORT:-443}:443`).
+   - Ajout de `extra_hosts: ["host.docker.internal:host-gateway"]` sur le service `api` pour la communication avec Ollama hôte sous Linux.
+   - Service `ollama` configuré avec profil optionnel `ai`, volume `ollama_models`, healthcheck `ollama list || exit 1` et redémarrage automatique `restart: unless-stopped`.
+   - Caddyfile mis à jour pour supporter la directive TLS personnalisable (`{$TLS_DIRECTIVE:tls internal}`).
+
+4. **Parité Windows (`scripts/install.ps1`)** :
+   - Contrôle des prérequis avec le pattern établi (Docker, Git, Node, pnpm).
+   - Choix de l'assistant IA adapté à Windows (Ollama local existant, nœud distant, sans IA).
+   - Maintien du focus développement local (BDD Docker + applications Node.js).
+
+5. **Prise en compte du mode Seed paramétrable (`apps/api/prisma/seed.ts`)** :
+   - Support de la variable `SEED_MODE` (`full` vs `minimal`) permettant de n'initialiser que le compte administrateur en mode minimal.
+
+6. **Restructuration de la documentation de déploiement (`docs/deployment.md`)** :
+   - Matrice de décision comparative en tête de document (VM/LXC x 4 scénarios d'inférence).
+   - Guide pas à pas par scénario avec dimensionnement matériel recommandé.
+   - Documentation du mode non interactif (tableau des variables d'environnement) et de l'option `--dry-run`.
+   - Section sécurité détaillée (isolation réseau d'Ollama, certificats TLS Caddy, gestion des secrets).
+
+### Tests et Conformité
+- Contrôle strict des variables IA : vérification de la cohérence de `AI_BASE_URL` et `AI_ENABLED` entre le générateur `.env`, `apps/api/src/config/env.validation.ts` et les providers IA de l'API.
+- Formatage ASCII pur : suppression de tous les émojis et caractères unicode dans les scripts (`[v]`, `[i]`, `[!]`, `[x]`, `[DRY-RUN]`, `-->`).
+- `bash -n` sur tous les scripts Bash : 100 % valide.
+- `shellcheck` sur tous les scripts Bash : 100 % propre (0 erreur, 0 avertissement).
+- Règle D-13 / RM-13 : 100 % des fichiers <= 400 lignes.
+- Validation des 8 scénarios d'exécution du wizard en mode `--dry-run`.
 
 
 
