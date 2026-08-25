@@ -3,6 +3,7 @@ import {
   Inject,
   Get,
   Post,
+  Put,
   Delete,
   Param,
   Body,
@@ -16,6 +17,7 @@ import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { ChatService } from './services/chat.service';
 import { createConversationSchema, type CreateConversationDto } from './dto/create-conversation.dto';
 import { sendMessageSchema, type SendMessageDto } from './dto/send-message.dto';
+import { updateAiPreferencesSchema, type UpdateAiPreferencesDto } from './dto/update-preferences.dto';
 
 @Controller('chat')
 @UseGuards(AuthGuard)
@@ -29,6 +31,40 @@ export class AiController {
   @Get('status')
   async getStatus(@CurrentUser() user: AuthenticatedUser) {
     return this.chatService.getStatus(user.id);
+  }
+
+  /**
+   * GET /api/v1/chat/models
+   * Liste les modèles installés / disponibles sur le fournisseur IA.
+   */
+  @Get('models')
+  async getModels() {
+    return this.chatService.getAvailableModels();
+  }
+
+  /**
+   * GET /api/v1/chat/preferences
+   * Récupère les préférences IA de l'étudiant (modèle préféré, mode libre).
+   */
+  @Get('preferences')
+  async getPreferences(@CurrentUser() user: AuthenticatedUser) {
+    return this.chatService.getPreferences(user.id);
+  }
+
+  /**
+   * PUT /api/v1/chat/preferences
+   * Met à jour les préférences IA de l'étudiant.
+   */
+  @Put('preferences')
+  async updatePreferences(
+    @Body() body: UpdateAiPreferencesDto,
+    @CurrentUser() user: AuthenticatedUser
+  ) {
+    const parseResult = updateAiPreferencesSchema.safeParse(body);
+    if (!parseResult.success) {
+      throw new BadRequestException('Format de préférences IA invalide.');
+    }
+    return this.chatService.updatePreferences(user.id, parseResult.data);
   }
 
   /**

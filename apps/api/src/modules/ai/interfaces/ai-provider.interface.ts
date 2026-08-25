@@ -11,9 +11,15 @@ export interface ChatMessage {
 export interface ChatOptions {
   maxTokens?: number;
   temperature?: number;
+  model?: string;
+  timeoutMs?: number;
   context?: {
+    pageType?: string;
+    pageSlug?: string;
     labSlug?: string;
     lessonSlug?: string;
+    quizSlug?: string;
+    moduleSlug?: string;
   };
 }
 
@@ -30,4 +36,5 @@ export interface AiProvider {
   readonly name: string;
   chat(messages: ChatMessage[], options?: ChatOptions): Promise<ChatResult>;
   isAvailable(): Promise<boolean>;
+  listModels?(): Promise<string[]>;
 }

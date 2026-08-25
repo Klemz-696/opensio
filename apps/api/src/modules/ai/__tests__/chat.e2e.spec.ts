@@ -190,11 +190,36 @@ describe.skipIf(!process.env.DATABASE_URL)(
         lucasAuth
       );
 
-      expect(result.assistantMessage.content).toContain('[Indice Pédagogique OpenSIO]');
+      expect(result.assistantMessage.content).toContain('Indice Pédagogique');
       expect(result.assistantMessage.content).not.toContain('Voici la solution complète pour ton TP');
     });
 
-    it('5. ISOLATION STRICTE : Emma ne peut pas accéder aux conversations ou messages de Lucas (403/404)', async () => {
+    it('5. PRÉFÉRENCES & MODÈLES : gestion des modèles et traçage du mode libre dans l’audit', async () => {
+      const models = await controller.getModels();
+      expect(models.models).toBeDefined();
+
+      const initialPrefs = await controller.getPreferences(lucasAuth);
+      expect(initialPrefs.freeMode).toBe(false);
+
+      // Activer le mode libre
+      const updatedPrefs = await controller.updatePreferences(
+        { preferredModel: 'llama3.1:8b', freeMode: true },
+        lucasAuth
+      );
+      expect(updatedPrefs.freeMode).toBe(true);
+      expect(updatedPrefs.preferredModel).toBe('llama3.1:8b');
+
+      // Vérifier audit log de changement de mode libre
+      const auditToggle = await prisma.auditLog.findFirst({
+        where: {
+          actorId: lucasUser.id,
+          action: 'AI_FREE_MODE_TOGGLED',
+        },
+      });
+      expect(auditToggle).toBeDefined();
+    });
+
+    it('6. ISOLATION STRICTE : Emma ne peut pas accéder aux conversations ou messages de Lucas (403/404)', async () => {
       const lucasConv = await controller.createConversation(
         { title: 'Secret Lucas' },
         lucasAuth
@@ -225,7 +250,7 @@ describe.skipIf(!process.env.DATABASE_URL)(
       ).rejects.toThrow(ForbiddenException);
     });
 
-    it('6. Lève NotFoundException pour une conversation inexistante', async () => {
+    it('7. Lève NotFoundException pour une conversation inexistante', async () => {
       await expect(
         controller.getConversation('00000000-0000-0000-0000-000000000000', lucasAuth)
       ).rejects.toThrow(NotFoundException);

@@ -8,11 +8,21 @@ export interface ChatStatus {
   privacyNotice: string;
 }
 
+export interface PageContext {
+  pageType?: string;
+  pageSlug?: string;
+  labSlug?: string;
+  lessonSlug?: string;
+  quizSlug?: string;
+  moduleSlug?: string;
+  isEvaluated?: boolean;
+}
+
 export interface ChatConversationItem {
   id: string;
   userId: string;
   title: string;
-  context?: { labSlug?: string; lessonSlug?: string };
+  context?: PageContext;
   createdAt: string;
   updatedAt: string;
   _count?: { messages: number };
@@ -33,6 +43,16 @@ export interface SendMessageResponse {
   remainingQuota: number;
 }
 
+export interface AiPreferences {
+  preferredModel: string | null;
+  freeMode: boolean;
+}
+
+export interface AiModelsResponse {
+  models: string[];
+  defaultModel: string;
+}
+
 const API_BASE = '/api/v1';
 
 export async function fetchChatStatus(token: string): Promise<ChatStatus> {
@@ -46,6 +66,50 @@ export async function fetchChatStatus(token: string): Promise<ChatStatus> {
   }
 
   return res.json() as Promise<ChatStatus>;
+}
+
+export async function fetchAiModels(token: string): Promise<AiModelsResponse> {
+  const res = await fetch(`${API_BASE}/chat/models`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
+  if (!res.ok) {
+    return { models: ['llama3.1:8b'], defaultModel: 'llama3.1:8b' };
+  }
+
+  return res.json() as Promise<AiModelsResponse>;
+}
+
+export async function fetchAiPreferences(token: string): Promise<AiPreferences> {
+  const res = await fetch(`${API_BASE}/chat/preferences`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
+  if (!res.ok) {
+    return { preferredModel: null, freeMode: false };
+  }
+
+  return res.json() as Promise<AiPreferences>;
+}
+
+export async function updateAiPreferences(
+  prefs: Partial<AiPreferences>,
+  token: string
+): Promise<AiPreferences> {
+  const res = await fetch(`${API_BASE}/chat/preferences`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(prefs),
+  });
+
+  if (!res.ok) {
+    throw new Error('Impossible de mettre à jour les préférences IA.');
+  }
+
+  return res.json() as Promise<AiPreferences>;
 }
 
 export async function fetchConversations(token: string): Promise<ChatConversationItem[]> {
@@ -62,7 +126,7 @@ export async function fetchConversations(token: string): Promise<ChatConversatio
 
 export async function createConversation(
   token: string,
-  params?: { title?: string; context?: { labSlug?: string; lessonSlug?: string } }
+  params?: { title?: string; context?: PageContext }
 ): Promise<ChatConversationItem> {
   const res = await fetch(`${API_BASE}/chat/conversations`, {
     method: 'POST',
@@ -99,7 +163,7 @@ export async function sendChatMessage(
   conversationId: string,
   content: string,
   token: string,
-  context?: { labSlug?: string; lessonSlug?: string }
+  context?: PageContext
 ): Promise<SendMessageResponse> {
   const res = await fetch(`${API_BASE}/chat/conversations/${conversationId}/messages`, {
     method: 'POST',
@@ -112,7 +176,7 @@ export async function sendChatMessage(
 
   if (!res.ok) {
     const err = (await res.json().catch(() => ({}))) as { message?: string };
-    throw new Error(err.message || 'Échec de l\'envoi du message.');
+    throw new Error(err.message || "Échec de l'envoi du message.");
   }
 
   return res.json() as Promise<SendMessageResponse>;
