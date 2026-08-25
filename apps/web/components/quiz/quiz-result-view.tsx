@@ -8,8 +8,9 @@ import {
   Award,
   BookOpen,
   Sparkles,
+  Bot,
 } from 'lucide-react';
-import type { QuizAttemptResult } from '../../lib/api/quiz-api';
+import type { QuizAttemptResult, QuizQuestionCorrection } from '../../lib/api/quiz-api';
 import { MarkdownRenderer } from '../lessons/markdown-renderer';
 
 interface QuizResultViewProps {
@@ -24,6 +25,32 @@ export function QuizResultView({
   onRetry,
 }: QuizResultViewProps) {
   const isPassed = result.passed;
+
+  const handleAskMentor = (question: QuizQuestionCorrection, index: number) => {
+    const userAnswersStr =
+      question.userAnswers && question.userAnswers.length > 0
+        ? question.userAnswers.join(', ')
+        : 'Aucune réponse';
+
+    const prompt = `J'ai fait une erreur à la question ${index + 1} du quiz « ${result.quizSlug} ».\nÉnoncé : « ${question.prompt} »\nMa réponse était : « ${userAnswersStr} ».\nPeux-tu m'expliquer pourquoi cette réponse est incorrecte et me guider pour mieux comprendre la notion ?`;
+
+    const event = new CustomEvent('opensio:open-mentor', {
+      detail: {
+        initialMessage: prompt,
+        title: `Coaching : ${result.quizSlug} (Q${index + 1})`,
+        context: {
+          pageType: 'quiz-coaching',
+          pageSlug: result.quizSlug,
+          quizSlug: result.quizSlug,
+          moduleSlug,
+          questionPrompt: question.prompt,
+          userAnswer: userAnswersStr,
+          isEvaluated: false,
+        },
+      },
+    });
+    window.dispatchEvent(event);
+  };
 
   return (
     <div className="space-y-8 animate-in fade-in duration-300">
@@ -175,6 +202,18 @@ export function QuizResultView({
                     </>
                   )}
                 </span>
+
+                {!question.isCorrect && (
+                  <button
+                    type="button"
+                    onClick={() => handleAskMentor(question, index)}
+                    aria-label={`Demander une explication au mentor pour la question ${index + 1}`}
+                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 hover:text-indigo-200 border border-indigo-500/40 text-xs font-medium transition-all cursor-pointer shadow-sm"
+                  >
+                    <Bot className="w-3.5 h-3.5 text-indigo-400" />
+                    <span>Expliquer avec le mentor</span>
+                  </button>
+                )}
               </div>
             </div>
 
@@ -183,7 +222,7 @@ export function QuizResultView({
               <MarkdownRenderer content={question.prompt} />
             </div>
 
-            {/* Explication pédagogique */}
+            {/* Explication pédagogique statique existante */}
             {question.explanation && (
               <div className="mt-4 p-4 sm:p-5 rounded-xl bg-slate-900/90 border border-slate-800 text-xs sm:text-sm text-slate-300">
                 <div className="flex items-center gap-2 text-amber-400 font-semibold text-xs mb-2">

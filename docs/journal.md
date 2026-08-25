@@ -735,3 +735,46 @@ Création complète du nouveau module `windows-server-ad` comprenant 6 leçons, 
 - `node scripts/check-file-size.mjs` : 100 % conforme D-13 (0 violation > 400 lignes).
 - `pnpm test` : 100 % vert (173 tests passants sur l'ensemble du monorepo).
 - Aucun emoji présent dans l'ensemble des fichiers de contenu et de code.
+
+---
+
+## [Lot C3] — Enrichissement du Mentor IA & Coaching Interactif
+
+**Date** : 25/08/2026  
+**Branches** : `feat/c3-gestion-conversations` (PR 1), `feat/c3-mentor-contextuel` (PR 2)  
+**Objectif** : Gestion avancée des conversations du Mentor IA (CRUD, auto-titrage, renommage inline, archivage/désarchivage, isolation stricte), mentor contextuel avec injection fine titre/objectifs (sans surcharge de contexte LLM), et coaching interactif de quiz sur les erreurs.
+
+### 1. Gestion des Conversations (Partie 1)
+- **Base de Données & Migration Prisma** :
+  - Colonnes `isCustomTitle` (Boolean, default false) et `archivedAt` (DateTime nullable) avec index composite `@@index([userId, archivedAt])` dans `apps/api/prisma/schema/chat.prisma`.
+  - Migration SQL `20260825210000_c3_chat_conversations_archive`.
+- **API NestJS pure sans dépendance LLM** :
+  - `ChatConversationService` : CRUD complet avec contrôle d'appartenance strict (403 Forbidden / 404 Not Found).
+  - `PATCH /api/v1/chat/conversations/:id` : Renommage manuel et archivage/désarchivage.
+  - `DELETE /api/v1/chat/conversations/:id` : Suppression définitive avec cascade des messages.
+  - `GET /api/v1/chat/conversations?status=active|archived|all` : Filtrage selon le statut.
+  - Renommage automatique au 1er message via troncature déterministe propre sans appel LLM (`conversation-namer.util.ts`).
+- **Interface Frontend Apprenant** :
+  - Panneau latéral des discussions (`MentorConversationSidebar`, `MentorConversationItem`) avec liste active, section repliable des discussions archivées, renommage inline (Entrée/Échap) et suppression avec confirmation modale.
+  - Accessibilité ARIA complète au clavier et lecteur d'écran.
+
+### 2. Mentor Contextuel & Coaching Quiz (Partie 2)
+- **Mentor Contextuel à Injection Fine** :
+  - `AiContextSanitizerService` : Résolution serveur des entités (`Lesson`, `Module`, `Lab`, `Quiz`).
+  - Injection dans le prompt système du **titre et des objectifs pédagogiques UNIQUEMENT** (jamais le cours complet), garantissant le respect de la fenêtre de contexte de `llama3.1:8b`.
+  - Affichage discret dans le header du mentor du contexte actif (`Leçon : ...`, `Coaching Quiz`, `Lab : ...`).
+  - Dégradation gracieuse et comportement général préservé en l'absence de contexte de page.
+- **Coaching Interactif de Quiz** :
+  - Sur l'écran de résultat de quiz (`QuizResultView`), bouton accessible « Expliquer avec le mentor » sur chaque réponse incorrecte (`!question.isCorrect`).
+  - Émission de l'événement `opensio:open-mentor` initialisant une discussion pré-configurée avec la question, la réponse de l'étudiant et les consignes de coaching bienveillant (explication du piège conceptuel sans donner la réponse brute).
+  - Maintien intégral des explications statiques existantes (Lot 5 / C1).
+- **Refactoring & Conformité D-13** :
+  - Découpage modulaire du frontend (`use-mentor-chat.ts`, `mentor-chat-header.tsx`, `mentor-conversation-sidebar.tsx`, `mentor-conversation-item.tsx`, `mentor-chat-drawer.tsx`).
+  - Tous les fichiers sources $\le$ 400 lignes (0 violation D-13).
+
+### 3. Validations & Qualité
+- `pnpm lint` : 100 % vert (0 erreur, 0 avertissement).
+- `pnpm typecheck` : 100 % vert dans tous les packages.
+- `node scripts/check-file-size.mjs` : 100 % conforme D-13.
+- `pnpm test` : 100 % vert (183 tests automatisés passants).
+

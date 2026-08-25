@@ -8,6 +8,9 @@ export interface ContextResolutionInput {
   lessonSlug?: string;
   quizSlug?: string;
   moduleSlug?: string;
+  questionPrompt?: string;
+  userAnswer?: string;
+  choices?: string[];
 }
 
 export interface ResolvedContextData {
@@ -19,6 +22,11 @@ export interface ResolvedContextData {
   lessonSlug?: string;
   quizSlug?: string;
   moduleSlug?: string;
+  moduleTitle?: string;
+  objectives?: string[];
+  questionPrompt?: string;
+  userAnswer?: string;
+  choices?: string[];
 }
 
 export interface SanitizedAiContext {
@@ -34,7 +42,7 @@ export class AiContextSanitizerService {
 
   /**
    * Résout l'entité côté serveur et construit la consigne système adaptée.
-   * En contexte évalué (lab / quiz), les règles socratiques sont strictes et le mode libre est ignoré.
+   * Injecte le titre et les objectifs pédagogiques uniquement (jamais la leçon entière).
    */
   async buildSanitizedContext(
     input?: ContextResolutionInput,
@@ -45,8 +53,36 @@ export class AiContextSanitizerService {
     let systemPrompt = '';
     let contextHeader = '';
 
-    if (resolved.isEvaluated) {
-      // 1. CONTEXTE ÉVALUÉ (Lab / Quiz) — Socratique Strict (Mode libre verrouillé)
+    if (resolved.pageType === 'quiz-coaching') {
+      // 1. CONTEXTE COACHING DE QUIZ (Analyse bienveillante d'une erreur)
+      systemPrompt = [
+        'Tu es « Mentor », le tuteur pédagogique d\'OpenSIO pour les étudiants de BTS SIO SISR.',
+        'MISSION : Coaching pédagogique suite à une réponse incorrecte sur un quiz.',
+        '',
+        'RÈGLES DE COACHING PÉDAGOGIQUE :',
+        '1. L\'étudiant a commis une erreur lors d\'une évaluation et souhaite comprendre son erreur.',
+        '2. Analyse sa réponse et explique pourquoi elle est incorrecte en identifiant le piège ou la confusion conceptuelle.',
+        '3. Guide l\'étudiant vers le bon raisonnement par des explications méthodologiques SANS lui donner directement la bonne réponse brute.',
+        '4. Reste bienveillant, clair, encourageant et concis.',
+        '5. Réponds en français.',
+      ].join('\n');
+
+      if (resolved.quizSlug) {
+        systemPrompt += `\n\nQuiz : [${resolved.title || resolved.quizSlug}]`;
+      }
+      if (resolved.questionPrompt) {
+        systemPrompt += `\nÉnoncé de la question : « ${resolved.questionPrompt} »`;
+      }
+      if (resolved.userAnswer) {
+        systemPrompt += `\nRéponse choisie par l'étudiant (incorrecte) : « ${resolved.userAnswer} »`;
+      }
+      if (resolved.choices && resolved.choices.length > 0) {
+        systemPrompt += `\nChoix proposés : ${resolved.choices.join(' | ')}`;
+      }
+
+      contextHeader = `Coaching Quiz : ${resolved.title || resolved.quizSlug || 'Question'}`;
+    } else if (resolved.isEvaluated) {
+      // 2. CONTEXTE ÉVALUÉ EN COURS (Lab / Quiz noté) — Socratique Strict (Mode libre verrouillé)
       systemPrompt = [
         'Tu es « Mentor », le tuteur pédagogique d\'OpenSIO pour les étudiants de BTS SIO SISR.',
         'ATTENTION : L\'étudiant est actuellement dans un atelier ou une évaluation notée.',
@@ -67,7 +103,7 @@ export class AiContextSanitizerService {
         contextHeader = `Quiz : ${resolved.title || resolved.quizSlug}`;
       }
     } else {
-      // 2. CONTEXTE NON-ÉVALUÉ (Cours / Dashboard / Général) — Mentor Global
+      // 3. CONTEXTE NON-ÉVALUÉ (Cours / Module / Dashboard / Général) — Mentor Global
       if (freeMode) {
         systemPrompt = [
           'Tu es « Mentor », le tuteur pédagogique d\'OpenSIO pour les étudiants de BTS SIO SISR.',
@@ -86,7 +122,11 @@ export class AiContextSanitizerService {
       }
 
       if (resolved.lessonSlug) {
-        systemPrompt += `\n\nCours de référence : [Leçon: ${resolved.title || resolved.lessonSlug}].`;
+        const modInfo = resolved.moduleTitle ? ` (module ${resolved.moduleTitle})` : '';
+        systemPrompt += `\n\nL'étudiant consulte actuellement la leçon « ${resolved.title || resolved.lessonSlug} »${modInfo}.`;
+        if (resolved.objectives && resolved.objectives.length > 0) {
+          systemPrompt += `\nObjectifs pédagogiques de la leçon :\n- ${resolved.objectives.join('\n- ')}`;
+        }
         contextHeader = `Leçon : ${resolved.title || resolved.lessonSlug}`;
       } else if (resolved.moduleSlug) {
         systemPrompt += `\n\nModule de référence : [Module: ${resolved.title || resolved.moduleSlug}].`;
@@ -110,8 +150,43 @@ export class AiContextSanitizerService {
       return { pageType: 'general', isEvaluated: false };
     }
 
-    const pageType = input.pageType || (input.labSlug ? 'lab' : input.quizSlug ? 'quiz' : input.lessonSlug ? 'lesson' : input.moduleSlug ? 'module' : 'general');
+    const pageType =
+      input.pageType ||
+      (input.labSlug
+        ? 'lab'
+        : input.quizSlug
+          ? 'quiz'
+          : input.lessonSlug
+            ? 'lesson'
+            : input.moduleSlug
+              ? 'module'
+              : 'general');
     const slug = input.pageSlug || input.labSlug || input.quizSlug || input.lessonSlug || input.moduleSlug;
+
+    // Coaching suite à une erreur sur une question de quiz
+    if (pageType === 'quiz-coaching' || (pageType === 'quiz' && input.questionPrompt)) {
+      const quizSlug = input.quizSlug || slug;
+      let quizTitle = quizSlug;
+      if (quizSlug) {
+        const quiz = await this.prisma.quiz.findUnique({
+          where: { slug: quizSlug },
+          select: { slug: true, title: true },
+        });
+        if (quiz) {
+          quizTitle = quiz.title;
+        }
+      }
+      return {
+        pageType: 'quiz-coaching',
+        pageSlug: quizSlug,
+        quizSlug,
+        title: quizTitle,
+        isEvaluated: false,
+        questionPrompt: input.questionPrompt,
+        userAnswer: input.userAnswer,
+        choices: input.choices,
+      };
+    }
 
     if (pageType === 'lab' || input.labSlug) {
       const labSlug = input.labSlug || slug;
@@ -158,14 +233,26 @@ export class AiContextSanitizerService {
       if (lessonSlug) {
         const lesson = await this.prisma.lesson.findUnique({
           where: { slug: lessonSlug },
-          select: { slug: true, title: true },
+          select: {
+            slug: true,
+            title: true,
+            objectives: true,
+            module: { select: { slug: true, title: true } },
+          },
         });
         if (lesson) {
+          let objectives: string[] = [];
+          if (Array.isArray(lesson.objectives)) {
+            objectives = lesson.objectives.filter((o): o is string => typeof o === 'string');
+          }
           return {
             pageType: 'lesson',
             pageSlug: lesson.slug,
             lessonSlug: lesson.slug,
             title: lesson.title,
+            moduleSlug: lesson.module?.slug,
+            moduleTitle: lesson.module?.title,
+            objectives,
             isEvaluated: false,
           };
         }

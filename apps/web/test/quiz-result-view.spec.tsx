@@ -4,7 +4,7 @@ import React from 'react';
 import { QuizResultView } from '../components/quiz/quiz-result-view';
 import type { QuizAttemptResult } from '../lib/api/quiz-api';
 
-describe('QuizResultView', () => {
+describe('QuizResultView (Coaching Quiz Mentor — Lot C3)', () => {
   const mockPassingResult: QuizAttemptResult = {
     id: 'att-1',
     quizId: 'quiz-1',
@@ -56,6 +56,14 @@ describe('QuizResultView', () => {
         isCorrect: false,
         explanation: 'Le pas est de 64.',
       },
+      {
+        questionId: 'q2',
+        prompt: 'Quelles adresses sont privées ?',
+        kind: 'multiple',
+        userAnswers: ['a', 'b'],
+        isCorrect: true,
+        explanation: 'Plages RFC 1918.',
+      },
     ],
   };
 
@@ -73,6 +81,7 @@ describe('QuizResultView', () => {
     expect(screen.getByText(/Acquis confirmés/)).toBeDefined();
     expect(screen.getByText('Le pas est de 64.')).toBeDefined();
     expect(screen.getByText('Plages RFC 1918.')).toBeDefined();
+    expect(screen.queryByText(/Expliquer avec le mentor/i)).toBeNull();
   });
 
   it('affiche le score de 50% et la mention d\'échec pour un score insuffisant', () => {
@@ -88,6 +97,32 @@ describe('QuizResultView', () => {
     expect(screen.getByText(/Score insuffisant/)).toBeDefined();
     expect(screen.getByText(/Tentative non validée/)).toBeDefined();
     expect(screen.getByText(/Incorrect \(0\)/)).toBeDefined();
+  });
+
+  it('affiche le bouton "Expliquer avec le mentor" sur la question fausse et déclenche l\'événement', () => {
+    const dispatchSpy = vi.spyOn(window, 'dispatchEvent');
+
+    render(
+      <QuizResultView
+        result={mockFailingResult}
+        moduleSlug="reseaux-fondamentaux"
+        onRetry={vi.fn()}
+      />,
+    );
+
+    const explainBtn = screen.getByRole('button', {
+      name: /demander une explication au mentor pour la question 1/i,
+    });
+    expect(explainBtn).toBeDefined();
+
+    fireEvent.click(explainBtn);
+
+    expect(dispatchSpy).toHaveBeenCalled();
+    const event = dispatchSpy.mock.calls.find((call) => (call[0] as CustomEvent).type === 'opensio:open-mentor')?.[0] as CustomEvent;
+    expect(event).toBeDefined();
+    expect(event.detail.context.pageType).toBe('quiz-coaching');
+    expect(event.detail.context.quizSlug).toBe('quiz-adressage');
+    expect(event.detail.context.questionPrompt).toBe('Quelle est l\'adresse réseau ?');
   });
 
   it('appelle onRetry au clic sur Recommencer le quiz', () => {
