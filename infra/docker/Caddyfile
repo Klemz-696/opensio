@@ -9,7 +9,7 @@
 }
 
 {$DOMAIN:opensio.home.lan} {
-    tls internal
+    {$TLS_DIRECTIVE:tls internal}
 
     # En-têtes de sécurité applicative (D-10, §30)
     header {
