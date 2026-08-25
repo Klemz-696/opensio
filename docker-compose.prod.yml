@@ -106,6 +106,7 @@ services:
       POSTGRES_DB: opensio
       POSTGRES_USER: opensio
       POSTGRES_PASSWORD: ${DB_PASSWORD}
+      PGDATA: /var/lib/postgresql/data
     volumes:
       - pgdata_prod:/var/lib/postgresql/data
     networks:

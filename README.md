@@ -90,7 +90,7 @@ Elle regroupe l'ensemble du cycle d'apprentissage pratique dans une application 
 | -------------------- | ------------------------------------------------------------------------------------------------- |
 | **Frontend**         | Next.js 15 (App Router, React 19, Turbopack), Tailwind CSS, Shiki, Lucide Icons                   |
 | **Backend**          | NestJS 11 (monolithe modulaire), WebSocket Gateway (`@nestjs/platform-ws`), Prisma 6              |
-| **Base de données**  | PostgreSQL 16 Alpine (Docker)                                                                     |
+| **Base de données**  | PostgreSQL 18 Alpine (Docker)                                                                     |
 | **Contenu**          | Markdown + Frontmatter YAML, Schémas Zod, Gray-Matter                                             |
 | **IA (Optionnelle)** | Ollama en local (`llama3.1:8b`) ou provider OpenAI-compatible                                     |
 | **Qualité & CI**     | Vitest (235 tests automatisés), ESLint 9 (Flat config), TypeScript 5.7, Turborepo, GitHub Actions |
@@ -149,7 +149,7 @@ copy .env.example .env
 ### 3. Démarrage de la base de données & Initialisation
 
 ```bash
-# 4. Lancer le conteneur PostgreSQL 16
+# 4. Lancer le conteneur PostgreSQL 18
 docker compose -f infra/docker/docker-compose.dev.yml up -d
 
 # 5. Appliquer les migrations de schéma Prisma
