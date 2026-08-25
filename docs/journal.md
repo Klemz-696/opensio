@@ -532,6 +532,99 @@ Implémentation complète du suivi de progression de l'étudiant et du tableau d
 - `pnpm build` : Build Next.js 15 App Router et NestJS 11 validé avec succès.
 - Démonstration HTTP réelle `demo-lot8.ts` validée avec succès en 8 étapes complètes.
 
+---
+
+## [Lot v0.2] — Distribution & Déploiement : Installation en Une Commande, Stack Production Dockerisée & Sauvegardes D-18
+
+**Date** : 25/08/2026  
+**Branche** : `feat/b11-deploiement`  
+**Objectif** : Fournir une expérience d'installation en une seule commande interactive guidée sur Windows, Linux et macOS, une stack de production Dockerisée durcie multi-stage avec reverse proxy Caddy HTTPS, parité stricte PostgreSQL 18 Alpine partout, conteneur de sauvegarde chiffrée quotidienne D-18 et runbook de restauration testé.
+
+### Réalisations
+
+- **1. Installateurs interactifs en une commande (`scripts/install.sh` & `scripts/install.ps1`)** :
+  - **Linux / macOS (`curl -fsSL <url>/install.sh | bash`)** : réassignation automatique de stdin sur `/dev/tty` pour maintenir l'interactivité complète malgré l'exécution en pipe `curl | bash`.
+  - **Windows (`irm <url>/install.ps1 | iex`)** : encodage robuste compatible PowerShell 5.1/7.
+  - Détection automatique et validation des versions requises : Git, Node.js (≥ 22), pnpm (11.23.0), Docker Engine (démon joignable) avec proposition d'installation assistée (winget / apt / dnf / pacman / brew) avec consentement explicite.
+  - Détection automatique d'Ollama et du modèle `llama3.1:8b` avec proposition de téléchargement ou message d'information transparent si absent.
+  - Choix interactif du mode : **Mode Développement** (clone/update, `.env`, Docker dev DB, pnpm install, migrate, seed, content:sync) ou **Mode Production** (génération de secrets cryptographiques forts, `.env`, stack Compose prod, HTTPS Caddy).
+
+- **2. Conteneurisation multi-stage durcie & Parité PostgreSQL 18** :
+  - Parité stricte PostgreSQL 18 Alpine (`postgres:18-alpine`) alignée sur le développement, la CI GitHub Actions et la production.
+  - `apps/api/Dockerfile` : multi-stage build `node:22-alpine` non-root (`node:node` UID 1000), exécution via `dumb-init`, point d'entrée `docker-entrypoint.sh` automatisant `prisma migrate deploy`, synchronisation du catalogue `content:sync` et sonde de santé `/api/v1/health`.
+  - `apps/web/Dockerfile` : multi-stage build `node:22-alpine` non-root avec mode `output: 'standalone'` Next.js 15, assets statiques optimisés et sonde de santé `/api/health`.
+  - Durcissement Compose (`docker-compose.prod.yml`) : `read_only: true`, `no-new-privileges:true`, `cap_drop: [ALL]`, limites strictes CPU/RAM (512 Mo à 1 Go), isolation sur réseaux Docker distincts (`opensio_edge` et `opensio_backend`), redémarrage `restart: unless-stopped`.
+  - Base de données PostgreSQL isolée sur le réseau interne backend, strictement non exposée sur l'hôte.
+
+- **3. Reverse Proxy Caddy & TLS Interne (D-06, D-17)** :
+  - `infra/docker/Caddyfile` : Terminaison TLS automatique via autorité de certification interne (`tls internal`), en-têtes de sécurité HSTS, CSP, X-Frame-Options DENY, X-Content-Type-Options nosniff.
+  - Routage transparent des WebSockets (`Connection *Upgrade*`) vers l'API backend pour le terminal interactif des labs.
+
+- **4. Sauvegardes Chiffrées & Restauration (D-18)** :
+  - `scripts/backup.sh` : export `pg_dump` 18, compression gzip, chiffrement fort AES-256-CBC avec dérivation PBKDF2 (`openssl enc -aes-256-cbc -pbkdf2`), calcul d'empreinte d'intégrité SHA256 et rotation automatique sur 7 jours.
+  - `scripts/restore.sh` : contrôle d'intégrité de la somme SHA256, déchiffrement à la volée, décompression et injection directe `psql` 18.
+  - `infra/docker/backup/Dockerfile` : image conteneur basée sur `postgres:18-alpine` (avec client `pg_dump` 18 natif) et cron quotidien automatisé.
+
+- **5. Validation de la Sécurité des Secrets (Zod)** :
+  - `apps/api/src/config/env.validation.ts` : rejet formel au démarrage de toute clé `JWT_SECRET` utilisant un template par défaut (`change-this...`, `change-me...`), avec tests unitaires de validation dédiés.
+
+- **6. Documentation & Runbooks d'Exploitation** :
+  - `docs/installation.md` : Guide d'installation complet une-commande (dev et prod).
+  - `docs/deployment.md` : Guide de déploiement en environnement Homelab / Proxmox VE (Debian 12, Caddy, certificats racines).
+  - `docs/runbooks/restore.md` : Procédure de reprise d'activité (Disaster Recovery) et restauration pas à pas.
+  - `README.md` : Mise en avant de l'installation une-commande dès l'en-tête du projet.
+
+### Validations & Métriques
+
+- `node scripts/check-file-size.mjs` : 100% conforme D-13 (255 fichiers analysés, 0 violation > 400 lignes).
+- `pnpm lint` : 100% vert (0 erreur, 0 avertissement).
+- `pnpm typecheck` : 100% vert (0 erreur TypeScript).
+- `pnpm test` : 100% vert (**239 tests automatisés** : 173 API, 48 Web, 18 Content-Schema).
+- **Vérification ShellCheck** : 100% vert dans un conteneur Debian 12 sur tous les scripts shell (`install.sh`, `backup.sh`, `restore.sh`, `entrypoint.sh`).
+- **Syntaxe PowerShell** : 100% valide sur `install.ps1`.
+- **Démonstration Réseau & Smoke Tests en Conteneurs de Production** :
+  - Build multi-stage et démarrage complet de la stack Docker Compose de production (`opensio-caddy`, `opensio-web`, `opensio-api`, `opensio-db-prod`, `opensio-backup`).
+  - Sondes de santé API `/api/v1/health` et Web `/api/health` en état `OK (status: ok)`.
+  - Accès HTTPS complet via Caddy Reverse Proxy (pages d'accueil, assets, catalogue).
+  - Exécution réelle du script de sauvegarde chiffrée `backup.sh` (génération de l'archive chiffrée AES-256 et de la somme SHA256).
+  - Exécution réelle du script de restauration `restore.sh` avec vérification d'intégrité SHA256 et réinjection sans perte.
+
+---
+
+## 2026-08-25 — Correctifs & Durcissement Post-Tests Réels (Lot v0.2)
+
+**Branche** : `feat/b11-deploiement`  
+**Contexte** : Suite aux premiers tests d'installation en conditions réelles sur machine Windows (démon Docker arrêté, mise à jour d'un environnement existant avec secrets), quatre défauts ont été identifiés et corrigés :
+
+### 1. Robustesse — Démon Docker injoignable & Encapsulation des commandes
+- **Constat** : Lorsque Docker Desktop est installé mais arrêté (ou moteur planté / erreur 500 sur le named pipe), `install.ps1` plantait brutalement sur une `NativeCommandError` PowerShell.
+- **Correction** :
+  - Encapsulation de tous les appels système (`git`, `node`, `pnpm`, `docker`, `ollama`) via un exécuteur sécurisé (`Get-SafeCommandOutput` sous Windows et redirections protégées sous Bash).
+  - Distinction formelle entre *« Docker non installé »* et *« Docker présent mais démon injoignable »*.
+  - Dans le second cas : message clair, remédiation guidée selon l'OS (lancer Docker Desktop / `systemctl start docker`), et boucle d'attente animée avec retry et timeout (90s) avec reprise transparente du parcours d'installation.
+  - Zéro stack trace brute atteignant l'utilisateur.
+
+### 2. Déduplication des fichiers Compose
+- **Constat** : `docker-compose.prod.yml` existait à la fois à la racine et dans `infra/docker/` avec un contenu redondant.
+- **Correction** : Suppression du fichier doublon `infra/docker/docker-compose.prod.yml`. Le fichier racine `docker-compose.prod.yml` constitue désormais l'unique source de vérité canonique pour la production. Mise à jour de toutes les références dans les scripts, documentations et workflows CI.
+
+### 3. Protection des secrets existants & Rotation consentie
+- **Constat (Incident réel)** : L'installeur réécrivait inconditionnellement `DATABASE_URL` et `DB_PASSWORD` dans `.env` sans appliquer le changement à la base PostgreSQL vivante, provoquant une erreur d'authentification Prisma P1000 au boot suivant.
+- **Correction** :
+  - Sur une installation existante (`.env` présent), l'installeur préserve strictement tous les secrets existants (`DATABASE_URL`, `DB_PASSWORD`, `JWT_SECRET`, `BACKUP_ENCRYPTION_KEY`).
+  - Toute régénération de secrets requiert désormais un consentement explicite avec avertissement d'impact.
+  - En cas de régénération validée, l'installeur propose automatiquement d'appliquer le mot de passe à la base active via `ALTER USER` (`docker exec`), de réinitialiser le volume de données, ou de laisser l'administrateur gérer l'alignement.
+  - Synchronisation automatique avec `apps/api/.env` si présent.
+
+### 4. Parité stricte PostgreSQL 18 & Procédure de bascule Dev
+- **Constat** : Le conteneur de dev était historiquement documenté en PostgreSQL 16 alors que la CI et la production tournent sous PostgreSQL 18 Alpine.
+- **Correction** :
+  - Alignement de `infra/docker/docker-compose.dev.yml` sur `postgres:18-alpine`.
+  - Documentation dans `docs/installation.md` de la procédure de bascule dev (les données étant 100 % reproductibles via `pnpm db:migrate`, `pnpm seed` et `pnpm content:sync`).
+  - Alignement de `README.md`.
+
+
+
 
 
 
