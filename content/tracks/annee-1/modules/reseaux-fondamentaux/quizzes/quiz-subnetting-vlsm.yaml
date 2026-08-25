@@ -1,0 +1,96 @@
+slug: quiz-subnetting-vlsm
+title: "Quiz — Subnetting et VLSM"
+passing_score: 80
+position: 3
+questions:
+  - kind: single
+    prompt: "Quel est le préfixe CIDR minimal requis pour accueillir un réseau local de 50 postes sans gaspillage d'adresses ?"
+    choices:
+      - id: a
+        text: "/25 (126 hôtes)"
+      - id: b
+        text: "/26 (62 hôtes)"
+      - id: c
+        text: "/27 (30 hôtes)"
+      - id: d
+        text: "/28 (14 hôtes)"
+    correct:
+      - b
+    explanation: "Pour 50 postes, la formule 2^H - 2 >= 50 donne H = 6 (2^6 - 2 = 62 hôtes utilisables). Le préfixe CIDR est donc 32 - 6 = /26. Un /27 est trop petit (30 hôtes max) et un /25 est surdimensionné."
+
+  - kind: single
+    prompt: "Pour une liaison point-à-point entre deux routeurs nécessitant exactement 2 adresses IP, quel masque de sous-réseau doit être appliqué ?"
+    choices:
+      - id: a
+        text: "255.255.255.248 (/29)"
+      - id: b
+        text: "255.255.255.252 (/30)"
+      - id: c
+        text: "255.255.255.254 (/31)"
+      - id: d
+        text: "255.255.255.240 (/28)"
+    correct:
+      - b
+    explanation: "Un masque /30 (255.255.255.252) comporte 2 bits d'hôtes, ce qui alloue 4 adresses au total : 1 adresse réseau, 2 adresses d'hôtes utiles et 1 adresse de broadcast."
+
+  - kind: single
+    prompt: "Si le premier sous-réseau attribué est 172.16.0.0/23, quelle est l'adresse réseau exacte du sous-réseau immédiatement consécutif ?"
+    choices:
+      - id: a
+        text: "172.16.0.128"
+      - id: b
+        text: "172.16.1.0"
+      - id: c
+        text: "172.16.2.0"
+      - id: d
+        text: "172.16.4.0"
+    correct:
+      - c
+    explanation: "Un /23 correspond à 9 bits d'hôtes, soit une taille de bloc de 512 adresses (de 172.16.0.0 à 172.16.1.255, broadcast en 172.16.1.255). Le sous-réseau suivant commence donc en 172.16.2.0."
+
+  - kind: multiple
+    prompt: "Quelles affirmations sont exactes concernant la méthodologie de calcul VLSM ?"
+    choices:
+      - id: a
+        text: "Il faut toujours ordonner les sous-réseaux du plus grand besoin en hôtes vers le plus petit"
+      - id: b
+        text: "Le masque de sous-réseau est obligatoirement identique sur tous les segments"
+      - id: c
+        text: "Le pas d'incrémentation correspond à la taille totale du bloc (2^H)"
+      - id: d
+        text: "La première adresse utile est toujours l'adresse réseau + 1"
+    correct:
+      - a
+      - c
+      - d
+    explanation: "En VLSM, les sous-réseaux sont ordonnés par taille décroissante, le pas est 2^H et la première adresse est Net+1. L'utilisation d'un masque identique est la définition du FLSM, pas du VLSM."
+
+  - kind: single
+    prompt: "Quelle est l'adresse de diffusion (broadcast) du sous-réseau 192.168.1.192/27 ?"
+    choices:
+      - id: a
+        text: "192.168.1.223"
+      - id: b
+        text: "192.168.1.224"
+      - id: c
+        text: "192.168.1.255"
+      - id: d
+        text: "192.168.1.207"
+    correct:
+      - a
+    explanation: "Un /27 a un pas de 32 (2^5). Le bloc démarre à 192.168.1.192 et se termine à 192.168.1.192 + 32 - 1 = 192.168.1.223. L'adresse de broadcast est 192.168.1.223."
+
+  - kind: single
+    prompt: "Quelle est la dernière adresse hôte utilisable du sous-réseau 10.50.4.0/22 ?"
+    choices:
+      - id: a
+        text: "10.50.4.254"
+      - id: b
+        text: "10.50.7.254"
+      - id: c
+        text: "10.50.7.255"
+      - id: d
+        text: "10.50.8.254"
+    correct:
+      - b
+    explanation: "Un /22 alloue 1024 adresses (4 octets de 256 dans le 3e octet, soit 10.50.4.0 à 10.50.7.255). Le broadcast est 10.50.7.255, donc la dernière adresse utilisable est 10.50.7.254."

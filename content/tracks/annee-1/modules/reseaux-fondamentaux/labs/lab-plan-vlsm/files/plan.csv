@@ -1,0 +1,7 @@
+service,network,prefix,gateway,first_host,last_host,broadcast
+Siege,,,,,,
+Agence-Nord,,,,,,
+Agence-Sud,,,,,,
+DMZ-Serveurs,,,,,,
+Liaison-WAN1,,,,,,
+Liaison-WAN2,,,,,,
