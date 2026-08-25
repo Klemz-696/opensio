@@ -623,6 +623,13 @@ Implémentation complète du suivi de progression de l'étudiant et du tableau d
   - Documentation dans `docs/installation.md` de la procédure de bascule dev (les données étant 100 % reproductibles via `pnpm db:migrate`, `pnpm seed` et `pnpm content:sync`).
   - Alignement de `README.md`.
 
+### 5. Exécution de pnpm sous Windows & Contrôle de version (>= 9)
+- **Constat** : Sous Windows, `pnpm` est installé sous forme de script externe (`pnpm.cmd` / `pnpm.ps1`). L'appel direct via `System.Diagnostics.Process` échouait silencieusement dans `Get-SafeCommandOutput`, produisant un affichage vide `[v] pnpm detecte : v`.
+- **Correction** :
+  - Encapsulation des commandes via `cmd.exe /c` dans `Get-SafeCommandOutput` pour résoudre correctement les scripts `.cmd`/`.bat`/`.ps1` et la variable `PATHEXT`.
+  - Parsing robuste de la version avec suppression du préfixe éventuel `v` et contrôle de version majeure $\ge 9$ (avec affichage conforme `v11.23.0` et proposition de mise à jour si la version est obsolète).
+  - Aligné sur `scripts/install.sh` avec conformité ShellCheck 100 %.
+
 
 
 
