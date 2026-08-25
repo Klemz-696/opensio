@@ -10,7 +10,6 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "dev": "next dev --turbopack"
-
   },
   "dependencies": {
     "@hookform/resolvers": "^5.9.1",

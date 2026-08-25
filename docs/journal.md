@@ -442,17 +442,97 @@ Implémentation complète du suivi de progression de l'étudiant et du tableau d
 - **Isolation et Immuabilité Post-Validation** : Une fois la session validée avec succès (`PASSED`), aucune modification de fichier ou déblocage d'indice n'est autorisé. Toute tentative d'accès non autorisé par un tiers est rejetée par une erreur 403 Forbidden.
 - **Gestion des Sandboxes Orphelines & Sweeper Périodique (`LabSessionSweeperService`)** : Pour éviter l'accumulation de dossiers temporaires sur le disque (`os.tmpdir()/opensio-labs/<sessionId>`) en cas d'abandon de session sans appel à `/stop` (ou si l'apprenant ne revient jamais sur la plateforme), un service dédié `LabSessionSweeperService` effectue un balayage proactif au démarrage puis toutes les 5 minutes. Toutes les sessions en statut `RUNNING` dont le TTL est dépassé sont basculées en statut `EXPIRED` et leur bac à sable sur disque est immédiatement purgé par le runner.
 
-## 2026-08-24 — Incident : Résolution runtime de `@opensio/content-schema` non compilé
+---
 
-- **Symptôme** : Au lancement de l'API (`nest start --watch` ou `node dist/main.js`), échec avec `ERR_MODULE_NOT_FOUND` sur `packages/content-schema/src/track.js` importé depuis `src/index.ts`.
-- **Diagnostic** : Le Lot 7 a introduit le premier import *runtime* de `@opensio/content-schema` dans l'API NestJS (`LabsService` chargeant `LabSchema` pour validation Zod). Le package était configuré avec `build = tsc --noEmit` sans émission `dist/` et ses imports relatifs ESM en `.js` n'étaient pas résolubles par Node en exécution standard. Les outils de test/dev à la volée (`tsx`, `vitest`) masquaient cette anomalie en compilant les sources TypeScript à la volée.
-- **Correction appliquée** :
-  1. `packages/content-schema` : Ajout d'une compilation TypeScript réelle (`tsconfig.build.json`) émettant `.js`, `.d.ts` et sourcemaps vers `dist/`.
-  2. `packages/content-schema/package.json` : Pointage de `main`, `types` et `exports` vers `./dist/index.js` et `./dist/index.d.ts`.
-  3. `turbo.json` : La tâche `dev` de l'API et du monorepo dépend désormais explicitement de la compilation des packages internes amont (`^build`).
-  4. `apps/api` : Ajout de `tsconfig.build.json` ciblant `rootDir: ./src` pour produire un artefact propre `dist/main.js` sans pollution des fichiers de tests.
-- **Note de Backlog (Qualité & CI)** :
-  - Ajouter une étape de smoke test en CI exécutant directement l'artefact compilé de production (`node dist/main.js` + interrogation du endpoint `GET /health` ou `GET /api/v1/health`) afin de bloquer systématiquement toute régression liée à la résolution des modules compilés.
+## [Lot 8] — Terminal & Assistant IA
+
+**Date** : 25/08/2026  
+**Branche** : `feat/b09-terminal-ai`  
+**Objectif** : Implémentation du Terminal Virtuel Interactif sécurisé par liste blanche de commandes et de l'Assistant Mentor IA avec tuteur pédagogique, architecture double mode (Ollama local / OpenAI distant), garde-fous zéro-fuite (RM-11) et rate limiting strict.
+
+### Réalisations
+
+- **Base de Données & Migration Prisma (`apps/api/prisma`)** :
+  - Création du sous-schéma `apps/api/prisma/schema/chat.prisma` modélisant `ChatConversation` et `ChatMessage` avec l'enum `ChatRole` (`USER`, `ASSISTANT`, `SYSTEM`).
+  - Extension de `apps/api/prisma/schema/labs.prisma` avec l'événement `TERMINAL_COMMAND` dans `LabEventKind`.
+  - Migration SQL `20260824221907_lot8_terminal_ai` appliquée sur PostgreSQL.
+- **Module Terminal Virtuel Sécurisé Backend (`apps/api/src/modules/terminal`)** :
+  - `SimulationCommandInterpreter` : Interpréteur avec **liste blanche stricte** de commandes autorisées (`help`, `ls`, `cat`, `cd`, `pwd`, `ip`, `ping`, `systemctl`, `ss`, `netstat`, `df`, `free`, `ps`, `clear`, `date`).
+  - **SÉCURITÉ CRITIQUE** : Zéro exécution de commandes arbitraires (`exec`/`spawn`/`eval`) sur l'entrée utilisateur. Toute commande hors liste blanche est immédiatement rejetée avec le code d'erreur standard 127.
+  - `SimulatedFilesystemService` : Navigation sécurisée (`cd`, `ls`, `cat`, `pwd`) strictement bornée au bac à sable de la session (`baseTempDir/<sessionId>`) avec protection contre le traversée de répertoires (`..`).
+  - `SimulatedNetworkService` : Simulation réaliste de l'état système Debian 12 et des configurations réseaux BTS SISR.
+  - `TerminalService` : Contrôle d'accès et d'appartenance de la session de lab (statut `RUNNING`), journalisation détaillée dans `LabEvent` (`TERMINAL_OPENED`, `TERMINAL_COMMAND`).
+  - `TerminalGateway` : Passerelle WebSocket `/ws/terminal` avec authentification par token JWT HS256, isolation inter-utilisateurs et heartbeat ping/pong (D-14).
+  - `TerminalController` : Endpoints REST sécurisés (`GET /labs/:slug/sessions/:id/terminal`, `POST .../exec`).
+- **Module Assistant Mentor IA Backend (`apps/api/src/modules/ai`)** :
+  - Contrat d'interface `AiProvider` avec token d'injection `AI_PROVIDER_TOKEN`.
+  - `OpenAiCompatibleProvider` : Provider double mode unifié compatible avec l'API OpenAI et **Ollama en local** (`http://localhost:11434/v1`, modèle `llama3.1:8b` par défaut) pour une confidentialité totale 0-data partagée (D-16).
+  - `NullProvider` : Provider inactif propre retournant des messages pédagogiques d'aide dégradés si l'IA est désactivée.
+  - `AiContextSanitizerService` : Injection exclusive des métadonnées publiques et consignes de tuteur Socratique (guide méthodologique, questions d'orientation). **Zéro injection des scripts validateurs, fichiers de solution ou correctChoiceIds**.
+  - `AiSolutionFilterService` : Filtre post-traitement interceptant toute tentative de divulgation de solution complète (RM-11) et la remplaçant par un refus pédagogique constructif.
+  - `AiRateLimiterService` : Limitation glissante stricte à 20 requêtes par heure et par utilisateur avec calcul du quota restant.
+  - `ChatService` : Gestion des conversations, historique des 20 derniers messages, audit d'utilisation (`CHAT_MESSAGE_SENT`) et bandeau de conformité RGPD.
+  - `AiController` : Endpoints REST (`GET /chat/status`, `GET /chat/conversations`, `POST /chat/conversations`, `GET /chat/conversations/:id/messages`, `POST /chat/conversations/:id/messages`, `DELETE /chat/conversations/:id`).
+- **Frontend Apprenant Next.js 15 (`apps/web`)** :
+  - `LabTerminal` : Terminal interactif avec barre d'état, invite `student@opensio-lab:~$ `, historique de commandes (touches Flèche Haut / Bas), raccourcis de commandes fréquentes et scrolling automatique.
+  - Intégration ergonomique dans la page de lab `/catalogue/[moduleSlug]/labs/[labSlug]` avec un sélecteur d'onglets réactif entre **« Éditeur de fichiers »** et **« Terminal interactif »**.
+  - `MentorChatDrawer` : Tiroir latéral flottant d'assistance IA avec indicateur de quota, sélection de discussions, badge de confidentialité Ollama Local et zone de saisie ergonomique.
+- **Tests & Démonstration Réelle HTTP** :
+  - Tests unitaires et d'intégration : `simulation-command-interpreter.spec.ts`, `terminal.service.spec.ts`, `terminal.gateway.spec.ts`, `ai-solution-filter.spec.ts`, `ai-rate-limiter.spec.ts`, `ai-context-sanitizer.spec.ts`, `openai-compatible-provider.spec.ts`, `chat.e2e.spec.ts`.
+  - Tests frontend Web : `lab-terminal.spec.tsx`, `mentor-chat.spec.tsx`.
+  - Script de démonstration réseau réelle HTTP (`apps/api/test/demo-lot8.ts`) : 13 étapes validant l'authentification JWT de 2 utilisateurs, l'isolation inter-utilisateurs, le blocage des commandes hors liste blanche, le refus de spoil par l'IA (RM-11), le rate limiting et la journalisation en base PostgreSQL.
+  - **207 tests automatisés passants à 100%** sur l'ensemble du monorepo (160 API, 47 Web).
+
+### Validations
+
+- `pnpm lint` : 100% vert (0 erreur, 0 avertissement).
+- `pnpm typecheck` : 100% vert (0 erreur TypeScript).
+- `pnpm test` : 100% vert (207 tests unitaires, d'intégration, E2E et frontend passants).
+- `node scripts/check-file-size.mjs` : 100% conforme D-13 (248 fichiers analysés, 0 violation > 400 lignes).
+- `pnpm build` : Build de production Next.js 15 App Router et NestJS 11 validé avec succès.
+- Démonstration HTTP réelle `demo-lot8.ts` validée avec succès.
+
+---
+
+## [Lot 8 — Correctifs & Évolutions] Module IA : Timeout Configurable, Préférences Étudiant, Détection de Contournement & Mentor Global
+
+**Date** : 25/08/2026  
+**Branche** : `feat/b09-terminal-ai`  
+**Objectif** : Stabilisation et enrichissement du module IA : gestion fine du timeout et chargement de modèle en RAM, correction des clés React, résolution de contexte serveur, intégration du Mentor Global et des préférences utilisateur (modèle préféré, Mode Libre sécurisé, traçage d'audit).
+
+### Réalisations
+
+- **Correctif 1 — Timeout Configurable & Chargement en RAM (`AI_TIMEOUT_MS`)** :
+  - Ajout de `AI_TIMEOUT_MS` (défaut 120 000 ms = 120s) dans `env.validation.ts` et `.env.example`.
+  - Documentation du piège de résolution `localhost` vs `127.0.0.1` sous Windows (IPv6 `::1` vs IPv4 Ollama).
+  - Gestion distincte de l'`AbortError` / Timeout dans `OpenAiCompatibleProvider` avec message explicite de chargement en RAM et journalisation de la cause réelle de l'échec.
+- **Correctif 2 — Élimination du Warning React Duplicate Key** :
+  - Réconciliation optimiste des identifiants de messages dans `mentor-chat-drawer.tsx` et clés de rendu uniques composées (`key={`${msg.id}-${idx}`}`) dans `mentor-chat-messages.tsx`.
+- **Évolution 3 — Contexte Résolu Côté Serveur & Détection de Contournement (RM-11)** :
+  - Transmission des métadonnées de page (`pageType`, `pageSlug`, `labSlug`, `quizSlug`, `lessonSlug`, `moduleSlug`) par le client web.
+  - Résolution d'entité et association directe de la conversation en BDD par `AiContextSanitizerService`.
+  - Application stricte des règles socratiques et du filtre de solution RM-11 en contexte évalué (lab / quiz noté).
+  - Détection côté serveur des tentatives de contournement dans les conversations générales demandant la solution d'un lab du catalogue (`AiSolutionFilterService`), blocage automatique et journalisation de l'événement d'audit `AI_CIRCUMVENTION_ATTEMPT`.
+- **Évolution 4 — Mentor Global Hors Évaluation** :
+  - Disponibilité de l'assistant Mentor sur toutes les pages de la plateforme.
+  - En contexte non-évalué (cours, module, révision générale), le Mentor répond de manière fluide et pédagogique sans restriction socratique artificielle.
+- **Évolution 5 — Préférences Étudiant & Mode Libre Traçable** :
+  - Ajout de la table PostgreSQL `user_ai_preferences` (`userId`, `preferredModel`, `freeMode`).
+  - Endpoints REST : `GET /chat/models` (introspection dynamique via `/api/tags` d'Ollama ou `/models`), `GET /chat/preferences`, `PUT /chat/preferences`.
+  - Le Mode Libre permet des explications complètes et du code direct **exclusivement hors contexte évalué** (strictement verrouillé et ignoré en lab/quiz noté).
+  - Chaque bascule du Mode Libre est tracée dans l'audit log (`AI_FREE_MODE_TOGGLED`).
+  - Découpage D-13 exemplaire du composant `MentorChatSettings` (< 400 lignes).
+
+### Validations
+
+- `pnpm lint` : 100% vert (0 erreur, 0 avertissement).
+- `pnpm typecheck` : 100% vert (0 erreur TypeScript).
+- `pnpm test` : 100% vert (**235 tests automatisés** : 169 API, 48 Web, 18 Content-Schema).
+- `node scripts/check-file-size.mjs` : 100% conforme D-13 (252 fichiers analysés, 0 violation > 400 lignes).
+- `pnpm build` : Build Next.js 15 App Router et NestJS 11 validé avec succès.
+- Démonstration HTTP réelle `demo-lot8.ts` validée avec succès en 8 étapes complètes.
+
+
 
 
 

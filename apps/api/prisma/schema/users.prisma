@@ -32,6 +32,8 @@ model User {
   labSessions         LabSession[]
   activityEvents      ActivityEvent[]
   auditLogs           AuditLog[]
+  chatConversations   ChatConversation[]
+  aiPreference        UserAiPreference?
 
   @@map("users")
 }

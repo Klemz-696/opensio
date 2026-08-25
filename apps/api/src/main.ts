@@ -1,4 +1,5 @@
 import { NestFactory } from '@nestjs/core';
+import { WsAdapter } from '@nestjs/platform-ws';
 import cookieParser from 'cookie-parser';
 import { AppModule } from './app.module';
 import { validateEnv } from './config/env.validation';
@@ -10,6 +11,7 @@ async function bootstrap(): Promise<void> {
 
   app.use(cookieParser());
   app.useGlobalFilters(new HttpExceptionFilter());
+  app.useWebSocketAdapter(new WsAdapter(app));
   app.setGlobalPrefix('api/v1');
 
   app.enableCors({

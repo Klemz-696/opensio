@@ -20,10 +20,12 @@ import { Breadcrumbs } from '../../../../../components/layout/breadcrumbs';
 import { LabHeader } from '../../../../../components/labs/lab-header';
 import { LabContext } from '../../../../../components/labs/lab-context';
 import { LabEditor } from '../../../../../components/labs/lab-editor';
+import { LabTerminal } from '../../../../../components/labs/lab-terminal';
 import { LabHints } from '../../../../../components/labs/lab-hints';
 import { LabVerdict } from '../../../../../components/labs/lab-verdict';
 import { LabSessionControls } from '../../../../../components/labs/lab-session-controls';
 import LabDetailLoading from './loading';
+import { Code, Terminal as TerminalIcon } from 'lucide-react';
 
 interface LabPageProps {
   params: Promise<{
@@ -40,6 +42,7 @@ export default function LabPage({ params }: LabPageProps) {
   const [lab, setLab] = useState<LabPublicDetail | null>(null);
   const [session, setSession] = useState<LabSession | null>(null);
   const [verdict, setVerdict] = useState<LabVerdictType | null>(null);
+  const [activeTab, setActiveTab] = useState<'editor' | 'terminal'>('editor');
   const [isLoading, setIsLoading] = useState(true);
   const [isStarting, setIsStarting] = useState(false);
   const [isValidating, setIsValidating] = useState(false);
@@ -230,12 +233,52 @@ export default function LabPage({ params }: LabPageProps) {
       )}
 
       {session && (
-        <LabEditor
-          files={session.files}
-          editableFilesInfo={lab.editableFiles}
-          isReadOnly={session.status !== 'running'}
-          onSave={handleSaveFiles}
-        />
+        <div className="mb-8">
+          <div className="flex items-center gap-2 mb-3 border-b border-slate-800 pb-2">
+            <button
+              type="button"
+              onClick={() => setActiveTab('editor')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-colors cursor-pointer ${
+                activeTab === 'editor'
+                  ? 'bg-blue-600/20 text-blue-300 border border-blue-500/30'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+              }`}
+            >
+              <Code className="w-4 h-4" />
+              <span>Éditeur de fichiers</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setActiveTab('terminal')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-colors cursor-pointer ${
+                activeTab === 'terminal'
+                  ? 'bg-emerald-600/20 text-emerald-300 border border-emerald-500/30'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+              }`}
+            >
+              <TerminalIcon className="w-4 h-4" />
+              <span>Terminal interactif</span>
+            </button>
+          </div>
+
+          {activeTab === 'editor' ? (
+            <LabEditor
+              files={session.files}
+              editableFilesInfo={lab.editableFiles}
+              isReadOnly={session.status !== 'running'}
+              onSave={handleSaveFiles}
+            />
+          ) : (
+            <div className="h-[500px]">
+              <LabTerminal
+                labSlug={lab.slug}
+                sessionId={session.id}
+                token={accessToken || ''}
+              />
+            </div>
+          )}
+        </div>
       )}
 
       {session && lab.hintsSummary.length > 0 && (
