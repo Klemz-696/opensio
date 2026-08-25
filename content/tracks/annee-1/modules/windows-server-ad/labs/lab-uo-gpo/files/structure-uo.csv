@@ -1,0 +1,9 @@
+ou_path,description,gpo_linked,gpo_enforced,block_inheritance
+OU=Entreprise,DC=entreprise,DC=lan,,,,
+OU=Utilisateurs,OU=Entreprise,DC=entreprise,DC=lan,,,,
+OU=Direction,OU=Utilisateurs,OU=Entreprise,DC=entreprise,DC=lan,,,,
+OU=Comptabilite,OU=Utilisateurs,OU=Entreprise,DC=entreprise,DC=lan,,,,
+OU=Technique,OU=Utilisateurs,OU=Entreprise,DC=entreprise,DC=lan,,,,
+OU=Ordinateurs,OU=Entreprise,DC=entreprise,DC=lan,,,,
+OU=Portables,OU=Ordinateurs,OU=Entreprise,DC=entreprise,DC=lan,,,,
+OU=Serveurs,OU=Entreprise,DC=entreprise,DC=lan,,,,

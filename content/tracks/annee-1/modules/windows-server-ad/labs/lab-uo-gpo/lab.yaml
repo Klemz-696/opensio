@@ -1,0 +1,63 @@
+slug: organisation-uo-et-gpo
+title: "Conception de l'arborescence des UO et liaison des stratégies de groupe (GPO)"
+level: 2_files
+max_score: 100
+estimated_minutes: 50
+context: |
+  Vous êtes chargé d'architecturer l'annuaire Active Directory du domaine entreprise.lan.
+  Le cahier des charges impose une structure d'Unités d'Organisation (UO) claire, séparant les comptes utilisateurs par service métier et les ordinateurs par typologie matérielle.
+  Chaque UO doit recevoir les liaisons de GPO appropriées et respecter les règles d'héritage d'entreprise :
+
+  1. UO Racine : OU=Entreprise,DC=entreprise,DC=lan (GPO liée : GPO_Securite_Globale)
+  2. UO Utilisateurs : OU=Utilisateurs,OU=Entreprise,DC=entreprise,DC=lan (GPO : GPO_Environnement_Utilisateur)
+     - OU=Direction,OU=Utilisateurs,OU=Entreprise,DC=entreprise,DC=lan (GPO : GPO_Direction_Lecteurs)
+     - OU=Comptabilite,OU=Utilisateurs,OU=Entreprise,DC=entreprise,DC=lan (GPO : GPO_Compta_Lecteurs)
+     - OU=Technique,OU=Utilisateurs,OU=Entreprise,DC=entreprise,DC=lan (GPO : GPO_Technique_Lecteurs)
+  3. UO Ordinateurs : OU=Ordinateurs,OU=Entreprise,DC=entreprise,DC=lan (GPO : GPO_Durcissement_Postes)
+     - OU=Portables,OU=Ordinateurs,OU=Entreprise,DC=entreprise,DC=lan (GPO : GPO_BitLocker_Nomades)
+  4. UO Serveurs : OU=Serveurs,OU=Entreprise,DC=entreprise,DC=lan (GPO : GPO_Securite_Serveurs, Enforced: true, Blocage héritage: true pour isoler les serveurs des GPO postes).
+
+  Complétez le fichier structure-uo.csv.
+
+objectives:
+  - "Structurer une arborescence LDAP d'Unités d'Organisation conforme aux bonnes pratiques d'entreprise"
+  - "Associer chaque niveau hiérarchique aux GPO ciblées"
+  - "Maîtriser les paramètres de blocage de l'héritage et d'application forcée (Enforced)"
+
+prerequisites:
+  - utilisateurs-groupes-uo
+  - strategies-de-groupe-gpo
+
+topology: null
+
+files:
+  editable:
+    - path: structure-uo.csv
+      description: "ou_path,description,gpo_linked,gpo_enforced,block_inheritance"
+
+hints:
+  - cost_percent: 10
+    text: "Respectez scrupuleusement la syntaxe Distinguished Name (DN) : OU=Nom,OU=Parent,DC=entreprise,DC=lan."
+  - cost_percent: 10
+    text: "Pour l'UO Serveurs, positionnez gpo_enforced et block_inheritance à true (en minuscules)."
+
+validation:
+  type: script
+  image: opensio/validator-csv:latest
+  timeout_seconds: 30
+  checks:
+    - id: ou_hierarchy_valid
+      required: true
+      points: 40
+      description: "Hiérarchie complète des 8 Unités d'Organisation (Entreprise, Utilisateurs, Direction, etc.)"
+    - id: gpo_links_valid
+      required: true
+      points: 40
+      description: "Liaison exacte de chaque GPO à son Unité d'Organisation respective"
+    - id: inheritance_enforced_valid
+      required: false
+      points: 20
+      description: "Configuration du blocage d'héritage et de l'application forcée sur l'UO Serveurs"
+
+scoring:
+  floor_percent: 50

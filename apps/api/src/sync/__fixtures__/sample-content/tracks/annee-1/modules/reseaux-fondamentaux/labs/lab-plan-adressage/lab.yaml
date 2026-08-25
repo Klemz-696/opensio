@@ -1,0 +1,34 @@
+slug: plan-adressage-pme
+title: "Plan d'adressage IP d'une PME"
+level: 2_files
+max_score: 100
+estimated_minutes: 45
+context: |
+  Vous devez concevoir le plan d'adressage IP d'une PME de 150 personnes.
+objectives:
+  - "Calculer les sous-réseaux"
+prerequisites:
+  - adressage-ipv4
+topology: null
+files:
+  editable:
+    - path: plan.csv
+      description: "Fichier de configuration"
+hints:
+  - cost_percent: 10
+    text: "Pensez au découpage binaire"
+validation:
+  type: script
+  image: opensio/validator-csv:latest
+  timeout_seconds: 30
+  checks:
+    - id: subnets_valid
+      required: true
+      points: 60
+      description: "Sous-réseaux valides"
+    - id: no_overlap
+      required: true
+      points: 40
+      description: "Aucun chevauchement"
+scoring:
+  floor_percent: 50

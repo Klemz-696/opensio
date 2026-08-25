@@ -1,0 +1,96 @@
+slug: quiz-ipv6-essentiels
+title: "Quiz — IPv6 Essentiels"
+passing_score: 80
+position: 4
+questions:
+  - kind: single
+    prompt: "Quelle est la forme la plus compressée et valide de l'adresse IPv6 2001:0db8:0000:0000:0008:0000:0000:4120 ?"
+    choices:
+      - id: a
+        text: "2001:db8::8:0:0:4120"
+      - id: b
+        text: "2001:db8::8::4120"
+      - id: c
+        text: "2001:db8:0:0:8::4120"
+      - id: d
+        text: "2001:db8:0:0:8:0:0:412"
+    correct:
+      - a
+    explanation: "La règle de compression autorise un seul double deux-points '::'. Comme les deux suites de zéros ont la même longueur (2 hextets), on compresse par convention la première séquence à gauche. '::' ne peut jamais apparaître deux fois dans une même adresse (choix b invalide)."
+
+  - kind: single
+    prompt: "Quel préfixe d'adresse IPv6 identifie les adresses de lien local (Link-Local), obligatoires et non routables ?"
+    choices:
+      - id: a
+        text: "2000::/3"
+      - id: b
+        text: "fc00::/7"
+      - id: c
+        text: "fe80::/10"
+      - id: d
+        text: "ff00::/8"
+    correct:
+      - c
+    explanation: "Les adresses Link-Local débutent par le préfixe fe80::/10 (dans l'intervalle fe80:: à febf::). Elles sont automatiquement configurées sur chaque interface et permettent les communications de niveau 2 et le routage local."
+
+  - kind: multiple
+    prompt: "Quels mécanismes sont utilisés par le protocole NDP (Neighbor Discovery Protocol) en remplacement d'ARP en IPv6 ?"
+    choices:
+      - id: a
+        text: "Neighbor Solicitation (NS) et Neighbor Advertisement (NA)"
+      - id: b
+        text: "Diffusion générale en broadcast sur le réseau"
+      - id: c
+        text: "Duplicate Address Detection (DAD) pour détecter les collisions d'adresses"
+      - id: d
+        text: "Router Solicitation (RS) et Router Advertisement (RA)"
+    correct:
+      - a
+      - c
+      - d
+    explanation: "NDP repose sur les messages ICMPv6 NS/NA pour la résolution d'adresses MAC, RS/RA pour la découverte de routeurs et DAD pour vérifier l'unicité de l'adresse. IPv6 n'utilise jamais de diffusion broadcast."
+
+  - kind: single
+    prompt: "Quelle valeur hexadécimale est insérée au milieu d'une adresse MAC 48 bits pour générer un identifiant d'interface de 64 bits selon la méthode EUI-64 ?"
+    choices:
+      - id: a
+        text: "AA:BB"
+      - id: b
+        text: "FF:FE"
+      - id: c
+        text: "FE:80"
+      - id: d
+        text: "00:00"
+    correct:
+      - b
+    explanation: "La méthode EUI-64 scinde l'adresse MAC en deux blocs de 24 bits et insère l'octet double 'FF:FE' (16 bits) au milieu, complété par l'inversion du 7e bit (bit Universel/Local)."
+
+  - kind: single
+    prompt: "Quelle adresse IPv6 Multicast correspond au groupe 'Tous les nœuds du lien local' (équivalent du broadcast IPv4) ?"
+    choices:
+      - id: a
+        text: "ff02::1"
+      - id: b
+        text: "ff02::2"
+      - id: c
+        text: "::1"
+      - id: d
+        text: "fe80::1"
+    correct:
+      - a
+    explanation: "L'adresse ff02::1 adresse tous les équipements compatibles IPv6 présents sur le même lien local. L'adresse ff02::2 cible tous les routeurs."
+
+  - kind: single
+    prompt: "Quelle est la taille standard en bits du préfixe de sous-réseau recommandé pour permettre le fonctionnement natif de SLAAC sur un segment d'accès ?"
+    choices:
+      - id: a
+        text: "32 bits"
+      - id: b
+        text: "48 bits"
+      - id: c
+        text: "64 bits"
+      - id: d
+        text: "128 bits"
+    correct:
+      - c
+    explanation: "Les spécifications IPv6 (RFC 4291) imposent un préfixe réseau de /64 sur les réseaux locaux d'extrémité pour que l'autoconfiguration SLAAC puisse générer un identifiant d'interface de 64 bits."

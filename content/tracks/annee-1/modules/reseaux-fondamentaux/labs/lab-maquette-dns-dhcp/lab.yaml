@@ -1,0 +1,71 @@
+slug: maquette-dns-dhcp
+title: "Déploiement d'une maquette de services réseau DNS et DHCP"
+level: 2_files
+max_score: 100
+estimated_minutes: 45
+context: |
+  Vous devez déployer et configurer le service d'infrastructure réseau d'une agence régionale sur le sous-réseau 192.168.50.0/24.
+  Le serveur d'infrastructure assure simultanément les fonctions de serveur DNS local et de serveur DHCP via le service dnsmasq.
+
+  Le cahier des charges réseau impose :
+  - Domaine local : agence.local
+  - Écoute sur l'interface locale (192.168.50.254 et 127.0.0.1)
+  - Enregistrements DNS statiques :
+    * srv-app.agence.local -> 192.168.50.10
+    * gw.agence.local -> 192.168.50.254
+  - Plage d'adresses dynamiques DHCP : 192.168.50.100 à 192.168.50.200 avec masque 255.255.255.0 et bail de 12h
+  - Options DHCP obligatoires :
+    * Option 3 (Router / Passerelle) : 192.168.50.254
+    * Option 6 (DNS) : 192.168.50.254
+    * Option 15 (Domain Name) : agence.local
+  - Réservation statique DHCP pour l'imprimante réseau :
+    * MAC 00:11:22:33:44:55 -> nom prn-agence -> IP 192.168.50.20
+
+  Complétez le fichier de configuration dnsmasq.conf.
+
+objectives:
+  - "Configurer la zone DNS locale, le domaine et la résolution des noms statiques"
+  - "Définir l'étendue DHCP dynamique (plage, masque et durée de bail)"
+  - "Distribuer les options réseau indispensables (passerelle par défaut, serveurs DNS, nom de domaine)"
+  - "Créer une réservation d'adresse IP statique liée à une adresse MAC"
+
+prerequisites:
+  - dns-et-dhcp
+
+topology: null
+
+files:
+  editable:
+    - path: dnsmasq.conf
+      description: "Fichier de configuration du service dnsmasq"
+
+hints:
+  - cost_percent: 10
+    text: "Pour définir le domaine et forcer la résolution locale : domain=agence.local et local=/agence.local/."
+  - cost_percent: 10
+    text: "Pour les options DHCP : dhcp-option=3,192.168.50.254 et dhcp-option=6,192.168.50.254."
+
+validation:
+  type: script
+  image: opensio/validator-dnsmasq:latest
+  timeout_seconds: 30
+  checks:
+    - id: dns_config_valid
+      required: true
+      points: 35
+      description: "Configuration du domaine agence.local et des enregistrements statiques (srv-app, gw)"
+    - id: dhcp_scope_valid
+      required: true
+      points: 35
+      description: "Plage DHCP 192.168.50.100-200, masque /24 et durée de bail configurés"
+    - id: dhcp_options_valid
+      required: true
+      points: 20
+      description: "Options DHCP 3 (passerelle), 6 (DNS) et 15 (domaine) conformes"
+    - id: static_reservation_valid
+      required: false
+      points: 10
+      description: "Réservation DHCP statique pour l'imprimante prn-agence (192.168.50.20)"
+
+scoring:
+  floor_percent: 50
