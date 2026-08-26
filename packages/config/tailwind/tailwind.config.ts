@@ -1,6 +1,7 @@
 import type { Config } from 'tailwindcss';
 
 export const sharedTailwindConfig: Partial<Config> = {
+  darkMode: 'class',
   theme: {
     extend: {
       colors: {

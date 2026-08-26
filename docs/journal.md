@@ -1013,8 +1013,45 @@ Création complète du nouveau module `windows-server-ad` comprenant 6 leçons, 
   - `pnpm test` : 100 % vert (**351 tests automatisés** : 228 API, 105 Web, 18 Content-Schema — 0 skipped).
   - `pnpm lint` : 100 % vert (0 erreur, 0 avertissement).
   - `pnpm typecheck` : 100 % vert (0 erreur TypeScript).
-  - `node scripts/check-file-size.mjs` : 100 % conforme D-13 (329 fichiers analysés, 0 violation > 400 lignes).
-  - `pnpm build` : Build de production complet Next.js 15 et NestJS 11 réussi avec succès.
+---
+
+## 2026-08-26 — [Fix Lot D2] : Câblage complet & Correction du Thème Clair / Sombre / Système
+
+**Branche** : `fix/d2-theme-clair`  
+**Objectif** : Rendre le thème clair pleinement fonctionnel avec bascule instantanée sans flash de chargement (FOUC), palette de couleurs claire complète et contrastée sur tous les composants (cartes, tableaux, formulaires, code Shiki dual-theme, terminal simulé, tiroir Mentor IA), support des 3 options de préférences (sombre par défaut, clair, système suivant l'OS), synchronisation du profil utilisateur et repli `localStorage`.
+
+### 1. Mécanisme de Thème & Zéro Flash au Chargement
+- **Intégration de `next-themes`** :
+  - Client wrapper `ThemeProvider` (`apps/web/components/theme/theme-provider.tsx`) configuré avec `attribute="class"`, `defaultTheme="dark"`, `enableSystem={true}` et stockage automatique de clé `theme` dans `localStorage`.
+  - Intégration dans le layout racine `apps/web/app/layout.tsx` avec `suppressHydrationWarning` sur la balise `<html>`.
+  - Script bloquant inline côté serveur injecté par `next-themes` éliminant tout flash de thème blanc/noir au premier chargement.
+- **Configuration Tailwind CSS** :
+  - Ajout de `darkMode: 'class'` dans `packages/config/tailwind/tailwind.config.ts` et `apps/web/tailwind.config.ts`.
+
+### 2. Design Tokens & Palette Graphique Bi-Thème
+- **Tokens CSS (`apps/web/styles/tokens.css`)** :
+  - `:root` : palette claire native contrastée (`--bg-primary: #f8fafc`, `--bg-secondary: #ffffff`, `--bg-card: rgba(255, 255, 255, 0.92)`, `--text-primary: #0f172a`, `--border-default: #e2e8f0`, etc.).
+  - `.dark` : palette sombre d'origine conservée et sublimée (`--bg-primary: #020617`, `--bg-secondary: #0b1120`, `--text-primary: #f8fafc`, etc.).
+- **Composants & Feuilles de Style Spécialisées** :
+  - `base.css` : adaptation des classes `.glass-panel` et `.glass-panel-hover` pour les fonds clairs et sombres.
+  - `lessons.css` : adaptation complète de la typographie `.lesson-prose` (titres, paragraphes, citations, listes, tableaux, code inline).
+  - `CodeBlock` (`apps/web/components/lessons/code-block.tsx`) : coloration syntaxique Shiki bi-thème simultanée (`github-light-default` / `github-dark-default`), bascule instantanée sans ré-exécution de `codeToHtml` grâce aux variables CSS `--shiki-light` / `--shiki-dark`.
+  - `LabTerminal` (`apps/web/components/labs/lab-terminal.tsx`) : contrôles, barre d'état et raccourcis adaptés en mode clair tout en préservant un contraste élevé sur la console terminal.
+  - Navbar, fil d'Ariane, formulaires d'authentification, pages Catalogue, Dashboard, Administration, Profil et tiroir Mentor IA intégralement adaptés avec contrastes certifiés.
+
+### 3. Câblage des Préférences & Tests
+- **Sélecteur de Thème (`ProfilePreferences`)** :
+  - Boutons interactifs avec icônes `Moon`, `Sun`, `Sliders` pour « Sombre », « Clair », « Système ».
+  - Bascule visuelle immédiate via `useTheme().setTheme` combinée à la sauvegarde de profil via l'API REST `PATCH /api/v1/profile/preferences`.
+- **Tests Automatisés Frontend** :
+  - `apps/web/test/theme-integration.spec.tsx` : tests d'intégration Vitest validant le `ThemeProvider`, la valeur par défaut (`dark`), la bascule vers `light` et `system`, et l'interaction avec `ProfilePreferences`.
+- **Bilan des Métriques** :
+  - `pnpm test` : 100 % vert (**354 tests automatisés** : 228 API, 108 Web, 18 Content-Schema — 0 skipped, 0 failed).
+  - `pnpm lint` : 100 % vert (0 erreur, 0 avertissement).
+  - `pnpm typecheck` : 100 % vert (0 erreur TypeScript).
+  - `node scripts/check-file-size.mjs` : 100 % conforme D-13 (331 fichiers analysés, 0 violation > 400 lignes).
+  - `pnpm build` : Build de production complet Next.js 15 et NestJS 11 validé avec succès.
+
 
 
 

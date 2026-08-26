@@ -155,36 +155,36 @@ export function LabTerminal({ labSlug, sessionId, token }: LabTerminalProps) {
     <div
       role="region"
       aria-label="Terminal de lab interactif"
-      className="flex flex-col h-full bg-slate-950 text-slate-100 rounded-xl border border-slate-800 shadow-2xl overflow-hidden font-mono text-sm"
+      className="flex flex-col h-full bg-slate-950 text-slate-100 rounded-xl border border-slate-300 dark:border-slate-800 shadow-xl overflow-hidden font-mono text-sm"
     >
       {/* Barre de titre du terminal */}
-      <div className="flex items-center justify-between px-4 py-2.5 bg-slate-900 border-b border-slate-800 select-none">
+      <div className="flex items-center justify-between px-4 py-2.5 bg-slate-100 dark:bg-slate-900 border-b border-slate-300 dark:border-slate-800 select-none">
         <div className="flex items-center gap-2">
           <div className="flex gap-1.5 mr-2">
             <div className="w-3 h-3 rounded-full bg-red-500/80" />
             <div className="w-3 h-3 rounded-full bg-yellow-500/80" />
             <div className="w-3 h-3 rounded-full bg-emerald-500/80" />
           </div>
-          <Terminal className="w-4 h-4 text-emerald-400" />
-          <span className="text-xs font-semibold text-slate-300">
+          <Terminal className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+          <span className="text-xs font-semibold text-slate-800 dark:text-slate-300">
             {status?.prompt.split(':')[0] || 'student@opensio-lab'}
           </span>
-          <span className="text-xs text-slate-500">({cwd ? `~/${cwd}` : '~'})</span>
+          <span className="text-xs text-slate-500 dark:text-slate-500">({cwd ? `~/${cwd}` : '~'})</span>
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1.5 text-xs text-slate-400">
-            <ShieldCheck className="w-3.5 h-3.5 text-blue-400" />
+          <div className="flex items-center gap-1.5 text-xs text-slate-600 dark:text-slate-400">
+            <ShieldCheck className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
             <span className="hidden sm:inline">Simulation Sécurisée</span>
           </div>
 
           <div className="flex items-center gap-1.5 text-xs">
             {isConnected ? (
-              <span className="flex items-center gap-1 text-emerald-400">
+              <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-medium">
                 <CheckCircle2 className="w-3.5 h-3.5" /> Connecté
               </span>
             ) : (
-              <span className="flex items-center gap-1 text-red-400">
+              <span className="flex items-center gap-1 text-red-600 dark:text-red-400 font-medium">
                 <AlertTriangle className="w-3.5 h-3.5" /> Déconnecté
               </span>
             )}
@@ -194,7 +194,7 @@ export function LabTerminal({ labSlug, sessionId, token }: LabTerminalProps) {
             type="button"
             onClick={() => setHistory([])}
             title="Effacer le terminal"
-            className="p-1 text-slate-400 hover:text-slate-200 hover:bg-slate-800 rounded transition-colors"
+            className="p-1 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-800 rounded transition-colors cursor-pointer"
           >
             <Trash2 className="w-3.5 h-3.5" />
           </button>
@@ -203,7 +203,7 @@ export function LabTerminal({ labSlug, sessionId, token }: LabTerminalProps) {
             type="button"
             onClick={() => void initTerminal()}
             title="Réinitialiser la connexion"
-            className="p-1 text-slate-400 hover:text-slate-200 hover:bg-slate-800 rounded transition-colors"
+            className="p-1 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-800 rounded transition-colors cursor-pointer"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin' : ''}`} />
           </button>
@@ -211,24 +211,24 @@ export function LabTerminal({ labSlug, sessionId, token }: LabTerminalProps) {
       </div>
 
       {/* Barre de commandes rapides */}
-      <div className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-900/60 border-b border-slate-800/80 overflow-x-auto text-xs">
-        <span className="text-slate-500 shrink-0 mr-1">Raccourcis :</span>
+      <div className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-50 dark:bg-slate-900/60 border-b border-slate-300 dark:border-slate-800/80 overflow-x-auto text-xs">
+        <span className="text-slate-500 dark:text-slate-500 shrink-0 mr-1 font-sans font-medium text-[11px]">Raccourcis :</span>
         {quickCommands.map((cmd) => (
           <button
             key={cmd}
             type="button"
             onClick={() => void handleRunCommand(cmd)}
             disabled={isLoading || !isConnected}
-            className="px-2 py-0.5 bg-slate-800/90 hover:bg-slate-700 text-slate-300 hover:text-white rounded border border-slate-700/50 transition-colors whitespace-nowrap disabled:opacity-50"
+            className="px-2 py-0.5 bg-white dark:bg-slate-800/90 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white rounded border border-slate-300 dark:border-slate-700/50 transition-colors whitespace-nowrap disabled:opacity-50 cursor-pointer text-xs"
           >
             {cmd}
           </button>
         ))}
       </div>
 
-      {/* Zone d'affichage des logs */}
+      {/* Zone d'affichage des logs (Console Terminal) */}
       <div
-        className="flex-1 p-4 overflow-y-auto space-y-2 select-text"
+        className="flex-1 p-4 bg-slate-950 overflow-y-auto space-y-2 select-text"
         onClick={() => inputRef.current?.focus()}
       >
         {error && (
