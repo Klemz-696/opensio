@@ -802,4 +802,49 @@ Création complète du nouveau module `windows-server-ad` comprenant 6 leçons, 
 - **Vérification d'idempotence et d'intégrité** :
   - L'exécution de `pnpm test` suivie de `pnpm content:sync` affiche 100 % de « inchangés » sur la base de développement (0 suppression, 0 réinsertion).
 
+---
+
+## 2026-08-26 — [Lot C2 — Partie 1] : Interface et Expérience Utilisateur — Navigation & Progression
+
+**Branche** : `feat/c2-navigation-progression`  
+**Objectif** : Amélioration de l'expérience utilisateur et de la navigation globale d'OpenSIO (audit UX complet étape 0, navigation séquentielle de cours avec touches directes, sommaire latéral repliable du module, progression visuelle systématique sur le catalogue et mise en avant de la reprise de lecture sur le tableau de bord).
+
+### 1. Audit UX Initial (Étape 0)
+- Cartographie intégrale des pages (`/catalogue`, `/catalogue/[moduleSlug]`, `/catalogue/[moduleSlug]/[lessonSlug]`, `/catalogue/[moduleSlug]/quiz/[quizSlug]`, `/catalogue/[moduleSlug]/labs/[labSlug]`, `/dashboard`) et de leurs composants.
+- Constat de non-régression : réutilisation intégrale des endpoints et services existants (`CatalogProgressEnricherService`, `ProgressAggregationService`, `DashboardService`) sans altération du cache ni requêtes N+1.
+
+### 2. Navigation de Leçon & Sommaire de Module
+- **Composant `LessonNavigation` (`apps/web/components/lessons/lesson-navigation.tsx`)** :
+  - Boutons Précédent et Suivant avec affichage dynamique du titre de la leçon et de son statut d'achèvement.
+  - En fin de module : détection automatique et proposition d'un lien d'évaluation vers le quiz du module (`quiz-*.yaml`) ou vers la page récapitulative du module.
+  - Navigation au clavier accessible : écoute des touches directes `Flèche gauche` et `Flèche droite` avec garde stricte (désactivée dans les `<input>`, `<textarea>`, `<select>`, zones `contentEditable`, terminaux et éléments à rôle de saisie) et neutralisation si une touche modificatrice (`Alt`, `Ctrl`, `Meta`, `Shift`) est active.
+  - Indicateur visuel `kbd` (`←` / `→`) pour guider l'apprenant.
+- **Composant `LessonModuleSidebar` (`apps/web/components/lessons/lesson-module-sidebar.tsx`)** :
+  - Sommaire latéral repliable du module affichant l'ensemble des leçons dans l'ordre pédagogique.
+  - Indicateurs d'état : coche verte pour les leçons terminées, puce de focus pour la leçon active (`aria-current="page"`), durée estimée et barre de progression globale du module.
+  - Accès direct aux quiz et labs du module.
+  - Support responsive : volet rétractable sur desktop et tiroir (drawer) avec backdrop sur mobile, fermeture via la touche `Échap` et accessibilité ARIA complète (`aria-expanded`, `aria-controls`).
+
+### 3. Progression Visuelle sur le Catalogue
+- **Composant `ModuleCard` (`apps/web/components/catalog/module-card.tsx`)** :
+  - Affichage systématique et harmonisé de la jauge de progression pour tous les modules (ex: `0/7 leçons (0 %)` si non entamé, jauge bleue en cours, jauge verte émeraude avec badge « Validé » à 100 %).
+  - Accessibilité : attributs `role="progressbar"`, `aria-valuenow`, `aria-valuemin="0"`, `aria-valuemax="100"` et `aria-label`.
+
+### 4. Tableau de Bord — Reprendre où tu t'es arrêté
+- **Composant `DashboardResume` (`apps/web/components/dashboard/dashboard-resume.tsx`)** :
+  - Identification et mise en valeur prioritaire de la dernière leçon consultée non terminée (`status === 'started'`) dans une carte dédiée avec bouton direct « Reprendre la leçon ».
+  - Grille secondaire pour les autres activités récentes et état vide accueillant pour les nouveaux apprenants.
+
+### 5. Validations & Tests
+- `apps/web/test/lesson-navigation.spec.tsx` : 5 tests unitaires validant l'affichage, la transition vers le quiz, la navigation clavier et les gardes sur les champs de saisie.
+- `apps/web/test/lesson-module-sidebar.spec.tsx` : 3 tests validant le rendu des leçons, l'indicateur `aria-current="page"`, la bascule et la fermeture par la touche `Échap`.
+- `apps/web/test/module-card.spec.tsx` : tests mis à jour avec le rôle `progressbar` et l'état par défaut à 0 %.
+- `apps/web/test/dashboard-page.spec.tsx` : tests mis à jour avec la nouvelle structure de reprise d'activité.
+- `pnpm test` : 100 % vert (**267 tests automatisés** : 185 API, 64 Web, 18 Content-Schema).
+- `pnpm lint` : 100 % vert (0 erreur, 0 avertissement).
+- `pnpm typecheck` : 100 % vert.
+- `node scripts/check-file-size.mjs` : 100 % conforme D-13 (270 fichiers analysés, 0 violation > 400 lignes).
+- `pnpm build` : Build de production Next.js 15 App Router et NestJS 11 validé avec succès.
+
+
 

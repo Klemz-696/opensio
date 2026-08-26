@@ -35,6 +35,9 @@ describe('ModuleCard', () => {
     expect(screen.getByText('B3.2')).toBeDefined();
     expect(screen.getByText('2/4 leçons')).toBeDefined();
     expect(screen.getByText('50%')).toBeDefined();
+
+    const progressBar = screen.getByRole('progressbar');
+    expect(progressBar.getAttribute('aria-valuenow')).toBe('50');
   });
 
   it('affiche le badge "Validé" quand le module est complètement terminé', () => {
@@ -51,5 +54,18 @@ describe('ModuleCard', () => {
     render(<ModuleCard module={completedModule} />);
     expect(screen.getByText('Validé')).toBeDefined();
     expect(screen.getByText('100%')).toBeDefined();
+  });
+
+  it('affiche 0% par défaut si aucune progression n\'est enregistrée', () => {
+    const unstartedModule: ModuleSummary = {
+      ...mockModule,
+      progress: null,
+    };
+
+    render(<ModuleCard module={unstartedModule} />);
+    expect(screen.getByText('0/4 leçons')).toBeDefined();
+    expect(screen.getByText('0%')).toBeDefined();
+    const progressBar = screen.getByRole('progressbar');
+    expect(progressBar.getAttribute('aria-valuenow')).toBe('0');
   });
 });
