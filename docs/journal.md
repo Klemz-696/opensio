@@ -794,8 +794,11 @@ Création complète du nouveau module `windows-server-ad` comprenant 6 leçons, 
   - Fichier de setup global `apps/api/test/setup-env.ts` forçant `NODE_ENV=test`, chargeant `.env.test` et dérivant automatiquement toute `DATABASE_URL` pointant vers `opensio` vers `opensio_test`.
 - **Garde-fous de sécurité stricts** :
   - `PrismaService` et `env.validation.ts` : Si `NODE_ENV === 'test'` et que `DATABASE_URL` cible la base de développement `opensio`, l'exécution est immédiatement bloquée avec une erreur explicite.
-- **Workflow CI GitHub Actions** :
-  - Application automatique des migrations Prisma sur la base de développement ET sur `opensio_test`.
+- **Workflow CI GitHub Actions & Cohérence Local / CI** :
+  - Service Postgres aligné sur `POSTGRES_DB: opensio_test` et mot de passe unifié.
+  - Déploiement des migrations via `prisma migrate deploy` directement contre `opensio_test` avant `pnpm test`.
+  - Création de `.env.test.example` et `apps/api/.env.test.example` documentant la configuration attendue.
+  - Harmonisation du skip gracieux en local dans `app-boot.e2e.spec.ts` et `chat.e2e.spec.ts` (0 test skippé en CI).
 - **Vérification d'idempotence et d'intégrité** :
   - L'exécution de `pnpm test` suivie de `pnpm content:sync` affiche 100 % de « inchangés » sur la base de développement (0 suppression, 0 réinsertion).
 
