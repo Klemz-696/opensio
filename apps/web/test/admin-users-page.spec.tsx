@@ -1,7 +1,7 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 import AdminUsersPage from '../app/admin/users/page';
-import { adminApi } from '../lib/api/admin-api';
+import { adminApi, type AdminUserItem } from '../lib/api/admin-api';
 
 vi.mock('../lib/api/admin-api', () => ({
   adminApi: {
@@ -20,7 +20,7 @@ vi.mock('../lib/auth/use-auth', () => ({
   }),
 }));
 
-const mockUsers = [
+const mockUsers: AdminUserItem[] = [
   {
     id: 'admin-1',
     email: 'admin@opensio.local',
@@ -29,6 +29,7 @@ const mockUsers = [
     status: 'ACTIVE',
     mustChangePassword: false,
     createdAt: '2026-08-26T10:00:00.000Z',
+    updatedAt: '2026-08-26T10:00:00.000Z',
     lastLoginAt: '2026-08-26T12:00:00.000Z',
   },
   {
@@ -39,6 +40,7 @@ const mockUsers = [
     status: 'ACTIVE',
     mustChangePassword: true,
     createdAt: '2026-08-26T10:00:00.000Z',
+    updatedAt: '2026-08-26T10:00:00.000Z',
     lastLoginAt: null,
   },
 ];
@@ -46,7 +48,7 @@ const mockUsers = [
 describe('AdminUsersPage Component', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    (adminApi.listUsers as any).mockResolvedValue({
+    vi.mocked(adminApi.listUsers).mockResolvedValue({
       data: {
         items: mockUsers,
         total: 2,

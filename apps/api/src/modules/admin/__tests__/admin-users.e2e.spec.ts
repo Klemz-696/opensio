@@ -8,10 +8,34 @@ import { AdminUsersService } from '../admin-users.service';
 import { AdminUsersController } from '../admin-users.controller';
 import { RolesGuard } from '../../../common/guards/roles.guard';
 import { Reflector } from '@nestjs/core';
-import { ForbiddenException, BadRequestException } from '@nestjs/common';
+import { ExecutionContext, ForbiddenException, BadRequestException } from '@nestjs/common';
+import type { Request } from 'express';
 import type { AuthenticatedUser } from '../../../common/guards/auth.guard';
 
 const TEST_SECRET = 'c'.repeat(64);
+
+function createMockExecutionContext(user: AuthenticatedUser): ExecutionContext {
+  return {
+    getHandler: () => ({}),
+    getClass: () => ({}),
+    switchToHttp: () => ({
+      getRequest: () => ({ user }),
+      getResponse: () => ({}),
+      getNext: () => ({}),
+    }),
+    getType: () => 'http',
+    switchToRpc: () => ({ getData: () => ({}), getContext: () => ({}) }),
+    switchToWs: () => ({ getClient: () => ({}), getData: () => ({}) }),
+    getArgs: () => [],
+    getArgByIndex: () => undefined,
+  } as unknown as ExecutionContext;
+}
+
+const mockReq = {
+  ip: '127.0.0.1',
+  headers: {},
+  socket: { remoteAddress: '127.0.0.1' },
+} as unknown as Request;
 
 describe.skipIf(!process.env.DATABASE_URL)('Admin Module — Tests d\'Intégration PostgreSQL & RBAC (Lot D1)', () => {
   let prisma: PrismaService;
@@ -120,21 +144,8 @@ describe.skipIf(!process.env.DATABASE_URL)('Admin Module — Tests d\'Intégrati
     reflector.getAllAndOverride = () => [Role.ADMIN];
     const guard = new RolesGuard(reflector);
 
-    const mockAdminContext = {
-      getHandler: () => ({}),
-      getClass: () => ({}),
-      switchToHttp: () => ({
-        getRequest: () => ({ user: adminAuth }),
-      }),
-    } as any;
-
-    const mockStudentContext = {
-      getHandler: () => ({}),
-      getClass: () => ({}),
-      switchToHttp: () => ({
-        getRequest: () => ({ user: studentAuth }),
-      }),
-    } as any;
+    const mockAdminContext = createMockExecutionContext(adminAuth);
+    const mockStudentContext = createMockExecutionContext(studentAuth);
 
     expect(guard.canActivate(mockAdminContext)).toBe(true);
     expect(() => guard.canActivate(mockStudentContext)).toThrow(ForbiddenException);
@@ -166,7 +177,7 @@ describe.skipIf(!process.env.DATABASE_URL)('Admin Module — Tests d\'Intégrati
         role: Role.APPRENANT,
       },
       adminAuth,
-      { ip: '127.0.0.1' } as any,
+      mockReq,
     );
 
     expect(created.user.email).toBe(targetEmail);
@@ -192,7 +203,7 @@ describe.skipIf(!process.env.DATABASE_URL)('Admin Module — Tests d\'Intégrati
         displayName: 'Target Modifié',
       },
       adminAuth,
-      { ip: '127.0.0.1' } as any,
+      mockReq,
     );
 
     expect(updated.displayName).toBe('Target Modifié');
@@ -209,7 +220,7 @@ describe.skipIf(!process.env.DATABASE_URL)('Admin Module — Tests d\'Intégrati
         adminUser.id,
         { role: Role.APPRENANT },
         adminAuth,
-        { ip: '127.0.0.1' } as any,
+        mockReq,
       ),
     ).rejects.toThrow(BadRequestException);
 
@@ -218,7 +229,7 @@ describe.skipIf(!process.env.DATABASE_URL)('Admin Module — Tests d\'Intégrati
         adminUser.id,
         { status: UserStatus.DISABLED },
         adminAuth,
-        { ip: '127.0.0.1' } as any,
+        mockReq,
       ),
     ).rejects.toThrow(BadRequestException);
   });
@@ -234,7 +245,7 @@ describe.skipIf(!process.env.DATABASE_URL)('Admin Module — Tests d\'Intégrati
       userInDb!.id,
       {},
       adminAuth,
-      { ip: '127.0.0.1' } as any,
+      mockReq,
     );
 
     expect(resetRes.temporaryPassword).toBeDefined();
