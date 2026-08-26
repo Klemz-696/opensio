@@ -1010,7 +1010,7 @@ Création complète du nouveau module `windows-server-ad` comprenant 6 leçons, 
   - `apps/web/test/profile-rgpd.spec.tsx` : 2 tests de confirmation et suppression RGPD.
   - `apps/web/test/profile-page.spec.tsx` : 2 tests d'intégration de la page `/profile`.
 - **Bilan Global des Métriques** :
-  - `pnpm test` : 100 % vert (**326 tests automatisés** : 203 API, 105 Web, 18 Content-Schema).
+  - `pnpm test` : 100 % vert (**351 tests automatisés** : 228 API, 105 Web, 18 Content-Schema — 0 skipped).
   - `pnpm lint` : 100 % vert (0 erreur, 0 avertissement).
   - `pnpm typecheck` : 100 % vert (0 erreur TypeScript).
   - `node scripts/check-file-size.mjs` : 100 % conforme D-13 (329 fichiers analysés, 0 violation > 400 lignes).
