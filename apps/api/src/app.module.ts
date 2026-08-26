@@ -13,12 +13,14 @@ import { LabsModule } from './modules/labs/labs.module';
 import { TerminalModule } from './modules/terminal/terminal.module';
 import { AiModule } from './modules/ai/ai.module';
 import { AdminModule } from './modules/admin/admin.module';
+import { ProfileModule } from './modules/profile/profile.module';
 
 @Module({
   imports: [
     PrismaModule,
     AuditModule,
     AuthModule,
+    ProfileModule,
     CatalogModule,
     QuizzesModule,
     ProgressModule,

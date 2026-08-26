@@ -29,6 +29,9 @@ export interface UserProfileResponse {
   id: string;
   email: string;
   displayName: string;
+  avatarUrl?: string | null;
+  bio?: string | null;
+  preferences?: unknown;
   role: Role;
   status: UserStatus;
   mustChangePassword: boolean;
@@ -98,6 +101,9 @@ export class AuthService {
       id: user.id,
       email: user.email,
       displayName: user.displayName,
+      avatarUrl: user.avatarUrl,
+      bio: user.bio,
+      preferences: user.preferences,
       role: user.role,
       status: user.status,
       mustChangePassword: user.mustChangePassword,
@@ -145,6 +151,8 @@ export class AuthService {
       email: user.email,
       displayName: user.displayName,
       role: user.role,
+      avatarUrl: user.avatarUrl,
+      bio: user.bio,
       mustChangePassword: user.mustChangePassword,
     };
 
@@ -182,6 +190,8 @@ export class AuthService {
       email: user.email,
       displayName: user.displayName,
       role: user.role,
+      avatarUrl: user.avatarUrl,
+      bio: user.bio,
       mustChangePassword: user.mustChangePassword,
     };
 
@@ -286,6 +296,9 @@ export class AuthService {
       id: user.id,
       email: user.email,
       displayName: user.displayName,
+      avatarUrl: user.avatarUrl,
+      bio: user.bio,
+      preferences: user.preferences,
       role: user.role,
       status: user.status,
       mustChangePassword: user.mustChangePassword,

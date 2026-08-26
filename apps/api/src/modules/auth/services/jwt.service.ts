@@ -16,6 +16,8 @@ export interface UserTokenProfile {
   email: string;
   displayName: string;
   role: Role;
+  avatarUrl?: string | null;
+  bio?: string | null;
   mustChangePassword?: boolean;
 }
 
