@@ -43,7 +43,7 @@ const mockDashboardData: DashboardData = {
       trackSlug: 'annee-1',
       difficulty: 2,
       estimatedMinutes: 45,
-      status: 'completed',
+      status: 'started',
       timeSpentSeconds: 1800,
       updatedAt: '2026-08-24T12:00:00Z',
     },
@@ -108,11 +108,12 @@ describe('Composants du Tableau de bord (Dashboard)', () => {
     expect(screen.getByText('Modules validés (RM-03)')).toBeDefined();
   });
 
-  it('DashboardResume affiche les leçons à reprendre', () => {
+  it('DashboardResume affiche la section "Reprendre où tu t\'es arrêté" avec la leçon en cours', () => {
     render(<DashboardResume items={mockDashboardData.resume} />);
-    expect(screen.getByText('Reprendre où j\'en étais')).toBeDefined();
+    expect(screen.getByText(/Reprendre où tu t'es arrêté/i)).toBeDefined();
     expect(screen.getByText('Adressage IPv4')).toBeDefined();
     expect(screen.getByText('Réseaux fondamentaux')).toBeDefined();
+    expect(screen.getByText('Reprendre la leçon')).toBeDefined();
   });
 
   it('DashboardRecommendations affiche les recommandations avec liens d\'action', () => {
