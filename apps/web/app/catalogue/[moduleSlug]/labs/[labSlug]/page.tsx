@@ -291,7 +291,7 @@ export default function LabPage({ params }: LabPageProps) {
         />
       )}
 
-      <LabContext lab={lab} />
+      <LabContext lab={lab} sessionId={session?.id} />
     </div>
   );
 }
