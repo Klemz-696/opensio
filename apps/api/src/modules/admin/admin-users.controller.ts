@@ -85,14 +85,17 @@ export class AdminUsersController {
     return this.adminUsersService.resetPassword(id, dto, user.id, ip);
   }
 
-  private extractClientIp(req: Request): string {
-    const forwarded = req.headers['x-forwarded-for'];
+  private extractClientIp(req?: Request): string {
+    if (!req) {
+      return '127.0.0.1';
+    }
+    const forwarded = req.headers?.['x-forwarded-for'];
     if (typeof forwarded === 'string') {
       return forwarded.split(',')[0].trim();
     }
     if (Array.isArray(forwarded) && forwarded.length > 0) {
       return forwarded[0].trim();
     }
-    return req.ip || req.socket.remoteAddress || '127.0.0.1';
+    return req.ip || req.socket?.remoteAddress || '127.0.0.1';
   }
 }

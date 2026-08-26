@@ -7,9 +7,18 @@ import type { PasswordService } from '../../auth/services/password.service';
 import type { RefreshTokenService } from '../../auth/services/refresh-token.service';
 import type { AuditService } from '../../audit/audit.service';
 
+interface MockPrismaUser {
+  findMany: ReturnType<typeof vi.fn>;
+  count: ReturnType<typeof vi.fn>;
+  findUnique: ReturnType<typeof vi.fn>;
+  findFirst: ReturnType<typeof vi.fn>;
+  create: ReturnType<typeof vi.fn>;
+  update: ReturnType<typeof vi.fn>;
+}
+
 describe('AdminUsersService (Lot D1)', () => {
   let service: AdminUsersService;
-  let prisma: PrismaService;
+  let mockPrismaUser: MockPrismaUser;
   let passwordService: PasswordService;
   let refreshTokenService: RefreshTokenService;
   let auditService: AuditService;
@@ -43,15 +52,17 @@ describe('AdminUsersService (Lot D1)', () => {
   };
 
   beforeEach(() => {
-    prisma = {
-      user: {
-        findMany: vi.fn(),
-        count: vi.fn(),
-        findUnique: vi.fn(),
-        findFirst: vi.fn(),
-        create: vi.fn(),
-        update: vi.fn(),
-      },
+    mockPrismaUser = {
+      findMany: vi.fn(),
+      count: vi.fn(),
+      findUnique: vi.fn(),
+      findFirst: vi.fn(),
+      create: vi.fn(),
+      update: vi.fn(),
+    };
+
+    const prisma = {
+      user: mockPrismaUser,
     } as unknown as PrismaService;
 
     passwordService = {
@@ -78,8 +89,8 @@ describe('AdminUsersService (Lot D1)', () => {
 
   describe('listUsers', () => {
     it('retourne la liste paginée des utilisateurs', async () => {
-      (prisma.user.findMany as any).mockResolvedValue([mockAdminUser, mockStudentUser]);
-      (prisma.user.count as any).mockResolvedValue(2);
+      mockPrismaUser.findMany.mockResolvedValue([mockAdminUser, mockStudentUser]);
+      mockPrismaUser.count.mockResolvedValue(2);
 
       const result = await service.listUsers({ page: 1, limit: 10 });
 
@@ -92,8 +103,8 @@ describe('AdminUsersService (Lot D1)', () => {
     });
 
     it('applique les filtres de recherche et de rôle', async () => {
-      (prisma.user.findMany as any).mockResolvedValue([mockStudentUser]);
-      (prisma.user.count as any).mockResolvedValue(1);
+      mockPrismaUser.findMany.mockResolvedValue([mockStudentUser]);
+      mockPrismaUser.count.mockResolvedValue(1);
 
       const result = await service.listUsers({
         page: 1,
@@ -104,7 +115,7 @@ describe('AdminUsersService (Lot D1)', () => {
       });
 
       expect(result.total).toBe(1);
-      expect(prisma.user.findMany).toHaveBeenCalledWith(
+      expect(mockPrismaUser.findMany).toHaveBeenCalledWith(
         expect.objectContaining({
           where: expect.objectContaining({
             role: Role.APPRENANT,
@@ -117,8 +128,8 @@ describe('AdminUsersService (Lot D1)', () => {
 
   describe('createUser', () => {
     it('crée un nouvel utilisateur avec mot de passe temporaire et flag mustChangePassword', async () => {
-      (prisma.user.findUnique as any).mockResolvedValue(null);
-      (prisma.user.create as any).mockResolvedValue({
+      mockPrismaUser.findUnique.mockResolvedValue(null);
+      mockPrismaUser.create.mockResolvedValue({
         ...mockStudentUser,
         mustChangePassword: true,
       });
@@ -135,7 +146,7 @@ describe('AdminUsersService (Lot D1)', () => {
 
       expect(result.user).toBeDefined();
       expect(result.temporaryPassword).toBe('TempP@ssword123!');
-      expect(prisma.user.create).toHaveBeenCalledWith(
+      expect(mockPrismaUser.create).toHaveBeenCalledWith(
         expect.objectContaining({
           data: expect.objectContaining({
             email: 'new.student@opensio.local',
@@ -151,7 +162,7 @@ describe('AdminUsersService (Lot D1)', () => {
     });
 
     it('rejette la création si l\'adresse email est déjà utilisée', async () => {
-      (prisma.user.findUnique as any).mockResolvedValue(mockStudentUser);
+      mockPrismaUser.findUnique.mockResolvedValue(mockStudentUser);
 
       await expect(
         service.createUser(
@@ -169,7 +180,7 @@ describe('AdminUsersService (Lot D1)', () => {
 
   describe('updateUser (Gardes de sécurité)', () => {
     it('interdit à un admin de désactiver son propre compte', async () => {
-      (prisma.user.findFirst as any).mockResolvedValue(mockAdminUser);
+      mockPrismaUser.findFirst.mockResolvedValue(mockAdminUser);
 
       await expect(
         service.updateUser(
@@ -182,7 +193,7 @@ describe('AdminUsersService (Lot D1)', () => {
     });
 
     it('interdit à un admin de rétrograder son propre rôle', async () => {
-      (prisma.user.findFirst as any).mockResolvedValue(mockAdminUser);
+      mockPrismaUser.findFirst.mockResolvedValue(mockAdminUser);
 
       await expect(
         service.updateUser(
@@ -195,8 +206,8 @@ describe('AdminUsersService (Lot D1)', () => {
     });
 
     it('révoque les sessions actives si l\'utilisateur est désactivé', async () => {
-      (prisma.user.findFirst as any).mockResolvedValue(mockStudentUser);
-      (prisma.user.update as any).mockResolvedValue({
+      mockPrismaUser.findFirst.mockResolvedValue(mockStudentUser);
+      mockPrismaUser.update.mockResolvedValue({
         ...mockStudentUser,
         status: UserStatus.DISABLED,
       });
@@ -219,8 +230,8 @@ describe('AdminUsersService (Lot D1)', () => {
 
   describe('resetPassword', () => {
     it('réinitialise le mot de passe, active mustChangePassword et révoque les sessions', async () => {
-      (prisma.user.findFirst as any).mockResolvedValue(mockStudentUser);
-      (prisma.user.update as any).mockResolvedValue({
+      mockPrismaUser.findFirst.mockResolvedValue(mockStudentUser);
+      mockPrismaUser.update.mockResolvedValue({
         ...mockStudentUser,
         mustChangePassword: true,
       });
@@ -234,7 +245,7 @@ describe('AdminUsersService (Lot D1)', () => {
 
       expect(result.temporaryPassword).toBe('TempP@ssword123!');
       expect(refreshTokenService.revokeAllUserTokens).toHaveBeenCalledWith(mockStudentUser.id);
-      expect(prisma.user.update).toHaveBeenCalledWith(
+      expect(mockPrismaUser.update).toHaveBeenCalledWith(
         expect.objectContaining({
           data: expect.objectContaining({
             mustChangePassword: true,
@@ -249,7 +260,7 @@ describe('AdminUsersService (Lot D1)', () => {
     });
 
     it('échoue si l\'utilisateur n\'existe pas', async () => {
-      (prisma.user.findFirst as any).mockResolvedValue(null);
+      mockPrismaUser.findFirst.mockResolvedValue(null);
 
       await expect(
         service.resetPassword('unknown-id', {}, mockAdminUser.id, '127.0.0.1'),
