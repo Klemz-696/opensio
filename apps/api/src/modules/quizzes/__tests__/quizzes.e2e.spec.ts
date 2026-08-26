@@ -10,7 +10,7 @@ import { QuizzesController } from '../quizzes.controller';
 import { executeContentSync } from '../../../sync/sync.service';
 import { CatalogCacheService } from '../../catalog/catalog-cache.service';
 import type { AuthenticatedUser } from '../../../common/guards/auth.guard';
-import { UserRole } from '@prisma/client';
+import { Role } from '@prisma/client';
 
 const TEST_SECRET = 'd'.repeat(64);
 
@@ -28,7 +28,7 @@ describe.skipIf(!process.env.DATABASE_URL)(
 
     const contentDir = path.resolve(__dirname, '../../../../../../content');
     const testEmail = 'etudiant.quiz.test@opensio.local';
-    let testUser: { id: string; email: string; displayName: string; role: UserRole };
+    let testUser: { id: string; email: string; displayName: string; role: Role };
     let authUser: AuthenticatedUser;
 
     beforeAll(async () => {
@@ -65,7 +65,7 @@ describe.skipIf(!process.env.DATABASE_URL)(
             email: testEmail,
             displayName: 'Étudiant Test Quiz',
             passwordHash: 'dummy_hash_argon2',
-            role: UserRole.STUDENT,
+            role: Role.APPRENANT,
           },
         });
 

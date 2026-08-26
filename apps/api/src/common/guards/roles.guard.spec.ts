@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import { Reflector } from '@nestjs/core';
 import { ExecutionContext, ForbiddenException } from '@nestjs/common';
-import { UserRole } from '@prisma/client';
+import { Role } from '@prisma/client';
 import { RolesGuard } from './roles.guard';
 
-function createMockContext(user?: { role: UserRole }): ExecutionContext {
+function createMockContext(user?: { role: Role }): ExecutionContext {
   return {
     getHandler: () => ({}),
     getClass: () => ({}),
@@ -20,34 +20,34 @@ describe('RolesGuard (§29.2)', () => {
     reflector.getAllAndOverride = () => null;
 
     const guard = new RolesGuard(reflector);
-    const context = createMockContext({ role: UserRole.STUDENT });
+    const context = createMockContext({ role: Role.APPRENANT });
 
     expect(guard.canActivate(context)).toBe(true);
   });
 
   it('autorise l\'accès si l\'utilisateur possède le rôle requis', () => {
     const reflector = new Reflector();
-    reflector.getAllAndOverride = () => [UserRole.ADMIN];
+    reflector.getAllAndOverride = () => [Role.ADMIN];
 
     const guard = new RolesGuard(reflector);
-    const context = createMockContext({ role: UserRole.ADMIN });
+    const context = createMockContext({ role: Role.ADMIN });
 
     expect(guard.canActivate(context)).toBe(true);
   });
 
   it('interdit l\'accès si le rôle de l\'utilisateur ne correspond pas', () => {
     const reflector = new Reflector();
-    reflector.getAllAndOverride = () => [UserRole.ADMIN];
+    reflector.getAllAndOverride = () => [Role.ADMIN];
 
     const guard = new RolesGuard(reflector);
-    const context = createMockContext({ role: UserRole.STUDENT });
+    const context = createMockContext({ role: Role.APPRENANT });
 
     expect(() => guard.canActivate(context)).toThrow(ForbiddenException);
   });
 
   it('interdit l\'accès si l\'utilisateur n\'est pas injecté dans la requête', () => {
     const reflector = new Reflector();
-    reflector.getAllAndOverride = () => [UserRole.STUDENT];
+    reflector.getAllAndOverride = () => [Role.APPRENANT];
 
     const guard = new RolesGuard(reflector);
     const context = createMockContext(undefined);

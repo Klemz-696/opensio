@@ -8,7 +8,7 @@ import { PrismaService } from '../src/prisma/prisma.service';
 import { PasswordService } from '../src/modules/auth/services/password.service';
 import { executeContentSync } from '../src/sync/sync.service';
 import { CatalogCacheService } from '../src/modules/catalog/catalog-cache.service';
-import { UserRole } from '@prisma/client';
+import { Role } from '@prisma/client';
 
 process.env.NODE_ENV = 'test';
 process.env.DATABASE_URL =
@@ -73,7 +73,7 @@ async function runDemonstration() {
         email: adminEmail,
         passwordHash: hashedAdmin,
         displayName: 'Admin Deploy',
-        role: UserRole.ADMIN,
+        role: Role.ADMIN,
       },
     });
 
@@ -83,7 +83,7 @@ async function runDemonstration() {
         email: studentEmail,
         passwordHash: hashedStudent,
         displayName: 'Student Deploy',
-        role: UserRole.STUDENT,
+        role: Role.APPRENANT,
       },
     });
 

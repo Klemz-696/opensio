@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import type { Request } from 'express';
-import { UserRole } from '@prisma/client';
+import { Role } from '@prisma/client';
 import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
 import { JwtService } from '../../modules/auth/services/jwt.service';
 
@@ -15,7 +15,7 @@ export interface AuthenticatedUser {
   id: string;
   email: string;
   displayName: string;
-  role: UserRole;
+  role: Role;
 }
 
 @Injectable()

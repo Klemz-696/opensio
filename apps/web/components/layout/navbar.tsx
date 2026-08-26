@@ -48,6 +48,15 @@ export function Navbar() {
               <BookOpen className="w-4 h-4 text-sky-400" />
               <span>Catalogue</span>
             </Link>
+            {isAuthenticated && (user?.role === 'ADMIN' || user?.role === 'admin') && (
+              <Link
+                href="/admin/users"
+                className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium text-indigo-300 hover:text-white hover:bg-indigo-950/60 border border-indigo-500/20 transition-colors"
+              >
+                <ShieldCheck className="w-4 h-4 text-indigo-400" />
+                <span>Administration</span>
+              </Link>
+            )}
           </nav>
         </div>
 
@@ -61,7 +70,11 @@ export function Navbar() {
                 <span className="font-semibold text-white leading-tight">{user.displayName}</span>
                 <span className="text-[10px] text-slate-400 flex items-center gap-1">
                   <ShieldCheck className="w-3 h-3 text-emerald-400" />
-                  {user.role === 'admin' ? 'Administrateur' : user.role === 'teacher' ? 'Formateur' : 'Étudiant'}
+                  {user.role === 'ADMIN' || user.role === 'admin'
+                    ? 'Administrateur'
+                    : user.role === 'teacher'
+                    ? 'Formateur'
+                    : 'Apprenant'}
                 </span>
               </div>
             </div>

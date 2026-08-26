@@ -1,4 +1,4 @@
-import { PrismaClient, UserRole, UserStatus } from '@prisma/client';
+import { PrismaClient, Role, UserStatus } from '@prisma/client';
 import * as argon2 from 'argon2';
 
 const prisma = new PrismaClient();
@@ -15,8 +15,9 @@ async function main(): Promise<void> {
 
   const isDev = process.env.NODE_ENV !== 'production';
 
-  // Compte Administrateur
-  const adminEmail = 'admin@opensio.local';
+  // 1. Compte Administrateur (configuré via variables d'environnement)
+  const adminEmail = process.env.SEED_ADMIN_EMAIL || 'admin@opensio.local';
+  const adminDisplayName = process.env.SEED_ADMIN_NAME || 'Administrateur OpenSIO';
   let adminPassword = process.env.SEED_ADMIN_PASSWORD;
   if (!adminPassword) {
     if (!isDev) {
@@ -31,30 +32,32 @@ async function main(): Promise<void> {
   const admin = await prisma.user.upsert({
     where: { email: adminEmail },
     update: {
-      role: UserRole.ADMIN,
+      displayName: adminDisplayName,
+      role: Role.ADMIN,
       status: UserStatus.ACTIVE,
     },
     create: {
       email: adminEmail,
       passwordHash: adminPasswordHash,
-      displayName: 'Administrateur OpenSIO',
-      role: UserRole.ADMIN,
+      displayName: adminDisplayName,
+      role: Role.ADMIN,
       status: UserStatus.ACTIVE,
+      mustChangePassword: false,
     },
   });
 
   console.log(`[v] Compte Administrateur configuré :`);
   console.log(`   - Email       : ${admin.email}`);
+  console.log(`   - Nom         : ${admin.displayName}`);
   console.log(`   - Rôle        : ${admin.role}`);
   console.log(`   - Mot de passe: ${adminPassword}`);
 
-  const seedMode = process.env.SEED_MODE || 'full';
+  // 2. Compte Démo : seed uniquement si DEMO_SEED=true (absent par défaut)
+  const isDemoSeedEnabled = process.env.DEMO_SEED === 'true';
 
-  if (seedMode === 'minimal') {
-    console.log('[i] [OpenSIO] Mode Seed Minimal actif : création du compte étudiant ignorée.');
-  } else {
-    // Compte Étudiant de Démonstration
-    const studentEmail = 'student@opensio.local';
+  if (isDemoSeedEnabled) {
+    const studentEmail = process.env.SEED_STUDENT_EMAIL || 'student@opensio.local';
+    const studentDisplayName = process.env.SEED_STUDENT_NAME || 'Étudiant Démo SISR';
     let studentPassword = process.env.SEED_STUDENT_PASSWORD;
     if (!studentPassword) {
       if (!isDev) {
@@ -69,22 +72,26 @@ async function main(): Promise<void> {
     const student = await prisma.user.upsert({
       where: { email: studentEmail },
       update: {
-        role: UserRole.STUDENT,
+        displayName: studentDisplayName,
+        role: Role.APPRENANT,
         status: UserStatus.ACTIVE,
       },
       create: {
         email: studentEmail,
         passwordHash: studentPasswordHash,
-        displayName: 'Étudiant Démo SISR',
-        role: UserRole.STUDENT,
+        displayName: studentDisplayName,
+        role: Role.APPRENANT,
         status: UserStatus.ACTIVE,
+        mustChangePassword: false,
       },
     });
 
-    console.log(`[v] Compte Étudiant de démo configuré :`);
+    console.log(`[v] Compte Étudiant de démo configuré (DEMO_SEED=true) :`);
     console.log(`   - Email       : ${student.email}`);
     console.log(`   - Rôle        : ${student.role}`);
     console.log(`   - Mot de passe: ${studentPassword}`);
+  } else {
+    console.log('[i] [OpenSIO] DEMO_SEED !== true : Aucun compte démo inséré (absent par défaut).');
   }
 
   console.log('[v] [OpenSIO] Amorçage terminé avec succès.');

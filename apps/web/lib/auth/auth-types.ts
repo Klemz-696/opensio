@@ -1,10 +1,11 @@
-export type UserRole = 'student' | 'teacher' | 'admin';
+export type UserRole = 'ADMIN' | 'APPRENANT' | 'admin' | 'apprenant' | 'student' | 'teacher';
 
 export interface AuthUser {
   id: string;
   email: string;
   displayName: string;
   role: UserRole;
+  mustChangePassword?: boolean;
 }
 
 export interface ProblemDetails {
@@ -32,5 +33,8 @@ export interface LoginResponse {
 export interface AuthContextValue extends AuthState {
   login: (email: string, password: string) => Promise<{ success: boolean; error?: ProblemDetails }>;
   logout: () => Promise<void>;
+  changePassword: (currentPassword: string, newPassword: string) => Promise<{ success: boolean; error?: ProblemDetails }>;
   setAccessToken: (token: string | null) => void;
+  updateCurrentUser: (partialUser: Partial<AuthUser>) => void;
 }
+

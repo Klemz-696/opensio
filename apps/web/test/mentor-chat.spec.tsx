@@ -71,13 +71,15 @@ describe('MentorChatDrawer (Assistant IA Frontend — Lot C3)', () => {
   beforeEach(() => {
     vi.restoreAllMocks();
     vi.spyOn(useAuthModule, 'useAuth').mockReturnValue({
-      user: { id: 'user-lucas', email: 'lucas@opensio.local', displayName: 'Lucas SISR', role: 'student' as const },
+      user: { id: 'user-lucas', email: 'lucas@opensio.local', displayName: 'Lucas SISR', role: 'APPRENANT' },
       accessToken: 'valid-jwt-token',
       isLoading: false,
       isAuthenticated: true,
       login: vi.fn(),
       logout: vi.fn(),
       setAccessToken: vi.fn(),
+      changePassword: vi.fn(),
+      updateCurrentUser: vi.fn(),
     });
 
     vi.spyOn(chatApi, 'fetchChatStatus').mockResolvedValue(mockStatus);

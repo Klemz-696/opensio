@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 import './globals.css';
 import { AuthProvider } from '../lib/auth/auth-context';
 import { MentorChatDrawer } from '../components/ai/mentor-chat-drawer';
+import { ForcePasswordChangeModal } from '../components/auth/force-password-change-modal';
 
 export const metadata: Metadata = {
   title: 'OpenSIO — Plateforme de formation pratique BTS SIO SISR',
@@ -20,6 +21,7 @@ export default function RootLayout({
       <body className="min-h-screen bg-slate-950 text-slate-100 antialiased selection:bg-sky-500 selection:text-white">
         <AuthProvider>
           {children}
+          <ForcePasswordChangeModal />
           <MentorChatDrawer />
         </AuthProvider>
       </body>
