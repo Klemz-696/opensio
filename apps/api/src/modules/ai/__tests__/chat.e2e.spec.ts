@@ -7,7 +7,7 @@ import { AiController } from '../ai.controller';
 import { AiContextSanitizerService } from '../services/ai-context-sanitizer.service';
 import { AiSolutionFilterService } from '../services/ai-solution-filter.service';
 import { AiRateLimiterService } from '../services/ai-rate-limiter.service';
-import { UserRole } from '@prisma/client';
+import { Role } from '@prisma/client';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import type { AiProvider } from '../interfaces/ai-provider.interface';
 import type { AuthenticatedUser } from '../../../common/guards/auth.guard';
@@ -25,8 +25,8 @@ describe.skipIf(!process.env.DATABASE_URL)(
     let chatService: ChatService;
     let controller: AiController;
 
-    let lucasUser: { id: string; email: string; displayName: string; role: UserRole } | undefined;
-    let emmaUser: { id: string; email: string; displayName: string; role: UserRole } | undefined;
+    let lucasUser: { id: string; email: string; displayName: string; role: Role } | undefined;
+    let emmaUser: { id: string; email: string; displayName: string; role: Role } | undefined;
     let lucasAuth: AuthenticatedUser;
     let emmaAuth: AuthenticatedUser;
 
@@ -89,7 +89,7 @@ describe.skipIf(!process.env.DATABASE_URL)(
             email: `lucas.chat.${unique}@opensio.local`,
             passwordHash: 'dummy-hash',
             displayName: 'Lucas SISR',
-            role: UserRole.STUDENT,
+            role: Role.APPRENANT,
           },
         });
 
@@ -98,7 +98,7 @@ describe.skipIf(!process.env.DATABASE_URL)(
             email: `emma.chat.${unique}@opensio.local`,
             passwordHash: 'dummy-hash',
             displayName: 'Emma SISR',
-            role: UserRole.STUDENT,
+            role: Role.APPRENANT,
           },
         });
 
@@ -106,14 +106,14 @@ describe.skipIf(!process.env.DATABASE_URL)(
           id: lucasUser.id,
           email: lucasUser.email,
           displayName: lucasUser.displayName,
-          role: UserRole.STUDENT,
+          role: Role.APPRENANT,
         };
 
         emmaAuth = {
           id: emmaUser.id,
           email: emmaUser.email,
           displayName: emmaUser.displayName,
-          role: UserRole.STUDENT,
+          role: Role.APPRENANT,
         };
       } catch {
         isDbConnected = false;

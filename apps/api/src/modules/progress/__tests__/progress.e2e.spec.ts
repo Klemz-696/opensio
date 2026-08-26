@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import * as path from 'path';
-import { UserRole } from '@prisma/client';
+import { Role } from '@prisma/client';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { ProgressService } from '../progress.service';
 import { ProgressAggregationService } from '../progress-aggregation.service';
@@ -36,8 +36,8 @@ describe.skipIf(!process.env.DATABASE_URL)(
 
     const contentDir = path.resolve(__dirname, '../../../../../../content');
 
-    let userA: { id: string; email: string; displayName: string; role: UserRole };
-    let userB: { id: string; email: string; displayName: string; role: UserRole };
+    let userA: { id: string; email: string; displayName: string; role: Role };
+    let userB: { id: string; email: string; displayName: string; role: Role };
 
     let authUserA: AuthenticatedUser;
     let authUserB: AuthenticatedUser;
@@ -85,7 +85,7 @@ describe.skipIf(!process.env.DATABASE_URL)(
             email: 'etudiant.a.lot6@opensio.local',
             displayName: 'Étudiant A',
             passwordHash: 'dummy_hash_argon2_a',
-            role: UserRole.STUDENT,
+            role: Role.APPRENANT,
           },
         });
 
@@ -94,7 +94,7 @@ describe.skipIf(!process.env.DATABASE_URL)(
             email: 'etudiant.b.lot6@opensio.local',
             displayName: 'Étudiant B',
             passwordHash: 'dummy_hash_argon2_b',
-            role: UserRole.STUDENT,
+            role: Role.APPRENANT,
           },
         });
 
