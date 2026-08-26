@@ -98,17 +98,17 @@ export function LabStepChecklist({ lab, sessionId }: LabStepChecklistProps) {
   }
 
   return (
-    <div className="glass-panel rounded-2xl p-5 sm:p-6 border border-slate-800 bg-slate-900/60 shadow-xl">
-      <div className="flex flex-wrap items-center justify-between gap-3 mb-4 pb-3 border-b border-slate-800">
+    <div className="glass-panel rounded-2xl p-5 sm:p-6 border border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/60 shadow-sm dark:shadow-xl">
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-4 pb-3 border-b border-slate-200 dark:border-slate-800">
         <div className="flex items-center gap-2.5">
-          <div className="p-2 rounded-xl bg-sky-500/10 border border-sky-500/20 text-sky-400">
+          <div className="p-2 rounded-xl bg-sky-500/10 border border-sky-500/20 text-sky-600 dark:text-sky-400">
             <ListOrdered className="w-5 h-5" />
           </div>
           <div>
-            <h3 className="text-base font-bold text-white">
+            <h3 className="text-base font-bold text-slate-900 dark:text-white">
               Checklist de progression du Lab
             </h3>
-            <p className="text-xs text-slate-400">
+            <p className="text-xs text-slate-500 dark:text-slate-400">
               Cochez les étapes au fur et à mesure de votre avancement pratique
             </p>
           </div>
@@ -116,7 +116,7 @@ export function LabStepChecklist({ lab, sessionId }: LabStepChecklistProps) {
 
         <div className="flex items-center gap-3">
           <div className="text-right">
-            <div className="text-xs font-bold text-sky-400">
+            <div className="text-xs font-bold text-sky-600 dark:text-sky-400">
               {completedCount} / {totalCount} ({progressPercent}%)
             </div>
           </div>
@@ -126,7 +126,7 @@ export function LabStepChecklist({ lab, sessionId }: LabStepChecklistProps) {
               onClick={handleReset}
               aria-label="Réinitialiser les étapes"
               title="Réinitialiser les étapes cochées"
-              className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-slate-200 transition-colors text-xs cursor-pointer border border-slate-700"
+              className="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 transition-colors text-xs cursor-pointer border border-slate-200 dark:border-slate-700"
             >
               <RotateCcw className="w-3.5 h-3.5" />
             </button>
@@ -135,7 +135,7 @@ export function LabStepChecklist({ lab, sessionId }: LabStepChecklistProps) {
       </div>
 
       {/* Barre de progression */}
-      <div className="w-full h-2 rounded-full bg-slate-800 overflow-hidden mb-4">
+      <div className="w-full h-2 rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden mb-4">
         <div
           role="progressbar"
           aria-valuenow={progressPercent}
@@ -159,29 +159,29 @@ export function LabStepChecklist({ lab, sessionId }: LabStepChecklistProps) {
               onClick={() => toggleStep(step.id)}
               className={`w-full text-left p-3.5 rounded-xl border transition-all flex items-start gap-3 cursor-pointer ${
                 isChecked
-                  ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-200'
-                  : 'bg-slate-900/40 hover:bg-slate-800/60 border-slate-800/80 text-slate-300'
+                  ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-800 dark:text-emerald-200'
+                  : 'bg-slate-50 dark:bg-slate-900/40 hover:bg-slate-100 dark:hover:bg-slate-800/60 border-slate-200 dark:border-slate-800/80 text-slate-700 dark:text-slate-300'
               }`}
             >
               <div className="mt-0.5 shrink-0">
                 {isChecked ? (
-                  <CheckSquare className="w-4 h-4 text-emerald-400" />
+                  <CheckSquare className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                 ) : (
-                  <Square className="w-4 h-4 text-slate-500" />
+                  <Square className="w-4 h-4 text-slate-500 dark:text-slate-400" />
                 )}
               </div>
 
               <div className="flex-1 text-xs sm:text-sm">
                 <div className="flex items-center gap-2">
-                  <span className="font-semibold text-slate-400 text-xs">
+                  <span className="font-semibold text-slate-500 dark:text-slate-400 text-xs">
                     Étape {idx + 1} :
                   </span>
-                  <span className={isChecked ? 'line-through text-slate-400' : 'text-slate-200'}>
+                  <span className={isChecked ? 'line-through text-slate-500 dark:text-slate-400' : 'text-slate-800 dark:text-slate-200'}>
                     {step.title}
                   </span>
                 </div>
                 {step.hint && (
-                  <div className="text-[11px] text-slate-400 mt-1 font-mono">
+                  <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 font-mono">
                     {step.hint}
                   </div>
                 )}
@@ -192,8 +192,8 @@ export function LabStepChecklist({ lab, sessionId }: LabStepChecklistProps) {
       </div>
 
       {progressPercent === 100 && (
-        <div className="mt-4 p-3 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs flex items-center gap-2 font-medium">
-          <Sparkles className="w-4 h-4 text-emerald-400 shrink-0" />
+        <div className="mt-4 p-3 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-800 dark:text-emerald-300 text-xs flex items-center gap-2 font-medium">
+          <Sparkles className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
           <span>Toutes les étapes ont été cochées. Pensez à lancer l’évaluation pour valider votre note finale !</span>
         </div>
       )}

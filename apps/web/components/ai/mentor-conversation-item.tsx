@@ -52,8 +52,8 @@ export function MentorConversationItem({
 }: MentorConversationItemProps) {
   if (isDeleting) {
     return (
-      <div className="p-2.5 rounded-xl bg-rose-950/80 border border-rose-500/40 text-xs space-y-2 animate-in fade-in duration-150">
-        <div className="flex items-center gap-1.5 text-rose-300 font-medium">
+      <div className="p-2.5 rounded-xl bg-rose-500/10 dark:bg-rose-950/80 border border-rose-500/40 text-xs space-y-2 animate-in fade-in duration-150">
+        <div className="flex items-center gap-1.5 text-rose-700 dark:text-rose-300 font-medium">
           <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
           <span>Supprimer définitivement ?</span>
         </div>
@@ -65,7 +65,7 @@ export function MentorConversationItem({
               onCancelDelete();
             }}
             disabled={isProcessing}
-            className="px-2 py-1 rounded-lg bg-slate-800 text-slate-300 hover:text-white text-[11px] cursor-pointer"
+            className="px-2 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white text-[11px] cursor-pointer"
           >
             Annuler
           </button>
@@ -85,7 +85,7 @@ export function MentorConversationItem({
 
   if (isEditing) {
     return (
-      <div className="p-1.5 rounded-xl bg-slate-900 border border-indigo-500/60 flex items-center gap-1.5 text-xs">
+      <div className="p-1.5 rounded-xl bg-white dark:bg-slate-900 border border-indigo-500/60 flex items-center gap-1.5 text-xs">
         <input
           type="text"
           value={editTitle}
@@ -101,7 +101,7 @@ export function MentorConversationItem({
           }}
           autoFocus
           aria-label="Nouveau titre de la discussion"
-          className="flex-1 bg-slate-950 px-2 py-1 rounded-lg border border-slate-800 text-white text-xs outline-none focus:border-indigo-400"
+          className="flex-1 bg-slate-50 dark:bg-slate-950 px-2 py-1 rounded-lg border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-xs outline-none focus:border-indigo-400"
         />
         <button
           type="button"
@@ -116,7 +116,7 @@ export function MentorConversationItem({
           type="button"
           onClick={onCancelRename}
           aria-label="Annuler le renommage"
-          className="p-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg cursor-pointer"
+          className="p-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg cursor-pointer"
         >
           <X className="w-3.5 h-3.5" />
         </button>
@@ -139,14 +139,14 @@ export function MentorConversationItem({
       aria-label={`Discussion : ${conversation.title}`}
       className={`group relative flex items-center justify-between p-2.5 rounded-xl text-xs transition-all cursor-pointer ${
         isActive
-          ? 'bg-indigo-600/25 border border-indigo-500/50 text-white shadow-sm'
-          : 'bg-slate-900/60 border border-slate-800/80 text-slate-300 hover:bg-slate-800/70 hover:text-white'
+          ? 'bg-indigo-600/15 dark:bg-indigo-600/25 border border-indigo-500/50 text-indigo-950 dark:text-white shadow-sm'
+          : 'bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800/80 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/70 hover:text-slate-900 dark:hover:text-white'
       }`}
     >
       <div className="flex items-center gap-2 min-w-0 pr-2">
         <MessageSquare
           className={`w-3.5 h-3.5 shrink-0 ${
-            isActive ? 'text-indigo-400' : 'text-slate-500 group-hover:text-slate-400'
+            isActive ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-500 dark:text-slate-400 group-hover:text-slate-700 dark:group-hover:text-slate-300'
           }`}
         />
         <div className="min-w-0">
@@ -163,7 +163,7 @@ export function MentorConversationItem({
           onClick={(e) => onStartRename(conversation, e)}
           aria-label={`Renommer ${conversation.title}`}
           title="Renommer"
-          className="p-1 hover:bg-slate-800 rounded text-slate-400 hover:text-white cursor-pointer"
+          className="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white cursor-pointer"
         >
           <Edit2 className="w-3.5 h-3.5" />
         </button>
@@ -172,10 +172,10 @@ export function MentorConversationItem({
           onClick={(e) => onArchive(conversation, e)}
           aria-label={isArchivedList ? `Désarchiver ${conversation.title}` : `Archiver ${conversation.title}`}
           title={isArchivedList ? 'Désarchiver' : 'Archiver'}
-          className="p-1 hover:bg-slate-800 rounded text-slate-400 hover:text-white cursor-pointer"
+          className="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white cursor-pointer"
         >
           {isArchivedList ? (
-            <ArchiveRestore className="w-3.5 h-3.5 text-amber-400" />
+            <ArchiveRestore className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
           ) : (
             <Archive className="w-3.5 h-3.5" />
           )}
@@ -185,7 +185,7 @@ export function MentorConversationItem({
           onClick={(e) => onStartDelete(conversation.id, e)}
           aria-label={`Supprimer ${conversation.title}`}
           title="Supprimer"
-          className="p-1 hover:bg-slate-800 rounded text-slate-400 hover:text-rose-400 cursor-pointer"
+          className="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded text-slate-500 dark:text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 cursor-pointer"
         >
           <Trash2 className="w-3.5 h-3.5" />
         </button>

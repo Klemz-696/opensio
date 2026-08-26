@@ -11,15 +11,15 @@ interface ModuleLessonsListProps {
 
 export function ModuleLessonsList({ moduleSlug, lessons }: ModuleLessonsListProps) {
   return (
-    <div className="glass-panel rounded-2xl p-6 border border-slate-800 mb-8">
-      <div className="flex items-center justify-between gap-2 mb-6 pb-3 border-b border-slate-800">
+    <div className="glass-panel rounded-2xl p-6 border border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/60 shadow-sm mb-8">
+      <div className="flex items-center justify-between gap-2 mb-6 pb-3 border-b border-slate-200 dark:border-slate-800">
         <div className="flex items-center gap-2">
-          <BookOpen className="w-5 h-5 text-sky-400" />
-          <h2 className="text-lg font-bold text-white">
+          <BookOpen className="w-5 h-5 text-sky-600 dark:text-sky-400" />
+          <h2 className="text-lg font-bold text-slate-900 dark:text-white">
             Leçons du module ({lessons.length})
           </h2>
         </div>
-        <span className="text-xs text-slate-400">Ordre recommandé</span>
+        <span className="text-xs text-slate-500 dark:text-slate-400">Ordre recommandé</span>
       </div>
 
       {lessons.length === 0 ? (
@@ -38,37 +38,37 @@ export function ModuleLessonsList({ moduleSlug, lessons }: ModuleLessonsListProp
                 href={`/catalogue/${moduleSlug}/${lesson.slug}`}
                 className={`flex items-center justify-between p-4 rounded-xl transition-all group cursor-pointer border ${
                   isCompleted
-                    ? 'bg-slate-900/40 border-emerald-500/20 hover:border-emerald-500/40 hover:bg-slate-800/60'
-                    : 'bg-slate-900/60 hover:bg-slate-800/80 border-slate-800/80 hover:border-sky-500/30'
+                    ? 'bg-emerald-500/5 dark:bg-slate-900/40 border-emerald-500/20 hover:border-emerald-500/40 hover:bg-emerald-500/10 dark:hover:bg-slate-800/60'
+                    : 'bg-slate-50 dark:bg-slate-900/60 hover:bg-slate-100 dark:hover:bg-slate-800/80 border-slate-200 dark:border-slate-800/80 hover:border-sky-500/30'
                 }`}
               >
                 <div className="flex items-center gap-4">
                   <div
                     className={`w-8 h-8 rounded-lg border font-mono font-bold text-xs flex items-center justify-center transition-colors ${
                       isCompleted
-                        ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
-                        : 'bg-slate-800 border-slate-700 text-sky-400 group-hover:bg-sky-500 group-hover:text-white'
+                        ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-600 dark:text-emerald-400'
+                        : 'bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-sky-600 dark:text-sky-400 group-hover:bg-sky-500 group-hover:text-white'
                     }`}
                   >
                     {isCompleted ? <CheckCircle2 className="w-4 h-4" /> : lessonIndex}
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <h3 className="text-sm font-semibold text-white group-hover:text-sky-300 transition-colors">
+                      <h3 className="text-sm font-semibold text-slate-900 dark:text-white group-hover:text-sky-600 dark:group-hover:text-sky-300 transition-colors">
                         {lesson.title}
                       </h3>
                       {isCompleted && (
-                        <span className="text-[10px] font-semibold px-2 py-0.2 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+                        <span className="text-[10px] font-semibold px-2 py-0.2 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">
                           Terminée
                         </span>
                       )}
                       {!isCompleted && isStarted && (
-                        <span className="text-[10px] font-semibold px-2 py-0.2 rounded-full bg-sky-500/10 text-sky-400 border border-sky-500/30">
+                        <span className="text-[10px] font-semibold px-2 py-0.2 rounded-full bg-sky-500/10 text-sky-600 dark:text-sky-400 border border-sky-500/30">
                           En cours
                         </span>
                       )}
                     </div>
-                    <div className="flex items-center gap-3 mt-1 text-xs text-slate-400">
+                    <div className="flex items-center gap-3 mt-1 text-xs text-slate-500 dark:text-slate-400">
                       <span className={`text-[10px] font-semibold px-2 py-0.2 rounded border ${diff.color}`}>
                         {diff.label}
                       </span>
@@ -80,7 +80,7 @@ export function ModuleLessonsList({ moduleSlug, lessons }: ModuleLessonsListProp
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2 text-slate-400 group-hover:text-sky-400 transition-colors">
+                <div className="flex items-center gap-2 text-slate-500 dark:text-slate-400 group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors">
                   <span className="text-xs hidden sm:inline font-medium">
                     {isCompleted ? 'Revoir la leçon' : 'Lire la leçon'}
                   </span>

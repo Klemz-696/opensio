@@ -32,12 +32,12 @@ export function QuizStepper({
         const isCurrent = !isReviewMode && currentIndex === index;
         const isAnswered = Boolean(answers[q.id] && answers[q.id].length > 0);
 
-        let badgeClasses = 'bg-slate-900/80 border-slate-800 text-slate-400 hover:border-slate-700 hover:text-slate-200';
+        let badgeClasses = 'bg-slate-100 dark:bg-slate-900/80 border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:border-slate-300 dark:hover:border-slate-700 hover:text-slate-900 dark:hover:text-slate-200';
 
         if (isCurrent) {
-          badgeClasses = 'bg-amber-500/20 border-amber-400 text-amber-300 ring-2 ring-amber-400/40 font-bold';
+          badgeClasses = 'bg-amber-500/20 border-amber-500 text-amber-700 dark:text-amber-300 ring-2 ring-amber-400/40 font-bold';
         } else if (isAnswered) {
-          badgeClasses = 'bg-emerald-500/15 border-emerald-500/40 text-emerald-300 font-semibold';
+          badgeClasses = 'bg-emerald-500/15 border-emerald-500/40 text-emerald-700 dark:text-emerald-300 font-semibold';
         }
 
         return (
@@ -55,7 +55,7 @@ export function QuizStepper({
             <span className="flex items-center gap-1">
               <span>{index + 1}</span>
               {isAnswered && !isCurrent && (
-                <Check className="w-3 h-3 text-emerald-400" />
+                <Check className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
               )}
             </span>
           </button>
@@ -63,7 +63,7 @@ export function QuizStepper({
       })}
 
       {/* Onglet Récapitulatif & Revue */}
-      <div className="h-6 w-px bg-slate-800 mx-1 shrink-0" aria-hidden="true" />
+      <div className="h-6 w-px bg-slate-200 dark:bg-slate-800 mx-1 shrink-0" aria-hidden="true" />
 
       <button
         type="button"
@@ -73,8 +73,8 @@ export function QuizStepper({
         aria-current={isReviewMode ? 'step' : undefined}
         className={`flex items-center gap-1.5 px-3 h-9 rounded-xl border text-xs transition-all cursor-pointer shrink-0 ${
           isReviewMode
-            ? 'bg-amber-500/20 border-amber-400 text-amber-300 ring-2 ring-amber-400/40 font-bold'
-            : 'bg-slate-900/80 border-slate-800 text-slate-400 hover:border-slate-700 hover:text-slate-200'
+            ? 'bg-amber-500/20 border-amber-500 text-amber-700 dark:text-amber-300 ring-2 ring-amber-400/40 font-bold'
+            : 'bg-slate-100 dark:bg-slate-900/80 border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:border-slate-300 dark:hover:border-slate-700 hover:text-slate-900 dark:hover:text-slate-200'
         } ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
       >
         <ClipboardList className="w-3.5 h-3.5" />

@@ -168,22 +168,22 @@ export default function LabPage({ params }: LabPageProps) {
   if (error && !lab) {
     return (
       <div className="max-w-2xl mx-auto py-12">
-        <div className="p-6 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-300 flex items-start gap-4">
-          <AlertCircle className="w-6 h-6 text-rose-400 shrink-0 mt-0.5" />
+        <div className="p-6 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-700 dark:text-rose-300 flex items-start gap-4">
+          <AlertCircle className="w-6 h-6 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5" />
           <div className="flex-1">
-            <h3 className="font-semibold text-rose-200">Atelier introuvable</h3>
-            <p className="text-sm mt-1 text-rose-300/90">{error}</p>
+            <h3 className="font-semibold text-rose-800 dark:text-rose-200">Atelier introuvable</h3>
+            <p className="text-sm mt-1 text-rose-700/90 dark:text-rose-300/90">{error}</p>
             <div className="flex items-center gap-3 mt-4">
               <Link
                 href={`/catalogue/${moduleSlug}`}
-                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-white transition-colors"
+                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-xs font-semibold text-slate-800 dark:text-white border border-slate-300 dark:border-slate-700 transition-colors"
               >
                 <ArrowLeft className="w-3.5 h-3.5" />
                 <span>Retour au module</span>
               </Link>
               <button
                 onClick={() => void loadLabData()}
-                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-rose-500/20 hover:bg-rose-500/30 border border-rose-500/40 text-xs font-semibold text-rose-200 transition-colors cursor-pointer"
+                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-rose-500/20 hover:bg-rose-500/30 border border-rose-500/40 text-xs font-semibold text-rose-800 dark:text-rose-200 transition-colors cursor-pointer"
               >
                 <RefreshCw className="w-3.5 h-3.5" />
                 <span>Réessayer</span>
@@ -218,8 +218,8 @@ export default function LabPage({ params }: LabPageProps) {
       />
 
       {error && (
-        <div className="p-4 mb-6 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-sm flex items-center gap-3">
-          <AlertCircle className="w-5 h-5 text-rose-400 shrink-0" />
+        <div className="p-4 mb-6 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-700 dark:text-rose-300 text-sm flex items-center gap-3">
+          <AlertCircle className="w-5 h-5 text-rose-600 dark:text-rose-400 shrink-0" />
           <span>{error}</span>
         </div>
       )}
@@ -234,14 +234,14 @@ export default function LabPage({ params }: LabPageProps) {
 
       {session && (
         <div className="mb-8">
-          <div className="flex items-center gap-2 mb-3 border-b border-slate-800 pb-2">
+          <div className="flex items-center gap-2 mb-3 border-b border-slate-200 dark:border-slate-800 pb-2">
             <button
               type="button"
               onClick={() => setActiveTab('editor')}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-colors cursor-pointer ${
                 activeTab === 'editor'
-                  ? 'bg-blue-600/20 text-blue-300 border border-blue-500/30'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+                  ? 'bg-blue-600/20 text-blue-700 dark:text-blue-300 border border-blue-500/30'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800/60'
               }`}
             >
               <Code className="w-4 h-4" />
@@ -253,8 +253,8 @@ export default function LabPage({ params }: LabPageProps) {
               onClick={() => setActiveTab('terminal')}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-colors cursor-pointer ${
                 activeTab === 'terminal'
-                  ? 'bg-emerald-600/20 text-emerald-300 border border-emerald-500/30'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+                  ? 'bg-emerald-600/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800/60'
               }`}
             >
               <TerminalIcon className="w-4 h-4" />

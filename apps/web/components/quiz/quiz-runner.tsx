@@ -92,24 +92,24 @@ export function QuizRunner({
   return (
     <div className="space-y-6">
       {/* En-tête du Quiz avec Stepper pas-à-pas */}
-      <div className="glass-panel rounded-2xl p-6 sm:p-8 border border-slate-800 bg-slate-900/80 shadow-xl">
+      <div className="glass-panel rounded-2xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 shadow-sm dark:shadow-xl">
         <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-500/30 flex items-center justify-center text-amber-400">
+            <div className="w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-500/30 flex items-center justify-center text-amber-500 dark:text-amber-400">
               <HelpCircle className="w-5 h-5" />
             </div>
             <div>
-              <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
+              <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
                 {quiz.title}
               </h1>
-              <p className="text-xs text-slate-400 mt-0.5">
-                Module : <span className="text-slate-300 font-medium">{quiz.module.title}</span>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                Module : <span className="text-slate-800 dark:text-slate-300 font-medium">{quiz.module.title}</span>
               </p>
             </div>
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold">
+            <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-700 dark:text-emerald-400 text-xs font-semibold">
               <Award className="w-4 h-4" />
               <span>Seuil de validation : {quiz.passingScore}% (RM-01)</span>
             </span>
@@ -117,14 +117,14 @@ export function QuizRunner({
         </div>
 
         {/* Stepper des questions */}
-        <div className="mt-4 pt-4 border-t border-slate-800">
-          <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-slate-400 mb-3">
-            <span className="font-semibold text-slate-300">
+        <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-800">
+          <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-slate-500 dark:text-slate-400 mb-3">
+            <span className="font-semibold text-slate-800 dark:text-slate-300">
               {isReviewMode
                 ? 'Étape de révision finale'
                 : `Question ${currentIndex + 1} sur ${totalQuestions} (${progressPercent}% complété)`}
             </span>
-            <span className="text-[11px] text-slate-400">
+            <span className="text-[11px] text-slate-500 dark:text-slate-400">
               {answeredCount}/{totalQuestions} répondue{answeredCount > 1 ? 's' : ''}
             </span>
           </div>
@@ -143,11 +143,11 @@ export function QuizRunner({
 
       {/* Message d'erreur éventuel en mode direct */}
       {!isReviewMode && error && (
-        <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-sm flex items-start gap-3">
-          <AlertCircle className="w-5 h-5 text-rose-400 shrink-0 mt-0.5" />
+        <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-700 dark:text-rose-300 text-sm flex items-start gap-3">
+          <AlertCircle className="w-5 h-5 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5" />
           <div className="flex-1">
-            <p className="font-semibold text-rose-200">Erreur</p>
-            <p className="text-xs mt-0.5 text-rose-300/90">{error}</p>
+            <p className="font-semibold text-rose-800 dark:text-rose-200">Erreur</p>
+            <p className="text-xs mt-0.5 text-rose-700 dark:text-rose-300/90">{error}</p>
           </div>
         </div>
       )}
@@ -176,12 +176,12 @@ export function QuizRunner({
           )}
 
           {/* Barre d'action pas-à-pas */}
-          <div className="sticky bottom-4 z-20 glass-panel rounded-2xl p-4 sm:p-5 border border-slate-800 bg-slate-900/90 shadow-2xl backdrop-blur-md flex flex-wrap items-center justify-between gap-4">
+          <div className="sticky bottom-4 z-20 glass-panel rounded-2xl p-4 sm:p-5 border border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-slate-900/90 shadow-xl dark:shadow-2xl backdrop-blur-md flex flex-wrap items-center justify-between gap-4">
             <button
               type="button"
               onClick={handlePrevious}
               disabled={currentIndex === 0 || isSubmitting}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 disabled:opacity-40 disabled:hover:bg-slate-800 disabled:cursor-not-allowed text-slate-200 text-xs sm:text-sm font-semibold transition-colors cursor-pointer"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 disabled:opacity-40 disabled:hover:bg-slate-100 dark:disabled:hover:bg-slate-800 disabled:cursor-not-allowed text-slate-800 dark:text-slate-200 text-xs sm:text-sm font-semibold transition-colors cursor-pointer border border-slate-200 dark:border-slate-700"
             >
               <ArrowLeft className="w-4 h-4" />
               <span>Précédente</span>
@@ -191,9 +191,9 @@ export function QuizRunner({
               type="button"
               onClick={handleGoToReview}
               disabled={isSubmitting}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-800/80 hover:bg-slate-750 border border-slate-700 text-slate-300 hover:text-white text-xs font-semibold transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800/80 hover:bg-slate-200 dark:hover:bg-slate-750 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white text-xs font-semibold transition-colors cursor-pointer"
             >
-              <ClipboardList className="w-3.5 h-3.5 text-amber-400" />
+              <ClipboardList className="w-3.5 h-3.5 text-amber-500 dark:text-amber-400" />
               <span>Revoir mes réponses</span>
             </button>
 

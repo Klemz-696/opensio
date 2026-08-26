@@ -25,10 +25,10 @@ export function AdminUsersFilters({
   const hasActiveFilters = Boolean(search || roleFilter || statusFilter);
 
   return (
-    <div className="p-4 rounded-2xl bg-slate-900/60 border border-slate-800 flex flex-col md:flex-row items-center gap-3">
+    <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 flex flex-col md:flex-row items-center gap-3">
       {/* Recherche */}
       <div className="relative flex-1 w-full">
-        <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+        <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500 dark:text-slate-400">
           <Search className="w-4 h-4" />
         </div>
         <input
@@ -36,7 +36,7 @@ export function AdminUsersFilters({
           value={search}
           onChange={(e) => onSearchChange(e.target.value)}
           placeholder="Rechercher par nom ou email..."
-          className="w-full pl-10 pr-4 py-2 bg-slate-950/60 border border-slate-700/70 rounded-xl text-white placeholder-slate-500 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+          className="w-full pl-10 pr-4 py-2 bg-white dark:bg-slate-950/60 border border-slate-300 dark:border-slate-700/70 rounded-xl text-slate-900 dark:text-white placeholder:text-slate-500 dark:placeholder:text-slate-400 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
         />
       </div>
 
@@ -46,7 +46,7 @@ export function AdminUsersFilters({
           <select
             value={roleFilter}
             onChange={(e) => onRoleFilterChange(e.target.value)}
-            className="w-full px-3 py-2 bg-slate-950/60 border border-slate-700/70 rounded-xl text-white text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer"
+            className="w-full px-3 py-2 bg-white dark:bg-slate-950/60 border border-slate-300 dark:border-slate-700/70 rounded-xl text-slate-900 dark:text-white text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer"
           >
             <option value="">Tous les rôles</option>
             <option value="APPRENANT">Apprenants</option>
@@ -59,7 +59,7 @@ export function AdminUsersFilters({
           <select
             value={statusFilter}
             onChange={(e) => onStatusFilterChange(e.target.value)}
-            className="w-full px-3 py-2 bg-slate-950/60 border border-slate-700/70 rounded-xl text-white text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer"
+            className="w-full px-3 py-2 bg-white dark:bg-slate-950/60 border border-slate-300 dark:border-slate-700/70 rounded-xl text-slate-900 dark:text-white text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer"
           >
             <option value="">Tous les statuts</option>
             <option value="ACTIVE">Actif</option>
@@ -71,7 +71,7 @@ export function AdminUsersFilters({
         {hasActiveFilters && (
           <button
             onClick={onReset}
-            className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 border border-slate-700/60 transition-colors cursor-pointer shrink-0"
+            className="p-2 rounded-xl text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-800 border border-slate-300 dark:border-slate-700/60 transition-colors cursor-pointer shrink-0"
             title="Réinitialiser les filtres"
           >
             <RotateCcw className="w-4 h-4" />
