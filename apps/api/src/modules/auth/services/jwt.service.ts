@@ -1,10 +1,10 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import * as jwt from 'jsonwebtoken';
-import { UserRole } from '@prisma/client';
+import { Role } from '@prisma/client';
 
 export interface JwtAccessTokenPayload {
   sub: string;
-  role: UserRole;
+  role: Role;
   email: string;
   displayName: string;
   iat?: number;
@@ -15,7 +15,8 @@ export interface UserTokenProfile {
   id: string;
   email: string;
   displayName: string;
-  role: UserRole;
+  role: Role;
+  mustChangePassword?: boolean;
 }
 
 @Injectable()

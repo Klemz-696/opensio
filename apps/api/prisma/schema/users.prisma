@@ -1,7 +1,6 @@
-enum UserRole {
-  STUDENT @map("student")
-  TEACHER @map("teacher")
-  ADMIN   @map("admin")
+enum Role {
+  ADMIN     @map("admin")
+  APPRENANT @map("apprenant")
 
   @@map("user_role")
 }
@@ -14,16 +13,17 @@ enum UserStatus {
 }
 
 model User {
-  id           String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  email        String     @unique @db.Citext
-  passwordHash String     @map("password_hash")
-  displayName  String     @map("display_name")
-  role         UserRole   @default(STUDENT)
-  status       UserStatus @default(ACTIVE)
-  createdAt    DateTime   @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt    DateTime   @updatedAt @map("updated_at") @db.Timestamptz(6)
-  lastLoginAt  DateTime?  @map("last_login_at") @db.Timestamptz(6)
-  deletedAt    DateTime?  @map("deleted_at") @db.Timestamptz(6)
+  id                 String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email              String     @unique @db.Citext
+  passwordHash       String     @map("password_hash")
+  displayName        String     @map("display_name")
+  role               Role       @default(APPRENANT)
+  status             UserStatus @default(ACTIVE)
+  mustChangePassword Boolean    @default(false) @map("must_change_password")
+  createdAt          DateTime   @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt          DateTime   @updatedAt @map("updated_at") @db.Timestamptz(6)
+  lastLoginAt        DateTime?  @map("last_login_at") @db.Timestamptz(6)
+  deletedAt          DateTime?  @map("deleted_at") @db.Timestamptz(6)
 
   refreshTokens       RefreshToken[]
   passwordResetTokens PasswordResetToken[]

@@ -11,7 +11,7 @@ import { LabsController } from '../labs.controller';
 import { executeContentSync } from '../../../sync/sync.service';
 import { CatalogCacheService } from '../../catalog/catalog-cache.service';
 import type { AuthenticatedUser } from '../../../common/guards/auth.guard';
-import { UserRole } from '@prisma/client';
+import { Role } from '@prisma/client';
 import { ForbiddenException, BadRequestException } from '@nestjs/common';
 
 import { LabSessionFormatterService } from '../services/lab-session-formatter.service';
@@ -34,8 +34,8 @@ describe.skipIf(!process.env.DATABASE_URL)(
     const contentDir = path.resolve(__dirname, '../../../../../../content');
     const lucasEmail = 'lucas.lab.test@opensio.local';
     const emmaEmail = 'emma.lab.test@opensio.local';
-    let lucasUser: { id: string; email: string; displayName: string; role: UserRole };
-    let emmaUser: { id: string; email: string; displayName: string; role: UserRole };
+    let lucasUser: { id: string; email: string; displayName: string; role: Role };
+    let emmaUser: { id: string; email: string; displayName: string; role: Role };
     let lucasAuth: AuthenticatedUser;
     let emmaAuth: AuthenticatedUser;
 
@@ -93,7 +93,7 @@ describe.skipIf(!process.env.DATABASE_URL)(
             email: lucasEmail,
             displayName: 'Lucas SISR',
             passwordHash: 'dummy_hash_argon2',
-            role: UserRole.STUDENT,
+            role: Role.APPRENANT,
           },
         });
 
@@ -102,7 +102,7 @@ describe.skipIf(!process.env.DATABASE_URL)(
             email: emmaEmail,
             displayName: 'Emma SISR',
             passwordHash: 'dummy_hash_argon2',
-            role: UserRole.STUDENT,
+            role: Role.APPRENANT,
           },
         });
 

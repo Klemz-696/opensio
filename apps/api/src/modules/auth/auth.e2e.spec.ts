@@ -1,5 +1,5 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { UserRole, UserStatus } from '@prisma/client';
+import { Role, UserStatus } from '@prisma/client';
 import { PasswordService } from './services/password.service';
 import { PasswordResetService } from './services/password-reset.service';
 import { JwtService } from './services/jwt.service';
@@ -20,6 +20,7 @@ describe.skipIf(!process.env.DATABASE_URL)('Auth Module — Tests d\'Intégratio
   let auditService: AuditService;
 
   const testEmail = 'etudiant.auth.test@opensio.local';
+  const changePasswordEmail = 'etudiant.changepwd.test@opensio.local';
   const initialPassword = 'InitialP@ssword123!';
   const updatedPassword = 'NewSecureP@ssword456!';
 
@@ -49,13 +50,15 @@ describe.skipIf(!process.env.DATABASE_URL)('Auth Module — Tests d\'Intégratio
         auditService,
       );
 
-      // Nettoyage préalable de l'utilisateur de test
-      const existing = await prisma.user.findUnique({ where: { email: testEmail } });
-      if (existing) {
-        await prisma.auditLog.deleteMany({ where: { actorId: existing.id } });
-        await prisma.refreshToken.deleteMany({ where: { userId: existing.id } });
-        await prisma.passwordResetToken.deleteMany({ where: { userId: existing.id } });
-        await prisma.user.delete({ where: { id: existing.id } });
+      // Nettoyage préalable des utilisateurs de test
+      for (const email of [testEmail, changePasswordEmail]) {
+        const existing = await prisma.user.findUnique({ where: { email } });
+        if (existing) {
+          await prisma.auditLog.deleteMany({ where: { actorId: existing.id } });
+          await prisma.refreshToken.deleteMany({ where: { userId: existing.id } });
+          await prisma.passwordResetToken.deleteMany({ where: { userId: existing.id } });
+          await prisma.user.delete({ where: { id: existing.id } });
+        }
       }
     } catch {
       isDbConnected = false;
@@ -65,12 +68,14 @@ describe.skipIf(!process.env.DATABASE_URL)('Auth Module — Tests d\'Intégratio
   afterAll(async () => {
     if (prisma && isDbConnected) {
       try {
-        const existing = await prisma.user.findUnique({ where: { email: testEmail } });
-        if (existing) {
-          await prisma.auditLog.deleteMany({ where: { actorId: existing.id } });
-          await prisma.refreshToken.deleteMany({ where: { userId: existing.id } });
-          await prisma.passwordResetToken.deleteMany({ where: { userId: existing.id } });
-          await prisma.user.delete({ where: { id: existing.id } });
+        for (const email of [testEmail, changePasswordEmail]) {
+          const existing = await prisma.user.findUnique({ where: { email } });
+          if (existing) {
+            await prisma.auditLog.deleteMany({ where: { actorId: existing.id } });
+            await prisma.refreshToken.deleteMany({ where: { userId: existing.id } });
+            await prisma.passwordResetToken.deleteMany({ where: { userId: existing.id } });
+            await prisma.user.delete({ where: { id: existing.id } });
+          }
         }
         await prisma.$disconnect();
       } catch {
@@ -96,7 +101,7 @@ describe.skipIf(!process.env.DATABASE_URL)('Auth Module — Tests d\'Intégratio
 
     expect(result).toBeDefined();
     expect(result.email).toBe(testEmail);
-    expect(result.role).toBe(UserRole.STUDENT);
+    expect(result.role).toBe(Role.APPRENANT);
     expect(result.status).toBe(UserStatus.ACTIVE);
 
     // Vérification en base : le mot de passe est bien haché avec Argon2id
@@ -148,7 +153,7 @@ describe.skipIf(!process.env.DATABASE_URL)('Auth Module — Tests d\'Intégratio
     // Validation du token JWT
     const decoded = jwtService.verifyAccessToken(loginResult.accessToken);
     expect(decoded.email).toBe(testEmail);
-    expect(decoded.role).toBe(UserRole.STUDENT);
+    expect(decoded.role).toBe(Role.APPRENANT);
 
     // Vérification du refresh token haché en SHA-256 en base
     const tokenHash = passwordService.hashToken(loginResult.refreshToken);
@@ -188,7 +193,47 @@ describe.skipIf(!process.env.DATABASE_URL)('Auth Module — Tests d\'Intégratio
 
     expect(me.email).toBe(testEmail);
     expect(me.displayName).toBe('Étudiant Test Auth');
-    expect(me.role).toBe(UserRole.STUDENT);
+    expect(me.role).toBe(Role.APPRENANT);
+  });
+
+  it('5b. Changement de mot de passe (POST /auth/change-password) : valide et met à jour mustChangePassword', async (ctx) => {
+    if (!isDbConnected) {
+      ctx.skip();
+      return;
+    }
+
+    // Création d'un utilisateur dédié pour tester le changement de mot de passe
+    const registerRes = await authService.register(
+      {
+        email: changePasswordEmail,
+        displayName: 'Étudiant Change Pwd Test',
+        password: initialPassword,
+      },
+      '127.0.0.1',
+    );
+
+    const userInDb = await prisma.user.findUnique({ where: { id: registerRes.id } });
+    await prisma.user.update({
+      where: { id: userInDb!.id },
+      data: { mustChangePassword: true },
+    });
+
+    const res = await authService.changePassword(userInDb!.id, {
+      currentPassword: initialPassword,
+      newPassword: updatedPassword,
+    });
+
+    expect(res.success).toBe(true);
+
+    const updatedUser = await prisma.user.findUnique({ where: { id: userInDb!.id } });
+    expect(updatedUser!.mustChangePassword).toBe(false);
+
+    // Vérifie qu'on peut se connecter avec le nouveau mot de passe
+    const loginRes = await authService.login({
+      email: changePasswordEmail,
+      password: updatedPassword,
+    });
+    expect(loginRes.accessToken).toBeDefined();
   });
 
   it('6. Rotation du refresh token (POST /refresh) : remplace l\'ancien token par un nouveau', async (ctx) => {
