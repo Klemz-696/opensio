@@ -53,22 +53,22 @@ export default function ModuleDetailPage({ params }: ModulePageProps) {
   if (error || !moduleData) {
     return (
       <div className="max-w-2xl mx-auto py-12">
-        <div className="p-6 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-300 flex items-start gap-4">
-          <AlertCircle className="w-6 h-6 text-rose-400 shrink-0 mt-0.5" />
+        <div className="p-6 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-700 dark:text-rose-300 flex items-start gap-4">
+          <AlertCircle className="w-6 h-6 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5" />
           <div className="flex-1">
-            <h3 className="font-semibold text-rose-200">Module introuvable</h3>
-            <p className="text-sm mt-1 text-rose-300/90">{error || 'Le module demandé n\'existe pas.'}</p>
+            <h3 className="font-semibold text-rose-800 dark:text-rose-200">Module introuvable</h3>
+            <p className="text-sm mt-1 text-rose-700/90 dark:text-rose-300/90">{error || 'Le module demandé n\'existe pas.'}</p>
             <div className="flex items-center gap-3 mt-4">
               <Link
                 href="/catalogue"
-                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-white transition-colors"
+                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-xs font-semibold text-slate-800 dark:text-white border border-slate-300 dark:border-slate-700 transition-colors"
               >
                 <ArrowLeft className="w-3.5 h-3.5" />
                 <span>Retour au catalogue</span>
               </Link>
               <button
                 onClick={() => void loadModule()}
-                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-rose-500/20 hover:bg-rose-500/30 border border-rose-500/40 text-xs font-semibold text-rose-200 transition-colors cursor-pointer"
+                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-rose-500/20 hover:bg-rose-500/30 border border-rose-500/40 text-xs font-semibold text-rose-800 dark:text-rose-200 transition-colors cursor-pointer"
               >
                 <RefreshCw className="w-3.5 h-3.5" />
                 <span>Réessayer</span>

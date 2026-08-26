@@ -56,7 +56,7 @@ export function MarkdownRenderer({ content }: MarkdownRendererProps) {
                 href={href}
                 target={isExternal ? '_blank' : undefined}
                 rel={isExternal ? 'noopener noreferrer' : undefined}
-                className="text-sky-400 hover:text-sky-300 underline underline-offset-4"
+                className="text-sky-600 hover:text-sky-700 dark:text-sky-400 dark:hover:text-sky-300 underline underline-offset-4"
               >
                 {props.children}
               </a>

@@ -155,10 +155,10 @@ export function LabTerminal({ labSlug, sessionId, token }: LabTerminalProps) {
     <div
       role="region"
       aria-label="Terminal de lab interactif"
-      className="flex flex-col h-full bg-slate-950 text-slate-100 rounded-xl border border-slate-300 dark:border-slate-800 shadow-xl overflow-hidden font-mono text-sm"
+      className="flex flex-col h-full bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-slate-100 rounded-xl border border-slate-300 dark:border-slate-800 shadow-xl overflow-hidden font-mono text-sm"
     >
       {/* Barre de titre du terminal */}
-      <div className="flex items-center justify-between px-4 py-2.5 bg-slate-100 dark:bg-slate-900 border-b border-slate-300 dark:border-slate-800 select-none">
+      <div className="flex items-center justify-between px-4 py-2.5 bg-slate-200/80 dark:bg-slate-900 border-b border-slate-300 dark:border-slate-800 select-none">
         <div className="flex items-center gap-2">
           <div className="flex gap-1.5 mr-2">
             <div className="w-3 h-3 rounded-full bg-red-500/80" />
@@ -166,10 +166,10 @@ export function LabTerminal({ labSlug, sessionId, token }: LabTerminalProps) {
             <div className="w-3 h-3 rounded-full bg-emerald-500/80" />
           </div>
           <Terminal className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-          <span className="text-xs font-semibold text-slate-800 dark:text-slate-300">
+          <span className="text-xs font-semibold text-slate-800 dark:text-slate-200">
             {status?.prompt.split(':')[0] || 'student@opensio-lab'}
           </span>
-          <span className="text-xs text-slate-500 dark:text-slate-500">({cwd ? `~/${cwd}` : '~'})</span>
+          <span className="text-xs text-slate-600 dark:text-slate-400">({cwd ? `~/${cwd}` : '~'})</span>
         </div>
 
         <div className="flex items-center gap-3">
@@ -194,7 +194,7 @@ export function LabTerminal({ labSlug, sessionId, token }: LabTerminalProps) {
             type="button"
             onClick={() => setHistory([])}
             title="Effacer le terminal"
-            className="p-1 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-800 rounded transition-colors cursor-pointer"
+            className="p-1 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-300 dark:hover:bg-slate-800 rounded transition-colors cursor-pointer"
           >
             <Trash2 className="w-3.5 h-3.5" />
           </button>
@@ -203,7 +203,7 @@ export function LabTerminal({ labSlug, sessionId, token }: LabTerminalProps) {
             type="button"
             onClick={() => void initTerminal()}
             title="Réinitialiser la connexion"
-            className="p-1 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-800 rounded transition-colors cursor-pointer"
+            className="p-1 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-300 dark:hover:bg-slate-800 rounded transition-colors cursor-pointer"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin' : ''}`} />
           </button>
@@ -211,8 +211,8 @@ export function LabTerminal({ labSlug, sessionId, token }: LabTerminalProps) {
       </div>
 
       {/* Barre de commandes rapides */}
-      <div className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-50 dark:bg-slate-900/60 border-b border-slate-300 dark:border-slate-800/80 overflow-x-auto text-xs">
-        <span className="text-slate-500 dark:text-slate-500 shrink-0 mr-1 font-sans font-medium text-[11px]">Raccourcis :</span>
+      <div className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 dark:bg-slate-900/60 border-b border-slate-300 dark:border-slate-800/80 overflow-x-auto text-xs">
+        <span className="text-slate-600 dark:text-slate-400 shrink-0 mr-1 font-sans font-medium text-[11px]">Raccourcis :</span>
         {quickCommands.map((cmd) => (
           <button
             key={cmd}
@@ -228,11 +228,11 @@ export function LabTerminal({ labSlug, sessionId, token }: LabTerminalProps) {
 
       {/* Zone d'affichage des logs (Console Terminal) */}
       <div
-        className="flex-1 p-4 bg-slate-950 overflow-y-auto space-y-2 select-text"
+        className="flex-1 p-4 bg-white dark:bg-slate-950 overflow-y-auto space-y-2 select-text"
         onClick={() => inputRef.current?.focus()}
       >
         {error && (
-          <div className="p-3 bg-red-950/50 border border-red-800 rounded text-red-300 text-xs">
+          <div className="p-3 bg-rose-50 dark:bg-red-950/50 border border-rose-200 dark:border-red-800 rounded text-rose-700 dark:text-red-300 text-xs">
             {error}
           </div>
         )}
@@ -240,30 +240,30 @@ export function LabTerminal({ labSlug, sessionId, token }: LabTerminalProps) {
         {history.map((entry) => {
           if (entry.type === 'banner') {
             return (
-              <pre key={entry.id} className="text-emerald-400/90 whitespace-pre-wrap leading-relaxed text-xs">
+              <pre key={entry.id} className="text-emerald-700 dark:text-emerald-400/90 whitespace-pre-wrap leading-relaxed text-xs font-semibold">
                 {entry.content}
               </pre>
             );
           }
           if (entry.type === 'command') {
             return (
-              <div key={entry.id} className="flex items-center gap-2 text-slate-200">
-                <span className="text-emerald-400 font-bold select-none">
+              <div key={entry.id} className="flex items-center gap-2 text-slate-800 dark:text-slate-200">
+                <span className="text-emerald-700 dark:text-emerald-400 font-bold select-none">
                   student@opensio-lab:{entry.cwd ? `~/${entry.cwd}` : '~'}$
                 </span>
-                <span className="text-white font-medium">{entry.content}</span>
+                <span className="text-slate-900 dark:text-white font-semibold">{entry.content}</span>
               </div>
             );
           }
           if (entry.type === 'stderr') {
             return (
-              <pre key={entry.id} className="text-red-400 whitespace-pre-wrap pl-4 border-l-2 border-red-500/50 py-0.5">
+              <pre key={entry.id} className="text-rose-600 dark:text-red-400 whitespace-pre-wrap pl-4 border-l-2 border-rose-500/50 dark:border-red-500/50 py-0.5">
                 {entry.content}
               </pre>
             );
           }
           return (
-            <pre key={entry.id} className="text-slate-300 whitespace-pre-wrap pl-2 leading-relaxed">
+            <pre key={entry.id} className="text-slate-800 dark:text-slate-300 whitespace-pre-wrap pl-2 leading-relaxed">
               {entry.content}
             </pre>
           );
@@ -271,7 +271,7 @@ export function LabTerminal({ labSlug, sessionId, token }: LabTerminalProps) {
 
         {/* Ligne de prompt active */}
         <div className="flex items-center gap-2 pt-1">
-          <span className="text-emerald-400 font-bold select-none whitespace-nowrap">
+          <span className="text-emerald-700 dark:text-emerald-400 font-bold select-none whitespace-nowrap">
             student@opensio-lab:{cwd ? `~/${cwd}` : '~'}$
           </span>
           <input
@@ -282,7 +282,7 @@ export function LabTerminal({ labSlug, sessionId, token }: LabTerminalProps) {
             onKeyDown={handleKeyDown}
             disabled={isLoading || !isConnected}
             placeholder={isConnected ? 'Tapez une commande (ex: help, ip a)...' : 'En attente de connexion...'}
-            className="flex-1 bg-transparent border-none outline-none text-slate-100 placeholder-slate-600 focus:ring-0 text-sm font-mono"
+            className="flex-1 bg-transparent border-none outline-none text-slate-900 dark:text-slate-100 placeholder:text-slate-500 dark:placeholder:text-slate-500 focus:ring-0 text-sm font-mono"
             autoFocus
           />
           <button

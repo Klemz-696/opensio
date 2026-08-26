@@ -49,12 +49,12 @@ export function LessonCompleteButton({
 
   if (isCompleted) {
     return (
-      <div className="inline-flex items-center gap-3 px-4 py-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300">
-        <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
+      <div className="inline-flex items-center gap-3 px-4 py-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300">
+        <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0" />
         <div className="text-left">
-          <div className="text-sm font-bold text-emerald-200">Leçon validée</div>
+          <div className="text-sm font-bold text-emerald-800 dark:text-emerald-200">Leçon validée</div>
           {formattedDate && (
-            <div className="text-xs text-emerald-400/80">Terminée le {formattedDate}</div>
+            <div className="text-xs text-emerald-600/90 dark:text-emerald-400/80">Terminée le {formattedDate}</div>
           )}
         </div>
       </div>
@@ -69,7 +69,7 @@ export function LessonCompleteButton({
         className="inline-flex items-center gap-2.5 px-5 py-3 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white font-semibold text-sm transition-all shadow-lg shadow-sky-500/25 disabled:opacity-50 cursor-pointer"
       >
         {isLoading ? (
-          <Loader2 className="w-4 h-4 animate-spin text-white" />
+          <Loader2 className="w-4 h-4 animate-spin" />
         ) : (
           <Award className="w-4 h-4 text-sky-200" />
         )}

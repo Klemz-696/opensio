@@ -56,20 +56,20 @@ export function ProfileHeader({ memberSince, lastLogin, bio }: ProfileHeaderProp
 
           <div className="flex flex-wrap items-center justify-center sm:justify-start gap-4 text-xs text-slate-500 dark:text-slate-400">
             <div className="flex items-center gap-1.5">
-              <Mail className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500" />
+              <Mail className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
               <span>{user?.email}</span>
             </div>
 
             {formattedDate && (
               <div className="flex items-center gap-1.5">
-                <Calendar className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500" />
+                <Calendar className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
                 <span>Membre depuis le {formattedDate}</span>
               </div>
             )}
 
             {lastLogin && (
               <div className="flex items-center gap-1.5">
-                <ShieldCheck className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500" />
+                <ShieldCheck className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
                 <span>
                   Dernier accès :{' '}
                   {new Date(lastLogin).toLocaleDateString('fr-FR', {

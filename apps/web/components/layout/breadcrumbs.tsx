@@ -26,7 +26,7 @@ export function Breadcrumbs({ items }: BreadcrumbsProps) {
         const isLast = index === items.length - 1;
         return (
           <React.Fragment key={`${item.label}-${index}`}>
-            <ChevronRight className="w-3.5 h-3.5 text-slate-400 dark:text-slate-600 shrink-0" />
+            <ChevronRight className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400 shrink-0" />
             {item.href && !isLast ? (
               <Link
                 href={item.href}
