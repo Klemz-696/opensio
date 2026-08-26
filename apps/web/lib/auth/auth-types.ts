@@ -5,6 +5,11 @@ export interface AuthUser {
   email: string;
   displayName: string;
   role: UserRole;
+  avatarUrl?: string | null;
+  bio?: string | null;
+  preferences?: Record<string, unknown> | null;
+  createdAt?: string;
+  lastLoginAt?: string | null;
   mustChangePassword?: boolean;
 }
 

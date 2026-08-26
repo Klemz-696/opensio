@@ -17,6 +17,9 @@ model User {
   email              String     @unique @db.Citext
   passwordHash       String     @map("password_hash")
   displayName        String     @map("display_name")
+  avatarUrl          String?    @map("avatar_url")
+  bio                String?    @db.Text
+  preferences        Json?
   role               Role       @default(APPRENANT)
   status             UserStatus @default(ACTIVE)
   mustChangePassword Boolean    @default(false) @map("must_change_password")
