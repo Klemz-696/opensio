@@ -12,7 +12,9 @@ export function ModuleCard({ module }: ModuleCardProps) {
   const diff = formatDifficulty(module.difficulty);
   const progress = module.progress;
   const isCompleted = progress?.isCompleted ?? false;
-  const progressPct = progress?.progressPercentage ?? 0;
+  const totalLessons = progress?.totalLessons ?? module.lessonsCount;
+  const completedLessons = progress?.completedLessons ?? 0;
+  const progressPct = progress?.progressPercentage ?? (totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0);
 
   return (
     <div className="glass-panel glass-panel-hover rounded-2xl p-6 flex flex-col justify-between group">
@@ -58,24 +60,44 @@ export function ModuleCard({ module }: ModuleCardProps) {
           </div>
         )}
 
-        {progress !== undefined && progress !== null && (
-          <div className="mb-4 space-y-1.5">
-            <div className="flex items-center justify-between text-[11px] text-slate-400 font-medium">
-              <span>{progress.completedLessons}/{progress.totalLessons} leçons</span>
-              <span className={isCompleted ? 'text-emerald-400 font-semibold' : 'text-sky-400'}>
-                {progressPct}%
-              </span>
-            </div>
-            <div className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
-              <div
-                className={`h-full rounded-full transition-all duration-500 ${
-                  isCompleted ? 'bg-emerald-500' : 'bg-sky-500'
-                }`}
-                style={{ width: `${Math.min(100, Math.max(0, progressPct))}%` }}
-              />
-            </div>
+        {/* Barre de progression visuelle systématique */}
+        <div className="mb-4 space-y-1.5">
+          <div className="flex items-center justify-between text-[11px] text-slate-400 font-medium">
+            <span>
+              {completedLessons}/{totalLessons} leçon{totalLessons > 1 ? 's' : ''}
+            </span>
+            <span
+              className={
+                isCompleted
+                  ? 'text-emerald-400 font-semibold'
+                  : progressPct > 0
+                  ? 'text-sky-400 font-semibold'
+                  : 'text-slate-500'
+              }
+            >
+              {progressPct}%
+            </span>
           </div>
-        )}
+          <div
+            role="progressbar"
+            aria-valuenow={progressPct}
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-label={`Progression du module ${module.title} : ${progressPct}%`}
+            className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden"
+          >
+            <div
+              className={`h-full rounded-full transition-all duration-500 ${
+                isCompleted
+                  ? 'bg-emerald-500'
+                  : progressPct > 0
+                  ? 'bg-sky-500'
+                  : 'bg-slate-700'
+              }`}
+              style={{ width: `${Math.min(100, Math.max(0, progressPct))}%` }}
+            />
+          </div>
+        </div>
       </div>
 
       <div className="pt-4 border-t border-slate-800/80 flex items-center justify-between mt-auto">
