@@ -74,21 +74,21 @@ export function LessonNavigation({
       {previousLesson ? (
         <Link
           href={`/catalogue/${encodeURIComponent(moduleSlug)}/${encodeURIComponent(previousLesson.slug)}`}
-          className="group flex flex-col justify-between p-4 sm:p-5 rounded-2xl bg-slate-900/80 hover:bg-slate-850 border border-slate-800 hover:border-sky-500/40 transition-all text-left shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400"
+          className="group flex flex-col justify-between p-4 sm:p-5 rounded-2xl bg-white/80 dark:bg-slate-900/80 hover:bg-slate-50 dark:hover:bg-slate-850 border border-slate-200 dark:border-slate-800 hover:border-sky-500/40 transition-all text-left shadow-sm dark:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400"
           aria-label={`Leçon précédente : ${previousLesson.title}`}
         >
-          <div className="flex items-center gap-2 text-xs font-semibold text-slate-400 group-hover:text-sky-400 transition-colors mb-2">
+          <div className="flex items-center gap-2 text-xs font-semibold text-slate-500 dark:text-slate-400 group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors mb-2">
             <ArrowLeft className="w-4 h-4 transform group-hover:-translate-x-1 transition-transform" />
             <span>Leçon précédente</span>
-            <kbd className="hidden md:inline-flex items-center px-1.5 py-0.5 text-[10px] font-mono font-semibold text-slate-400 bg-slate-800 border border-slate-700 rounded shadow-sm">
+            <kbd className="hidden md:inline-flex items-center px-1.5 py-0.5 text-[10px] font-mono font-semibold text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded shadow-sm">
               ←
             </kbd>
           </div>
           <div className="flex items-center gap-2">
             {previousLesson.status === 'completed' && (
-              <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" aria-label="Leçon terminée" />
+              <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" aria-label="Leçon terminée" />
             )}
-            <span className="text-sm sm:text-base font-bold text-white group-hover:text-sky-300 transition-colors line-clamp-1">
+            <span className="text-sm sm:text-base font-bold text-slate-900 dark:text-white group-hover:text-sky-600 dark:group-hover:text-sky-300 transition-colors line-clamp-1">
               {previousLesson.title}
             </span>
           </div>
@@ -96,7 +96,7 @@ export function LessonNavigation({
       ) : (
         <div
           aria-hidden="true"
-          className="hidden sm:flex p-4 sm:p-5 rounded-2xl border border-dashed border-slate-800/60 bg-slate-950/30 items-center justify-center text-xs text-slate-400"
+          className="hidden sm:flex p-4 sm:p-5 rounded-2xl border border-dashed border-slate-200 dark:border-slate-800/60 bg-slate-50/50 dark:bg-slate-950/30 items-center justify-center text-xs text-slate-500 dark:text-slate-400"
         >
           <span>Première leçon du module</span>
         </div>
@@ -106,38 +106,38 @@ export function LessonNavigation({
       {nextLesson ? (
         <Link
           href={`/catalogue/${encodeURIComponent(moduleSlug)}/${encodeURIComponent(nextLesson.slug)}`}
-          className="group flex flex-col justify-between p-4 sm:p-5 rounded-2xl bg-slate-900/80 hover:bg-slate-850 border border-slate-800 hover:border-sky-500/40 transition-all text-right sm:items-end shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400"
+          className="group flex flex-col justify-between p-4 sm:p-5 rounded-2xl bg-white/80 dark:bg-slate-900/80 hover:bg-slate-50 dark:hover:bg-slate-850 border border-slate-200 dark:border-slate-800 hover:border-sky-500/40 transition-all text-right sm:items-end shadow-sm dark:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400"
           aria-label={`Leçon suivante : ${nextLesson.title}`}
         >
-          <div className="flex items-center justify-end gap-2 text-xs font-semibold text-slate-400 group-hover:text-sky-400 transition-colors mb-2">
-            <kbd className="hidden md:inline-flex items-center px-1.5 py-0.5 text-[10px] font-mono font-semibold text-slate-400 bg-slate-800 border border-slate-700 rounded shadow-sm">
+          <div className="flex items-center justify-end gap-2 text-xs font-semibold text-slate-500 dark:text-slate-400 group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors mb-2">
+            <kbd className="hidden md:inline-flex items-center px-1.5 py-0.5 text-[10px] font-mono font-semibold text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded shadow-sm">
               →
             </kbd>
             <span>Leçon suivante</span>
             <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
           </div>
           <div className="flex items-center justify-end gap-2">
-            <span className="text-sm sm:text-base font-bold text-white group-hover:text-sky-300 transition-colors line-clamp-1">
+            <span className="text-sm sm:text-base font-bold text-slate-900 dark:text-white group-hover:text-sky-600 dark:group-hover:text-sky-300 transition-colors line-clamp-1">
               {nextLesson.title}
             </span>
             {nextLesson.status === 'completed' && (
-              <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" aria-label="Leçon terminée" />
+              <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" aria-label="Leçon terminée" />
             )}
           </div>
         </Link>
       ) : quiz ? (
         <Link
           href={`/catalogue/${encodeURIComponent(moduleSlug)}/quiz/${encodeURIComponent(quiz.slug)}`}
-          className="group flex flex-col justify-between p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-amber-500/10 via-slate-900/90 to-slate-900 hover:from-amber-500/20 border border-amber-500/30 hover:border-amber-500/60 transition-all text-right sm:items-end shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
+          className="group flex flex-col justify-between p-4 sm:p-5 rounded-2xl bg-amber-500/10 hover:bg-amber-500/15 dark:bg-gradient-to-br dark:from-amber-500/10 dark:via-slate-900/90 dark:to-slate-900 dark:hover:from-amber-500/20 border border-amber-500/30 hover:border-amber-500/60 transition-all text-right sm:items-end shadow-sm dark:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
           aria-label={`Dernière leçon terminée. Passer au quiz : ${quiz.title}`}
         >
-          <div className="flex items-center justify-end gap-2 text-xs font-semibold text-amber-400 mb-2">
+          <div className="flex items-center justify-end gap-2 text-xs font-semibold text-amber-600 dark:text-amber-400 mb-2">
             <span>Dernière leçon — Évaluation finale</span>
             <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
           </div>
           <div className="flex items-center justify-end gap-2">
-            <HelpCircle className="w-4 h-4 text-amber-400 shrink-0" />
-            <span className="text-sm sm:text-base font-bold text-white group-hover:text-amber-300 transition-colors line-clamp-1">
+            <HelpCircle className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
+            <span className="text-sm sm:text-base font-bold text-slate-900 dark:text-white group-hover:text-amber-600 dark:group-hover:text-amber-300 transition-colors line-clamp-1">
               Passer le quiz du module
             </span>
           </div>
@@ -145,14 +145,14 @@ export function LessonNavigation({
       ) : (
         <Link
           href={`/catalogue/${encodeURIComponent(moduleSlug)}`}
-          className="group flex flex-col justify-between p-4 sm:p-5 rounded-2xl bg-slate-900/80 hover:bg-slate-850 border border-slate-800 hover:border-sky-500/40 transition-all text-right sm:items-end shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400"
+          className="group flex flex-col justify-between p-4 sm:p-5 rounded-2xl bg-white/80 dark:bg-slate-900/80 hover:bg-slate-50 dark:hover:bg-slate-850 border border-slate-200 dark:border-slate-800 hover:border-sky-500/40 transition-all text-right sm:items-end shadow-sm dark:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400"
           aria-label="Fin du module, retourner à l'accueil du module"
         >
-          <div className="flex items-center justify-end gap-2 text-xs font-semibold text-slate-400 group-hover:text-sky-400 transition-colors mb-2">
+          <div className="flex items-center justify-end gap-2 text-xs font-semibold text-slate-500 dark:text-slate-400 group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors mb-2">
             <span>Fin du module</span>
             <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
           </div>
-          <span className="text-sm sm:text-base font-bold text-white group-hover:text-sky-300 transition-colors">
+          <span className="text-sm sm:text-base font-bold text-slate-900 dark:text-white group-hover:text-sky-600 dark:group-hover:text-sky-300 transition-colors">
             Retour au module
           </span>
         </Link>

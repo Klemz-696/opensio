@@ -119,7 +119,7 @@ export function ProfileEditor({ initialBio }: ProfileEditorProps) {
             minLength={2}
             maxLength={50}
             placeholder="Ex : Alexandre Dupont"
-            className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950/80 border border-slate-300 dark:border-slate-700 focus:border-sky-500 focus:ring-1 focus:ring-sky-500 text-slate-900 dark:text-white text-xs placeholder:text-slate-400 dark:placeholder:text-slate-500 transition-colors"
+            className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950/80 border border-slate-300 dark:border-slate-700 focus:border-sky-500 focus:ring-1 focus:ring-sky-500 text-slate-900 dark:text-white text-xs placeholder:text-slate-500 dark:placeholder:text-slate-400 transition-colors"
           />
           <span className="text-[10px] text-slate-500 mt-1 block">
             Ce nom est visible sur vos contributions et dans la barre de navigation.
@@ -130,7 +130,7 @@ export function ProfileEditor({ initialBio }: ProfileEditorProps) {
         <div>
           <div className="flex items-center justify-between mb-1.5">
             <label className="block text-xs font-semibold text-slate-700 dark:text-slate-200 flex items-center gap-1.5">
-              <FileText className="w-3.5 h-3.5 text-slate-400" />
+              <FileText className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
               Biographie (optionnelle)
             </label>
             <span
@@ -147,7 +147,7 @@ export function ProfileEditor({ initialBio }: ProfileEditorProps) {
             rows={3}
             maxLength={500}
             placeholder="Présentez votre parcours, vos objectifs en BTS SIO SISR ou vos spécialités techniques..."
-            className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950/80 border border-slate-300 dark:border-slate-700 focus:border-sky-500 focus:ring-1 focus:ring-sky-500 text-slate-900 dark:text-white text-xs placeholder:text-slate-400 dark:placeholder:text-slate-500 transition-colors resize-none"
+            className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950/80 border border-slate-300 dark:border-slate-700 focus:border-sky-500 focus:ring-1 focus:ring-sky-500 text-slate-900 dark:text-white text-xs placeholder:text-slate-500 dark:placeholder:text-slate-400 transition-colors resize-none"
           />
         </div>
       </div>

@@ -15,6 +15,7 @@
     "content:sync": "pnpm --filter @opensio/api content:sync",
     "content:validate": "pnpm --filter @opensio/content-schema test",
     "check-file-size": "node scripts/check-file-size.mjs",
+    "check:theme": "node scripts/check-theme-classes.mjs",
     "format": "prettier --write \"**/*.{ts,tsx,js,mjs,json,md,yml,yaml}\""
   },
   "devDependencies": {

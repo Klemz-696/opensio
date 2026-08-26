@@ -28,27 +28,27 @@ export function DashboardRecommendations({
   };
 
   return (
-    <div className="glass-panel rounded-2xl p-6 border border-slate-800 mb-8 bg-gradient-to-br from-slate-900/90 to-slate-950">
-      <div className="flex items-center gap-2 mb-4 pb-3 border-b border-slate-800">
-        <Sparkles className="w-5 h-5 text-amber-400" />
-        <h2 className="text-lg font-bold text-white">Recommandations pédagogiques</h2>
+    <div className="glass-panel rounded-2xl p-6 border border-slate-200 dark:border-slate-800 mb-8 bg-white/90 dark:bg-gradient-to-br dark:from-slate-900/90 dark:to-slate-950 shadow-sm">
+      <div className="flex items-center gap-2 mb-4 pb-3 border-b border-slate-200 dark:border-slate-800">
+        <Sparkles className="w-5 h-5 text-amber-500 dark:text-amber-400" />
+        <h2 className="text-lg font-bold text-slate-900 dark:text-white">Recommandations pédagogiques</h2>
       </div>
 
       <div className="space-y-3">
         {recommendations.map((rec) => (
           <div
             key={rec.id}
-            className="p-4 rounded-xl bg-slate-900/80 border border-slate-850 hover:border-slate-700 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3 group"
+            className="p-4 rounded-xl bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3 group"
           >
             <div className="flex items-start gap-3">
-              <div className="p-2 rounded-lg bg-slate-800 border border-slate-700 mt-0.5 shrink-0">
+              <div className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 mt-0.5 shrink-0">
                 {getIcon(rec.kind)}
               </div>
               <div>
-                <h3 className="text-sm font-bold text-white group-hover:text-sky-300 transition-colors">
+                <h3 className="text-sm font-bold text-slate-900 dark:text-white group-hover:text-sky-600 dark:group-hover:text-sky-300 transition-colors">
                   {rec.title}
                 </h3>
-                <p className="text-xs text-slate-400 mt-0.5 leading-relaxed">
+                <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5 leading-relaxed">
                   {rec.description}
                 </p>
               </div>
@@ -56,7 +56,7 @@ export function DashboardRecommendations({
 
             <Link
               href={rec.href}
-              className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-sky-300 transition-colors shrink-0 cursor-pointer"
+              className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-xs font-semibold text-sky-700 dark:text-sky-300 border border-slate-200 dark:border-slate-700 transition-colors shrink-0 cursor-pointer"
             >
               <span>Accéder</span>
               <ArrowRight className="w-3.5 h-3.5" />

@@ -85,9 +85,9 @@ export function LabEditor({
   const allAvailablePaths = editableFilesInfo.map((f) => f.path);
 
   return (
-    <div className="glass-panel rounded-2xl overflow-hidden border border-slate-800 mb-8 flex flex-col">
+    <div className="glass-panel rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 mb-8 flex flex-col">
       {/* Barre d'onglets de fichiers */}
-      <div className="bg-slate-900/90 border-b border-slate-800 px-4 py-2.5 flex flex-wrap items-center justify-between gap-3">
+      <div className="bg-slate-100 dark:bg-slate-900/90 border-b border-slate-200 dark:border-slate-800 px-4 py-2.5 flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-1.5 overflow-x-auto">
           {allAvailablePaths.map((p) => {
             const isActive = p === activeFilePath;
@@ -97,8 +97,8 @@ export function LabEditor({
                 onClick={() => setActiveFilePath(p)}
                 className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-mono transition-colors ${
                   isActive
-                    ? 'bg-slate-800 text-emerald-300 font-semibold border border-slate-700 shadow-sm'
-                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-850'
+                    ? 'bg-white dark:bg-slate-800 text-emerald-700 dark:text-emerald-300 font-semibold border border-slate-200 dark:border-slate-700 shadow-sm'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-800'
                 }`}
               >
                 <FileCode className="w-3.5 h-3.5" />
@@ -113,7 +113,7 @@ export function LabEditor({
           {currentFileInfo?.initialContent !== undefined && !isReadOnly && (
             <button
               onClick={handleReset}
-              className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-750 text-slate-400 hover:text-slate-200 text-xs transition-colors cursor-pointer"
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 text-xs transition-colors cursor-pointer"
               title="Réinitialiser au contenu d'origine"
             >
               <RotateCcw className="w-3.5 h-3.5" />
@@ -130,7 +130,7 @@ export function LabEditor({
               {isSaving ? (
                 <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
               ) : savedSuccess ? (
-                <Check className="w-3.5 h-3.5 text-white" />
+                <Check className="w-3.5 h-3.5" />
               ) : (
                 <Save className="w-3.5 h-3.5" />
               )}
@@ -142,15 +142,15 @@ export function LabEditor({
 
       {/* Description du format attendu */}
       {currentFileInfo?.description && (
-        <div className="bg-slate-900/40 border-b border-slate-800/80 px-4 py-2 text-xs text-slate-400 font-mono">
+        <div className="bg-slate-50 dark:bg-slate-900/40 border-b border-slate-200 dark:border-slate-800/80 px-4 py-2 text-xs text-slate-600 dark:text-slate-400 font-mono">
           <span className="text-slate-500 mr-2">Structure attendue :</span>
-          <span className="text-slate-300">{currentFileInfo.description}</span>
+          <span className="text-slate-700 dark:text-slate-300">{currentFileInfo.description}</span>
         </div>
       )}
 
       {saveError && (
-        <div className="px-4 py-2 bg-rose-500/10 border-b border-rose-500/20 text-rose-300 text-xs flex items-center gap-2">
-          <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
+        <div className="px-4 py-2 bg-rose-500/10 border-b border-rose-500/20 text-rose-700 dark:text-rose-300 text-xs flex items-center gap-2">
+          <AlertCircle className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0" />
           <span>{saveError}</span>
         </div>
       )}
@@ -164,7 +164,7 @@ export function LabEditor({
           readOnly={isReadOnly}
           rows={14}
           spellCheck={false}
-          className={`w-full p-4 bg-slate-950/90 text-slate-100 font-mono text-xs sm:text-sm leading-relaxed outline-none resize-y border-none focus:ring-1 focus:ring-emerald-500/50 ${
+          className={`w-full p-4 bg-slate-50 dark:bg-slate-950/90 text-slate-900 dark:text-slate-100 font-mono text-xs sm:text-sm leading-relaxed outline-none resize-y border-none focus:ring-1 focus:ring-emerald-500/50 ${
             isReadOnly ? 'opacity-80 cursor-not-allowed' : ''
           }`}
           placeholder="Saisissez ou éditez les données ici..."
