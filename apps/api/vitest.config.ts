@@ -7,6 +7,7 @@ export default defineConfig({
     environment: 'node',
     testTimeout: 15000,
     fileParallelism: false,
+    setupFiles: ['./test/setup-env.ts'],
   },
   plugins: [
     swc.vite({
