@@ -846,5 +846,49 @@ Création complète du nouveau module `windows-server-ad` comprenant 6 leçons, 
 - `node scripts/check-file-size.mjs` : 100 % conforme D-13 (270 fichiers analysés, 0 violation > 400 lignes).
 - `pnpm build` : Build de production Next.js 15 App Router et NestJS 11 validé avec succès.
 
+---
+
+## 2026-08-26 — [Lot C2 — Partie 2] : Interface et Expérience Utilisateur — UX Quiz & Labs
+
+**Branche** : `feat/c2-ux-quiz-labs`  
+**Objectif** : Perfectionnement de l'expérience interactive des quiz et des ateliers pratiques (labs) avec progression pas-à-pas, révision complète des réponses avant soumission finale, checklist interactive des étapes de lab avec suivi local, cartouche enrichi temps/points et intégration complète des blocs de commandes copiables.
+
+### 1. Ergonomie et Déroulement des Quiz
+- **Mode Pas-à-Pas & Stepper Interactif (`QuizStepper`)** :
+  - Découpage séquentiel des questions avec affichage clair du rang (`Question X sur Y`).
+  - Navigation par pastilles d'états : en cours (bordure active), répondue (fond émeraude et coche), non répondue (fond ardoise sombre).
+  - Boutons de déplacement rapide « Précédente » et « Suivante » avec mise à jour immédiate du scroll et des états de validation.
+- **Écran de Revue & Récapitulatif Pré-Soumission (`QuizReviewStep`)** :
+  - Vue d'ensemble de l'ensemble des réponses sélectionnées par l'étudiant avec affichage détaillé des intitulés de choix.
+  - Alerte visuelle en cas de questions non renseignées (`X questions sans réponse`).
+  - Bouton direct « Modifier » ramenant précisément sur la question ciblée.
+  - Soumission finale sécurisée avec états de chargement (`isSubmitting`) et désactivation préventive des boutons.
+- **Transition douce vers les résultats** :
+  - Animations discrètes `animate-in fade-in` et harmonisation du scroll vers le résultat.
+
+### 2. Ergonomie et Déroulement des Labs
+- **Checklist Interactive des Étapes (`LabStepChecklist`)** :
+  - Agrégation structurée des objectifs pédagogiques et des critères d'évaluation du validateur.
+  - Cochage interactif avec persistance locale dans le navigateur (`localStorage`) indexée par lab et session.
+  - Jauge de progression dédiée (`X / Y étapes franchies - Z%`) et action de réinitialisation.
+- **Blocs de Code et Commandes Copiables** :
+  - Contexte et scénario de lab rendus via `MarkdownRenderer` : coloration syntaxique Shiki et bouton « Copier » universel avec retour visuel immédiat.
+- **Cartouche Enrichi Temps / Points (`LabHeader`)** :
+  - Présentation modernisée en grille : durée estimée, score maximum, seuil plancher après indices, nombre d'indices et badge de statut de session dynamique.
+
+### 3. Validations & Tests
+- `apps/web/test/quiz-runner.spec.tsx` : 6 tests unitaires et d'intégration validant le mode pas-à-pas, la navigation, le stepper, la revue et la soumission.
+- `apps/web/test/quiz-stepper.spec.tsx` : 3 tests unitaires du composant stepper.
+- `apps/web/test/quiz-review-step.spec.tsx` : 4 tests unitaires de l'écran récapitulatif.
+- `apps/web/test/lab-step-checklist.spec.tsx` : 3 tests unitaires de la checklist et du stockage local.
+- `apps/web/test/lab-header.spec.tsx` : 2 tests du cartouche temps/points et des badges de session.
+- `apps/web/test/lab-context.spec.tsx` : 1 test du rendu Markdown et des contrôles de validation.
+- `pnpm test` : 100 % vert (**282 tests automatisés** : 185 API, 79 Web, 18 Content-Schema).
+- `pnpm lint` : 100 % vert (0 erreur, 0 avertissement).
+- `pnpm typecheck` : 100 % vert.
+- `node scripts/check-file-size.mjs` : 100 % conforme D-13 (278 fichiers analysés, 0 violation > 400 lignes).
+- `pnpm build` : Build Next.js 15 et NestJS 11 validé avec succès.
+
+
 
 
