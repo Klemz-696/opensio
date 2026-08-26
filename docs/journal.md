@@ -886,8 +886,66 @@ Création complète du nouveau module `windows-server-ad` comprenant 6 leçons, 
 - `pnpm test` : 100 % vert (**282 tests automatisés** : 185 API, 79 Web, 18 Content-Schema).
 - `pnpm lint` : 100 % vert (0 erreur, 0 avertissement).
 - `pnpm typecheck` : 100 % vert.
-- `node scripts/check-file-size.mjs` : 100 % conforme D-13 (278 fichiers analysés, 0 violation > 400 lignes).
-- `pnpm build` : Build Next.js 15 et NestJS 11 validé avec succès.
+---
+
+## 2026-08-26 — [Lot D1] : Comptes réels, rôles et administration
+
+**Branche** : `feat/d1-roles-admin`  
+**Objectif** : Mise en place du modèle de rôles formel (`ADMIN`, `APPRENANT`), administration des comptes utilisateurs, amorçage sécurisé configurable (seed admin & démo conditionnelle), procédure de premier login avec mot de passe temporaire forcé et interface d'administration complète.
+
+### 1. Modèle de Données & Migration Prisma
+- **Enum `Role`** : remplacement de l'ancien `UserRole` par `enum Role { ADMIN @map("admin"), APPRENANT @map("apprenant") }`.
+- **Flag `mustChangePassword`** : ajout du champ booléen `mustChangePassword Boolean @default(false) @map("must_change_password")` sur le modèle `User`.
+- **Migration SQL robuste** : création de `20260826160000_lot_d1_roles_admin` assurant la migration sécurisée des comptes existants (`student`/`teacher` convertis en `apprenant`).
+- **Seed & Configuration d'Amorçage** :
+  - Compte administrateur configurable via `SEED_ADMIN_EMAIL`, `SEED_ADMIN_NAME`, `SEED_ADMIN_PASSWORD` (documenté dans `.env.example`).
+  - Compte étudiant démo conditionné à `DEMO_SEED=true` (absent par défaut).
+
+### 2. Backend & API NestJS
+- **Décorateur `@Roles` & `RolesGuard`** : protection RBAC native au niveau des routes et contrôleurs API.
+- **Module Administration (`AdminModule`)** :
+  - `GET /api/v1/admin/users` : liste paginée avec filtres (recherche texte, rôle, statut).
+  - `POST /api/v1/admin/users` : création de compte par un admin avec génération de mot de passe temporaire et `mustChangePassword=true`.
+  - `PATCH /api/v1/admin/users/:id` : mise à jour des informations, rôle et statut (avec garde-fous stricts interdisant l'auto-rétrogradation et l'auto-désactivation d'un admin).
+  - `POST /api/v1/admin/users/:id/reset-password` : réinitialisation de mot de passe par l'admin, révocation instantanée des sessions actives et activation de `mustChangePassword`.
+  - Révocation automatique de toutes les sessions actives (`RefreshTokenService.revokeAllUserTokens`) lors de la désactivation ou de la réinitialisation de compte.
+  - Traçabilité totale via `AuditService` (`ADMIN_USER_CREATE`, `ADMIN_USER_UPDATE`, `ADMIN_USER_PASSWORD_RESET`).
+- **Changement de Mot de Passe (`POST /api/v1/auth/change-password`)** :
+  - Endpoint authentifié permettant à l'utilisateur de valider son ancien mot de passe, de définir son nouveau mot de passe fort et de désactiver `mustChangePassword`.
+
+### 3. Frontend Web Next.js 15 & Interface d'Administration
+- **Navigation conditionnelle (`Navbar`)** : affichage du lien « Administration » réservé exclusivement aux utilisateurs possédant le rôle `ADMIN`.
+- **Garde de route (`AdminRoute`)** : protection des pages `/admin/*` avec redirection des non-connectés et message d'accès restreint pour les apprenants.
+- **Page de Gestion des Utilisateurs (`/admin/users`)** :
+  - Cartouche de statistiques dynamiques (Total, Administrateurs, Apprenants, Comptes actifs).
+  - Barre de filtres (recherche nom/email, filtre par rôle, filtre par statut, réinitialisation).
+  - Tableau moderne et réactif avec badges de rôle, indicateurs d'état, badges de sécurité (mot de passe temporaire / défini), dates de création et dernier accès.
+  - Dialogue de création (`CreateUserDialog`) avec génération/saisie de mot de passe temporaire et bouton de copie en un clic.
+  - Dialogue de modification (`EditUserDialog`) avec protection contre l'auto-rétrogradation.
+  - Dialogue de réinitialisation (`ResetPasswordDialog`) avec génération de mot de passe temporaire et bouton de copie.
+  - Dialogue d'activation/désactivation (`ToggleStatusDialog`) avec confirmation explicite et protection contre l'auto-verrouillage.
+- **Modale de changement forcé (`ForcePasswordChangeModal`)** :
+  - Modale bloquante globale déclenchée automatiquement dès la connexion si `mustChangePassword=true`.
+  - Checklist interactive des critères de sécurité du mot de passe en temps réel.
+
+### 4. Validations & Qualité
+- **Tests API** :
+  - `apps/api/src/modules/admin/__tests__/admin-users.service.spec.ts` : 9 tests unitaires (CRUD, filtres, auto-protection, révocation, politique de mot de passe).
+  - `apps/api/src/modules/admin/__tests__/admin-users.e2e.spec.ts` : 6 tests d'intégration PostgreSQL et contrôles RBAC.
+  - `apps/api/src/modules/auth/auth.e2e.spec.ts` : tests d'intégration mis à jour avec le flux complet de changement de mot de passe.
+  - Tous les tests de modules existants (`auth`, `labs`, `quizzes`, `progress`, `terminal`, `ai`, `demo-*`) mis à jour pour le nouvel enum `Role`.
+- **Tests Frontend** :
+  - `apps/web/test/admin-route.spec.tsx` : 4 tests de protection RBAC frontend.
+  - `apps/web/test/force-password-change-modal.spec.tsx` : 4 tests du modal de changement forcé de mot de passe.
+  - `apps/web/test/navbar-admin.spec.tsx` : 2 tests de conditionnement de la navigation.
+  - `apps/web/test/admin-users-page.spec.tsx` : 2 tests d'intégration de la page d'administration.
+- **Bilan des Métriques** :
+  - `pnpm test` : 100 % vert (**303 tests automatisés** : 194 API, 91 Web, 18 Content-Schema).
+  - `pnpm lint` : 100 % vert (0 erreur, 0 avertissement).
+  - `pnpm typecheck` : 100 % vert (0 erreur TypeScript).
+  - `node scripts/check-file-size.mjs` : 100 % conforme D-13 (305 fichiers analysés, 0 violation > 400 lignes).
+  - `pnpm build` : Build de production Next.js 15 App Router et NestJS 11 validé avec succès.
+
 
 
 

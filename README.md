@@ -179,12 +179,17 @@ Les services sont immédiatement disponibles sur :
 
 ---
 
-### 5. Comptes de démonstration (Développement local)
+### 5. Comptes & Rôles (Lot D1)
 
-| Rôle                  | Adresse email           | Mot de passe          |
-| --------------------- | ----------------------- | --------------------- |
-| 🎓 **Étudiant**       | `student@opensio.local` | `StudentOpenSIO2026!` |
-| 🛡️ **Administrateur** | `admin@opensio.local`   | `AdminOpenSIO2026!`   |
+| Rôle                  | Rôle Système | Compte Initial / Démo   | Mot de passe          | Amorçage (Seed) |
+| --------------------- | ------------ | ----------------------- | --------------------- | --------------- |
+| 🛡️ **Administrateur** | `ADMIN`      | `admin@opensio.local`   | `AdminOpenSIO2026!`   | Automatique (`SEED_ADMIN_*`) |
+| 🎓 **Apprenant**      | `APPRENANT`  | `student@opensio.local` | `StudentOpenSIO2026!` | Démo si `DEMO_SEED=true` |
+
+> 📌 **Gestion des comptes & Sécurité** :
+> - Seul un administrateur peut créer de nouveaux comptes via l'interface `/admin/users` (inscription publique désactivée par défaut).
+> - Tout compte créé ou réinitialisé par un administrateur est doté d'un mot de passe temporaire et doit obligatoirement définir un mot de passe personnel à sa première connexion.
+> - Le compte étudiant de démonstration n'est amorcé que si `DEMO_SEED=true` est présent dans l'environnement.
 
 ---
 
