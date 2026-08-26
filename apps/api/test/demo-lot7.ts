@@ -7,12 +7,12 @@ import { PrismaService } from '../src/prisma/prisma.service';
 import { PasswordService } from '../src/modules/auth/services/password.service';
 import { executeContentSync } from '../src/sync/sync.service';
 import { CatalogCacheService } from '../src/modules/catalog/catalog-cache.service';
-import { UserRole } from '@prisma/client';
+import { Role } from '@prisma/client';
 
 async function runDemonstration() {
   console.log('='.repeat(70));
   console.log('🚀 DÉMONSTRATION RÉSEAU RÉELLE (HTTP) — LOT 7 (OpenSIO)');
-  console.log('   Ateliers Pratiques (Labs), Runner & Sécurité Zéro-Fuite');
+  console.log('   Sessions de Labs, Machine à États & Runner Découplé');
   console.log('='.repeat(70) + '\n');
 
   process.env.API_PORT = '4008';
@@ -34,7 +34,7 @@ async function runDemonstration() {
   const cacheService = app.get(CatalogCacheService);
   const passwordService = app.get(PasswordService);
 
-  // Synchronisation du catalogue pour assurer l'existence du lab
+  // Synchronisation du catalogue
   await executeContentSync(prisma, contentDir, cacheService);
 
   try {
@@ -60,7 +60,7 @@ async function runDemonstration() {
         email: lucasEmail,
         displayName: 'Lucas SISR',
         passwordHash,
-        role: UserRole.STUDENT,
+        role: Role.APPRENANT,
       },
     });
 
@@ -69,7 +69,7 @@ async function runDemonstration() {
         email: emmaEmail,
         displayName: 'Emma SISR',
         passwordHash,
-        role: UserRole.STUDENT,
+        role: Role.APPRENANT,
       },
     });
 

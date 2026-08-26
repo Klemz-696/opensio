@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { TerminalGateway } from '../terminal.gateway';
 import type { JwtService } from '../../auth/services/jwt.service';
 import type { TerminalService } from '../services/terminal.service';
-import { UserRole } from '@prisma/client';
+import { Role } from '@prisma/client';
 
 import type { IncomingMessage } from 'node:http';
 import type { AuthenticatedWebSocket } from '../terminal.gateway';
@@ -77,7 +77,7 @@ describe('TerminalGateway (WebSocket Auth & Isolation)', () => {
   it('ferme la connexion (4403) si la session n’appartient pas à l’utilisateur (isolation)', async () => {
     mockJwtService.verifyAccessToken.mockReturnValue({
       sub: 'user-emma',
-      role: UserRole.STUDENT,
+      role: Role.APPRENANT,
       email: 'emma@opensio.local',
       displayName: 'Emma',
     });
@@ -95,7 +95,7 @@ describe('TerminalGateway (WebSocket Auth & Isolation)', () => {
   it('authentifie avec succès et envoie le message "ready" avec le prompt', async () => {
     mockJwtService.verifyAccessToken.mockReturnValue({
       sub: 'user-lucas',
-      role: UserRole.STUDENT,
+      role: Role.APPRENANT,
       email: 'lucas@opensio.local',
       displayName: 'Lucas',
     });

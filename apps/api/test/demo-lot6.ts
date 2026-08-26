@@ -7,7 +7,7 @@ import { PrismaService } from '../src/prisma/prisma.service';
 import { PasswordService } from '../src/modules/auth/services/password.service';
 import { executeContentSync } from '../src/sync/sync.service';
 import { CatalogCacheService } from '../src/modules/catalog/catalog-cache.service';
-import { UserRole } from '@prisma/client';
+import { Role } from '@prisma/client';
 
 async function runDemonstration() {
   console.log('='.repeat(70));
@@ -58,7 +58,7 @@ async function runDemonstration() {
         email: lucasEmail,
         displayName: 'Lucas SISR',
         passwordHash,
-        role: UserRole.STUDENT,
+        role: Role.APPRENANT,
       },
     });
 
@@ -67,7 +67,7 @@ async function runDemonstration() {
         email: emmaEmail,
         displayName: 'Emma SISR',
         passwordHash,
-        role: UserRole.STUDENT,
+        role: Role.APPRENANT,
       },
     });
 
