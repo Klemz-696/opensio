@@ -37,12 +37,12 @@ export function ModuleCard({ module }: ModuleCardProps) {
           </div>
         </div>
 
-        <h3 className="text-lg font-bold text-white group-hover:text-sky-400 transition-colors leading-snug mb-2">
+        <h3 className="text-lg font-bold text-slate-900 dark:text-white group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors leading-snug mb-2">
           {module.title}
         </h3>
 
         {module.description && (
-          <p className="text-xs text-slate-400 line-clamp-2 mb-4 leading-relaxed">
+          <p className="text-xs text-slate-600 dark:text-slate-400 line-clamp-2 mb-4 leading-relaxed">
             {module.description}
           </p>
         )}
@@ -52,7 +52,7 @@ export function ModuleCard({ module }: ModuleCardProps) {
             {module.competencyRefs.map((comp) => (
               <span
                 key={comp}
-                className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800/80 border border-slate-700 text-sky-300"
+                className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-sky-700 dark:text-sky-300"
               >
                 {comp}
               </span>
@@ -62,17 +62,17 @@ export function ModuleCard({ module }: ModuleCardProps) {
 
         {/* Barre de progression visuelle systématique */}
         <div className="mb-4 space-y-1.5">
-          <div className="flex items-center justify-between text-[11px] text-slate-400 font-medium">
+          <div className="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 font-medium">
             <span>
               {completedLessons}/{totalLessons} leçon{totalLessons > 1 ? 's' : ''}
             </span>
             <span
               className={
                 isCompleted
-                  ? 'text-emerald-400 font-semibold'
+                  ? 'text-emerald-600 dark:text-emerald-400 font-semibold'
                   : progressPct > 0
-                  ? 'text-sky-400 font-semibold'
-                  : 'text-slate-500'
+                  ? 'text-sky-600 dark:text-sky-400 font-semibold'
+                  : 'text-slate-400 dark:text-slate-500'
               }
             >
               {progressPct}%
@@ -84,7 +84,7 @@ export function ModuleCard({ module }: ModuleCardProps) {
             aria-valuemin={0}
             aria-valuemax={100}
             aria-label={`Progression du module ${module.title} : ${progressPct}%`}
-            className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden"
+            className="w-full h-1.5 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden"
           >
             <div
               className={`h-full rounded-full transition-all duration-500 ${
@@ -92,7 +92,7 @@ export function ModuleCard({ module }: ModuleCardProps) {
                   ? 'bg-emerald-500'
                   : progressPct > 0
                   ? 'bg-sky-500'
-                  : 'bg-slate-700'
+                  : 'bg-slate-300 dark:bg-slate-700'
               }`}
               style={{ width: `${Math.min(100, Math.max(0, progressPct))}%` }}
             />
@@ -100,15 +100,15 @@ export function ModuleCard({ module }: ModuleCardProps) {
         </div>
       </div>
 
-      <div className="pt-4 border-t border-slate-800/80 flex items-center justify-between mt-auto">
-        <div className="flex items-center gap-1.5 text-xs text-slate-400">
-          <BookOpen className="w-3.5 h-3.5 text-sky-400" />
+      <div className="pt-4 border-t border-slate-200 dark:border-slate-800/80 flex items-center justify-between mt-auto">
+        <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
+          <BookOpen className="w-3.5 h-3.5 text-sky-500 dark:text-sky-400" />
           <span>{module.lessonsCount} leçon{module.lessonsCount > 1 ? 's' : ''}</span>
         </div>
 
         <Link
           href={`/catalogue/${module.slug}`}
-          className="inline-flex items-center gap-1.5 text-xs font-semibold text-sky-400 group-hover:text-sky-300 transition-colors cursor-pointer"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-sky-600 dark:text-sky-400 group-hover:text-sky-700 dark:group-hover:text-sky-300 transition-colors cursor-pointer"
         >
           <span>Accéder au module</span>
           <ArrowRight className="w-3.5 h-3.5 transform group-hover:translate-x-1 transition-transform" />

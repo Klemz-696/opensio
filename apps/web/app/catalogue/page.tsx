@@ -47,14 +47,14 @@ export default function CataloguePage() {
     <div>
       <div className="mb-10">
         <div className="flex items-center gap-3 mb-2">
-          <div className="w-10 h-10 rounded-xl bg-sky-500/10 border border-sky-500/30 flex items-center justify-center text-sky-400">
+          <div className="w-10 h-10 rounded-xl bg-sky-500/10 border border-sky-500/30 flex items-center justify-center text-sky-600 dark:text-sky-400">
             <BookOpen className="w-5 h-5" />
           </div>
-          <h1 className="text-3xl font-extrabold tracking-tight text-white">
+          <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
             Catalogue de Formation BTS SIO SISR
           </h1>
         </div>
-        <p className="text-sm text-slate-400 max-w-3xl">
+        <p className="text-sm text-slate-600 dark:text-slate-400 max-w-3xl">
           Parcourez l'ensemble des modules d'apprentissage organisés par année de formation.
           Chaque module comprend des cours théoriques approfondis, des quiz et des exercices pratiques.
         </p>

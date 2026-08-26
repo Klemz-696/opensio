@@ -21,8 +21,25 @@ body {
 
 .glass-panel-hover:hover {
   border-color: var(--border-accent);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4), 0 0 15px rgba(56, 189, 248, 0.1);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08), 0 0 12px rgba(2, 132, 199, 0.1);
   transform: translateY(-2px);
+}
+
+.dark .glass-panel-hover:hover {
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4), 0 0 15px rgba(56, 189, 248, 0.1);
+}
+
+/* Shiki Dual-Theme CSS variables support */
+.shiki,
+.shiki span {
+  color: var(--shiki-light);
+  background-color: transparent !important;
+}
+
+html.dark .shiki,
+html.dark .shiki span {
+  color: var(--shiki-dark);
+  background-color: transparent !important;
 }
 
 /* Custom scrollbars */
@@ -43,3 +60,4 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--text-muted);
 }
+
