@@ -58,6 +58,9 @@ jobs:
       - name: Contrôle de la taille des fichiers (Règle D-13 / RM-13)
         run: node scripts/check-file-size.mjs
 
+      - name: Contrôle des classes bi-thème (Thème Clair / Sombre)
+        run: node scripts/check-theme-classes.mjs
+
       - name: Linting
         run: pnpm lint
 

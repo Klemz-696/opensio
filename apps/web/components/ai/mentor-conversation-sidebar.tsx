@@ -118,10 +118,10 @@ export function MentorConversationSidebar({
     <div
       role="region"
       aria-label="Historique des discussions"
-      className="p-3 bg-slate-950 border-b border-slate-800 space-y-3"
+      className="p-3 bg-slate-50 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800 space-y-3"
     >
       <div className="flex items-center justify-between">
-        <span className="text-xs font-bold text-slate-300 uppercase tracking-wider">
+        <span className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
           Discussions
         </span>
         <button
@@ -138,7 +138,7 @@ export function MentorConversationSidebar({
       {/* Discussions actives */}
       <div className="space-y-1.5 max-h-44 overflow-y-auto pr-1">
         {activeConversations.length === 0 ? (
-          <div className="py-4 text-center text-xs text-slate-500 bg-slate-900/40 rounded-xl border border-dashed border-slate-800">
+          <div className="py-4 text-center text-xs text-slate-500 bg-white/60 dark:bg-slate-900/40 rounded-xl border border-dashed border-slate-200 dark:border-slate-800">
             Aucune discussion active
           </div>
         ) : (
@@ -148,13 +148,13 @@ export function MentorConversationSidebar({
 
       {/* Section discussions archivées repliable */}
       {archivedConversations.length > 0 && (
-        <div className="pt-2 border-t border-slate-800/80">
+        <div className="pt-2 border-t border-slate-200 dark:border-slate-800/80">
           <button
             type="button"
             onClick={() => setIsArchivedOpen((v) => !v)}
             aria-expanded={isArchivedOpen}
             aria-label={`Discussions archivées (${archivedConversations.length})`}
-            className="w-full flex items-center justify-between py-1 px-1.5 text-xs text-slate-400 hover:text-slate-200 transition-colors cursor-pointer font-medium"
+            className="w-full flex items-center justify-between py-1 px-1.5 text-xs text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 transition-colors cursor-pointer font-medium"
           >
             <div className="flex items-center gap-1.5">
               {isArchivedOpen ? (
@@ -164,7 +164,7 @@ export function MentorConversationSidebar({
               )}
               <span>Discussions archivées</span>
             </div>
-            <span className="px-1.5 py-0.5 rounded-full bg-slate-800 text-[10px] text-slate-400 font-mono">
+            <span className="px-1.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-[10px] text-slate-600 dark:text-slate-400 font-mono">
               {archivedConversations.length}
             </span>
           </button>

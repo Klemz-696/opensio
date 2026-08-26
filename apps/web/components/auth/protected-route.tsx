@@ -23,8 +23,8 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
 
   if (isLoading) {
     return (
-      <div className="min-h-[70vh] flex flex-col items-center justify-center gap-4 text-slate-400">
-        <Loader2 className="w-10 h-10 animate-spin text-sky-400" />
+      <div className="min-h-[70vh] flex flex-col items-center justify-center gap-4 text-slate-500 dark:text-slate-400">
+        <Loader2 className="w-10 h-10 animate-spin text-sky-500 dark:text-sky-400" />
         <p className="text-sm font-medium animate-pulse">Vérification de la session OpenSIO...</p>
       </div>
     );

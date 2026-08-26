@@ -67,7 +67,7 @@ export function MentorChatInput({
           <Sparkles className="w-3 h-3 text-indigo-500 dark:text-indigo-400" />
           <span>{remainingQuota} / {rateLimitHourly} messages restants cette heure</span>
         </div>
-        <span className="hidden sm:inline text-slate-400 dark:text-slate-600">Shift + Entrée pour nouvelle ligne</span>
+        <span className="hidden sm:inline text-slate-500 dark:text-slate-400">Shift + Entrée pour nouvelle ligne</span>
       </div>
     </div>
   );

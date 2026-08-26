@@ -1050,11 +1050,40 @@ Création complète du nouveau module `windows-server-ad` comprenant 6 leçons, 
   - `pnpm lint` : 100 % vert (0 erreur, 0 avertissement).
   - `pnpm typecheck` : 100 % vert (0 erreur TypeScript).
   - `node scripts/check-file-size.mjs` : 100 % conforme D-13 (331 fichiers analysés, 0 violation > 400 lignes).
-  - `pnpm build` : Build de production complet Next.js 15 et NestJS 11 validé avec succès.
 
+---
 
+## 2026-08-26 — [Correctif Exhaustif] : Audit & Conversion Bi-Thème Complète avec Garde-Fou CI
 
+**Branche** : `fix/theme-clair-complet`  
+**Objectif** : Éliminer 100 % des classes sombres hardcodées résiduelles dans `apps/web` (boutons/cartes d'accès aux leçons/quiz/labs, en-tête de module, listes de cours, progression de track, widgets dashboard, modales, dialogues admin, formulaires, tiroir Mentor IA et skeletons de chargement), mettre en place un script de contrôle automatisé `scripts/check-theme-classes.mjs` intégré à la CI GitHub Actions, et certifier l'accessibilité bi-thème page par page.
 
+### 1. Audit Exhaustif & Remplacement des Classes Hardcodées
+- **Composants Catalogue (`apps/web/components/catalog/`)** :
+  - `module-header.tsx`, `module-lessons-list.tsx`, `module-quizzes-list.tsx`, `module-labs-list.tsx`, `track-section.tsx`, `module-card.tsx` : conversion des fonds fixes, bordures sombres et textes atténués en variantes bi-thème (`dark:`).
+- **Composants Dashboard (`apps/web/components/dashboard/`)** :
+  - `dashboard-header.tsx`, `dashboard-stats.tsx`, `dashboard-recommendations.tsx`, `dashboard-resume.tsx`, `dashboard-tracks.tsx`, `dashboard-quizzes.tsx`, `dashboard-activity.tsx` : cartes, jauges et compteurs adaptés aux contrastes clairs et sombres.
+- **Composants Leçons, Labs & Quiz** :
+  - `lesson-header.tsx`, `lesson-metadata.tsx`, `lesson-module-sidebar.tsx`, `lesson-navigation.tsx`, `lesson-complete-button.tsx`, `markdown-renderer.tsx`.
+  - `lab-header.tsx`, `lab-context.tsx`, `lab-editor.tsx`, `lab-hints.tsx`, `lab-session-controls.tsx`, `lab-step-checklist.tsx`, `lab-terminal.tsx`, `lab-verdict.tsx`.
+  - `quiz-runner.tsx`, `quiz-stepper.tsx`, `quiz-question-item.tsx`, `quiz-review-step.tsx`, `quiz-result-view.tsx`.
+- **Composants Admin, Auth & Profil** :
+  - `admin-users-header.tsx`, `admin-users-filters.tsx`, `admin-users-table.tsx`, `admin-pagination.tsx`, `create-user-dialog.tsx`, `edit-user-dialog.tsx`, `reset-password-dialog.tsx`, `toggle-status-dialog.tsx`.
+  - `login-form.tsx`, `force-password-change-modal.tsx`, `admin-route.tsx`, `protected-route.tsx`.
+  - `profile-editor.tsx`, `profile-header.tsx`, `profile-preferences.tsx`, `profile-rgpd.tsx`, `profile-security.tsx`, `avatar-uploader.tsx`.
+  - `mentor-chat-drawer.tsx`, `mentor-chat-header.tsx`, `mentor-chat-input.tsx`, `mentor-chat-messages.tsx`, `mentor-chat-settings.tsx`, `mentor-conversation-item.tsx`, `mentor-conversation-sidebar.tsx`.
+- **Pages & Skeletons de chargement (`apps/web/app/**`)** :
+  - Remplacement de toutes les classes `bg-slate-800` et `text-slate-400` des squelettes (`loading.tsx`) par des classes dynamiques `bg-slate-200 dark:bg-slate-800`.
 
+### 2. Garde-Fou CI Durable (`scripts/check-theme-classes.mjs`)
+- Création d'un script d'analyse statique dédié `scripts/check-theme-classes.mjs` vérifiant l'absence de classes sombres hardcodées sans variante `dark:` dans `apps/web/app` et `apps/web/components`.
+- Ajout du script `"check:theme": "node scripts/check-theme-classes.mjs"` dans le `package.json` racine.
+- Intégration dans le pipeline CI `.github/workflows/ci.yml` pour bloquer toute régression future.
 
-
+### 3. Validations & Métriques
+- `node scripts/check-theme-classes.mjs` : **0 violation** sur 83 fichiers analysés.
+- `node scripts/check-file-size.mjs` : 100 % conforme D-13 (0 violation > 400 lignes sur 331 fichiers analysés).
+- `pnpm lint --force` : 100 % vert (0 erreur, 0 avertissement sur les 4 packages).
+- `pnpm typecheck --force` : 100 % vert (0 erreur TypeScript).
+- `pnpm test --force` : 100 % vert (**354 tests passants** : 228 API, 108 Web, 18 Content-Schema — 0 failed, 0 skipped).
+- `pnpm build --force` : 100 % vert (Next.js 15 App Router et NestJS 11).

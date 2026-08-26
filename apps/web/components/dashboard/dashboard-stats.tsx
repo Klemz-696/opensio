@@ -58,14 +58,14 @@ export function DashboardStats({ overview }: DashboardStatsProps) {
         return (
           <div
             key={stat.label}
-            className="glass-panel rounded-2xl p-5 border border-slate-800 flex flex-col justify-between"
+            className="glass-panel rounded-2xl p-5 border border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/60 shadow-sm flex flex-col justify-between"
           >
             <div className="flex items-start justify-between gap-3 mb-3">
               <div>
-                <span className="text-xs font-semibold text-slate-400 block mb-1">
+                <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 block mb-1">
                   {stat.label}
                 </span>
-                <div className="text-2xl font-black text-white tracking-tight">
+                <div className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">
                   {stat.value}
                 </div>
               </div>
@@ -77,16 +77,16 @@ export function DashboardStats({ overview }: DashboardStatsProps) {
 
             {stat.progress !== undefined ? (
               <div className="space-y-1 mt-2">
-                <div className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                <div className="w-full h-1.5 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
                   <div
                     className="h-full bg-gradient-to-r from-sky-500 to-blue-500 rounded-full transition-all duration-500"
                     style={{ width: `${stat.progress}%` }}
                   />
                 </div>
-                <div className="text-[11px] text-slate-500">{stat.subtext}</div>
+                <div className="text-[11px] text-slate-500 dark:text-slate-400">{stat.subtext}</div>
               </div>
             ) : (
-              <div className="text-[11px] text-slate-500 mt-2">{stat.subtext}</div>
+              <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-2">{stat.subtext}</div>
             )}
           </div>
         );

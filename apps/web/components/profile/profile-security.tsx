@@ -99,7 +99,7 @@ export function ProfileSecurity() {
               onChange={(e) => setCurrentPassword(e.target.value)}
               required
               placeholder="••••••••••••"
-              className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950/80 border border-slate-300 dark:border-slate-700 focus:border-sky-500 focus:ring-1 focus:ring-sky-500 text-slate-900 dark:text-white text-xs placeholder:text-slate-400 dark:placeholder:text-slate-500 transition-colors"
+              className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950/80 border border-slate-300 dark:border-slate-700 focus:border-sky-500 focus:ring-1 focus:ring-sky-500 text-slate-900 dark:text-white text-xs placeholder:text-slate-500 dark:placeholder:text-slate-400 transition-colors"
             />
           </div>
 
@@ -114,7 +114,7 @@ export function ProfileSecurity() {
               onChange={(e) => setNewPassword(e.target.value)}
               required
               placeholder="••••••••••••"
-              className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950/80 border border-slate-300 dark:border-slate-700 focus:border-sky-500 focus:ring-1 focus:ring-sky-500 text-slate-900 dark:text-white text-xs placeholder:text-slate-400 dark:placeholder:text-slate-500 transition-colors"
+              className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950/80 border border-slate-300 dark:border-slate-700 focus:border-sky-500 focus:ring-1 focus:ring-sky-500 text-slate-900 dark:text-white text-xs placeholder:text-slate-500 dark:placeholder:text-slate-400 transition-colors"
             />
           </div>
 
@@ -129,7 +129,7 @@ export function ProfileSecurity() {
               onChange={(e) => setConfirmPassword(e.target.value)}
               required
               placeholder="••••••••••••"
-              className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950/80 border border-slate-300 dark:border-slate-700 focus:border-sky-500 focus:ring-1 focus:ring-sky-500 text-slate-900 dark:text-white text-xs placeholder:text-slate-400 dark:placeholder:text-slate-500 transition-colors"
+              className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950/80 border border-slate-300 dark:border-slate-700 focus:border-sky-500 focus:ring-1 focus:ring-sky-500 text-slate-900 dark:text-white text-xs placeholder:text-slate-500 dark:placeholder:text-slate-400 transition-colors"
             />
           </div>
         </div>
@@ -144,7 +144,7 @@ export function ProfileSecurity() {
               {hasMinLength ? (
                 <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 dark:text-emerald-400" />
               ) : (
-                <XCircle className="w-3.5 h-3.5 text-slate-400 dark:text-slate-600" />
+                <XCircle className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
               )}
               <span className={hasMinLength ? 'text-emerald-700 dark:text-emerald-300 font-medium' : 'text-slate-500 dark:text-slate-400'}>
                 Au moins 12 caractères
@@ -155,7 +155,7 @@ export function ProfileSecurity() {
               {hasThreeClasses ? (
                 <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 dark:text-emerald-400" />
               ) : (
-                <XCircle className="w-3.5 h-3.5 text-slate-400 dark:text-slate-600" />
+                <XCircle className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
               )}
               <span className={hasThreeClasses ? 'text-emerald-700 dark:text-emerald-300 font-medium' : 'text-slate-500 dark:text-slate-400'}>
                 Au moins 3 classes ({classCount}/3 validées)
