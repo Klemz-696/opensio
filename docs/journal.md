@@ -946,6 +946,77 @@ Création complète du nouveau module `windows-server-ad` comprenant 6 leçons, 
   - `node scripts/check-file-size.mjs` : 100 % conforme D-13 (305 fichiers analysés, 0 violation > 400 lignes).
   - `pnpm build` : Build de production Next.js 15 App Router et NestJS 11 validé avec succès.
 
+---
+
+## 2026-08-26 — [Lot D2] : Profil utilisateur complet, Avatar, Préférences & RGPD
+
+**Branche** : `feat/d2-profil`  
+**Objectif** : Implémentation complète de la gestion du profil utilisateur : correctif préalable du seed admin D-09, upload/suppression d'avatar sécurisé avec stockage disque local et validation stricte de types MIME / magic bytes, édition des informations personnelles et de la biographie, gestion des préférences d'interface et d'IA, changement de mot de passe avec checklist D-09, et flux d'effacement RGPD avec suppression physique de l'avatar et purge en cascade.
+
+### 1. Correctif Préalable — Validation D-09 du Seed Admin
+- **Validation stricte au seed** : `prisma/seed.ts` valide désormais `SEED_ADMIN_PASSWORD` (et `SEED_STUDENT_PASSWORD`) contre la politique de sécurité D-09 (12+ caractères, au moins 3 classes).
+- **Échec bruyant et explicite** : si le mot de passe est insuffisant, le script lève une erreur explicite avec code de sortie non nul.
+- **Cohérence des hashs** : inclusion de `passwordHash` dans le bloc `update` de l'upsert afin de garantir que les comptes existants reçoivent le hash exact de la variable d'environnement courante.
+- **Test automatisé** : `apps/api/src/modules/auth/__tests__/seed-validation.spec.ts` (4 tests unitaires).
+
+### 2. Modèle de Données & Migration Prisma
+- **Champs ajoutés au modèle `User`** :
+  - `avatarUrl String? @map("avatar_url")`
+  - `bio String? @db.Text`
+  - `preferences Json?`
+- **Migration SQL** : `20260826180000_lot_d2_user_profile` appliquée avec succès.
+
+### 3. Backend & API Profil (`ProfileModule`)
+- **Stockage Sécurisé de l'Avatar (`AvatarStorageService`)** :
+  - Stockage local dans `uploads/avatars/` (compatible volume Docker).
+  - Validation binaire stricte des magic bytes (JPEG, PNG, WebP, GIF) et limite de taille à 2 Mo max.
+  - Génération de noms de fichiers sécurisés (`avatar_<userId>_<timestamp>_<uuid>.<ext>`) et protection regex anti-traversée de chemin.
+  - Streaming sécurisé avec en-têtes `X-Content-Type-Options: nosniff` et cache optimisé.
+  - Suppression automatique de l'ancien fichier d'avatar lors d'un remplacement.
+- **Endpoints REST API (`/api/v1/profile` & `/api/v1/users/avatar`)** :
+  - `GET /api/v1/profile` : Profil complet de l'utilisateur connecté avec bio, préférences et IA.
+  - `PATCH /api/v1/profile` : Mise à jour du nom d'affichage et de la bio (validation Zod).
+  - `POST /api/v1/profile/avatar` : Upload d'avatar (`multipart/form-data`, validation fichier et audit log).
+  - `DELETE /api/v1/profile/avatar` : Suppression de la photo de profil et purge du fichier disque.
+  - `GET /api/v1/profile/preferences` : Consultation des préférences d'interface et IA.
+  - `PATCH /api/v1/profile/preferences` : Mise à jour atomique des préférences.
+  - `DELETE /api/v1/profile` : Suppression de compte RGPD (détruit le fichier avatar, révoque tous les refresh tokens de session, consigne l'audit log `USER_ACCOUNT_DELETE_RGPD` et supprime le compte en base).
+  - `@Public() GET /api/v1/users/avatar/:filename` : Endpoint public de diffusion sécurisée de l'avatar.
+- **Mise à jour d'AuthService & JwtService** :
+  - Les profils renvoyés lors du login, refresh et `getMe` intègrent `avatarUrl`, `bio` et `preferences`.
+
+### 4. Frontend Web Next.js 15 & Expérience Profil (`apps/web`)
+- **Affichage Avatar & Initiales dans la `Navbar`** :
+  - Affiche l'image de l'avatar si disponible, ou le fallback élégant des initiales (`getInitials`) avec lien direct vers `/profile`.
+- **Page Profil Complète (`/profile`)** :
+  - `ProfileHeader` : Cartouche visuel avec grand avatar, nom d'affichage, badge de rôle, adresse email, date d'inscription et date du dernier accès.
+  - `AvatarUploader` : Sélecteur de fichier avec prévisualisation en direct, validation 2 Mo / format d'image, bouton d'enregistrement et bouton de suppression.
+  - `ProfileEditor` : Modification du nom et de la bio avec compteur de caractères en temps réel (max 500).
+  - `ProfilePreferences` : Personnalisation du thème (sombre/clair/système), effets sonores et préférences de l'assistant Mentor IA.
+  - `ProfileSecurity` : Formulaire de changement de mot de passe avec checklist interactive D-09 en temps réel.
+  - `ProfileRgpd` : Cartouche d'information RGPD et zone critique de suppression définitive du compte avec modale sécurisée et saisie obligatoire de confirmation.
+
+### 5. Validations & Tests
+- **Tests API** :
+  - `apps/api/src/modules/auth/__tests__/seed-validation.spec.ts` : 4 tests unitaires de validation du seed.
+  - `apps/api/src/modules/profile/__tests__/avatar-storage.service.spec.ts` : 10 tests unitaires du stockage d'avatar.
+  - `apps/api/src/modules/profile/__tests__/profile.service.spec.ts` : 7 tests unitaires de la logique métier et RGPD.
+  - `apps/api/src/modules/profile/__tests__/profile.e2e.spec.ts` : 6 tests d'intégration PostgreSQL complets.
+- **Tests Frontend** :
+  - `apps/web/test/navbar-avatar.spec.tsx` : 2 tests d'affichage d'avatar et initiales dans la navbar.
+  - `apps/web/test/avatar-uploader.spec.tsx` : 5 tests du composant uploader (validation, preview, upload, suppression).
+  - `apps/web/test/profile-editor.spec.tsx` : 2 tests d'édition et soumission du profil.
+  - `apps/web/test/profile-preferences.spec.tsx` : 1 test de gestion des préférences.
+  - `apps/web/test/profile-rgpd.spec.tsx` : 2 tests de confirmation et suppression RGPD.
+  - `apps/web/test/profile-page.spec.tsx` : 2 tests d'intégration de la page `/profile`.
+- **Bilan Global des Métriques** :
+  - `pnpm test` : 100 % vert (**351 tests automatisés** : 228 API, 105 Web, 18 Content-Schema — 0 skipped).
+  - `pnpm lint` : 100 % vert (0 erreur, 0 avertissement).
+  - `pnpm typecheck` : 100 % vert (0 erreur TypeScript).
+  - `node scripts/check-file-size.mjs` : 100 % conforme D-13 (329 fichiers analysés, 0 violation > 400 lignes).
+  - `pnpm build` : Build de production complet Next.js 15 et NestJS 11 réussi avec succès.
+
+
 
 
 

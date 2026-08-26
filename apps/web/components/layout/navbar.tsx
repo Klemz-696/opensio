@@ -3,8 +3,9 @@
 import React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { BookOpen, LayoutDashboard, LogOut, ShieldCheck, Terminal, User as UserIcon } from 'lucide-react';
+import { BookOpen, LayoutDashboard, LogOut, ShieldCheck, Terminal } from 'lucide-react';
 import { useAuth } from '../../lib/auth/use-auth';
+import { getInitials, formatRole } from '../../lib/utils/formatters';
 
 export function Navbar() {
   const { user, logout, isAuthenticated } = useAuth();
@@ -62,22 +63,32 @@ export function Navbar() {
 
         {isAuthenticated && user && (
           <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2.5 px-3 py-1.5 rounded-xl bg-slate-900/80 border border-slate-800 text-xs text-slate-300">
-              <div className="w-6 h-6 rounded-full bg-sky-500/20 border border-sky-500/30 text-sky-400 flex items-center justify-center">
-                <UserIcon className="w-3.5 h-3.5" />
-              </div>
+            <Link
+              href="/profile"
+              className="flex items-center gap-2.5 px-3 py-1.5 rounded-xl bg-slate-900/80 hover:bg-slate-800/80 border border-slate-800 hover:border-slate-700 text-xs text-slate-300 transition-all cursor-pointer group"
+              title="Mon profil et préférences"
+            >
+              {user.avatarUrl ? (
+                <img
+                  src={user.avatarUrl}
+                  alt={user.displayName}
+                  className="w-6 h-6 rounded-full object-cover border border-sky-500/40"
+                />
+              ) : (
+                <div className="w-6 h-6 rounded-full bg-sky-500/20 border border-sky-500/30 text-sky-400 font-bold flex items-center justify-center text-[10px]">
+                  {getInitials(user.displayName)}
+                </div>
+              )}
               <div className="flex flex-col text-left">
-                <span className="font-semibold text-white leading-tight">{user.displayName}</span>
+                <span className="font-semibold text-white group-hover:text-sky-300 transition-colors leading-tight">
+                  {user.displayName}
+                </span>
                 <span className="text-[10px] text-slate-400 flex items-center gap-1">
                   <ShieldCheck className="w-3 h-3 text-emerald-400" />
-                  {user.role === 'ADMIN' || user.role === 'admin'
-                    ? 'Administrateur'
-                    : user.role === 'teacher'
-                    ? 'Formateur'
-                    : 'Apprenant'}
+                  {formatRole(user.role)}
                 </span>
               </div>
-            </div>
+            </Link>
 
             <button
               onClick={handleLogout}
