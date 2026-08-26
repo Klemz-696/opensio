@@ -147,6 +147,54 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [accessToken]);
 
+  const changePassword = useCallback(
+    async (
+      currentPassword: string,
+      newPassword: string,
+    ): Promise<{ success: boolean; error?: ProblemDetails }> => {
+      try {
+        const response = await fetch('/api/v1/auth/change-password', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
+          },
+          body: JSON.stringify({ currentPassword, newPassword }),
+          credentials: 'include',
+        });
+
+        if (response.ok) {
+          setUser((prev) => (prev ? { ...prev, mustChangePassword: false } : null));
+          return { success: true };
+        }
+
+        const errorData: ProblemDetails = await response.json().catch(() => ({
+          type: 'about:blank',
+          title: 'Erreur',
+          status: response.status,
+          detail: 'Échec de mise à jour du mot de passe.',
+        }));
+
+        return { success: false, error: errorData };
+      } catch (err: unknown) {
+        return {
+          success: false,
+          error: {
+            type: 'NETWORK_ERROR',
+            title: 'Erreur réseau',
+            status: 0,
+            detail: err instanceof Error ? err.message : 'Impossible de contacter le serveur',
+          },
+        };
+      }
+    },
+    [accessToken],
+  );
+
+  const updateCurrentUser = useCallback((partialUser: Partial<AuthUser>) => {
+    setUser((prev) => (prev ? { ...prev, ...partialUser } : null));
+  }, []);
+
   const value: AuthContextValue = {
     user,
     accessToken,
@@ -154,7 +202,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     isAuthenticated: Boolean(user && accessToken),
     login,
     logout,
+    changePassword,
     setAccessToken,
+    updateCurrentUser,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
