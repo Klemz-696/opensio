@@ -64,30 +64,30 @@ export function LoginForm() {
   };
 
   return (
-    <div className="w-full max-w-md p-8 glass-panel rounded-2xl shadow-2xl border border-slate-700/60 bg-slate-900/80 backdrop-blur-xl">
+    <div className="w-full max-w-md p-8 glass-panel rounded-2xl shadow-xl dark:shadow-2xl border border-slate-200 dark:border-slate-700/60 bg-white/90 dark:bg-slate-900/80 backdrop-blur-xl">
       <div className="text-center mb-8">
-        <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-sky-500/10 border border-sky-500/30 text-sky-400 mb-4 shadow-inner">
+        <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-sky-500/10 border border-sky-500/30 text-sky-600 dark:text-sky-400 mb-4 shadow-inner">
           <Lock className="w-7 h-7" />
         </div>
-        <h1 className="text-2xl font-bold tracking-tight text-white">Connexion à OpenSIO</h1>
-        <p className="text-sm text-slate-400 mt-2">
+        <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Connexion à OpenSIO</h1>
+        <p className="text-sm text-slate-500 dark:text-slate-400 mt-2">
           Plateforme pratique de révision BTS SIO SISR
         </p>
       </div>
 
       {globalError && (
-        <div className="mb-6 p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-sm flex items-start gap-3">
-          <AlertCircle className="w-5 h-5 text-rose-400 shrink-0 mt-0.5" />
+        <div className="mb-6 p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-700 dark:text-rose-300 text-sm flex items-start gap-3">
+          <AlertCircle className="w-5 h-5 text-rose-500 dark:text-rose-400 shrink-0 mt-0.5" />
           <div className="flex-1">
-            <p className="font-semibold text-rose-200">{globalError.title}</p>
-            <p className="text-xs text-rose-300/90 mt-1">{globalError.detail}</p>
+            <p className="font-semibold text-rose-800 dark:text-rose-200">{globalError.title}</p>
+            <p className="text-xs text-rose-600 dark:text-rose-300/90 mt-1">{globalError.detail}</p>
           </div>
         </div>
       )}
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
         <div>
-          <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-2">
+          <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-2">
             Adresse Email
           </label>
           <div className="relative">
@@ -98,16 +98,16 @@ export function LoginForm() {
               {...register('email')}
               type="email"
               placeholder="etudiant@opensio.local"
-              className="w-full pl-11 pr-4 py-2.5 bg-slate-950/60 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all text-sm"
+              className="w-full pl-11 pr-4 py-2.5 bg-slate-50 dark:bg-slate-950/60 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all text-sm"
             />
           </div>
           {errors.email && (
-            <p className="text-rose-400 text-xs mt-1.5">{errors.email.message}</p>
+            <p className="text-rose-500 dark:text-rose-400 text-xs mt-1.5">{errors.email.message}</p>
           )}
         </div>
 
         <div>
-          <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-2">
+          <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-2">
             Mot de passe
           </label>
           <div className="relative">
@@ -118,11 +118,11 @@ export function LoginForm() {
               {...register('password')}
               type="password"
               placeholder="••••••••••••"
-              className="w-full pl-11 pr-4 py-2.5 bg-slate-950/60 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all text-sm"
+              className="w-full pl-11 pr-4 py-2.5 bg-slate-50 dark:bg-slate-950/60 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all text-sm"
             />
           </div>
           {errors.password && (
-            <p className="text-rose-400 text-xs mt-1.5">{errors.password.message}</p>
+            <p className="text-rose-500 dark:text-rose-400 text-xs mt-1.5">{errors.password.message}</p>
           )}
         </div>
 
@@ -145,11 +145,11 @@ export function LoginForm() {
         </button>
       </form>
 
-      <div className="mt-6 pt-6 border-t border-slate-800 text-center">
+      <div className="mt-6 pt-6 border-t border-slate-200 dark:border-slate-800 text-center">
         <button
           type="button"
           onClick={fillDemoAccount}
-          className="text-xs text-sky-400 hover:text-sky-300 transition-colors underline underline-offset-4 cursor-pointer"
+          className="text-xs text-sky-600 dark:text-sky-400 hover:text-sky-500 dark:hover:text-sky-300 transition-colors underline underline-offset-4 cursor-pointer"
         >
           Remplir avec le compte étudiant démo (du seed)
         </button>

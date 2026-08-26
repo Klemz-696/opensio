@@ -59,11 +59,11 @@ export default function ProfilePage() {
 
   if (isLoading || !isAuthenticated) {
     return (
-      <div className="min-h-screen bg-slate-950 flex flex-col">
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col">
         <Navbar />
         <main className="flex-1 flex items-center justify-center">
-          <div className="flex items-center gap-3 text-slate-400 text-sm">
-            <Loader2 className="w-5 h-5 animate-spin text-sky-400" />
+          <div className="flex items-center gap-3 text-slate-500 dark:text-slate-400 text-sm">
+            <Loader2 className="w-5 h-5 animate-spin text-sky-500 dark:text-sky-400" />
             <span>Chargement du profil...</span>
           </div>
         </main>
@@ -79,7 +79,7 @@ export default function ProfilePage() {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col">
+    <div className="min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 flex flex-col">
       <Navbar />
 
       <main className="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
@@ -97,7 +97,7 @@ export default function ProfilePage() {
         />
 
         {/* Navigation par onglets */}
-        <div className="flex border-b border-slate-800 gap-2 overflow-x-auto pb-1">
+        <div className="flex border-b border-slate-200 dark:border-slate-800 gap-2 overflow-x-auto pb-1">
           {tabs.map(({ key, label, icon: Icon }) => {
             const isActive = activeTab === key;
             return (
@@ -107,8 +107,8 @@ export default function ProfilePage() {
                 onClick={() => setActiveTab(key)}
                 className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
                   isActive
-                    ? 'bg-sky-500/15 text-sky-400 border border-sky-500/30'
-                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60'
+                    ? 'bg-sky-500/15 text-sky-700 dark:text-sky-400 border border-sky-500/30'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-900/60'
                 }`}
               >
                 <Icon className="w-4 h-4" />

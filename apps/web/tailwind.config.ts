@@ -2,6 +2,7 @@ import type { Config } from 'tailwindcss';
 import sharedConfig from '@opensio/config/tailwind/tailwind.config';
 
 const config: Config = {
+  darkMode: 'class',
   content: [
     './app/**/*.{js,ts,jsx,tsx,mdx}',
     './components/**/*.{js,ts,jsx,tsx,mdx}',

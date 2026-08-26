@@ -33,8 +33,8 @@ export function MentorChatInput({
   const isDisabled = isLoading || isQuotaDepleted || mode === 'disabled';
 
   return (
-    <div className="p-3 bg-slate-900 border-t border-slate-800">
-      <div className="relative flex items-end gap-2 bg-slate-950 border border-slate-800 rounded-2xl p-2 focus-within:border-indigo-500/50 transition-colors">
+    <div className="p-3 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800">
+      <div className="relative flex items-end gap-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl p-2 focus-within:border-indigo-500/50 transition-colors">
         <textarea
           value={inputMessage}
           onChange={(e) => setInputMessage(e.target.value)}
@@ -48,7 +48,7 @@ export function MentorChatInput({
                 ? 'Quota horaire atteint'
                 : 'Pose ta question à Mentor (Entrée pour envoyer)...'
           }
-          className="flex-1 bg-transparent border-none outline-none resize-none text-xs sm:text-sm text-slate-100 placeholder-slate-500 font-sans focus:ring-0 p-1"
+          className="flex-1 bg-transparent border-none outline-none resize-none text-xs sm:text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 font-sans focus:ring-0 p-1"
         />
 
         <button
@@ -64,10 +64,10 @@ export function MentorChatInput({
 
       <div className="flex items-center justify-between mt-2 px-1 text-[11px] text-slate-500">
         <div className="flex items-center gap-1">
-          <Sparkles className="w-3 h-3 text-indigo-400" />
+          <Sparkles className="w-3 h-3 text-indigo-500 dark:text-indigo-400" />
           <span>{remainingQuota} / {rateLimitHourly} messages restants cette heure</span>
         </div>
-        <span className="hidden sm:inline text-slate-600">Shift + Entrée pour nouvelle ligne</span>
+        <span className="hidden sm:inline text-slate-400 dark:text-slate-600">Shift + Entrée pour nouvelle ligne</span>
       </div>
     </div>
   );
