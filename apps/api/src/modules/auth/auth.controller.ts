@@ -23,6 +23,7 @@ import { registerSchema, type RegisterDto } from './dto/register.dto';
 import { loginSchema, type LoginDto } from './dto/login.dto';
 import { forgotPasswordSchema, type ForgotPasswordDto } from './dto/forgot-password.dto';
 import { resetPasswordSchema, type ResetPasswordDto } from './dto/reset-password.dto';
+import { changePasswordSchema, type ChangePasswordDto } from './dto/change-password.dto';
 
 const COOKIE_NAME = 'refreshToken';
 const REFRESH_COOKIE_PATH = '/api/v1/auth';
@@ -138,6 +139,18 @@ export class AuthController {
   ) {
     const ip = this.extractClientIp(req);
     return this.authService.resetPassword(dto, ip);
+  }
+
+  @UseGuards(AuthGuard)
+  @Post('change-password')
+  @HttpCode(HttpStatus.OK)
+  async changePassword(
+    @CurrentUser() user: AuthenticatedUser,
+    @Body(new ZodValidationPipe(changePasswordSchema)) dto: ChangePasswordDto,
+    @Req() req: Request,
+  ) {
+    const ip = this.extractClientIp(req);
+    return this.authService.changePassword(user.id, dto, ip);
   }
 
   @UseGuards(AuthGuard)

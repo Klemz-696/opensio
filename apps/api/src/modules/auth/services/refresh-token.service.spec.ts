@@ -3,7 +3,7 @@ import { RefreshTokenService } from './refresh-token.service';
 import { PasswordService } from './password.service';
 import { AuditService } from '../../audit/audit.service';
 import { PrismaService } from '../../../prisma/prisma.service';
-import { UserRole, UserStatus } from '@prisma/client';
+import { Role, UserStatus } from '@prisma/client';
 
 describe('RefreshTokenService', () => {
   let service: RefreshTokenService;
@@ -16,8 +16,9 @@ describe('RefreshTokenService', () => {
     email: 'test@opensio.local',
     displayName: 'Test User',
     passwordHash: 'hash',
-    role: UserRole.STUDENT,
+    role: Role.APPRENANT,
     status: UserStatus.ACTIVE,
+    mustChangePassword: false,
     createdAt: new Date(),
     updatedAt: new Date(),
     lastLoginAt: null,

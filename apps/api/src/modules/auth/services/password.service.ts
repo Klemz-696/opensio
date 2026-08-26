@@ -46,6 +46,25 @@ export class PasswordService {
     return crypto.randomBytes(bytes).toString('hex');
   }
 
+  generateTemporaryPassword(): string {
+    const letters = 'abcdefghjkmnpqrstuvwxyz';
+    const uppers = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
+    const digits = '23456789';
+    const specials = '!@#$%&*+=-';
+    const all = letters + uppers + digits + specials;
+
+    const chars = [
+      letters[crypto.randomInt(letters.length)],
+      uppers[crypto.randomInt(uppers.length)],
+      digits[crypto.randomInt(digits.length)],
+      specials[crypto.randomInt(specials.length)],
+    ];
+    for (let i = 0; i < 10; i++) {
+      chars.push(all[crypto.randomInt(all.length)]);
+    }
+    return chars.sort(() => crypto.randomInt(3) - 1).join('');
+  }
+
   hashToken(rawToken: string): string {
     return crypto.createHash('sha256').update(rawToken).digest('hex');
   }
