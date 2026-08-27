@@ -1,0 +1,25 @@
+slug: sauvegardes-stockage
+title: "Sauvegardes, Stockage & Continuité d'Activité"
+description: "Technologies de stockage de données, architectures RAID (1, 5, 6, 10), stratégie de sauvegarde 3-2-1-1-0 et immuabilité, outils Linux (rsync, BorgBackup) et Windows (VSS, Veeam), tests de restauration et métriques PCA/PRA (RTO/RPO)."
+position: 6
+difficulty: 2
+estimated_minutes: 500
+competency_refs:
+  - "B1.1"
+  - "B2.3"
+  - "B3.4"
+lessons:
+  - technologies-stockage-raid
+  - strategie-sauvegarde-3-2-1
+  - outils-sauvegarde-linux
+  - outils-sauvegarde-windows-veeam
+  - restauration-metriques-rto-rpo
+quizzes:
+  - quiz-technologies-stockage-raid
+  - quiz-strategie-sauvegarde-3-2-1
+  - quiz-outils-sauvegarde-linux
+  - quiz-outils-sauvegarde-windows-veeam
+  - quiz-restauration-metriques-rto-rpo
+labs:
+  - script-sauvegarde-rsync-rotation
+  - matrice-pca-pra-rpo-rto
