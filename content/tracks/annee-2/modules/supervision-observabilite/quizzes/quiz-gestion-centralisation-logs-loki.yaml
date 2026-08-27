@@ -1,0 +1,79 @@
+slug: quiz-gestion-centralisation-logs-loki
+title: "Quiz — Centralisation des Logs et Loki"
+passing_score: 80
+position: 4
+questions:
+  - kind: single
+    prompt: "Quelle est la différence d'approche majeure entre la stack ELK (Elasticsearch) et la stack Grafana Loki pour l'indexation des journaux ?"
+    choices:
+      - id: a
+        text: "Elasticsearch indexe l'intégralité des mots de chaque ligne de log (index inversé volumineux), tandis que Loki n'indexe que les métadonnées (labels) et stocke les lignes brutes compressées"
+      - id: b
+        text: "Loki ne peut lire que les fichiers écrits en majuscules"
+      - id: c
+        text: "Elasticsearch ne fonctionne que sans réseau Internet"
+      - id: d
+        text: "Loki supprime automatiquement tous les logs après 10 secondes"
+    correct:
+      - a
+    explanation: "En n'indexant que les labels (comme Prometheus), Loki réduit considérablement la consommation de mémoire RAM et l'espace de stockage par rapport à Elasticsearch."
+
+  - kind: single
+    prompt: "Quel composant logiciel léger de l'écosystème Grafana est déployé sur chaque serveur pour collecter les journaux locaux et les expédier vers Loki ?"
+    choices:
+      - id: a
+        text: "Promtail (ou Fluent Bit)"
+      - id: b
+        text: "Logstash"
+      - id: c
+        text: "node_exporter"
+      - id: d
+        text: "Alertmanager"
+    correct:
+      - a
+    explanation: "`Promtail` est l'agent officiel léger conçu pour scraper les fichiers de logs, appliquer des étapes de parsing (json, regex) et les pousser vers l'API de Loki."
+
+  - kind: single
+    prompt: "Dans le langage LogQL, quelle est la fonction du filtre de ligne '|= \"error\"' appliqué sur un flux de logs ?"
+    choices:
+      - id: a
+        text: "Il ne conserve que les lignes de logs contenant textuellement la sous-chaîne 'error'"
+      - id: b
+        text: "Il remplace le mot 'error' par le mot 'succès'"
+      - id: c
+        text: "Il supprime toutes les erreurs du système d'exploitation"
+      - id: d
+        text: "Il arrête l'exécution du serveur web"
+    correct:
+      - a
+    explanation: "L'opérateur `|=` (ou `!~` pour exclusion par regex) filtre les lignes du flux sélectionné pour n'extraire que celles correspondant au motif recherché."
+
+  - kind: single
+    prompt: "Comment LogQL permet-il de générer des séries temporelles numériques à partir d'un flux de logs textuels ?"
+    choices:
+      - id: a
+        text: "En utilisant des fonctions d'agrégation temporelle comme 'rate()' ou 'count_over_time()' sur un sélecteur de logs filtré"
+      - id: b
+        text: "En demandant à l'administrateur de compter les lignes manuellement"
+      - id: c
+        text: "En convertissant les lettres en chiffres hexadécimaux"
+      - id: d
+        text: "C'est impossible, les logs ne peuvent jamais être transformés en métriques"
+    correct:
+      - a
+    explanation: "LogQL permet par exemple d'écrire `rate({job=\"nginx\"} |= \"500\"[5m])` pour tracer l'évolution du taux d'erreurs 500 directement depuis les logs."
+
+  - kind: single
+    prompt: "Dans une configuration Promtail, à quoi sert l'étape de pipeline 'pipeline_stages' avec le parser 'json' ?"
+    choices:
+      - id: a
+        text: "À extraire automatiquement les champs d'un log structuré au format JSON pour en faire des variables exploitables ou des labels dynamiques"
+      - id: b
+        text: "À effacer tous les logs qui ne sont pas écrits en langage C"
+      - id: c
+        text: "À envoyer un email aux développeurs"
+      - id: d
+        text: "À crypter le disque dur du serveur"
+    correct:
+      - a
+    explanation: "Le parser `json` extrait les clés structurées (comme `status`, `request_time`, `remote_addr`) pour permettre un filtrage et un étiquetage fins dans Loki."

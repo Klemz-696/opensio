@@ -1,0 +1,2 @@
+{job="nginx"} |= "500"
+sum(rate({job="nginx"} |= "500"[5m]))
