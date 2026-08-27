@@ -1,0 +1,79 @@
+slug: quiz-concepts-supervision-alerting-sli-slo
+title: "Quiz — Concepts de Supervision, Alerting et SLI/SLO"
+passing_score: 80
+position: 1
+questions:
+  - kind: single
+    prompt: "Quelle est la principale distinction entre la supervision classique en 'boîte noire' (Black-box) et l'observabilité en 'boîte blanche' (White-box) ?"
+    choices:
+      - id: a
+        text: "La boîte noire teste l'état et le comportement externe perçu du service (ping, HTTP check), tandis que la boîte blanche inspecte l'état interne du système (métriques détaillées, logs, traces)"
+      - id: b
+        text: "La boîte noire nécessite des câbles réseau noirs et la boîte blanche des câbles blancs"
+      - id: c
+        text: "La boîte blanche ne fonctionne que sur les ordinateurs éteints"
+      - id: d
+        text: "La boîte noire ne s'applique qu'au système d'exploitation Windows"
+    correct:
+      - a
+    explanation: "Le monitoring boîte noire vérifie la disponibilité apparente depuis l'extérieur, tandis que l'observabilité boîte blanche analyse les mécanismes internes pour diagnostiquer les dégradations."
+
+  - kind: single
+    prompt: "Qu'est-ce que le phénomène de 'Fatigue des alertes' (Alert Fatigue) et quel est son danger principal ?"
+    choices:
+      - id: a
+        text: "La submersion des équipes par un volume excessif de fausses alertes ou d'alertes non actionnables, conduisant à ignorer les notifications et à manquer un incident critique"
+      - id: b
+        text: "L'usure prématurée des serveurs physiques de supervision"
+      - id: c
+        text: "L'obligation de changer de logiciel de messagerie tous les mois"
+      - id: d
+        text: "Le manque de sommeil dû à la programmation en assembleur"
+    correct:
+      - a
+    explanation: "Des alertes trop nombreuses ou non pertinentes désensibilisent les opérateurs humains, augmentant drastiquement le temps de réaction lors d'une panne réelle."
+
+  - kind: single
+    prompt: "Dans le cadre méthodologique SRE, quelle est la définition d'un SLI (Service Level Indicator) ?"
+    choices:
+      - id: a
+        text: "La métrique quantitative mesurée en temps réel évaluant le niveau de conformité ou de performance d'un service (ex: pourcentage de requêtes servies avec succès)"
+      - id: b
+        text: "Le montant de la facture d'hébergement cloud"
+      - id: c
+        text: "Le nom de l'administrateur système de garde"
+      - id: d
+        text: "Le nombre total de lignes de code du projet"
+    correct:
+      - a
+    explanation: "Le SLI est l'indicateur factuel et mesurable (ex: ratio requêtes valides / requêtes totales) servant de base au calcul de conformité avec les objectifs SLO."
+
+  - kind: single
+    prompt: "Comment le concept de 'Budget d'Erreur' (Error Budget) arbitre-t-il la relation entre les équipes de développement et d'exploitation ?"
+    choices:
+      - id: a
+        text: "Tant que le budget d'erreur n'est pas consommé (100% - SLO), les équipes peuvent déployer rapidement ; s'il est épuisé, les déploiements sont gelés au profit de la fiabilisation"
+      - id: b
+        text: "En déduisant de l'argent sur le salaire des développeurs à chaque bug"
+      - id: c
+        text: "En interdisant toute modification du code pendant 1 an"
+      - id: d
+        text: "En obligeant les équipes à travailler uniquement la nuit"
+    correct:
+      - a
+    explanation: "L'Error Budget transforme la tolérance aux pannes en un outil d'arbitrage objectif entre innovation rapide et maintien de la stabilité opérationnelle."
+
+  - kind: single
+    prompt: "Quel document opérationnel doit idéalement accompagner toute alerte critique réveillant un ingénieur d'astreinte ?"
+    choices:
+      - id: a
+        text: "Un Runbook (procédure pas à pas expliquant la signification de l'alerte, les commandes de diagnostic et les actions de remédiation)"
+      - id: b
+        text: "Une lettre de démission pré-remplie"
+      - id: c
+        text: "Le contrat de bail du centre de données"
+      - id: d
+        text: "Le schéma électronique de la carte mère"
+    correct:
+      - a
+    explanation: "Le Runbook évite la panique et les erreurs de manipulation sous stress en fournissant une procédure claire et éprouvée pour diagnostiquer et résoudre l'anomalie."

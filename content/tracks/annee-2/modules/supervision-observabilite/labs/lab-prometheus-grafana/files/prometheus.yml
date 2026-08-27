@@ -1,0 +1,14 @@
+# prometheus.yml - Configuration Prometheus
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+# TODO: Charger le fichier de règles d'alerte alerts.yml
+rule_files:
+  # - alerts.yml
+
+scrape_configs:
+  # TODO: Configurer le job node-exporter (port 9100)
+
+  # TODO: Configurer le job nginx-exporter (port 9113)

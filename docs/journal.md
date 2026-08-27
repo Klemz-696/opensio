@@ -1353,6 +1353,32 @@ Création complète du nouveau module `windows-server-ad` comprenant 6 leçons, 
 - `pnpm test --force` : 100 % vert (357 tests passants dans le monorepo).
 - `pnpm build --force` : 100 % réussi.
 
+### 22. Phase 2.3 — Production du Module `supervision-observabilite` (2ème Année SISR)
+- **Module `supervision-observabilite`** (5 leçons, 5 quiz, 2 labs) :
+  - `01-concepts-supervision-alerting-sli-slo.md` + `quiz-concepts-supervision-alerting-sli-slo.yaml` : Supervision en boîte noire vs Observabilité en boîte blanche, cycle de vie d'une alerte, prévention de la fatigue des alertes (Alert Fatigue), importance des Runbooks d'exploitation, et indicateurs SRE (SLI, SLO, SLA, Budget d'erreur).
+  - `02-collecte-metriques-promql-retention.md` + `quiz-collecte-metriques-promql-retention.yaml` : Modèle de données des séries temporelles (Time Series), collecte par tirage (Pull Scraping), 4 types de métriques (Counter, Gauge, Histogram, Summary), requêtes PromQL avancées (`rate()`, `histogram_quantile(0.95, ...)`), stockage TSDB, rétention et prévention de l'explosion de cardinalité.
+  - `03-visualisation-tableaux-bord-grafana.md` + `quiz-visualisation-tableaux-bord-grafana.yaml` : Architecture de Grafana, types de panels (Time Series, Stat, Gauge, Heatmap), variables de dashboard dynamiques (`$instance`), annotations temporelles d'événements, méthode USE pour l'infrastructure (Utilization, Saturation, Errors) et méthode RED pour les services applicatifs (Rate, Errors, Duration).
+  - `04-gestion-centralisation-logs-loki.md` + `quiz-gestion-centralisation-logs-loki.yaml` : Enjeux de la centralisation des logs, comparatif architectural Elasticsearch (ELK) vs Grafana Loki, agent de collecte Promtail (scraping `/var/log/*`, pipeline stages JSON et mapping de labels), requêtes de filtrage et de métriques LogQL (`|=`, `|~`, `rate()`).
+  - `05-traces-distribuees-observabilite-opentelemetry.md` + `quiz-traces-distribuees-observabilite-opentelemetry.yaml` : Traçage distribué dans les microservices, concepts de Trace, Span, Span ID et arbre d'exécution hiérarchique, propagation de contexte HTTP W3C Trace Context (`traceparent`), architecture du collecteur OpenTelemetry (Receivers, Processors, Exporters), et corrélation complète Métriques / Traces / Logs via `trace_id`.
+  - **2 Labs autonomes de niveau 2_files avec suites de tests complètes** :
+    - `lab-prometheus-grafana` (`configuration-supervision-prometheus-grafana`) : Configuration de Prometheus (`prometheus.yml` avec intervalles, `alerts.yml`, jobs `node-exporter` et `nginx-exporter`) et règles d'alerte (`InstanceDown` sur `up == 0`, `HighCpuUsage` avec calcul PromQL, `for: 5m`, `severity: warning/critical`, `summary` et `description`).
+    - `lab-centralisation-logs` (`centralisation-logs-promtail-loki`) : Configuration de Promtail (`promtail-config.yml` avec écoute 9080, positions, client Loki, scrape `/var/log/nginx/*.log`, pipeline_stages JSON avec label `status`) et requêtes LogQL (`queries.logql` avec filtrage d'erreurs 5xx et métrique `rate()` par hôte).
+
+### 23. Validations Globales Post-Supervision-Observabilite
+- `node content/validate.mjs` : **100 % valide** :
+  - **2 parcours opérationnels** (`annee-1`, `annee-2`).
+  - **13 modules opérationnels** (8 en 1ère année, 5 en 2ème année).
+  - **69 leçons rédigées et validées**.
+  - **69 quiz d'évaluation (357 questions avec explications pédagogiques)**.
+  - **30 ateliers pratiques (Labs)**.
+  - **93 / 93 tests de validateurs passants** sur les suites de fixtures.
+- `pnpm content:validate` : 100 % valide (18/18 tests Zod passants).
+- `node scripts/check-file-size.mjs` : 100 % conforme D-13 (331 fichiers analysés, 0 violation > 400 lignes).
+- `node scripts/check-theme-classes.mjs` : 100 % conforme bi-thème (0 violation).
+- `pnpm test --force` : 100 % vert (357 tests passants dans le monorepo).
+- `pnpm build --force` : 100 % réussi.
+
+
 
 
 

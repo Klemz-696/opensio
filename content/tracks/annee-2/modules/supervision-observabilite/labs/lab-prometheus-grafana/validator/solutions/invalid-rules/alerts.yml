@@ -1,0 +1,6 @@
+groups:
+  - name: incomplete-alerts
+    rules:
+      - alert: InstanceDown
+        expr: up == 0
+        # Absence de for et severity
