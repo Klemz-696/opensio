@@ -1,0 +1,80 @@
+slug: quiz-technologies-stockage-raid
+title: "Quiz — Technologies de Stockage et RAID"
+passing_score: 80
+position: 1
+questions:
+  - kind: single
+    prompt: "Sur une baie de stockage comprenant 4 disques durs de 4 To chacun configurés en RAID 5, quelle est la capacité utile disponible ?"
+    choices:
+      - id: a
+        text: "12 To ((4 - 1) * 4 To)"
+      - id: b
+        text: "16 To (4 * 4 To)"
+      - id: c
+        text: "8 To (4 / 2 * 4 To)"
+      - id: d
+        text: "4 To"
+    correct:
+      - a
+    explanation: "En RAID 5 avec N disques de taille C, la capacité utile est (N - 1) * C, soit (4 - 1) * 4 = 12 To. L'équivalent d'un disque est réservé pour la parité distribuée."
+
+  - kind: multiple
+    prompt: "Quels niveaux de RAID permettent de tolérer la panne simultanée de 2 disques durs sans perte de données ?"
+    choices:
+      - id: a
+        text: "RAID 6 (double parité)"
+      - id: b
+        text: "RAID 10 (si la panne touche un disque dans chaque miroir distinct)"
+      - id: c
+        text: "RAID 5"
+      - id: d
+        text: "RAID 0"
+    correct:
+      - a
+      - b
+    explanation: "Le RAID 6 tolère toujours la panne de 2 disques quelconques. Le RAID 10 tolère jusqu'à 2 pannes si elles ne touchent pas les deux membres du même sous-miroir. Le RAID 5 ne tolère qu'une seule panne."
+
+  - kind: single
+    prompt: "Pourquoi affirme-t-on formellement qu'une grappe RAID n'est pas une sauvegarde ?"
+    choices:
+      - id: a
+        text: "Parce que le RAID assure uniquement la haute disponibilité matérielle : une suppression accidentelle ou un chiffrement par ransomware est répercuté instantanément sur tous les disques"
+      - id: b
+        text: "Parce que le RAID ralentit systématiquement la vitesse de lecture"
+      - id: c
+        text: "Parce que le RAID ne fonctionne pas avec le protocole TCP/IP"
+      - id: d
+        text: "Parce que le RAID nécessite obligatoirement des disques de marques différentes"
+    correct:
+      - a
+    explanation: "Le RAID protège uniquement contre la défaillance mécanique d'un disque. Les erreurs logiques (suppression, corruption, virus, ransomware) s'appliquent immédiatement à la grappe entière."
+
+  - kind: single
+    prompt: "Quel est le rôle d'un disque Hot-Spare dans un serveur ou une baie de stockage ?"
+    choices:
+      - id: a
+        text: "C'est un disque de secours préinstallé en veille, activé automatiquement dès qu'un disque du volume tombe en panne pour démarrer la reconstruction"
+      - id: b
+        text: "C'est un disque externe USB déconnecté du réseau"
+      - id: c
+        text: "C'est un disque dédié uniquement au stockage des mots de passe de l'administrateur"
+      - id: d
+        text: "C'est un disque qui accélère la vitesse du processeur hôte"
+    correct:
+      - a
+    explanation: "Le disque Hot-Spare prend automatiquement le relais du disque défaillant sans attendre l'intervention physique d'un technicien, réduisant la fenêtre de vulnérabilité du volume RAID."
+
+  - kind: single
+    prompt: "Quelle commande Linux mdadm permet de simuler la panne d'un disque /dev/sdb dans le volume /dev/md0 ?"
+    choices:
+      - id: a
+        text: "mdadm --manage /dev/md0 --fail /dev/sdb"
+      - id: b
+        text: "mdadm --stop /dev/md0"
+      - id: c
+        text: "rm -rf /dev/sdb"
+      - id: d
+        text: "format /dev/sdb"
+    correct:
+      - a
+    explanation: "`mdadm --manage /dev/md0 --fail /dev/sdb` force le statut défaillant (faulty) du disque pour tester le comportement de la grappe ou préparer son retrait."

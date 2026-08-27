@@ -1,0 +1,79 @@
+slug: quiz-outils-sauvegarde-linux
+title: "Quiz — Outils de Sauvegarde Linux"
+passing_score: 80
+position: 3
+questions:
+  - kind: single
+    prompt: "Que réalise la commande rsync avec l'option -a (--archive) ?"
+    choices:
+      - id: a
+        text: "Elle préserve récursivement les permissions, propriétaires, groupes, dates de modification et liens symboliques"
+      - id: b
+        text: "Elle crée automatiquement une archive compressée .zip avec mot de passe"
+      - id: c
+        text: "Elle efface l'intégralité du disque dur de destination avant de copier"
+      - id: d
+        text: "Elle interdit tout transfert sur le port SSH"
+    correct:
+      - a
+    explanation: "L'option `-a` regroupe `-rlptgoD` et garantit une copie miroir fidèle à l'identique de l'arborescence et des métadonnées UNIX."
+
+  - kind: single
+    prompt: "Quelle est la conséquence de l'option --delete passée à la commande rsync ?"
+    choices:
+      - id: a
+        text: "Elle supprime sur la destination les fichiers qui n'existent plus dans la source"
+      - id: b
+        text: "Elle supprime la source immédiatement après le transfert"
+      - id: c
+        text: "Elle annule la sauvegarde en cas d'erreur réseau"
+      - id: d
+        text: "Elle vide la corbeille de tous les utilisateurs"
+    correct:
+      - a
+    explanation: "`--delete` maintient une stricte synchronisation miroir en éliminant sur la destination les fichiers obsolètes ou supprimés de la source."
+
+  - kind: single
+    prompt: "Quel est l'avantage majeur de l'option --link-dest de rsync pour les sauvegardes horodatées ?"
+    choices:
+      - id: a
+        text: "Elle utilise des liens physiques (hard links) pour réutiliser les fichiers inchangés de la sauvegarde précédente sans consommer d'espace disque supplémentaire"
+      - id: b
+        text: "Elle envoie automatiquement un e-mail à l'administrateur"
+      - id: c
+        text: "Elle désactive les cartes réseaux pendant la copie"
+      - id: d
+        text: "Elle convertit les fichiers Linux en format Windows NTFS"
+    correct:
+      - a
+    explanation: "`--link-dest` crée des pointeurs physiques (hard links) vers les fichiers non modifiés de la sauvegarde précédente, rendant chaque dossier de backup navigable comme une complète tout en n'occupant que l'espace des deltas."
+
+  - kind: single
+    prompt: "Dans une ligne de crontab système, quelle planification correspond à l'expression '15 03 * * 1-5' ?"
+    choices:
+      - id: a
+        text: "Tous les jours du lundi au vendredi à 03h15 du matin"
+      - id: b
+        text: "Le 15 mars de chaque année à 01h05"
+      - id: c
+        text: "Toutes les 15 minutes pendant 3 heures le premier jour du mois"
+      - id: d
+        text: "Le premier dimanche de chaque mois à 15h03"
+    correct:
+      - a
+    explanation: "Minute=15, Heure=03, JourMois=*, Mois=*, JourSemaine=1-5 (lundi à vendredi), soit du lundi au vendredi à 03h15."
+
+  - kind: single
+    prompt: "Quelle commande Linux permet de vérifier formellement l'intégrité d'une archive par rapport à son fichier d'empreintes SHA-256 ?"
+    choices:
+      - id: a
+        text: "sha256sum -c backup.sha256"
+      - id: b
+        text: "md5sum -f backup.tar"
+      - id: c
+        text: "tar -xvf backup.sha256"
+      - id: d
+        text: "cmp --hash backup.tar"
+    correct:
+      - a
+    explanation: "`sha256sum -c` (check) recalcule l'empreinte de chaque fichier mentionné dans la liste et confirme s'il correspond au hash de référence (OK / Échec)."
