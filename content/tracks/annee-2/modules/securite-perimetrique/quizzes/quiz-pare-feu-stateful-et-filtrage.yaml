@@ -1,0 +1,79 @@
+slug: quiz-pare-feu-stateful-et-filtrage
+title: "Quiz — Pare-feu Stateful et Filtrage"
+passing_score: 80
+position: 2
+questions:
+  - kind: single
+    prompt: "Comment un pare-feu à inspection d'état (Stateful Firewall) gère-t-il les paquets de retour d'une connexion Web initiée par un client interne ?"
+    choices:
+      - id: a
+        text: "Il consulte sa table d'état conntrack et autorise automatiquement les paquets en état ESTABLISHED sans nécessiter d'ouverture de port statique en entrée"
+      - id: b
+        text: "Il oblige l'administrateur à ouvrir tous les ports de 1024 à 65535 en entrée"
+      - id: c
+        text: "Il bloque tous les paquets de retour par mesure de précaution"
+      - id: d
+        text: "Il convertit le paquet en email d'alerte pour l'administrateur"
+    correct:
+      - a
+    explanation: "Le suivi d'état associe les paquets de réponse à la session initialement créée et les laisse entrer de façon dynamique et sécurisée."
+
+  - kind: single
+    prompt: "Dans le module de suivi de connexions Linux (conntrack), quelle action un pare-feu doit-il impérativement appliquer aux paquets qualifiés en état 'INVALID' ?"
+    choices:
+      - id: a
+        text: "Les détruire immédiatement (DROP / REJECT) car ils présentent des anomalies structurelles ou correspondent à des tentatives de scan"
+      - id: b
+        text: "Les accepter et leur attribuer une priorité maximale"
+      - id: c
+        text: "Les sauvegarder dans un fichier texte sur le bureau"
+      - id: d
+        text: "Les renvoyer au fournisseur d'accès Internet"
+    correct:
+      - a
+    explanation: "Les paquets en état `INVALID` (flags incohérents, paquets orphelins, scans furtifs) doivent être éliminés sans délai (`ct state invalid drop`)."
+
+  - kind: single
+    prompt: "Sous l'outil moderne nftables, quelle famille de table permet de regrouper les règles de filtrage IPv4 et IPv6 au sein d'une seule et même chaîne ?"
+    choices:
+      - id: a
+        text: "La famille inet (table inet filter)"
+      - id: b
+        text: "La famille ipx"
+      - id: c
+        text: "La famille netbios"
+      - id: d
+        text: "La famille token-ring"
+    correct:
+      - a
+    explanation: "La famille `inet` de `nftables` est dual-stack et traite simultanément les protocoles IPv4 et IPv6 de manière unifiée."
+
+  - kind: single
+    prompt: "Sur une passerelle de filtrage Linux nftables, quelle chaîne traite le trafic routé transitant d'une interface réseau vers une autre (ex: du LAN vers le WAN) ?"
+    choices:
+      - id: a
+        text: "La chaîne forward (hook forward)"
+      - id: b
+        text: "La chaîne input"
+      - id: c
+        text: "La chaîne output"
+      - id: d
+        text: "La chaîne loopback"
+    correct:
+      - a
+    explanation: "Le hook `forward` intercepte les paquets routés entre deux interfaces réseaux, alors que le hook `input` ne concerne que le trafic destiné au routeur lui-même."
+
+  - kind: single
+    prompt: "Pourquoi est-il indispensable d'ajouter la directive 'flush ruleset' au début d'un script de règles nftables (/etc/nftables.conf) ?"
+    choices:
+      - id: a
+        text: "Pour purger l'ensemble des tables et règles précédentes avant de charger les nouvelles, garantissant ainsi l'idempotence et évitant les doublons"
+      - id: b
+        text: "Pour réinitialiser les adresses IP du serveur"
+      - id: c
+        text: "Pour redémarrer le système d'exploitation"
+      - id: d
+        text: "Pour formater le disque dur"
+    correct:
+      - a
+    explanation: "Sans `flush ruleset`, le rechargement du fichier de configuration concatène les règles aux règles existantes au lieu de les remplacer proprement."

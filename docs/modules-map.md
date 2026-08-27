@@ -85,8 +85,8 @@ La cartographie complète comporte **19 modules** (8 en 1ère année, 11 en 2èm
 
 | # | Slug proposé | Titre du module | Statut | Leçons cibles | Labs cibles | Blocs couverts |
 |---|---|---|---|:---:|:---:|---|
-| 9 | `routage-interconnexion` | Routage dynamique & Interconnexion de réseaux | **À créer** | 5 | 2 | B2.1, B2.2 |
-| 10 | `securite-pare-feu-filtrage` | Sécurité périmétrique, Pare-feu & Filtrage réseau | **À créer** | 6 | 3 | B2.2, B3.3, B3.4 |
+| 9 | `routage-interconnexion` | Routage dynamique & Interconnexion de réseaux | **Complet** | 5 | 2 | B2.1, B2.2 |
+| 10 | `securite-perimetrique` | Sécurité périmétrique, Pare-feu & Filtrage réseau | **Complet** | 5 | 2 | B2.1, B2.2, B3.1 |
 | 11 | `serveurs-web-pki-tls` | Services Web, Reverse Proxy & Infrastructure PKI / TLS | **À créer** | 6 | 3 | B2.3, B3.2, B3.3 |
 | 12 | `vpn-acces-distants` | Réseaux privés virtuels (VPN) & Accès distants sécurisés | **À créer** | 5 | 2 | B2.1, B2.2, B3.2, B3.3 |
 | 13 | `conteneurisation-docker` | Conteneurisation d'applications avec Docker & Compose | **À créer** | 6 | 3 | B1.5, B2.3, B3.3 |
