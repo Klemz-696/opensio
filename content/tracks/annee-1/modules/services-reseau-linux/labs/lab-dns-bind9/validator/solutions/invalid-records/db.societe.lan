@@ -1,0 +1,20 @@
+$TTL    86400
+@       IN      SOA     ns1.societe.lan. admin.societe.lan. (
+                        2026082701      ; Serial
+                        28800           ; Refresh
+                        7200            ; Retry
+                        2419200         ; Expire
+                        3600 )          ; Negative Cache TTL
+;
+@       IN      NS      ns1.societe.lan.
+@       IN      NS      ns2.societe.lan.
+
+@       IN      MX  10  mail.societe.lan.
+
+ns1     IN      A       192.168.10.10
+ns2     IN      A       192.168.10.11
+mail    IN      A       192.168.10.15
+srv-web IN      A       192.168.10.20
+srv-db  IN      A       192.168.10.30
+
+www     IN      CNAME   srv-web.societe.lan.

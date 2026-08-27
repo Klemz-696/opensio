@@ -1,0 +1,80 @@
+slug: quiz-gestion-utilisateurs-et-sudo
+title: "Quiz — Gestion des Utilisateurs et Sudo"
+passing_score: 80
+position: 2
+questions:
+  - kind: single
+    prompt: "Où sont stockés les hashs des mots de passe des comptes utilisateurs locaux sous Debian ?"
+    choices:
+      - id: a
+        text: "/etc/passwd (champ n°2)"
+      - id: b
+        text: "/etc/shadow (accessible uniquement en lecture par root)"
+      - id: c
+        text: "/etc/security/passwords.db"
+      - id: d
+        text: "/var/lib/accounts/hashes"
+    correct:
+      - b
+    explanation: "/etc/shadow stocke les empreintes hachées des mots de passe avec des permissions strictes (640 root:shadow), tandis que /etc/passwd ne contient qu'un 'x' symbolique."
+
+  - kind: single
+    prompt: "Quelle commande permet de forcer un utilisateur à changer son mot de passe lors de sa toute prochaine ouverture de session ?"
+    choices:
+      - id: a
+        text: "passwd -e nom_utilisateur ou chage -d 0 nom_utilisateur"
+      - id: b
+        text: "usermod -L nom_utilisateur"
+      - id: c
+        text: "userdel -f nom_utilisateur"
+      - id: d
+        text: "chage -E 0 nom_utilisateur"
+    correct:
+      - a
+    explanation: "chage -d 0 (ou passwd -e / --expire) réinitialise la date de dernier changement de mot de passe à l'époque Unix (1970), ce qui déclenche immédiatement l'obligation de renouvellement à la première connexion."
+
+  - kind: single
+    prompt: "Quel outil doit TOUJOURS être utilisé pour modifier le fichier /etc/sudoers de manière sécurisée ?"
+    choices:
+      - id: a
+        text: "nano /etc/sudoers"
+      - id: b
+        text: "visudo"
+      - id: c
+        text: "sudoedit /etc/sudoers"
+      - id: d
+        text: "vim /etc/sudoers"
+    correct:
+      - b
+    explanation: "visudo pose un verrou exclusif sur /etc/sudoers et effectue un contrôle syntaxique rigoureux avant sauvegarde, évitant ainsi d'isoler la machine avec une syntaxe erronée qui bloquerait tout appel à sudo."
+
+  - kind: multiple
+    prompt: "Quels paramètres de la commande useradd permettent de créer un utilisateur avec son dossier personnel et un shell bash par défaut ?"
+    choices:
+      - id: a
+        text: "-m (créer le répertoire personnel /home/username s'il n'existe pas)"
+      - id: b
+        text: "-s /bin/bash (définir le shell de connexion interactif)"
+      - id: c
+        text: "-k /etc/skel (forcer la suppression des squelettes de profil)"
+      - id: d
+        text: "-r (créer un compte administrateur racine)"
+    correct:
+      - a
+      - b
+    explanation: "-m ordonne la création du /home et la copie des fichiers types depuis /etc/skel, tandis que -s /bin/bash configure l'interpréteur de commandes interactif."
+
+  - kind: single
+    prompt: "Que signifie la ligne suivante dans le fichier /etc/sudoers : '%technique ALL=(ALL) NOPASSWD: /usr/bin/systemctl' ?"
+    choices:
+      - id: a
+        text: "Tous les membres du groupe technique peuvent exécuter /usr/bin/systemctl avec les droits de n'importe quel utilisateur sans saisir leur mot de passe"
+      - id: b
+        text: "Seul l'utilisateur nommé technique peut modifier le mot de passe de systemctl"
+      - id: c
+        text: "Tous les utilisateurs du système peuvent lancer systemctl sans mot de passe"
+      - id: d
+        text: "Le groupe technique a tous les droits administrateur sur toute la machine"
+    correct:
+      - a
+    explanation: "Le préfixe '%' désigne un groupe (/etc/group). NOPASSWD dispense les membres de ce groupe de renseigner leur mot de passe pour la commande spécifiée (/usr/bin/systemctl)."

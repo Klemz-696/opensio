@@ -1,0 +1,81 @@
+slug: quiz-resolution-dns-recursive-cache
+title: "Quiz — Résolution DNS Récursive et Cache"
+passing_score: 80
+position: 3
+questions:
+  - kind: single
+    prompt: "Pourquoi est-il dangereux de laisser la directive 'allow-recursion { any; };' sur un serveur DNS exposé sur une adresse IP publique ?"
+    choices:
+      - id: a
+        text: "Le serveur devient un résolveur ouvert pouvant être exploité pour des attaques par amplification DNS DDoS"
+      - id: b
+        text: "Cela désactive le pare-feu du serveur"
+      - id: c
+        text: "Les requêtes DNS seront limitées à 10 requêtes par minute"
+      - id: d
+        text: "Bind9 convertit automatiquement tous les enregistrements en IPv6"
+    correct:
+      - a
+    explanation: "Un 'Open Resolver' accessible depuis tout l'Internet est systématiquement détourné par des botnets pour saturer la bande passante de cibles via des attaques DDoS par amplification."
+
+  - kind: single
+    prompt: "Quelle commande de l'utilitaire 'rndc' permet de vider l'ensemble du cache de résolution en mémoire d'un serveur Bind9 ?"
+    choices:
+      - id: a
+        text: "rndc flush"
+      - id: b
+        text: "rndc clear"
+      - id: c
+        text: "rndc reload-cache"
+      - id: d
+        text: "rndc purge"
+    correct:
+      - a
+    explanation: "'rndc flush' purge l'intégralité du cache DNS en RAM sans nécessiter de redémarrage du processus named."
+
+  - kind: multiple
+    prompt: "Quels mécanismes permettent de protéger un résolveur DNS contre les attaques d'empoisonnement de cache (DNS Cache Poisoning) ?"
+    choices:
+      - id: a
+        text: "La randomisation des ports source UDP émis par le résolveur"
+      - id: b
+        text: "La validation cryptographique DNSSEC (dnssec-validation auto;)"
+      - id: c
+        text: "L'utilisation de numéros d'identification de transaction (TXID) aléatoires"
+      - id: d
+        text: "La désactivation complète des protocoles TCP"
+    correct:
+      - a
+      - b
+      - c
+    explanation: "La combinaison de TXID aléatoires, de la randomisation des ports source UDP et de la signature cryptographique DNSSEC empêche l'injection prédictive de fausses réponses forgées."
+
+  - kind: single
+    prompt: "À quoi sert la configuration de redirecteurs ('forwarders { 1.1.1.1; 9.9.9.9; };') dans un serveur DNS Bind9 local ?"
+    choices:
+      - id: a
+        text: "Déléguer la résolution des requêtes pour les domaines extérieurs à des serveurs DNS récursifs performants ou filtrants au lieu d'interroger directement les serveurs racines"
+      - id: b
+        text: "Sauvegarder les fichiers de zone sur un stockage cloud"
+      - id: c
+        text: "Bloquer l'ensemble du trafic Web HTTPS sortant"
+      - id: d
+        text: "Forcer les clients à s'authentifier par certificat"
+    correct:
+      - a
+    explanation: "Les forwarders permettent de relayer les requêtes récursives vers des serveurs en amont (DNS du FAI, Quad9, Cloudflare), bénéficiant de leurs caches massifs et de leur protection contre les sites malveillants."
+
+  - kind: single
+    prompt: "Comment se nomme la redirection DNS qui cible spécifiquement les requêtes d'un nom de domaine partenaire particulier vers son propre contrôleur DNS interne ?"
+    choices:
+      - id: a
+        text: "Redirection conditionnelle (Conditional Forwarding)"
+      - id: b
+        text: "Délégation de sous-domaine aveugle"
+      - id: c
+        text: "Tunneling DNS"
+      - id: d
+        text: "Route statique BGP"
+    correct:
+      - a
+    explanation: "La redirection conditionnelle applique une règle de forwarders uniquement pour un suffixe de domaine précis (ex: filiale.lan)."

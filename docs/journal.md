@@ -1087,3 +1087,55 @@ Création complète du nouveau module `windows-server-ad` comprenant 6 leçons, 
 - `pnpm typecheck --force` : 100 % vert (0 erreur TypeScript).
 - `pnpm test --force` : 100 % vert (**354 tests passants** : 228 API, 108 Web, 18 Content-Schema — 0 failed, 0 skipped).
 - `pnpm build --force` : 100 % vert (Next.js 15 App Router et NestJS 11).
+
+---
+
+## 2026-08-27 — [Lot D3] : Contenu SISR — Cartographie & Phase 2.1 (Socle Linux & Services Réseau)
+
+**Branches** : `docs/d3-carte-modules` (Phase 1), `feat/d3-socle-systemes-linux` (Phase 2.1)  
+**Objectif** : Cartographie exhaustive des 19 modules du référentiel national BTS SIO option SISR, ordonnancement pédagogique en 5 phases, réintégration justifiée du module transversal d'anglais technique, et production complète des 2 modules prioritaires de 1ère année (`linux-administration` et `services-reseau-linux`).
+
+### 1. Phase 1 — Cartographie Référentiel & Investigation
+- **Investigation Git sur `anglais-technique`** :
+  - Identification de l'omission technique lors du passage à la structure hiérarchique par tracks en v0.2.0.
+  - Justification contractuelle et réintégration au catalogue en 1ère année (Module transversal, épreuve nationale E2).
+- **Cartographie Référentiel (`docs/modules-map.md`)** :
+  - Définition complète des 19 modules (8 en 1ère année, 11 en 2ème année), alignés sur les blocs B1.1–B1.6, B2.1–B2.3, B3.1–B3.4 et E2.
+  - Spécification détaillée des slugs, intitulés, durées, niveaux, idées de labs et matrice de couverture croisée.
+  - Mise à jour de la feuille de route pédagogique dans `docs/roadmap.md` (§4).
+
+### 2. Phase 2.1 — Production du Module `linux-administration`
+- **Module `linux-administration`** (6 leçons, 6 quiz, 3 labs) :
+  - `01-arborescence-fhs-et-permissions.md` + `quiz-arborescence-fhs-et-permissions.yaml` : Norme FHS, UGO octal/symbolique, bits spéciaux SUID, SGID, Sticky Bit et ACL POSIX.
+  - `02-gestion-utilisateurs-et-sudo.md` + `quiz-gestion-utilisateurs-et-sudo.yaml` : Fichiers `/etc/passwd`, `/etc/shadow`, `/etc/group`, commande `chage` et délégation `visudo`/`sudoers`.
+  - `03-paquets-et-logiciels-apt.md` + `quiz-paquets-et-logiciels-apt.yaml` : Dépôts APT, clés GPG, gestion des paquets `dpkg`/`apt`, et correctifs `unattended-upgrades`.
+  - `04-gestion-services-systemd.md` + `quiz-gestion-services-systemd.yaml` : Unités `.service`, `.target`, cycle de vie `systemctl`, rédaction d'unité et dépannage.
+  - `05-stockage-disques-et-lvm.md` + `quiz-stockage-disques-et-lvm.yaml` : GPT, ext4/xfs, points de montage `/etc/fstab` durcis avec UUIDs, architecture LVM (PV, VG, LV) et extension à chaud.
+  - `06-analyse-journaux-et-processus.md` + `quiz-analyse-journaux-et-processus.yaml` : Surveillance des processus (`ps`, `htop`, `free`, `df`), signaux POSIX, `journalctl` et rotation `logrotate`.
+  - **3 Labs autonomes de niveau 2_files avec suites de tests complètes** :
+    - `lab-droits-fhs` (`droits-fhs-et-permissions`) : Matrice de sécurisation FHS (SGID 2770, Sticky 1777, TLS 710) dans `permissions.csv`.
+    - `lab-configuration-lvm` (`configuration-stockage-lvm`) : Montages fstab durcis avec UUIDs et options `nodev,nosuid,noexec` dans `fstab`.
+    - `lab-depannage-systemd` (`depannage-service-systemd`) : Unité de service systemd durcie (non-root, After/Requires, Restart, NoNewPrivileges) dans `api-backend.service`.
+
+### 3. Phase 2.1 — Production du Module `services-reseau-linux`
+- **Module `services-reseau-linux`** (5 leçons, 5 quiz, 2 labs) :
+  - `01-serveur-dhcp-linux.md` + `quiz-serveur-dhcp-linux.yaml` : Processus DORA, configuration ISC-DHCP (`dhcpd.conf`), architecture ISC Kea (JSON) et baux.
+  - `02-serveur-dns-bind9-autorite.md` + `quiz-serveur-dns-bind9-autorite.yaml` : Architecture Bind9, zones directes/inverses, enregistrements SOA, NS, MX, A, CNAME, PTR et point terminal.
+  - `03-resolution-dns-recursive-cache.md` + `quiz-resolution-dns-recursive-cache.yaml` : Résolution récursive vs itérative, forwarders, randomisation des ports, DNSSEC, durcissement ANSSI et administration `rndc`.
+  - `04-synchronisation-horaire-ntp.md` + `quiz-synchronisation-horaire-ntp.yaml` : Strates NTP (0 à 15), importance pour Kerberos/TLS, configuration Chrony (`chrony.conf`), outil `chronyc` et client `systemd-timesyncd`.
+  - `05-relais-dhcp-et-multi-sous-reseaux.md` + `quiz-relais-dhcp-et-multi-sous-reseaux.yaml` : Traversée des routeurs, champ `giaddr`, Option 82, `isc-dhcp-relay` et `ip helper-address`.
+  - **2 Labs autonomes de niveau 2_files avec suites de tests complètes** :
+    - `lab-dns-bind9` (`configuration-dns-bind9`) : Déploiement complet Bind9 (zone directe `db.societe.lan` et zone inverse `db.192.168.10` avec réciprocité PTR).
+    - `lab-serveur-dhcp-kea` (`configuration-dhcp-kea`) : Déploiement ISC Kea JSON (`kea-dhcp4.conf`) avec pools, options DHCP et réservation MAC.
+
+### 4. Validations & Métriques de Contenu
+- `node content/validate.mjs` : **100 % valide** :
+  - 4 modules opérationnels (`reseaux-fondamentaux`, `windows-server-ad`, `linux-administration`, `services-reseau-linux`).
+  - 24 leçons complètes et relues.
+  - 24 quiz d'évaluation (132 questions avec explications pédagogiques).
+  - 12 ateliers pratiques de niveau 2_files avec validateurs autonomes.
+  - **36 / 36 tests de validateurs passants** sur les suites de fixtures (`valid` et `invalid-*`).
+- `pnpm content:validate` : 100 % valide (18/18 tests Zod passants).
+- `node scripts/check-file-size.mjs` : 100 % conforme D-13 (331 fichiers analysés, 0 violation > 400 lignes).
+- `node scripts/check-theme-classes.mjs` : 100 % conforme bi-thème (0 violation).
+

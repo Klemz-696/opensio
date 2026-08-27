@@ -1,0 +1,81 @@
+slug: quiz-serveur-dhcp-linux
+title: "Quiz — Serveur DHCP Linux"
+passing_score: 80
+position: 1
+questions:
+  - kind: single
+    prompt: "Quel est l'ordre chronologique des 4 étapes du protocole DHCP (processus DORA) ?"
+    choices:
+      - id: a
+        text: "Discover → Offer → Request → Acknowledge"
+      - id: b
+        text: "Demand → Offer → Reserve → Accept"
+      - id: c
+        text: "Discover → Request → Offer → Acknowledge"
+      - id: d
+        text: "Direct → Option → Route → Assign"
+    correct:
+      - a
+    explanation: "Le processus DORA correspond à : 1. DHCPDISCOVER (client broadcast), 2. DHCPOFFER (serveur propose), 3. DHCPREQUEST (client accepte), 4. DHCPACK (serveur confirme le bail)."
+
+  - kind: single
+    prompt: "Quels sont les ports UDP standard utilisés respectivement par le serveur et par le client DHCP ?"
+    choices:
+      - id: a
+        text: "Port 67 (serveur) et Port 68 (client)"
+      - id: b
+        text: "Port 53 (serveur) et Port 54 (client)"
+      - id: c
+        text: "Port 80 (serveur) et Port 443 (client)"
+      - id: d
+        text: "Port 123 (serveur) et Port 124 (client)"
+    correct:
+      - a
+    explanation: "Le serveur DHCP écoute sur le port UDP 67 et le client reçoit les réponses sur le port UDP 68."
+
+  - kind: single
+    prompt: "Dans le fichier /etc/dhcp/dhcpd.conf, quelle directive permet d'attribuer une adresse IP fixe permanente (réservation) basée sur l'adresse MAC ?"
+    choices:
+      - id: a
+        text: "host { hardware ethernet xx:xx:xx...; fixed-address 192.168.10.20; }"
+      - id: b
+        text: "static-lease 192.168.10.20 mac xx:xx:xx..."
+      - id: c
+        text: "reserve-ip 192.168.10.20 for client-id"
+      - id: d
+        text: "bind-mac xx:xx:xx... to 192.168.10.20"
+    correct:
+      - a
+    explanation: "Le bloc 'host <nom> { hardware ethernet <mac>; fixed-address <ip>; }' est la syntaxe normalisée du serveur ISC-DHCP pour les réservations statiques."
+
+  - kind: multiple
+    prompt: "Quelles informations indispensables sont couramment transmises via les options DHCP aux postes clients ?"
+    choices:
+      - id: a
+        text: "option routers (adresse IP de la passerelle par défaut)"
+      - id: b
+        text: "option domain-name-servers (adresses IP des serveurs DNS)"
+      - id: c
+        text: "option domain-name (suffixe DNS de recherche local)"
+      - id: d
+        text: "option root-password (mot de passe administrateur du poste)"
+    correct:
+      - a
+      - b
+      - c
+    explanation: "DHCP distribue les passerelles (option routers), les serveurs DNS (option domain-name-servers) et le nom de domaine (option domain-name), mais ne transmet jamais de mots de passe système."
+
+  - kind: single
+    prompt: "Quel symptôme réseau indique de manière quasi certaine l'impossibilité pour un client d'obtenir un bail auprès d'un serveur DHCP ?"
+    choices:
+      - id: a
+        text: "L'attribution d'une adresse automatique APIPA de la plage 169.254.0.0/16"
+      - id: b
+        text: "L'adresse IP 127.0.0.1 sur la carte réseau"
+      - id: c
+        text: "Une coupure physique du lien Ethernet"
+      - id: d
+        text: "Un débit réseau limité à 10 Mbit/s"
+    correct:
+      - a
+    explanation: "Lorsqu'un client configuré en DHCP ne reçoit aucune réponse à ses requêtes Discover dans les temps impartis, son système lui assigne automatiquement une adresse APIPA (169.254.x.x)."

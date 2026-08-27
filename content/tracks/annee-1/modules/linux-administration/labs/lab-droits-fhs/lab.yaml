@@ -1,0 +1,55 @@
+slug: droits-fhs-et-permissions
+title: "Sécurisation de l'arborescence FHS et matrice des permissions UNIX"
+level: 2_files
+max_score: 100
+estimated_minutes: 40
+context: |
+  Vous êtes administrateur système dans une entreprise de services numériques.
+  L'entreprise déploie un nouveau serveur de fichiers et d'applications Debian.
+  Vous devez définir dans `permissions.csv` la politique de sécurisation stricte des dossiers :
+  - `/var/www/html` : Dossier du site Web (Propriétaire `www-data`, Groupe `www-data`, droits `755`).
+  - `/data/partages/comptabilite` : Partage restreint du service Compta (Propriétaire `root`, Groupe `compta`, droits `2770` avec bit SGID pour forcer l'héritage de groupe).
+  - `/data/partages/technique` : Partage du service Technique (Propriétaire `root`, Groupe `technique`, droits `2770` avec bit SGID).
+  - `/data/partages/commun` : Dépôt temporaire partagé entre tous les employés (Propriétaire `root`, Groupe `users`, droits `1777` avec Sticky Bit).
+  - `/etc/ssl/private` : Clés privées TLS (Propriétaire `root`, Groupe `ssl-cert`, droits `710` strictement hermétiques aux autres).
+
+objectives:
+  - "Définir les permissions octales adaptées au principe de moindre privilège pour chaque répertoire"
+  - "Positionner le bit spécial SGID (2xxx) sur les répertoires collaboratifs de service"
+  - "Appliquer le Sticky Bit (1xxx) sur l'espace d'échange partagé pour éviter les suppressions abusives"
+  - "Sécuriser les dossiers sensibles de clés cryptographiques"
+
+prerequisites:
+  - "arborescence-fhs-et-permissions"
+
+files:
+  editable:
+    - path: permissions.csv
+      description: "Chemin, Propriétaire, Groupe, Permissions octales, Rôle"
+
+hints:
+  - cost_percent: 10
+    text: "Le bit SGID sur un dossier correspond à la valeur 2000 en octal (ex: 2770 = SGID + rwxrwx---)."
+  - cost_percent: 10
+    text: "Le Sticky Bit correspond à la valeur 1000 en octal (ex: 1777 = Sticky + rwxrwxrwx)."
+
+validation:
+  type: script
+  image: opensio/validator-permissions:latest
+  timeout_seconds: 30
+  checks:
+    - id: ownership_valid
+      required: true
+      points: 30
+      description: "Propriétaires et groupes conformes aux règles de service"
+    - id: standard_permissions_valid
+      required: true
+      points: 40
+      description: "Permissions octales standard adaptées à chaque besoin"
+    - id: special_bits_valid
+      required: true
+      points: 30
+      description: "Bits spéciaux SGID (2xxx) et Sticky Bit (1xxx) correctement appliqués"
+
+scoring:
+  floor_percent: 50

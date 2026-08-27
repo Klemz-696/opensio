@@ -1,0 +1,64 @@
+slug: depannage-service-systemd
+title: "Rédaction et durcissement d'une unité de service systemd"
+level: 2_files
+max_score: 100
+estimated_minutes: 35
+context: |
+  Une API backend critique en Node.js doit être déployée sous forme de service systemd fiable et sécurisé.
+  Le fichier d'unité initial `api-backend.service` comporte des erreurs de configuration et manque de durcissement.
+  Vous devez corriger et finaliser `api-backend.service` avec les exigences suivantes :
+  1. Section `[Unit]` :
+     - Description claire du service.
+     - Démarrage ordonné après le réseau et PostgreSQL (`After=network.target postgresql.service`).
+     - Dépendance forte vers PostgreSQL (`Requires=postgresql.service`).
+  2. Section `[Service]` :
+     - Type d'exécution `simple`.
+     - Exécution sous utilisateur dédié `appuser` et groupe `appuser` (jamais `root`).
+     - Répertoire de travail : `/opt/api-backend`.
+     - Commande de démarrage : `/usr/bin/node /opt/api-backend/dist/main.js`.
+     - Politique de redémarrage automatique en cas de panne : `Restart=always` avec délai `RestartSec=5s`.
+     - Fichier d'environnement chargé : `EnvironmentFile=/opt/api-backend/.env`.
+     - Mesures de durcissement de sécurité : `NoNewPrivileges=true`, `ProtectSystem=full`, `PrivateTmp=true`.
+  3. Section `[Install]` :
+     - Rattaché à la cible multi-utilisateurs standard `WantedBy=multi-user.target`.
+
+objectives:
+  - "Structurer correctement les trois sections d'une unité systemd ([Unit], [Service], [Install])"
+  - "Définir les dépendances de démarrage After et Requires"
+  - "Appliquer le principe de moindre privilège (utilisateur applicatif non-root)"
+  - "Intégrer les directives de durcissement de sécurité systemd"
+
+prerequisites:
+  - "gestion-services-systemd"
+
+files:
+  editable:
+    - path: api-backend.service
+      description: "Fichier d'unité de service systemd"
+
+hints:
+  - cost_percent: 10
+    text: "La directive 'After=' définit l'ordre alors que 'Requires=' impose la dépendance."
+  - cost_percent: 10
+    text: "N'oubliez pas les directives de durcissement dans [Service] : NoNewPrivileges=true, ProtectSystem=full et PrivateTmp=true."
+
+validation:
+  type: script
+  image: opensio/validator-systemd:latest
+  timeout_seconds: 30
+  checks:
+    - id: unit_dependencies_valid
+      required: true
+      points: 30
+      description: "Dépendances After et Requires vers network.target et postgresql.service conformes"
+    - id: service_execution_valid
+      required: true
+      points: 40
+      description: "Exécution non-root (appuser), chemins absolus, variables d'env et Restart=always"
+    - id: hardening_and_install_valid
+      required: true
+      points: 30
+      description: "Directives de durcissement (NoNewPrivileges, ProtectSystem, PrivateTmp) et WantedBy validés"
+
+scoring:
+  floor_percent: 50
