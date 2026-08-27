@@ -1,0 +1,79 @@
+slug: quiz-pipelines-cicd-github-actions-gitlab-ci
+title: "Quiz — Pipelines CI/CD et GitHub Actions"
+passing_score: 80
+position: 3
+questions:
+  - kind: single
+    prompt: "Dans un workflow GitHub Actions, quelle directive sous un job permet d'ordonner qu'il ne s'exécute qu'après le succès complet d'un ou plusieurs autres jobs ?"
+    choices:
+      - id: a
+        text: "needs: [nom_du_job]"
+      - id: b
+        text: "after: [nom_du_job]"
+      - id: c
+        text: "depends: [nom_du_job]"
+      - id: d
+        text: "wait_for: [nom_du_job]"
+    correct:
+      - a
+    explanation: "Par défaut, les jobs s'exécutent en parallèle. La directive `needs:` crée un graphe de dépendances séquentielles (DAG) bloquant l'exécution si le job prérequis échoue."
+
+  - kind: single
+    prompt: "Comment doit-on injecter un mot de passe ou une clé privée de déploiement dans un job GitHub Actions en toute sécurité ?"
+    choices:
+      - id: a
+        text: "En le stockant dans les GitHub Secrets du dépôt et en y faisant référence avec la syntaxe ${{ secrets.NOM_DU_SECRET }}"
+      - id: b
+        text: "En l'écrivant directement en clair dans le fichier workflow YAML"
+      - id: c
+        text: "En le committant dans un fichier README.md"
+      - id: d
+        text: "En l'envoyant par email au support technique GitHub"
+    correct:
+      - a
+    explanation: "Les GitHub Secrets sont chiffrés au repos et masqués automatiquement (redacted `***`) dans tous les flux de journaux d'exécution du runner."
+
+  - kind: single
+    prompt: "En quoi consiste la stratégie de déploiement 'Blue/Green' pour une application web de production ?"
+    choices:
+      - id: a
+        text: "À maintenir deux environnements de production identiques (Blue actif, Green recevant la nouvelle version) puis à basculer instantanément le routeur vers Green une fois les tests validés"
+      - id: b
+        text: "À changer la couleur de fond du site web tous les lundis"
+      - id: c
+        text: "À déployer uniquement les serveurs situés en pleine nature"
+      - id: d
+        text: "À éteindre tous les serveurs pendant 48 heures"
+    correct:
+      - a
+    explanation: "Le déploiement Blue/Green élimine le temps d'arrêt lors des mises à jour et permet un retour arrière (rollback) instantané en rebasculant simplement le trafic vers l'ancien environnement."
+
+  - kind: single
+    prompt: "Dans un pipeline CI/CD, à quoi sert l'étape d'archivage des artefacts (ex: actions/upload-artifact) ?"
+    choices:
+      - id: a
+        text: "À sauvegarder et partager les fichiers compilés (binaires, dossiers dist/, rapports de couverture) entre différents jobs ou pour téléchargement ultérieur"
+      - id: b
+        text: "À supprimer le code source du dépôt Git"
+      - id: c
+        text: "À compresser la mémoire RAM du serveur hôte"
+      - id: d
+        text: "À envoyer des cartes postales aux utilisateurs"
+    correct:
+      - a
+    explanation: "Les artefacts permettent de découpler la phase de build de la phase de déploiement, en garantissant que les fichiers déployés sont strictement ceux qui ont été testés."
+
+  - kind: single
+    prompt: "Quelle action du Marketplace GitHub permet de cloner le dépôt Git dans l'espace de travail du runner au début d'un job ?"
+    choices:
+      - id: a
+        text: "actions/checkout@v4"
+      - id: b
+        text: "actions/clone@v4"
+      - id: c
+        text: "actions/git-pull@v4"
+      - id: d
+        text: "actions/download-repo@v4"
+    correct:
+      - a
+    explanation: "`actions/checkout` est l'action officielle standard permettant au runner de récupérer les fichiers du dépôt pour la branche ou le commit analysé."

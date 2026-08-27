@@ -1,0 +1,79 @@
+slug: quiz-gestion-configuration-ansible
+title: "Quiz — Gestion de Configuration Ansible"
+passing_score: 80
+position: 2
+questions:
+  - kind: single
+    prompt: "Pourquoi qualifie-t-on l'architecture d'Ansible de 'sans agent' (Agentless) ?"
+    choices:
+      - id: a
+        text: "Parce qu'Ansible ne nécessite aucun service démon résident sur les serveurs cibles et s'exécute directement via des connexions SSH standard et l'interpréteur Python"
+      - id: b
+        text: "Parce qu'Ansible n'utilise aucun fichier de configuration"
+      - id: c
+        text: "Parce qu'Ansible ne fonctionne que sans connexion Internet"
+      - id: d
+        text: "Parce que l'administrateur n'a pas besoin de compte utilisateur"
+    correct:
+      - a
+    explanation: "Le modèle Agentless simplifie l'administration : seul le nœud de contrôle exécute Ansible, qui se connecte en SSH sur les cibles sans agent à installer au préalable."
+
+  - kind: single
+    prompt: "Que signifie la propriété d'idempotence pour un module ou un playbook Ansible ?"
+    choices:
+      - id: a
+        text: "L'exécution répétée du playbook garantit d'atteindre l'état cible désiré sans effectuer de modifications inutiles si le système est déjà conforme"
+      - id: b
+        text: "Le playbook s'exécute deux fois plus vite à chaque tentative"
+      - id: c
+        text: "Le mot de passe de connexion change à chaque exécution"
+      - id: d
+        text: "Le système redémarre automatiquement après chaque tâche"
+    correct:
+      - a
+    explanation: "L'idempotence garantit qu'Ansible vérifie d'abord l'état actuel et n'applique de modifications (`changed`) que si nécessaire, garantissant la stabilité du système."
+
+  - kind: single
+    prompt: "Dans un playbook Ansible, quand une tâche déclarée sous la section 'handlers' est-elle exécutée ?"
+    choices:
+      - id: a
+        text: "Une seule fois en fin de play, et uniquement si une tâche préalable comportant la directive 'notify' a effectivement modifié l'état du système (changed)"
+      - id: b
+        text: "Avant toutes les autres tâches au tout début du playbook"
+      - id: c
+        text: "À chaque seconde pendant toute la durée d'exécution"
+      - id: d
+        text: "Uniquement si l'administrateur appuie sur la touche Entrée"
+    correct:
+      - a
+    explanation: "Les handlers sont des tâches de notification conditionnelles conçues pour déclencher des actions différées (comme recharger Nginx) uniquement lorsqu'un changement a eu lieu."
+
+  - kind: single
+    prompt: "Quel moteur de templating est nativement utilisé par Ansible pour générer des fichiers de configuration dynamiques (fichiers .j2) ?"
+    choices:
+      - id: a
+        text: "Jinja2"
+      - id: b
+        text: "Smarty"
+      - id: c
+        text: "Mustache"
+      - id: d
+        text: "EJS"
+    correct:
+      - a
+    explanation: "Ansible s'appuie sur le moteur Jinja2 pour l'interpolation de variables (`{{ ma_var }}`), les structures conditionnelles et les boucles dans les fichiers templates."
+
+  - kind: single
+    prompt: "Dans un fichier de playbook Ansible, quelle directive au niveau du play permet d'activer l'élévation de privilèges (sudo) pour l'exécution des tâches administratives ?"
+    choices:
+      - id: a
+        text: "become: true"
+      - id: b
+        text: "root: yes"
+      - id: c
+        text: "admin: force"
+      - id: d
+        text: "sudo: always"
+    correct:
+      - a
+    explanation: "La directive standard `become: true` (ou `become: yes`) ordonne à Ansible d'utiliser le mécanisme d'élévation de privilèges configuré (sudo par défaut sous Linux)."

@@ -1,0 +1,25 @@
+slug: automatisation-devops
+title: "Automatisation Système, DevOps & Infrastructure as Code"
+description: "Principes de la culture DevOps, gestion de configuration avec Ansible, pipelines CI/CD automatisés, Infrastructure as Code avec Terraform et observabilité Prometheus/Grafana."
+position: 4
+difficulty: 3
+estimated_minutes: 550
+competency_refs:
+  - "B2.1"
+  - "B2.2"
+  - "B2.3"
+lessons:
+  - principes-devops-et-culture-cicd
+  - gestion-configuration-ansible
+  - pipelines-cicd-github-actions-gitlab-ci
+  - infrastructure-as-code-terraform
+  - supervision-observabilite-prometheus-grafana
+quizzes:
+  - quiz-principes-devops-et-culture-cicd
+  - quiz-gestion-configuration-ansible
+  - quiz-pipelines-cicd-github-actions-gitlab-ci
+  - quiz-infrastructure-as-code-terraform
+  - quiz-supervision-observabilite-prometheus-grafana
+labs:
+  - deploiement-automatise-ansible
+  - definition-pipeline-cicd-github-actions
