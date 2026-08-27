@@ -1,0 +1,79 @@
+slug: quiz-suivi-pilotage-indicateurs-burndown-charts
+title: "Quiz — Suivi et Pilotage Agile"
+passing_score: 80
+position: 4
+questions:
+  - kind: single
+    prompt: "Sur un graphique de Sprint Burndown Chart, que signifie une courbe réelle qui reste sur un plateau horizontal pendant plusieurs jours consécutifs ?"
+    choices:
+      - id: a
+        text: "Aucun Story Point n'a été achevé (terminé à 100 %) durant ces jours, indiquant souvent des tâches trop volumineuses ou des blocages techniques imprévus"
+      - id: b
+        text: "L'équipe a terminé le projet avec 3 mois d'avance"
+      - id: c
+        text: "Le serveur de base de données est éteint"
+      - id: d
+        text: "La courbe est parfaite et ne nécessite aucune attention"
+    correct:
+      - a
+    explanation: "Un plateau signale que le travail ne progresse pas vers l'état 'Done', nécessitant l'intervention du Scrum Master pour lever les blocages."
+
+  - kind: single
+    prompt: "Quelle est la définition exacte du 'Cycle Time' (Temps de Cycle) dans le suivi des métriques de flux Kanban ?"
+    choices:
+      - id: a
+        text: "Le temps écoulé entre le moment où l'équipe commence activement à travailler sur une tâche (statut 'En Cours') et le moment où elle est livrée (statut 'Terminé')"
+      - id: b
+        text: "La durée de vie totale de la batterie de l'ordinateur"
+      - id: c
+        text: "Le temps passé par les employés à la cantine le midi"
+      - id: d
+        text: "L'intervalle de temps entre deux redémarrages de serveurs"
+    correct:
+      - a
+    explanation: "Le Cycle Time mesure l'efficacité active de production de l'équipe, à distinguer du Lead Time qui inclut également le temps d'attente initial dans le Backlog."
+
+  - kind: single
+    prompt: "Quel est l'objectif premier du rituel de 'Sprint Retrospective' à la clôture de chaque itération Scrum ?"
+    choices:
+      - id: a
+        text: "Permettre à l'équipe d'inspecter ses méthodes de travail, sa communication et ses outils, et de décider d'actions d'amélioration concrètes pour le prochain Sprint"
+      - id: b
+        text: "Désigner le développeur le moins productif pour lui attribuer un gage"
+      - id: c
+        text: "Calculer les primes financières individuelles des salariés"
+      - id: d
+        text: "Faire une démonstration commerciale aux clients externes"
+    correct:
+      - a
+    explanation: "La rétrospective est un espace d'amélioration continue bienveillant dédié à l'équipe interne pour optimiser sa façon de travailler ensemble."
+
+  - kind: single
+    prompt: "Que désigne le phénomène de 'Scope Creep' (Dérive de Périmètre) en cours de Sprint ou de projet ?"
+    choices:
+      - id: a
+        text: "L'ajout continu et non maîtrisé de nouvelles exigences ou fonctionnalités au cours de l'itération sans ajustement correspondant du délai ou du budget"
+      - id: b
+        text: "Une erreur de compilation dans le code Python"
+      - id: c
+        text: "La déconnexion accidentelle d'un câble réseau"
+      - id: d
+        text: "La perte des mots de passe administrateurs"
+    correct:
+      - a
+    explanation: "Le Scope Creep dilue les efforts de l'équipe et met en péril l'engagement du Sprint si les nouvelles demandes ne sont pas réorientées vers le Product Backlog futur."
+
+  - kind: single
+    prompt: "Dans un atelier de rétrospective utilisant le format 'Mad / Sad / Glad', quel est l'intérêt de catégoriser les ressentis de l'équipe ?"
+    choices:
+      - id: a
+        text: "Identifier précisément les irritants et frustrations (Mad/Sad) pour construire des actions correctives tout en célébrant les succès et pratiques efficaces (Glad)"
+      - id: b
+        text: "Classer les employés en fonction de leur niveau de colère"
+      - id: c
+        text: "Remplir un formulaire obligatoire pour la médecine du travail"
+      - id: d
+        text: "Remplacer l'évaluation annuelle par les ressources humaines"
+    correct:
+      - a
+    explanation: "Ce format visuel et ludique libère la parole et permet de dégager rapidement les priorités d'amélioration de l'équipe."

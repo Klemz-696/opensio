@@ -1,0 +1,6 @@
+board_name: "Tableau Incomplet"
+columns:
+  - id: "backlog"
+    name: "À faire"
+  - id: "done"
+    name: "Terminé"
