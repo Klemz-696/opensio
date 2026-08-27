@@ -1,0 +1,28 @@
+slug: linux-administration
+title: "Linux : administration système & services de base"
+description: "Administration système sous Debian : arborescence FHS, permissions UNIX et ACLs, gestion des utilisateurs et droits sudo, gestion des paquets APT, gestion des services systemd, stockage LVM et analyse des journaux."
+position: 3
+difficulty: 2
+estimated_minutes: 600
+competency_refs:
+  - "B1.1"
+  - "B1.2"
+  - "B2.3"
+lessons:
+  - arborescence-fhs-et-permissions
+  - gestion-utilisateurs-et-sudo
+  - paquets-et-logiciels-apt
+  - gestion-services-systemd
+  - stockage-disques-et-lvm
+  - analyse-journaux-et-processus
+quizzes:
+  - quiz-arborescence-fhs-et-permissions
+  - quiz-gestion-utilisateurs-et-sudo
+  - quiz-paquets-et-logiciels-apt
+  - quiz-gestion-services-systemd
+  - quiz-stockage-disques-et-lvm
+  - quiz-analyse-journaux-et-processus
+labs:
+  - droits-fhs-et-permissions
+  - configuration-stockage-lvm
+  - depannage-service-systemd

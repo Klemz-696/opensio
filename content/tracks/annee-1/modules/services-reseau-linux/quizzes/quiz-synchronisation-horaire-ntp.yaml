@@ -1,0 +1,81 @@
+slug: quiz-synchronisation-horaire-ntp
+title: "Quiz — Synchronisation Horaire NTP"
+passing_score: 80
+position: 4
+questions:
+  - kind: single
+    prompt: "Sur quel port de transport et quel protocole fonctionne le service de temps NTP ?"
+    choices:
+      - id: a
+        text: "Port UDP 123"
+      - id: b
+        text: "Port TCP 123"
+      - id: c
+        text: "Port UDP 53"
+      - id: d
+        text: "Port TCP 88"
+    correct:
+      - a
+    explanation: "NTP utilise le protocole de datagramme UDP sur le port 123 pour minimiser la latence réseau lors des échanges temporels."
+
+  - kind: single
+    prompt: "Dans la hiérarchie NTP, à quoi correspond un serveur de 'Stratum 1' ?"
+    choices:
+      - id: a
+        text: "Un serveur de temps connecté directement à une horloge de référence atomique ou un récepteur GPS (Stratum 0)"
+      - id: b
+        text: "Un serveur NTP dont l'heure a dérivé de plus de 1 seconde"
+      - id: c
+        text: "Un poste de travail client standard de bureau"
+      - id: d
+        text: "Un serveur NTP secondaire en attente de basculement"
+    correct:
+      - a
+    explanation: "Les serveurs Stratum 1 sont directement interfacés avec les sources de référence physique (horloges au césium, GPS/Galileo constituant le Stratum 0)."
+
+  - kind: single
+    prompt: "Pourquoi la synchronisation horaire est-elle indispensable pour l'authentification dans un domaine d'entreprise (Active Directory / Kerberos) ?"
+    choices:
+      - id: a
+        text: "Kerberos rejette les tickets d'authentification si l'écart d'horloge entre le client et le contrôleur dépasse le seuil de tolérance (5 minutes par défaut) afin de prévenir les attaques par rejeu"
+      - id: b
+        text: "Le mot de passe de l'utilisateur change automatiquement toutes les minutes"
+      - id: c
+        text: "Le protocole SMB refuse de chiffrer les fichiers si l'heure est impaire"
+      - id: d
+        text: "Le serveur DNS refuse d'enregistrer les machines dont l'heure n'est pas GMT"
+    correct:
+      - a
+    explanation: "Les tickets Kerberos contiennent un horodatage. Un décalage supérieur à 5 minutes (skew time) déclenche un rejet de sécurité immédiat pour bloquer les tentatives de réutilisation de tickets interceptés (Replay Attacks)."
+
+  - kind: multiple
+    prompt: "Quelles commandes de l'utilitaire 'chronyc' permettent de superviser les sources de temps et l'état de synchronisation du démon Chrony ?"
+    choices:
+      - id: a
+        text: "chronyc sources -v (liste détaillée des serveurs NTP amont et de leur état)"
+      - id: b
+        text: "chronyc tracking (analyse du décalage d'horloge, de la dérive et de la source active)"
+      - id: c
+        text: "chronyc sourcestats -v (statistiques de connectivité et gigue temporelle)"
+      - id: d
+        text: "chronyc reboot-clock (force le redémarrage physique de la carte mère)"
+    correct:
+      - a
+      - b
+      - c
+    explanation: "'sources', 'tracking' et 'sourcestats' sont les commandes d'administration et de diagnostic de référence de chronyc."
+
+  - kind: single
+    prompt: "Dans le fichier /etc/chrony/chrony.conf, quelle directive permet d'autoriser les postes du sous-réseau 192.168.10.0/24 à interroger ce serveur comme source de temps ?"
+    choices:
+      - id: a
+        text: "allow 192.168.10.0/24"
+      - id: b
+        text: "listen 192.168.10.0/24"
+      - id: c
+        text: "grant-client 192.168.10.0/24"
+      - id: d
+        text: "ntp-accept 192.168.10.0/24"
+    correct:
+      - a
+    explanation: "La directive 'allow <subnet>' ouvre l'accès au service NTP de chronyd pour les hôtes ou plages d'adresses spécifiés."

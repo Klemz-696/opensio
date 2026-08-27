@@ -1,0 +1,10 @@
+[Unit]
+Description=API Backend
+After=network.target
+
+[Service]
+ExecStart=node /opt/api-backend/dist/main.js
+User=root
+
+[Install]
+WantedBy=default.target

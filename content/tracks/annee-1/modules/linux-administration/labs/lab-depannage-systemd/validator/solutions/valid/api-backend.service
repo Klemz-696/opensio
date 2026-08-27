@@ -1,0 +1,20 @@
+[Unit]
+Description=API Backend de Production OpenSIO
+After=network.target postgresql.service
+Requires=postgresql.service
+
+[Service]
+Type=simple
+User=appuser
+Group=appuser
+WorkingDirectory=/opt/api-backend
+ExecStart=/usr/bin/node /opt/api-backend/dist/main.js
+Restart=always
+RestartSec=5s
+EnvironmentFile=/opt/api-backend/.env
+NoNewPrivileges=true
+ProtectSystem=full
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
