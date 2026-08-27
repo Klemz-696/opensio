@@ -7,16 +7,16 @@ questions:
     prompt: "Que désigne précisément le standard universel CVE (Common Vulnerabilities and Exposures) ?"
     choices:
       - id: a
-        text: "Un système de nomenclature normalisé attribuant un identifiant unique public (ex: CVE-2024-3094) à chaque vulnérabilité de sécurité connue afin de faciliter son suivi mondial"
+        text: "Un système de nomenclature normalisé attribuant un identifiant unique public (ex: CVE-2024-3094) à chaque faille de sécurité connue pour faciliter son suivi mondial"
       - id: b
         text: "Un modèle de contrat de travail pour les administrateurs systèmes"
       - id: c
-        text: "Une marque de serveurs informatiques"
+        text: "Une marque de serveurs informatiques et de commutateurs"
       - id: d
-        text: "Un protocole de routage dynamique pour réseaux WAN"
+        text: "Un protocole de chiffrement pour les réseaux sans fil Wi-Fi"
     correct:
       - a
-    explanation: "Le dictionnaire CVE fournit un identifiant commun et standardisé partagé par tous les éditeurs, chercheurs et outils de sécurité de l'industrie."
+    explanation: "Le dictionnaire CVE fournit un identifiant commun partagé par tous les éditeurs, chercheurs et outils de sécurité de l'industrie pour désigner sans ambiguïté une vulnérabilité."
 
   - kind: single
     prompt: "Sur une échelle CVSS v3.1 (allant de 0.0 à 10.0), à partir de quel score une vulnérabilité est-elle qualifiée de 'Critique' (Critical) ?"
@@ -24,56 +24,58 @@ questions:
       - id: a
         text: "À partir d'un score supérieur ou égal à 9.0 (de 9.0 à 10.0)"
       - id: b
-        text: "À partir de 5.0"
+        text: "À partir d'un score de 5.0"
       - id: c
         text: "Uniquement si le score est égal à 0.0"
       - id: d
-        text: "À partir de 15.0"
+        text: "À partir d'un score de 15.0"
     correct:
       - a
-    explanation: "Une note CVSS entre 9.0 et 10.0 signale une vulnérabilité critique, généralement exploitable à distance sans authentification avec impact maximal, exigeant un patch immédiat."
+    explanation: "Une note CVSS entre 9.0 et 10.0 signale une vulnérabilité critique, généralement exploitable à distance sans authentification avec un impact maximal, exigeant un correctif sous 24 à 48 heures."
 
-  - kind: single
-    prompt: "Quel est le rôle du paquet 'unattended-upgrades' dans une politique de sécurité des serveurs Debian/Ubuntu ?"
+  - kind: multiple
+    prompt: "Quels facteurs opérationnels déterminent la priorisation de l'application d'un correctif de sécurité dans une entreprise ?"
     choices:
       - id: a
-        text: "Télécharger et installer automatiquement les mises à jour et correctifs de sécurité dès leur publication par les dépôts officiels, sans intervention manuelle de l'administrateur"
+        text: "L'existence d'un exploit public actif répertorié dans le catalogue CISA KEV (Known Exploited Vulnerabilities)"
+      - id: b
+        text: "L'exposition réseau du serveur concerné (ex: serveur en DMZ accessible depuis Internet public vs serveur en réseau d'administration isolé)"
+      - id: c
+        text: "La criticité métier de l'actif et la sensibilité des données hébergées"
+      - id: d
+        text: "La couleur du boîtier physique de la machine"
+    correct:
+      - a
+      - b
+      - c
+    explanation: "La priorisation des patchs croise la sévérité théorique (CVSS), la présence d'exploits actifs dans la nature (CISA KEV), l'exposition réelle aux attaquants et la valeur des données de l'actif."
+
+  - kind: single
+    prompt: "Quel est le rôle du paquet 'unattended-upgrades' sous Debian/Ubuntu ?"
+    choices:
+      - id: a
+        text: "Télécharger et installer automatiquement les correctifs de sécurité dès leur publication officielle par les dépôts de sécurité, sans intervention humaine manuelle"
       - id: b
         text: "Désinstaller le système d'exploitation tous les week-ends"
       - id: c
         text: "Bloquer l'accès à tous les sites Web d'actualités"
       - id: d
-        text: "Remplacer le mot de passe utilisateur par 'admin'"
+        text: "Remplacer le mot de passe utilisateur par une valeur par défaut"
     correct:
       - a
-    explanation: "`unattended-upgrades` assure l'application rapide des correctifs de sécurité critiques (dépôts `-security`), réduisant la fenêtre temporelle d'exposition aux attaques."
+    explanation: "`unattended-upgrades` garantit l'application automatisée et rapide des correctifs de sécurité officiels (dépôts `-security`), réduisant drastiquement la fenêtre d'exposition aux attaques."
 
   - kind: single
-    prompt: "Pourquoi est-il indispensable de tester les mises à jour logicielles dans un environnement de pré-production (Staging) avant de les appliquer sur les serveurs de production ?"
+    prompt: "Pourquoi est-il indispensable de tester les correctifs logiciels dans un environnement de pré-production (Staging) avant le déploiement en production ?"
     choices:
       - id: a
         text: "Pour détecter d'éventuelles régressions logicielles, incompatibilités applicatives ou arrêts de service avant d'impacter les utilisateurs et processus métiers de l'entreprise"
       - id: b
-        text: "Pour occuper le temps libre des équipes support"
+        text: "Pour occuper le temps libre des équipes d'assistance"
       - id: c
-        text: "Parce que les dépôts de staging sont moins chers"
+        text: "Parce que les dépôts de staging sont gratuits alors que ceux de production sont payants"
       - id: d
-        text: "Pour vérifier la vitesse des câbles Ethernet"
+        text: "Pour vérifier l'usure mécanique des câbles RJ45"
     correct:
       - a
-    explanation: "Le passage en environnement de staging permet de valider le bon fonctionnement de l'application après application du patch et de préparer un plan de retour arrière si nécessaire."
-
-  - kind: single
-    prompt: "Quel outil open source en ligne de commande est couramment utilisé sous Linux pour effectuer un audit de durcissement et scanner les vulnérabilités de configuration d'un système ?"
-    choices:
-      - id: a
-        text: "Lynis"
-      - id: b
-        text: "Paint"
-      - id: c
-        text: "Notepad"
-      - id: d
-        text: "VLC"
-    correct:
-      - a
-    explanation: "Lynis est un outil d'audit de sécurité et de conformité qui inspecte la configuration de l'OS et propose un score d'indice de durcissement (*Hardening Index*)."
+    explanation: "Le passage en environnement de staging permet de valider le bon fonctionnement des applications métiers après application du patch et de préparer un plan de retour arrière (rollback) si nécessaire."
