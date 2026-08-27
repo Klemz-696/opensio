@@ -89,10 +89,10 @@ La cartographie complète comporte **19 modules** (8 en 1ère année, 11 en 2èm
 | 10 | `securite-perimetrique` | Sécurité périmétrique, Pare-feu & Filtrage réseau | **Complet** | 5 | 2 | B2.1, B2.2, B3.1 |
 | 11 | `conteneurisation-docker` | Conteneurisation d'applications avec Docker & Compose | **Complet** | 5 | 2 | B2.1, B2.2, B2.3 |
 | 12 | `automatisation-devops` | Automatisation Système, DevOps & Infrastructure as Code | **Complet** | 5 | 2 | B2.1, B2.2, B2.3 |
-| 13 | `serveurs-web-pki-tls` | Services Web, Reverse Proxy & Infrastructure PKI / TLS | **À créer** | 6 | 3 | B2.3, B3.2, B3.3 |
-| 14 | `vpn-acces-distants` | Réseaux privés virtuels (VPN) & Accès distants sécurisés | **À créer** | 5 | 2 | B2.1, B2.2, B3.2, B3.3 |
-| 15 | `scripting-automatisation` | Scripting système & Automatisation (Bash & PowerShell) | **À créer** | 6 | 2 | B1.1, B2.3 |
-| 16 | `supervision-metrologie` | Supervision des infrastructures, Métrologie & Alerting | **À créer** | 5 | 2 | B1.2, B2.3, B3.4 |
+| 13 | `supervision-observabilite` | Supervision, Observabilité, Métrologie & Centralisation des Logs | **Complet** | 5 | 2 | B2.1, B2.2, B3.1 |
+| 14 | `serveurs-web-pki-tls` | Services Web, Reverse Proxy & Infrastructure PKI / TLS | **À créer** | 6 | 3 | B2.3, B3.2, B3.3 |
+| 15 | `vpn-acces-distants` | Réseaux privés virtuels (VPN) & Accès distants sécurisés | **À créer** | 5 | 2 | B2.1, B2.2, B3.2, B3.3 |
+| 16 | `scripting-automatisation` | Scripting système & Automatisation (Bash & PowerShell) | **À créer** | 6 | 2 | B1.1, B2.3 |
 | 17 | `cybersecurite-durcissement-audit` | Cybersécurité : Durcissement, Audit & Gestion des vulnérabilités | **À créer** | 6 | 3 | B3.1, B3.2, B3.3, B3.4 |
 | 18 | `haute-disponibilite-clustering` | Haute disponibilité, Équilibrage de charge & Continuité de service | **À créer** | 5 | 2 | B2.1, B2.3, B3.4 |
 | 19 | `cloud-hybride-cicd` | Cloud hybride & Intégration / Déploiement Continus (CI/CD) | **À créer** | 5 | 2 | B1.4, B1.5, B2.1, B2.3 |
