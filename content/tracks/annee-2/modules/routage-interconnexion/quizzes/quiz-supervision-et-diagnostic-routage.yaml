@@ -1,0 +1,79 @@
+slug: quiz-supervision-et-diagnostic-routage
+title: "Quiz — Supervision et Diagnostic du Routage"
+passing_score: 80
+position: 5
+questions:
+  - kind: single
+    prompt: "Dans la sortie de la commande 'show ip route' d'un routeur Cisco, que signifie précisément la ligne 'O IA 192.168.30.0/24 [110/65] via 10.0.0.1' ?"
+    choices:
+      - id: a
+        text: "Une route OSPF inter-zones (Inter-Area) avec une Distance Administrative de 110 et un Coût métrique total de 65"
+      - id: b
+        text: "Une route statique désactivée avec 110 paquets perdus et 65 retransmissions"
+      - id: c
+        text: "Une route directement connectée sur le port physique 110"
+      - id: d
+        text: "Une route BGP externe reçue via le protocole RIP"
+    correct:
+      - a
+    explanation: "Le code `O IA` désigne une route OSPF provenant d'une autre zone. La notation `[110/65]` indique `[Distance Administrative / Métrique de Coût]`."
+
+  - kind: single
+    prompt: "Que révèle la commande 'traceroute' lorsque la même séquence d'adresses IP de routeurs se répète indéfiniment jusqu'à dépasser le nombre maximal de sauts (30 hops) ?"
+    choices:
+      - id: a
+        text: "Une boucle de routage (Routing Loop) entre ces équipements d'interconnexion"
+      - id: b
+        text: "Une surcharge de mémoire vive sur le serveur DNS"
+      - id: c
+        text: "Une négociation réussie de la vitesse de la carte réseau"
+      - id: d
+        text: "Une coupure physique totale de la fibre optique sous-marine"
+    correct:
+      - a
+    explanation: "La répétition cyclique d'adresses de routeurs dans un `traceroute` est la signature caractéristique d'une boucle de routage."
+
+  - kind: single
+    prompt: "Dans quel cas de figure le 'Routage Asymétrique' pose-t-il un problème critique de communication dans un réseau d'entreprise ?"
+    choices:
+      - id: a
+        text: "Lorsqu'un pare-feu à inspection d'état (Stateful Firewall) est placé sur l'un des chemins et détruit les paquets retour car il n'a pas vu passer l'initiation de session TCP SYN"
+      - id: b
+        text: "Lorsque tous les routeurs du réseau utilisent la même adresse IP"
+      - id: c
+        text: "Lorsque la vitesse de téléchargement est supérieure à la vitesse d'envoi"
+      - id: d
+        text: "Lorsqu'on utilise un clavier AZERTY au lieu d'un clavier QWERTY"
+    correct:
+      - a
+    explanation: "Les pare-feu d'entreprise inspectent l'état des sessions TCP. Si le trafic retour emprunte une autre passerelle, le pare-feu rejette les paquets ACK/DATA comme illégitimes."
+
+  - kind: single
+    prompt: "Quelle commande Linux permet d'afficher en temps réel le chemin réseau, la latence moyenne et le taux exact de perte de paquets par saut intermédiaire ?"
+    choices:
+      - id: a
+        text: "mtr (ou mytraceroute)"
+      - id: b
+        text: "cat /etc/passwd"
+      - id: c
+        text: "chmod 777 /var/log"
+      - id: d
+        text: "uptime"
+    correct:
+      - a
+    explanation: "L'outil `mtr` combine les fonctionnalités de `traceroute` et de `ping` en mesurant en continu la gigue, la latence et la perte de paquets pour chaque routeur intermédiaire."
+
+  - kind: single
+    prompt: "Lorsque la commande 'show ip ospf neighbor' affiche l'état 'FULL/BDR' pour un voisin, quelle est la conclusion opérationnelle ?"
+    choices:
+      - id: a
+        text: "La session OSPF est parfaitement synchronisée et le voisin distant joue le rôle de Backup Designated Router sur ce segment"
+      - id: b
+        text: "La session est en échec critique et doit être redémarrée immédiatement"
+      - id: c
+        text: "Le routeur distant a été piraté"
+      - id: d
+        text: "Le câble réseau est débranché"
+    correct:
+      - a
+    explanation: "L'état `FULL/BDR` indique que la base topologique est totalement synchronisée (état normal) et que ce voisin assure la fonction de routeur désigné de secours."

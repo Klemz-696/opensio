@@ -1,0 +1,79 @@
+slug: quiz-routage-inter-vlan-sous-interfaces
+title: "Quiz — Routage Inter-VLAN"
+passing_score: 80
+position: 3
+questions:
+  - kind: single
+    prompt: "Dans une topologie 'Router-on-a-Stick' (RoaS), quel type de liaison doit relier le port du commutateur à l'interface physique du routeur ?"
+    choices:
+      - id: a
+        text: "Une liaison agrégée Trunk 802.1Q transportant les trames étiquetées (tagged) de l'ensemble des VLANs"
+      - id: b
+        text: "Un port d'accès (Access) affecté uniquement au VLAN 1"
+      - id: c
+        text: "Un câble série RS-232 asynchrone"
+      - id: d
+        text: "Une liaison USB 3.0"
+    correct:
+      - a
+    explanation: "Le lien doit être configuré en Trunk 802.1Q pour multiplexer les trames balisées des différents VLANs vers les sous-interfaces logiques du routeur."
+
+  - kind: single
+    prompt: "Sur une sous-interface de routeur Cisco IOS (ex: GigabitEthernet0/0.20), quelle commande est obligatoire AVANT d'assigner l'adresse IP de passerelle ?"
+    choices:
+      - id: a
+        text: "encapsulation dot1Q 20"
+      - id: b
+        text: "switchport mode trunk"
+      - id: c
+        text: "ip routing"
+      - id: d
+        text: "speed 1000"
+    correct:
+      - a
+    explanation: "La directive `encapsulation dot1Q <vlan-id>` spécifie le protocole de balisage et l'identifiant de VLAN associé, préalable obligatoire à l'attribution de l'IP."
+
+  - kind: single
+    prompt: "Sur un commutateur multicouche (Switch Niveau 3), qu'est-ce qu'une interface SVI (Switch Virtual Interface) ?"
+    choices:
+      - id: a
+        text: "Une interface logique de niveau 3 (ex: interface Vlan 10) qui sert d'adresse IP de passerelle par défaut pour les hôtes de ce VLAN"
+      - id: b
+        text: "Un connecteur physique RJ45 en plaqué or"
+      - id: c
+        text: "Une machine virtuelle Linux exécutée dans le système d'exploitation du switch"
+      - id: d
+        text: "Un câble d'alimentation redondant"
+    correct:
+      - a
+    explanation: "Les SVI (`interface Vlan <id>`) sont des passerelles virtuelles routées au sein du commutateur de niveau 3, assurant le routage inter-VLAN à vitesse filaire."
+
+  - kind: single
+    prompt: "Quel est le principal avantage technique d'un commutateur de niveau 3 par rapport à une solution Router-on-a-Stick ?"
+    choices:
+      - id: a
+        text: "Le routage inter-VLAN est exécuté matériellement par des circuits ASIC (Wire-Speed), sans goulot d'étranglement sur un câble physique unique"
+      - id: b
+        text: "Le commutateur L3 consomme zéro watt d'électricité"
+      - id: c
+        text: "Il ne nécessite aucune adresse IP de passerelle pour les clients"
+      - id: d
+        text: "Il permet de doubler la vitesse de connexion du FAI gratuitement"
+    correct:
+      - a
+    explanation: "Les commutateurs L3 routent les paquets directement dans leurs composants matériels dédiés (ASIC/TCAM), offrant des débits bien supérieurs au lien partagé du RoaS."
+
+  - kind: single
+    prompt: "Un poste client dans le VLAN 10 (IP 192.168.10.15/24) ne parvient pas à joindre un serveur dans le VLAN 20 (IP 192.168.20.50/24). Quelle est la première vérification de couche 3 à effectuer sur le client ?"
+    choices:
+      - id: a
+        text: "Vérifier que la passerelle par défaut (Default Gateway) configurée sur le poste pointe bien vers l'adresse IP de la sous-interface/SVI du VLAN 10"
+      - id: b
+        text: "Vérifier la couleur du câble réseau"
+      - id: c
+        text: "Changer le fond d'écran du système d'exploitation"
+      - id: d
+        text: "Désinstaller le navigateur Web"
+    correct:
+      - a
+    explanation: "Pour envoyer un paquet hors de son sous-réseau local, un client doit obligatoirement transmettre la trame à sa passerelle par défaut dans son propre VLAN (ex: 192.168.10.254)."

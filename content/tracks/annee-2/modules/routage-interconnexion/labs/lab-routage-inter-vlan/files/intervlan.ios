@@ -1,0 +1,24 @@
+! ==========================================
+! PARTIE 1 : ROUTEUR R-GATEWAY (Router-on-a-Stick)
+! ==========================================
+hostname R-GATEWAY
+!
+interface GigabitEthernet0/0/0
+ no ip address
+ no shutdown
+!
+! TODO: Configurer les sous-interfaces .10, .20 et .30
+! avec encapsulation dot1Q et adresses IP de passerelle
+!
+
+
+! ==========================================
+! PARTIE 2 : COMMUTATEUR SW-CORE-L3 (SVI)
+! ==========================================
+hostname SW-CORE-L3
+!
+! TODO: Activer le routage (ip routing)
+! Créer les VLANs 10, 20 et 30
+! Configurer les SVIs (interface Vlan10, Vlan20, Vlan30)
+! Configurer le port Trunk GigabitEthernet1/0/24
+!

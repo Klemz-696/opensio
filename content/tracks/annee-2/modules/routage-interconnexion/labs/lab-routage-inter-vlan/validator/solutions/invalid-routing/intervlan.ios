@@ -1,0 +1,32 @@
+! Configuration invalide : commande d'activation du routage manquante sur switch L3
+hostname R-GATEWAY
+!
+interface GigabitEthernet0/0/0
+ no ip address
+ no shutdown
+!
+interface GigabitEthernet0/0/0.10
+ encapsulation dot1Q 10
+ ip address 192.168.10.254 255.255.255.0
+!
+interface GigabitEthernet0/0/0.20
+ encapsulation dot1Q 20
+ ip address 192.168.20.254 255.255.255.0
+!
+interface GigabitEthernet0/0/0.30
+ encapsulation dot1Q 30
+ ip address 192.168.30.254 255.255.255.0
+!
+hostname SW-CORE-L3
+vlan 10
+vlan 20
+vlan 30
+interface Vlan10
+ ip address 192.168.10.254 255.255.255.0
+interface Vlan20
+ ip address 192.168.20.254 255.255.255.0
+interface Vlan30
+ ip address 192.168.30.254 255.255.255.0
+interface GigabitEthernet1/0/24
+ switchport mode trunk
+ no shutdown

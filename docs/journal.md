@@ -1253,6 +1253,32 @@ Création complète du nouveau module `windows-server-ad` comprenant 6 leçons, 
   - `pnpm test --force` : 100 % vert (357 tests passants dans le monorepo).
   - `pnpm build --force` : 100 % réussi.
 
+### 14. Phase 2.3 — Production du Module `routage-interconnexion` (2ème Année SISR)
+- **Module `routage-interconnexion`** (5 leçons, 5 quiz, 2 labs) :
+  - `01-principes-routage-statique-dynamique.md` + `quiz-principes-routage-statique-dynamique.yaml` : Fonctionnement de la couche 3 (RIB, FIB, saut par saut), règle du masque le plus long, routage statique, distance administrative (AD) et routes statiques flottantes (Floating routes), taxonomie des protocoles dynamiques (IGP/EGP, Vecteur de distance vs État de liens).
+  - `02-protocole-ospf-architecture-et-etats.md` + `quiz-protocole-ospf-architecture-et-etats.yaml` : Architecture hiérarchique OSPFv2 (Backbone Area 0, routeurs ABR et ASBR), machine à 7 états d'adjacence (Down à Full), élection DR/BDR sur réseaux broadcast, calcul du coût et réajustement de la bande passante de référence (`auto-cost reference-bandwidth 100000`).
+  - `03-routage-inter-vlan-sous-interfaces.md` + `quiz-routage-inter-vlan-sous-interfaces.yaml` : Isolation de niveau 2 des VLANs, architecture Router-on-a-Stick (RoaS) avec liaisons Trunk 802.1Q et sous-interfaces `encapsulation dot1Q`, routage matériel sur commutateurs de niveau 3 via interfaces virtuelles SVI (`interface Vlan <id>`) et comparatif technique de performance.
+  - `04-nat-pat-et-routage-par-defaut.md` + `quiz-nat-pat-et-routage-par-defaut.yaml` : Translation d'adresses privées (RFC 1918), NAT statique 1:1, PAT / Surcharge / Masquerade avec réécriture de ports TCP/UDP, route par défaut (0.0.0.0/0) et injection OSPF `default-information originate`, architecture d'interconnexion multi-sites.
+  - `05-supervision-et-diagnostic-routage.md` + `quiz-supervision-et-diagnostic-routage.yaml` : Lecture de la table de routage (`show ip route`, codes C, S, O, O IA, O*E2), diagnostic de sessions de voisinage (`show ip ospf neighbor`), résolution du blocage ExStart/Exchange (MTU Mismatch), détection de boucles de routage (TTL Expired) et impact du routage asymétrique sur les pare-feu d'état.
+  - **2 Labs autonomes de niveau 2_files avec suites de tests complètes** :
+    - `lab-config-ospf` (`configuration-routage-dynamique-ospf`) : Configuration complète du routeur R1-CORE sous FRRouting dans `frr.conf` (Router-ID 10.255.255.1, référence 100 Gbps, annonces Area 0, coûts eth1=10 et eth2=100, passive-interface eth0 et default-information originate).
+    - `lab-routage-inter-vlan` (`configuration-routage-inter-vlan`) : Configuration Cisco IOS dans `intervlan.ios` du routeur RoaS (sous-interfaces .10, .20, .30 dot1Q) et du switch L3 (activation `ip routing`, VLANs 10/20/30, SVIs Vlan10/20/30 et port Trunk).
+
+### 15. Validations Globales Post-Routage-Interconnexion
+- `node content/validate.mjs` : **100 % valide** :
+  - **2 parcours opérationnels** (`annee-1`, `annee-2`).
+  - **9 modules opérationnels** (8 en 1ère année, 1 en 2ème année).
+  - **49 leçons rédigées et validées**.
+  - **49 quiz d'évaluation (257 questions avec explications pédagogiques)**.
+  - **22 ateliers pratiques (Labs)**.
+  - **69 / 69 tests de validateurs passants** sur les suites de fixtures.
+- `pnpm content:validate` : 100 % valide (18/18 tests Zod passants).
+- `node scripts/check-file-size.mjs` : 100 % conforme D-13 (331 fichiers analysés, 0 violation > 400 lignes).
+- `node scripts/check-theme-classes.mjs` : 100 % conforme bi-thème (0 violation).
+- `pnpm test --force` : 100 % vert (357 tests passants dans le monorepo).
+- `pnpm build --force` : 100 % réussi.
+
+
 
 
 
