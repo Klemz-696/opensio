@@ -1428,6 +1428,32 @@ Création complète du nouveau module `windows-server-ad` comprenant 6 leçons, 
 - `pnpm test --force` : 100 % vert (357 tests passants dans le monorepo).
 - `pnpm build --force` : 100 % réussi.
 
+### 28. Phase 2.3 — Production du Module `veille-certification` (2ème Année SISR)
+- **Module `veille-certification`** (5 leçons, 5 quiz, 2 labs) :
+  - `01-methodologie-veille-technologique-curation.md` + `quiz-methodologie-veille-technologique-curation.yaml` : Démarche de veille active vs passive, mécanismes de collecte Push (flux RSS/Atom, newsletters) vs Pull, typologie des sources fiables (CERT-FR, CNCF, NIST NVD, RFC), lutte contre l'infobésité et formalisation de fiches d'impact opérationnel pour le SI.
+  - `02-panorama-certifications-it-systemes-reseaux.md` + `quiz-panorama-certifications-it-systemes-reseaux.yaml` : Panorama exhaustif des certifications IT par domaine : Réseaux (Cisco CCNA 200-301), Systèmes Linux (LPIC-1, Red Hat RHCSA EX200), Cloud Public (AWS SAA-C03, Azure AZ-104), DevOps (Terraform Associate, CKA Kubernetes) et Sécurité (CompTIA Security+), niveaux, formats QCM vs Labs pratiques, coûts et validité (3 ans).
+  - `03-preparation-examens-certification-methodologie.md` + `quiz-preparation-examens-certification-methodologie.yaml` : Triade d'apprentissage (théorie ciblée, pratique intensive à 50 %, examens blancs avec analyse des erreurs), rétroplanning sur 8-12 semaines, mise en place de Home Labs (Proxmox, Packet Tracer, Free Tiers Cloud), gestion du temps et règles de passage (Pearson VUE en centre vs Online Proctoring).
+  - `04-portfolio-technique-visibilite-open-source.md` + `quiz-portfolio-technique-visibilite-open-source.yaml` : Valorisation par la preuve, structure d'un profil GitHub exemplaire avec README documentés, schémas d'architecture et absence de secrets, blog technique et retours d'expérience, badges officiels Credly vérifiables et contributions open source.
+  - `05-insertion-professionnelle-entretiens-carrieres-sisr.md` + `quiz-insertion-professionnelle-entretiens-carrieres-sisr.yaml` : Typologies d'employeurs (ESN, clients finaux, secteur public), CV technique optimisé, méthode STAR (Situation, Tâche, Action, Résultat) pour les entretiens RH/techniques, démarche méthodique de diagnostic en couches (modèle OSI) et trajectoires de carrière (Admin Senior, Cloud/DevOps, RSSI).
+  - **2 Labs autonomes de niveau 2_files avec suites de tests complètes** :
+    - `lab-plan-veille` (`elaboration-plan-veille-technologique`) : Plan de veille structuré `veille-plan.yml` (thématique ciblée, outils et 4 sources variées avec URLs sécurisées) et fiche de synthèse d'actualité `veille-synthese.md` (métadonnées, résumé technique, analyse d'impact sur le SI et préconisations d'actions concrètes).
+    - `lab-choix-certifications` (`construction-parcours-certification-it`) : Feuille de route pluriannuelle `certification-roadmap.yml` (profil cible, 3 certifications officielles ordonnées avec budget total calculé) et plan d'étude hebdomadaire `study-plan.yml` (8 h/semaine, 10 semaines/cert, ressources variées et description du Home Lab).
+
+### 29. Validations Globales Post-Veille-Certification
+- `node content/validate.mjs` : **100 % valide** :
+  - **2 parcours opérationnels** (`annee-1`, `annee-2`).
+  - **16 modules opérationnels** (8 en 1ère année, 8 en 2ème année).
+  - **84 leçons rédigées et validées**.
+  - **84 quiz d'évaluation (432 questions avec explications pédagogiques)**.
+  - **36 ateliers pratiques (Labs)**.
+  - **111 / 111 tests de validateurs passants** sur les suites de fixtures.
+- `pnpm content:validate` : 100 % valide (18/18 tests Zod passants).
+- `node scripts/check-file-size.mjs` : 100 % conforme D-13 (331 fichiers analysés, 0 violation > 400 lignes).
+- `node scripts/check-theme-classes.mjs` : 100 % conforme bi-thème (0 violation).
+- `pnpm test --force` : 100 % vert (357 tests passants dans le monorepo).
+- `pnpm build --force` : 100 % réussi.
+
+
 
 
 

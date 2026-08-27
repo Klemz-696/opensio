@@ -92,10 +92,11 @@ La cartographie complète comporte **19 modules** (8 en 1ère année, 11 en 2èm
 | 13 | `supervision-observabilite` | Supervision, Observabilité, Métrologie & Centralisation des Logs | **Complet** | 5 | 2 | B2.1, B2.2, B3.1 |
 | 14 | `cloud-prive-virtualisation` | Cloud Privé, Virtualisation d'Entreprise & Orchestration | **Complet** | 5 | 2 | B2.1, B2.2, B2.3 |
 | 15 | `securite-systemes-durcissement` | Sécurité des Systèmes, Durcissement & Vulnérabilités | **Complet** | 5 | 2 | B2.1, B2.2, B3.1 |
-| 16 | `serveurs-web-pki-tls` | Services Web, Reverse Proxy & Infrastructure PKI / TLS | **À créer** | 6 | 3 | B2.3, B3.2, B3.3 |
-| 17 | `vpn-acces-distants` | Réseaux privés virtuels (VPN) & Accès distants sécurisés | **À créer** | 5 | 2 | B2.1, B2.2, B3.2, B3.3 |
-| 18 | `scripting-automatisation` | Scripting système & Automatisation (Bash & PowerShell) | **À créer** | 6 | 2 | B1.1, B2.3 |
-| 19 | `haute-disponibilite-clustering` | Haute disponibilité, Équilibrage de charge & Continuité de service | **À créer** | 5 | 2 | B2.1, B2.3, B3.4 |
+| 16 | `gestion-projets-agile` | Gestion de Projets IT, Méthodes Agiles (Scrum, Kanban) | **Complet** | 5 | 2 | B1.1, B1.2, B3.4 |
+| 17 | `veille-certification` | Veille Technologique, Certifications Professionnelles & Insertion SISR | **Complet** | 5 | 2 | B1.1, B3.4 |
+| 18 | `serveurs-web-pki-tls` | Services Web, Reverse Proxy & Infrastructure PKI / TLS | **À créer** | 6 | 3 | B2.3, B3.2, B3.3 |
+| 19 | `vpn-acces-distants` | Réseaux privés virtuels (VPN) & Accès distants sécurisés | **À créer** | 5 | 2 | B2.1, B2.2, B3.2, B3.3 |
+| 20 | `scripting-automatisation` | Scripting système & Automatisation (Bash & PowerShell) | **À créer** | 6 | 2 | B1.1, B2.3 |
 
 ---
 
