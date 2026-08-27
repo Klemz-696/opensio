@@ -1139,3 +1139,28 @@ Création complète du nouveau module `windows-server-ad` comprenant 6 leçons, 
 - `node scripts/check-file-size.mjs` : 100 % conforme D-13 (331 fichiers analysés, 0 violation > 400 lignes).
 - `node scripts/check-theme-classes.mjs` : 100 % conforme bi-thème (0 violation).
 
+### 5. Phase 2.2 — Production du Module `virtualisation-systemes`
+- **Module `virtualisation-systemes`** (5 leçons, 5 quiz, 2 labs) :
+  - `01-hyperviseurs-type1-type2.md` + `quiz-hyperviseurs-type1-type2.yaml` : Hyperviseurs Type 1 (Bare-Metal) vs Type 2 (Hosted), KVM/QEMU, virtualisation imbriquée, extensions CPU (VT-x, AMD-V, EPT, NPT).
+  - `02-architecture-proxmox-ve.md` + `quiz-architecture-proxmox-ve.yaml` : Architecture Proxmox VE (Debian 12 + KVM + LXC + pve-cluster), corosync, stockage (local-lvm, ZFS, Ceph, NFS) et commandes CLI `qm` / `pct` / `pvesm`.
+  - `03-reseau-virtuel-bridges-vlans.md` + `quiz-reseau-virtuel-bridges-vlans.yaml` : Linux Bridges (`vmbr0`, `vmbr1`), configuration `/etc/network/interfaces`, mode `bridge-vlan-aware`, isolation DMZ et agrégation de liens (Bonds LACP 802.3ad).
+  - `04-modeles-clones-lies-cloudinit.md` + `quiz-modeles-clones-lies-cloudinit.yaml` : Modèles de VMs, Clones intégraux vs Clones liés (_Linked Clones_), et provisionnement automatisé Cloud-Init (`user-data`, `users`, `packages`, `runcmd`).
+  - `05-dimensionnement-ressources-quotas.md` + `quiz-dimensionnement-ressources-quotas.yaml` : Sur-allocation (Overcommitment vCPU/vRAM), ballon mémoire VirtIO Ballooning, limitation I/O (IOPS, débit Mo/s) et pools de ressources.
+  - **2 Labs autonomes de niveau 2_files avec suites de tests complètes** :
+    - `lab-config-cloudinit` (`configuration-cloudinit-vm`) : Configuration déclarative Cloud-Init dans `user-data` avec en-tête `#cloud-config`, compte `admin-sys`, clé SSH et durcissement pare-feu UFW dans `runcmd:`.
+    - `lab-interfaces-proxmox` (`configuration-interfaces-proxmox`) : Configuration réseau `/etc/network/interfaces` Proxmox avec pont public `vmbr0` (VLAN-aware, passerelle) et pont privé isolé `vmbr1` (DMZ interne).
+
+### 6. Validations Globales Post-Virtualisation
+- `node content/validate.mjs` : **100 % valide** :
+  - 5 modules opérationnels (`reseaux-fondamentaux`, `windows-server-ad`, `linux-administration`, `services-reseau-linux`, `virtualisation-systemes`).
+  - 29 leçons rédigées et validées.
+  - 29 quiz d'évaluation (157 questions).
+  - 14 ateliers pratiques (Labs).
+  - **43 / 43 tests de validateurs passants** sur les suites de fixtures.
+- `pnpm content:validate` : 100 % valide (18/18 tests Zod passants).
+- `node scripts/check-file-size.mjs` : 100 % conforme D-13 (331 fichiers analysés, 0 violation > 400 lignes).
+- `node scripts/check-theme-classes.mjs` : 100 % conforme bi-thème (0 violation).
+- `pnpm test --force` : 100 % vert (357 tests passants dans le monorepo).
+- `pnpm build --force` : 100 % réussi.
+
+

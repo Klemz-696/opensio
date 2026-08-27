@@ -1,0 +1,81 @@
+slug: quiz-modeles-clones-lies-cloudinit
+title: "Quiz — Modèles, Clones Liés et Cloud-Init"
+passing_score: 80
+position: 4
+questions:
+  - kind: single
+    prompt: "Quelle est la différence fondamentale entre un Clone Intégral (Full Clone) et un Clone Lié (Linked Clone) ?"
+    choices:
+      - id: a
+        text: "Le clone lié se crée quasi instantanément en référençant le disque du modèle, alors que le clone intégral copie intégralement toutes les données"
+      - id: b
+        text: "Le clone lié ne fonctionne qu'avec des conteneurs LXC et jamais avec des machines virtuelles KVM"
+      - id: c
+        text: "Le clone intégral supprime automatiquement le modèle de référence"
+      - id: d
+        text: "Le clone lié ne peut pas être connecté au réseau virtuel"
+    correct:
+      - a
+    explanation: "Un clone lié (Linked Clone) utilise le disque du modèle de base en lecture seule et n'enregistre que les modifications dans un disque delta (Cow), ce qui rend le déploiement instantané et très économe en espace disque."
+
+  - kind: single
+    prompt: "Quel en-tête obligatoire doit figurer sur la toute première ligne d'un fichier de configuration Cloud-Init user-data ?"
+    choices:
+      - id: a
+        text: "#cloud-config"
+      - id: b
+        text: "#!/bin/bash"
+      - id: c
+        text: "--- yaml-cloud"
+      - id: d
+        text: "#proxmox-template"
+    correct:
+      - a
+    explanation: "L'en-tête #cloud-config est indispensable pour que le service Cloud-Init au démarrage de la VM identifie le fichier comme une directive de configuration YAML standard."
+
+  - kind: multiple
+    prompt: "Quelles actions peuvent être exécutées automatiquement lors du premier démarrage grâce à Cloud-Init ?"
+    choices:
+      - id: a
+        text: "Création d'utilisateurs avec droits sudo et injection de clés SSH publiques"
+      - id: b
+        text: "Configuration statique de l'adresse IP et de la passerelle par défaut"
+      - id: c
+        text: "Installation automatique de paquets logiciels (packages:)"
+      - id: d
+        text: "Remplacement physique de la carte mère du serveur hôte"
+    correct:
+      - a
+      - b
+      - c
+    explanation: "Cloud-Init permet de configurer le réseau, les comptes et clés d'accès, et d'installer des paquets et scripts au premier boot, sans aucune action manuelle de l'administrateur."
+
+  - kind: single
+    prompt: "Dans la configuration user-data de Cloud-Init, quelle section permet d'exécuter une suite de commandes shell en fin de provisionnement ?"
+    choices:
+      - id: a
+        text: "runcmd:"
+      - id: b
+        text: "exec_scripts:"
+      - id: c
+        text: "bash_hooks:"
+      - id: d
+        text: "postinstall:"
+    correct:
+      - a
+    explanation: "La section runcmd: contient une liste de commandes shell exécutées dans l'ordre par Cloud-Init lors de la phase finale de personnalisation de la machine."
+
+  - kind: single
+    prompt: "Quelle commande CLI Proxmox permet de convertir une VM standard en modèle de référence (Template immuable) ?"
+    choices:
+      - id: a
+        text: "qm template <vmid>"
+      - id: b
+        text: "qm freeze <vmid>"
+      - id: net
+        text: "pct convert <vmid>"
+      - id: d
+        text: "pvesm create-template <vmid>"
+    correct:
+      - a
+    explanation: "qm template <vmid> fige la machine virtuelle en lecture seule et la transforme en Template, permettant ensuite de générer des clones intégraux ou liés."
