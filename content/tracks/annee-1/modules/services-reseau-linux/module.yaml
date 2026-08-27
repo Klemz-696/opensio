@@ -1,0 +1,25 @@
+slug: services-reseau-linux
+title: "Services réseau Linux (DNS, DHCP, NTP)"
+description: "Déploiement et sécurisation des services d'infrastructure réseau indispensables sous Debian : serveur DNS faisant autorité et récursif Bind9, serveur DHCP ISC-DHCP et Kea, synchronisation horaire NTP/Chrony, et agent de relais DHCP."
+position: 4
+difficulty: 3
+estimated_minutes: 500
+competency_refs:
+  - "B2.1"
+  - "B2.2"
+  - "B2.3"
+lessons:
+  - serveur-dhcp-linux
+  - serveur-dns-bind9-autorite
+  - resolution-dns-recursive-cache
+  - synchronisation-horaire-ntp
+  - relais-dhcp-et-multi-sous-reseaux
+quizzes:
+  - quiz-serveur-dhcp-linux
+  - quiz-serveur-dns-bind9-autorite
+  - quiz-resolution-dns-recursive-cache
+  - quiz-synchronisation-horaire-ntp
+  - quiz-relais-dhcp-et-multi-sous-reseaux
+labs:
+  - configuration-dns-bind9
+  - configuration-dhcp-kea

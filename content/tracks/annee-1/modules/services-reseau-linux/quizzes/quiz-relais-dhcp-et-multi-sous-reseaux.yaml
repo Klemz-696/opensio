@@ -1,0 +1,81 @@
+slug: quiz-relais-dhcp-et-multi-sous-reseaux
+title: "Quiz — Relais DHCP et Multi-Sous-Réseaux"
+passing_score: 80
+position: 5
+questions:
+  - kind: single
+    prompt: "Pourquoi un client DHCP situé dans un VLAN 20 ne peut-il pas joindre directement un serveur DHCP situé dans le VLAN 10 sans mécanisme de relais ?"
+    choices:
+      - id: a
+        text: "Les requêtes initiales DHCP (Discover) sont émises en diffusion (Broadcast 255.255.255.255), or les routeurs ne propagent jamais les broadcasts entre sous-réseaux"
+      - id: b
+        text: "Le protocole DHCP est incompatible avec les commutateurs modernes"
+      - id: c
+        text: "Le serveur DHCP refuse les paquets qui ont un TTL supérieur à 1"
+      - id: d
+        text: "Les cartes réseau bloquent les requêtes hors de leur sous-réseau"
+    correct:
+      - a
+    explanation: "Par définition, les trames de broadcast sont cantonnées à leur domaine de diffusion local (VLAN/sous-réseau) et sont stoppées par les routeurs."
+
+  - kind: single
+    prompt: "Quel champ de l'en-tête DHCP est renseigné par l'agent de relais avec sa propre adresse IP d'interface pour indiquer au serveur le sous-réseau d'origine du client ?"
+    choices:
+      - id: a
+        text: "giaddr (Gateway IP Address)"
+      - id: b
+        text: "ciaddr (Client IP Address)"
+      - id: c
+        text: "yiaddr (Your IP Address)"
+      - id: d
+        text: "siaddr (Next Server IP Address)"
+    correct:
+      - a
+    explanation: "Le champ 'giaddr' est rempli par le relais avec l'adresse IP de l'interface qui a capté le broadcast du client. Le serveur DHCP utilise cette valeur pour identifier la bonne étendue IP (subnet) à distribuer."
+
+  - kind: single
+    prompt: "Sur un commutateur de niveau 3 ou un routeur Cisco, quelle commande active le relais DHCP vers le serveur central 192.168.10.10 sur l'interface VLAN 20 ?"
+    choices:
+      - id: a
+        text: "ip helper-address 192.168.10.10"
+      - id: b
+        text: "dhcp relay-to 192.168.10.10"
+      - id: c
+        text: "forward broadcast 192.168.10.10"
+      - id: d
+        text: "service dhcp target 192.168.10.10"
+    correct:
+      - a
+    explanation: "'ip helper-address' transforme les diffusions UDP (notamment DHCP port 67) reçues sur l'interface en paquets Unicast routés vers l'adresse IP du serveur cible."
+
+  - kind: multiple
+    prompt: "Quelles conditions doivent être remplies sur un serveur DHCP centralisé pour distribuer des baux à des clients situés derrière un relais DHCP distant ?"
+    choices:
+      - id: a
+        text: "Déclarer un bloc 'subnet' correspondant exactement à la plage réseau du sous-réseau distant dans dhcpd.conf"
+      - id: b
+        text: "Configurer une passerelle par défaut (option routers) adaptée au sous-réseau distant du client"
+      - id: c
+        text: "Assurer la joignabilité réseau IP Unicast bidirectionnelle entre le serveur et l'agent de relais"
+      - id: d
+        text: "Désactiver le protocole ARP sur le serveur DHCP"
+    correct:
+      - a
+      - b
+      - c
+    explanation: "Le serveur doit avoir la déclaration du subnet distant avec sa passerelle correspondante et disposer du routage IP Unicast fonctionnel entre lui et le relais."
+
+  - kind: single
+    prompt: "Sous Linux Debian, quel paquet fournit l'agent de relais officiel de l'ISC pour transférer les requêtes DHCP vers un serveur centralisé ?"
+    choices:
+      - id: a
+        text: "isc-dhcp-relay"
+      - id: b
+        text: "dhcp-proxy-agent"
+      - id: c
+        text: "systemd-dhcprelay"
+      - id: d
+        text: "bind9-relay"
+    correct:
+      - a
+    explanation: "'isc-dhcp-relay' (ou dhcp-helper) est le démon Linux standard assurant le rôle d'agent de relais DHCP."

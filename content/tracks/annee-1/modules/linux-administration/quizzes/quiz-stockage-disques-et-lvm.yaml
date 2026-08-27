@@ -1,0 +1,81 @@
+slug: quiz-stockage-disques-et-lvm
+title: "Quiz — Stockage, Disques et LVM"
+passing_score: 80
+position: 5
+questions:
+  - kind: single
+    prompt: "Quel est l'ordre chronologique exact des trois couches d'abstraction pour créer un volume LVM ?"
+    choices:
+      - id: a
+        text: "PV (Physical Volume) → VG (Volume Group) → LV (Logical Volume)"
+      - id: b
+        text: "VG (Volume Group) → PV (Physical Volume) → LV (Logical Volume)"
+      - id: c
+        text: "LV (Logical Volume) → VG (Volume Group) → PV (Physical Volume)"
+      - id: d
+        text: "Partition → LV (Logical Volume) → VG (Volume Group)"
+    correct:
+      - a
+    explanation: "On initialise d'abord les disques/partitions physiques en PVs (pvcreate), on les regroupe ensuite dans un pool de stockage VG (vgcreate), puis on découpe des volumes logiques LV (lvcreate) que l'on formate."
+
+  - kind: single
+    prompt: "Quelle commande permet d'agrandir un volume logique de 20 Go ET d'étendre immédiatement le système de fichiers ext4 sous-jacent en une seule étape ?"
+    choices:
+      - id: a
+        text: "lvextend -L +20G -r /dev/vg_data/lv_web"
+      - id: b
+        text: "lvresize -size 20G /dev/vg_data/lv_web"
+      - id: c
+        text: "resize2fs /dev/vg_data/lv_web +20G"
+      - id: d
+        text: "vgextend +20G /dev/vg_data/lv_web"
+    correct:
+      - a
+    explanation: "L'option '-r' (ou --resizefs) de lvextend appelle automatiquement l'utilitaire adéquat (resize2fs pour ext4 ou xfs_growfs pour XFS) pour étendre le système de fichiers dans le même temps."
+
+  - kind: single
+    prompt: "Dans /etc/fstab, pourquoi est-il fortement recommandé d'utiliser les UUIDs plutôt que les noms de périphériques comme /dev/sdb1 ?"
+    choices:
+      - id: a
+        text: "Les UUIDs accélèrent la vitesse de lecture du disque"
+      - id: b
+        text: "Les identifiants /dev/sdX peuvent changer de lettre lors d'un redémarrage ou de l'ajout d'un nouveau contrôleur de disque, ce qui peut causer des montages erronés"
+      - id: c
+        text: "Le système de fichiers XFS refuse de se monter sans UUID"
+      - id: d
+        text: "fstab ne supporte plus la syntaxe /dev/ depuis Debian 11"
+    correct:
+      - b
+    explanation: "L'UUID est gravé dans l'en-tête du système de fichiers et reste permanent, alors que l'ordre des lettres (/dev/sda, /dev/sdb...) dépend de l'ordre d'énumération matériel au boot."
+
+  - kind: multiple
+    prompt: "Quelles options de montage dans /etc/fstab améliorent la sécurité d'une partition dédiée aux fichiers temporaires comme /tmp ?"
+    choices:
+      - id: a
+        text: "nosuid (ignore les bits SUID/SGID pour empêcher l'élévation de privilèges)"
+      - id: b
+        text: "noexec (interdit l'exécution directe de tout binaire sur la partition)"
+      - id: c
+        text: "nodev (bloque l'interprétation des fichiers spéciaux de périphériques)"
+      - id: d
+        text: "nofail (ignore le formatage du disque)"
+    correct:
+      - a
+      - b
+      - c
+    explanation: "Le triptyque nosuid, noexec, nodev constitue le standard de durcissement (CIS/ANSSI) pour les partitions inscriptibles par des utilisateurs non privilégiés comme /tmp."
+
+  - kind: single
+    prompt: "Quelle commande permet de vérifier la validité syntaxique de /etc/fstab et de monter l'ensemble des points déclarés sans redémarrer la machine ?"
+    choices:
+      - id: a
+        text: "mount -a"
+      - id: b
+        text: "fstab -t"
+      - id: c
+        text: "systemctl reload fstab"
+      - id: d
+        text: "fsck -y"
+    correct:
+      - a
+    explanation: "'mount -a' tente de monter tous les systèmes de fichiers déclarés dans /etc/fstab qui ne sont pas encore montés, permettant de valider la configuration avant tout redémarrage."

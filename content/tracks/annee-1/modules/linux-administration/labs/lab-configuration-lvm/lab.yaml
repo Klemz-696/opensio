@@ -1,0 +1,54 @@
+slug: configuration-stockage-lvm
+title: "Configuration du stockage LVM et sécurisation des points de montage fstab"
+level: 2_files
+max_score: 100
+estimated_minutes: 40
+context: |
+  Vous devez configurer le fichier `/etc/fstab` d'un serveur d'entreprise intégrant une architecture LVM :
+  1. Système racine `/` sur `/dev/mapper/vg_system-lv_root` (UUID: `11111111-2222-3333-4444-555555555555`, type `ext4`, options `defaults,noatime`, dump `0`, fsck `1`).
+  2. Partition de boot `/boot` sur partition standard (UUID: `aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee`, type `ext4`, options `defaults`, dump `0`, fsck `2`).
+  3. Espace applicatif Web `/var/www` sur `/dev/mapper/vg_data-lv_web` (UUID: `22222222-3333-4444-5555-666666666666`, type `ext4`, options `defaults,nodev,nosuid,noatime`, dump `0`, fsck `2`).
+  4. Répertoire temporaire `/tmp` sur `/dev/mapper/vg_system-lv_tmp` (UUID: `33333333-4444-5555-6666-777777777777`, type `ext4`, options `defaults,nodev,nosuid,noexec`, dump `0`, fsck `2`).
+  5. Espace de bases de données `/var/lib/postgresql` sur `/dev/mapper/vg_data-lv_postgres` (UUID: `44444444-5555-6666-7777-888888888888`, type `xfs`, options `defaults,noatime,nodev`, dump `0`, fsck `2`).
+  6. Espace Swap sur `/dev/mapper/vg_system-lv_swap` (UUID: `99999999-8888-7777-6666-555555555555`, type `swap`, options `sw`, dump `0`, fsck `0`).
+
+objectives:
+  - "Déclarer les UUIDs persistants pour l'ensemble des volumes physiques et logiques"
+  - "Associer les types de systèmes de fichiers adéquats (ext4, xfs, swap)"
+  - "Appliquer les options de durcissement recommandées (nodev, nosuid, noexec sur /tmp et /var/www)"
+  - "Paramétrer l'ordre fsck approprié (1 pour racine, 2 pour les autres partitions, 0 pour swap)"
+
+prerequisites:
+  - "stockage-disques-et-lvm"
+
+files:
+  editable:
+    - path: fstab
+      description: "Fichier de configuration des montages système fstab"
+
+hints:
+  - cost_percent: 10
+    text: "Utilisez la syntaxe 'UUID=<valeur>' en première colonne pour chaque ligne."
+  - cost_percent: 10
+    text: "Pour /tmp, combinez impérativement les options 'nodev,nosuid,noexec' pour respecter les recommandations de sécurité."
+
+validation:
+  type: script
+  image: opensio/validator-fstab:latest
+  timeout_seconds: 30
+  checks:
+    - id: mountpoints_and_types_valid
+      required: true
+      points: 35
+      description: "Tous les points de montage et types de systèmes de fichiers sont correctement déclarés"
+    - id: uuids_declared
+      required: true
+      points: 30
+      description: "Tous les volumes utilisent la syntaxe d'identifiant unique UUID"
+    - id: security_options_and_fsck_valid
+      required: true
+      points: 35
+      description: "Options de sécurité (nodev, nosuid, noexec sur /tmp) et ordre fsck valides"
+
+scoring:
+  floor_percent: 50

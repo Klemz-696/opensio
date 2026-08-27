@@ -1,0 +1,81 @@
+slug: quiz-analyse-journaux-et-processus
+title: "Quiz — Analyse des Journaux et Processus"
+passing_score: 80
+position: 6
+questions:
+  - kind: single
+    prompt: "Quel signal POSIX est envoyé par défaut par la commande 'kill <PID>' pour demander l'arrêt propre d'un processus ?"
+    choices:
+      - id: a
+        text: "SIGKILL (signal 9)"
+      - id: b
+        text: "SIGTERM (signal 15)"
+      - id: c
+        text: "SIGHUP (signal 1)"
+      - id: d
+        text: "SIGSTOP (signal 19)"
+    correct:
+      - b
+    explanation: "'kill' sans argument envoie SIGTERM (15). Le processus intercepte ce signal pour fermer ses fichiers, terminer ses transactions et se clore proprement. SIGKILL (9) n'est employé qu'en dernier recours."
+
+  - kind: single
+    prompt: "Quelle commande journalctl permet de suivre en direct le flux des événements d'un serveur Web Nginx en temps réel ?"
+    choices:
+      - id: a
+        text: "journalctl -u nginx.service -f"
+      - id: b
+        text: "journalctl --live nginx"
+      - id: c
+        text: "journalctl -t nginx -w"
+      - id: d
+        text: "journalctl -u nginx --tail"
+    correct:
+      - a
+    explanation: "L'option '-f' (follow) de journalctl reproduit le comportement de 'tail -f' et affiche les nouvelles lignes au fur et à mesure de leur émission."
+
+  - kind: single
+    prompt: "Selon le standard Syslog (RFC 5424), quel niveau de sévérité correspond aux erreurs d'exécution classiques du système ?"
+    choices:
+      - id: a
+        text: "0 (Emergency)"
+      - id: b
+        text: "3 (Error)"
+      - id: c
+        text: "6 (Info)"
+      - id: d
+        text: "7 (Debug)"
+    correct:
+      - b
+    explanation: "Le niveau 3 correspond à 'Error'. Le niveau 0 est réservé aux urgences critiques rendant le système inutilisable (Emergency), le niveau 6 à l'information (Info) et le niveau 7 au débogage (Debug)."
+
+  - kind: multiple
+    prompt: "Quels utilitaires permettent de diagnostiquer une saturation de mémoire vive (RAM) et d'espace disque sous Linux ?"
+    choices:
+      - id: a
+        text: "free -h (affiche l'utilisation de la RAM physique et du Swap)"
+      - id: b
+        text: "df -hT (affiche le taux d'occupation des systèmes de fichiers montés)"
+      - id: c
+        text: "du -sh /var/* (calcule la volumétrie occupée par les sous-dossiers)"
+      - id: d
+        text: "netstat -r (affiche la mémoire des cartes d'interface réseau)"
+    correct:
+      - a
+      - b
+      - c
+    explanation: "free, df et du sont les outils d'analyse de ressources mémoire et stockage. netstat -r affiche la table de routage IP."
+
+  - kind: single
+    prompt: "Quel est le rôle principal de l'utilitaire 'logrotate' ?"
+    choices:
+      - id: a
+        text: "Transférer tous les logs vers un serveur cloud chiffré"
+      - id: b
+        text: "Découper, compresser, archiver et purger périodiquement les journaux pour éviter de saturer le disque dur"
+      - id: c
+        text: "Corriger automatiquement les erreurs détectées dans les logs"
+      - id: d
+        text: "Supprimer immédiatement tous les journaux système à minuit"
+    correct:
+      - b
+    explanation: "logrotate applique les règles de rotation temporelle (daily/weekly), compresse les anciennes traces (gzip) et limite le nombre d'archives conservées."
