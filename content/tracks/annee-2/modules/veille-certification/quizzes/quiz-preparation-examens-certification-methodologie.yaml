@@ -1,0 +1,79 @@
+slug: quiz-preparation-examens-certification-methodologie
+title: "Quiz — Préparation aux Examens de Certification"
+passing_score: 80
+position: 3
+questions:
+  - kind: single
+    prompt: "Qu'est-ce que le 'Blueprint' d'un examen de certification IT et pourquoi est-il indispensable ?"
+    choices:
+      - id: a
+        text: "Le document officiel de l'éditeur détaillant la liste exhaustive des domaines de compétences évalués, les objectifs techniques précis et leur pondération en pourcentage"
+      - id: b
+        text: "Un plan d'architecte pour construire le centre d'examen"
+      - id: c
+        text: "La facture d'achat du voucher d'examen"
+      - id: d
+        text: "Un logiciel anti-virus à installer sur son PC"
+    correct:
+      - a
+    explanation: "Le Blueprint est le guide contractuel de l'examen : il permet de structurer ses révisions en se concentrant sur les compétences réellement testées et les domaines à fort coefficient."
+
+  - kind: single
+    prompt: "Quelle proportion de temps est-il conseillé d'accorder à la pratique en laboratoire (Hands-on Labs) lors de la préparation d'une certification technique ?"
+    choices:
+      - id: a
+        text: "Environ 50 % du temps total de révision (afin d'ancrer les concepts par la manipulation concrète en CLI ou console)"
+      - id: b
+        text: "0 % (la théorie pure dans les livres suffit largement)"
+      - id: c
+        text: "100 % sans jamais lire aucune documentation ni blueprint"
+      - id: d
+        text: "Uniquement 5 minutes la veille de l'examen"
+    correct:
+      - a
+    explanation: "La pratique en lab est le pilier central de l'apprentissage en SISR, permettant de comprendre le comportement réel des systèmes et réseaux et de développer des réflexes de diagnostic."
+
+  - kind: single
+    prompt: "Lors d'un examen surveillé en ligne à distance (Online Proctoring), quelle règle stricte est impérativement imposée au candidat sous peine d'annulation immédiate de l'épreuve ?"
+    choices:
+      - id: a
+        text: "Être seul dans une pièce fermée, sur un bureau entièrement dégagé de tout document ou objet, avec webcam et micro actifs, sans parler ni quitter l'écran des yeux"
+      - id: b
+        text: "Inviter des amis pour s'entraider sur les questions difficiles"
+      - id: c
+        text: "Avoir ses cours ouverts sur un second écran"
+      - id: d
+        text: "Manger un repas complet en regardant la télévision"
+    correct:
+      - a
+    explanation: "Les protocoles d'Online Proctoring (Pearson VUE OnVUE, etc.) appliquent des règles de sécurité très strictes pour garantir l'intégrité de l'examen."
+
+  - kind: single
+    prompt: "Comment doit-on aborder l'analyse des résultats lors des entraînements sur examens blancs (Practice Tests) ?"
+    choices:
+      - id: a
+        text: "Décortiquer en détail chaque mauvaise réponse ET les bonnes réponses trouvées par hasard, en relisant la documentation technique pour comprendre précisément pourquoi les autres choix sont invalides"
+      - id: b
+        text: "Apprendre par cœur les numéros de questions sans chercher à comprendre"
+      - id: c
+        text: "Ignorer les erreurs et relancer le test en boucle jusqu'à avoir 100 %"
+      - id: d
+        text: "Accuser le créateur du test d'incompétence"
+    correct:
+      - a
+    explanation: "L'analyse des erreurs est l'étape la plus formatrice : elle permet de cibler ses lacunes conceptuelles et d'affûter son esprit d'analyse face aux pièges."
+
+  - kind: single
+    prompt: "Si un examen de 60 questions dure 90 minutes au total, quelle est la cadence moyenne recommandée par question pour garder une marge de relecture finale ?"
+    choices:
+      - id: a
+        text: "Environ 1 minute à 1 minute 15 secondes par question (laissant 15 à 20 minutes pour revoir les questions marquées)"
+      - id: b
+        text: "15 minutes par question"
+      - id: c
+        text: "3 secondes par question"
+      - id: d
+        text: "Il n'y a pas de limite de temps"
+    correct:
+      - a
+    explanation: "Une bonne gestion du temps permet de ne pas paniquer sur les questions complexes et de conserver du temps pour inspecter les questions hésitantes."

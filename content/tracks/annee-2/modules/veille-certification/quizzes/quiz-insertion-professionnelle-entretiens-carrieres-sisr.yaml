@@ -1,0 +1,79 @@
+slug: quiz-insertion-professionnelle-entretiens-carrieres-sisr
+title: "Quiz — Insertion Professionnelle et Carrières SISR"
+passing_score: 80
+position: 5
+questions:
+  - kind: single
+    prompt: "Dans la méthode STAR (Situation, Tâche, Action, Résultat) recommandée pour structurer ses réponses lors d'un entretien d'embauche, que représente la lettre 'R' (Résultat) ?"
+    choices:
+      - id: a
+        text: "La description chiffrée et qualitative de l'impact positif et des bénéfices mesurables obtenus suite aux actions techniques mises en œuvre (ex: temps de résolution, disponibilité améliorée, satisfaction utilisateur)"
+      - id: b
+        text: "La signature du chèque de salaire"
+      - id: c
+        text: "La demande d'un café au recruteur"
+      - id: d
+        text: "Le calcul de l'âge de l'examinateur"
+    correct:
+      - a
+    explanation: "Le résultat chiffré et factuel apporte la preuve concrète de la valeur ajoutée et de l'efficacité du candidat lors de ses missions."
+
+  - kind: single
+    prompt: "Lors d'un entretien technique d'administration systèmes et réseaux, face à une question ou panne dont vous ignorez la réponse exacte, quelle attitude professionnelle est attendue ?"
+    choices:
+      - id: a
+        text: "Reconnaître avec franchise que l'on n'a pas la solution par cœur, puis exposer avec calme sa démarche logique d'investigation (méthode de diagnostic en couches, consultation des logs, recherche dans la documentation)"
+      - id: b
+        text: "Inventer des termes techniques inexistants pour faire illusion"
+      - id: c
+        text: "Quitter immédiatement la salle d'entretien sans dire au revoir"
+      - id: d
+        text: "Accuser le recruteur de poser des questions trop difficiles"
+    correct:
+      - a
+    explanation: "Les évaluateurs techniques valorisent avant tout la rigueur intellectuelle, l'honnêteté et la capacité d'investigation méthodique face à l'inconnu."
+
+  - kind: single
+    prompt: "Quel avantage distinctif offre généralement un début de carrière dans une Entreprise de Services du Numérique (ESN) pour un jeune diplômé BTS SIO SISR ?"
+    choices:
+      - id: a
+        text: "Une variété importante de missions chez différents clients permettant une montée en compétences accélérée sur des technologies diverses, souvent accompagnée du financement de certifications"
+      - id: b
+        text: "L'assurance de ne jamais changer de projet pendant 40 ans"
+      - id: c
+        text: "Le travail obligatoire sans ordinateur"
+      - id: d
+        text: "L'exemption totale de payer des impôts"
+    correct:
+      - a
+    explanation: "Les ESN constituent un excellent tremplin formateur, offrant un vaste spectre d'expériences sur des architectures variées en un temps réduit."
+
+  - kind: single
+    prompt: "Lors du diagnostic d'un incident de connectivité réseau en direct lors d'un test technique, quelle démarche méthodique structurée doit être privilégiée ?"
+    choices:
+      - id: a
+        text: "Le modèle en couches OSI (de la couche physique/câble, à la couche IP/routage, transport TCP/UDP, puis application et logs)"
+      - id: b
+        text: "Le redémarrage aléatoire de tous les serveurs du datacenter"
+      - id: c
+        text: "La suppression de toutes les règles du pare-feu"
+      - id: d
+        text: "Le tirage au sort de l'adresse IP à modifier"
+    correct:
+      - a
+    explanation: "Le dépannage 'Bottom-Up' (du physique vers l'applicatif) permet d'isoler rapidement la cause racine sans perdre de temps en suppositions désordonnées."
+
+  - kind: single
+    prompt: "Vers quel métier hautement qualifié de l'ingénierie moderne un administrateur systèmes et réseaux junior peut-il naturellement évoluer après 2 à 4 ans d'expérience s'il maîtrise l'Infrastructure as Code (Terraform) et l'automatisation (Ansible, CI/CD) ?"
+    choices:
+      - id: a
+        text: "Ingénieur Cloud & DevOps / Plateforme (Platform Engineer)"
+      - id: b
+        text: "Comptable d'entreprise"
+      - id: c
+        text: "Chauffeur de taxi"
+      - id: d
+        text: "Graphiste illustrateur"
+    correct:
+      - a
+    explanation: "L'alliance des bases solides d'administration système/réseau avec l'automatisation et le cloud constitue le socle naturel vers les métiers DevOps et Platform Engineering."

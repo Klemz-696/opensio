@@ -1,0 +1,6 @@
+theme: "Veille"
+frequency: "rarement"
+# Pas de tools
+sources:
+  - name: "Google"
+    url: "http://google.com" # non sécurisé et pas de type

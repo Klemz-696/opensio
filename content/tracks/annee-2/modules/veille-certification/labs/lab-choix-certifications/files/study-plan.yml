@@ -1,0 +1,11 @@
+# study-plan.yml - Plan d'Étude et Préparation aux Examens
+
+weekly_study_hours: 8
+prep_weeks_per_cert: 10
+
+resources:
+  - "Guide officiel d'étude (Official Cert Guide)"
+  - "Plateforme d'examens blancs (Boson / Practice Tests)"
+
+# TODO: Compléter les ressources et décrire lab_environment
+# lab_environment: "..."

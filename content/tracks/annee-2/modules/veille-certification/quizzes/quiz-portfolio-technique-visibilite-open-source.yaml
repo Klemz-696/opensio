@@ -1,0 +1,79 @@
+slug: quiz-portfolio-technique-visibilite-open-source
+title: "Quiz — Portfolio Technique et Visibilité Professionnelle"
+passing_score: 80
+position: 4
+questions:
+  - kind: single
+    prompt: "Quel est l'élément le plus déterminant pour qu'un projet d'infrastructure hébergé sur GitHub soit valorisant aux yeux d'un recruteur ou d'un jury d'examen ?"
+    choices:
+      - id: a
+        text: "Un fichier README.md soigné et complet, décrivant le contexte métier, un schéma d'architecture visuel, les prérequis, un guide de déploiement pas-à-pas et l'absence totale de secrets/mots de passe dans le code"
+      - id: b
+        text: "Le fait d'avoir 10 000 lignes de code sans aucun commentaire ni documentation"
+      - id: c
+        text: "La présence de photos de vacances dans les dossiers"
+      - id: d
+        text: "Un dépôt privé inaccessible sans explication"
+    correct:
+      - a
+    explanation: "Le README est la vitrine du projet : il démontre la capacité du candidat à documenter, vulgariser, sécuriser et industrialiser son travail."
+
+  - kind: single
+    prompt: "Quelle plateforme internationale est couramment utilisée par les éditeurs (Cisco, Microsoft, AWS, CompTIA) pour délivrer des badges numériques de certification vérifiables en ligne ?"
+    choices:
+      - id: a
+        text: "Credly (anciennement Acclaim)"
+      - id: b
+        text: "TikTok"
+      - id: c
+        text: "eBay"
+      - id: d
+        text: "Snapchat"
+    correct:
+      - a
+    explanation: "Credly fournit des métadonnées vérifiables et infalsifiables attestant de l'authenticité et de la validité temporelle des certifications obtenues."
+
+  - kind: single
+    prompt: "Quel type de contenu est particulièrement recommandé sur un blog technique personnel pour illustrer sa maturité professionnelle en administration systèmes et réseaux ?"
+    choices:
+      - id: a
+        text: "Des retours d'expérience (Post-Mortem) sur la résolution méthodique d'incidents complexes, des tutoriels d'architecture IaC et des comptes-rendus de labs documentés"
+      - id: b
+        text: "Des critiques de films de cinéma"
+      - id: c
+        text: "La recopie textuelle de pages Wikipédia"
+      - id: d
+        text: "Des recettes de cuisine"
+    correct:
+      - a
+    explanation: "Le partage de résolutions de pannes réelles démontre la capacité d'investigation, l'esprit de synthèse et la pédagogie du candidat."
+
+  - kind: single
+    prompt: "Pourquoi est-il crucial d'inclure un fichier de licence (ex: MIT, Apache 2.0, GPL-3.0) dans un dépôt open source public sur GitHub ?"
+    choices:
+      - id: a
+        text: "Pour définir explicitement les droits et conditions de réutilisation, modification et distribution du code par la communauté"
+      - id: b
+        text: "Pour payer des impôts supplémentaires"
+      - id: c
+        text: "Parce que GitHub supprime les dépôts sans licence au bout de 24 heures"
+      - id: d
+        text: "Pour empêcher quiconque de lire le code"
+    correct:
+      - a
+    explanation: "Sans licence explicite, le droit d'auteur par défaut s'applique et personne n'a légalement le droit d'utiliser ou modifier le projet partagé."
+
+  - kind: single
+    prompt: "Comment une contribution modeste à un projet open source (ex: correction de documentation, signalement d'une anomalie détaillée) peut-elle valoriser un profil junior ?"
+    choices:
+      - id: a
+        text: "Elle prouve la maîtrise des workflows Git collaboratifs (Fork, Pull Request, Issue) et la volonté d'interagir constructivement avec une communauté technique"
+      - id: b
+        text: "Elle permet de devenir propriétaire de l'entreprise éditrice"
+      - id: c
+        text: "Elle remplace automatiquement le passage du diplôme du BTS"
+      - id: d
+        text: "Elle donne un droit d'accès administrateur à tous les serveurs du monde"
+    correct:
+      - a
+    explanation: "Les contributions open source démontrent le savoir-être collaboratif, la rigueur et la familiarité avec les outils modernes du développement et de l'ingénierie logicielle."

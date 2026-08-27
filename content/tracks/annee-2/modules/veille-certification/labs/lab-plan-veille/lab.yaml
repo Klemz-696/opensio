@@ -1,0 +1,64 @@
+slug: elaboration-plan-veille-technologique
+title: "Élaboration d'un Plan de Veille Technologique et Synthèse d'Actualité IT"
+level: 2_files
+max_score: 100
+estimated_minutes: 40
+context: |
+  Dans le cadre de votre activité professionnelle et de la préparation de l'épreuve de veille du BTS SIO, vous devez formaliser votre stratégie de veille technologique et rédiger une première fiche d'impact opérationnel.
+
+  Vous devez configurer :
+  1. **`veille-plan.yml`** :
+     - Définir une thématique ciblée (`theme`)
+     - Déclarer les outils de collecte et d'organisation (`tools`) et la fréquence (`frequency`)
+     - Référencer au moins 4 sources d'information variées sous `sources:`, avec pour chacune : `name`, `type` (ex: institutionnel/securite, editeur/standard, communaute/rex), `url` valide et `channel` (rss, newsletter, alert)
+  2. **`veille-synthese.md`** :
+     - Rédiger une fiche d'impact technique structurée comportant : Titre explicite, Métadonnées (Date, Source), Résumé Technique, Analyse d'Impact sur le SI et Préconisations Opérationnelles concrètes
+
+objectives:
+  - "Structurer un plan de veille technologique personnel outillé et régulier"
+  - "Sélectionner des sources d'information spécialisées, fiables et diversifiées"
+  - "Analyser une actualité technique critique sous l'angle de la sécurité et de l'architecture"
+  - "Formuler des recommandations d'action opérationnelles pour un Système d'Information d'entreprise"
+
+prerequisites:
+  - "methodologie-veille-technologique-curation"
+
+files:
+  editable:
+    - path: veille-plan.yml
+      description: "Fichier de configuration du plan de veille, thématique et sources"
+    - path: veille-synthese.md
+      description: "Fiche de synthèse technique et analyse d'impact opérationnel"
+
+hints:
+  - cost_percent: 10
+    text: "Dans veille-plan.yml, assurez-vous de déclarer au moins 4 sources avec des URLs valides (https://)."
+  - cost_percent: 10
+    text: "Variez les types de sources (ex: institutionnel/securite, editeur/standard, communaute/rex)."
+  - cost_percent: 10
+    text: "Dans veille-synthese.md, structurez bien les sections Métadonnées, Résumé, Impact SI et Préconisations."
+
+validation:
+  type: script
+  image: opensio/validator-veille:latest
+  timeout_seconds: 30
+  checks:
+    - id: veille_plan_structure_and_theme
+      required: true
+      points: 25
+      description: "Structure du Plan : définition de la thématique, des outils et de la fréquence de veille"
+    - id: veille_sources_diversity_and_quality
+      required: true
+      points: 25
+      description: "Qualité des Sources : référencement d'au moins 4 sources diversifiées avec URLs et canaux"
+    - id: veille_synthese_structure_and_metadata
+      required: true
+      points: 25
+      description: "Structure de la Synthèse : titre explicite et métadonnées (Date, Source, Auteur)"
+    - id: veille_synthese_impact_and_recommendations
+      required: true
+      points: 25
+      description: "Analyse Opérationnelle : résumé technique, analyse d'impact sur le SI et préconisations d'action"
+
+scoring:
+  floor_percent: 50

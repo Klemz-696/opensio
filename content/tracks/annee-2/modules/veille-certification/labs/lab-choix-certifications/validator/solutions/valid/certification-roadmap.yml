@@ -1,0 +1,25 @@
+target_role: "Administrateur Systèmes, Cloud & Réseaux"
+
+certifications:
+  - code: "200-301"
+    title: "Cisco Certified Network Associate (CCNA)"
+    vendor: "Cisco"
+    level: "associe"
+    estimated_cost_eur: 300
+    target_quarter: "2026-Q4"
+
+  - code: "AZ-104"
+    title: "Microsoft Certified: Azure Administrator Associate"
+    vendor: "Microsoft"
+    level: "associe"
+    estimated_cost_eur: 165
+    target_quarter: "2027-Q2"
+
+  - code: "EX200"
+    title: "Red Hat Certified System Administrator (RHCSA)"
+    vendor: "Red Hat"
+    level: "professionnel"
+    estimated_cost_eur: 450
+    target_quarter: "2027-Q4"
+
+total_budget_eur: 915
