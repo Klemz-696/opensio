@@ -1328,6 +1328,32 @@ Création complète du nouveau module `windows-server-ad` comprenant 6 leçons, 
 - `pnpm test --force` : 100 % vert (357 tests passants dans le monorepo).
 - `pnpm build --force` : 100 % réussi.
 
+### 20. Phase 2.3 — Production du Module `automatisation-devops` (2ème Année SISR)
+- **Module `automatisation-devops`** (5 leçons, 5 quiz, 2 labs) :
+  - `01-principes-devops-et-culture-cicd.md` + `quiz-principes-devops-et-culture-cicd.yaml` : Mouvement DevOps, décloisonnement Dev et Ops, modèle CAMS (Culture, Automation, Measurement, Sharing), continuum CI/CD (Intégration Continue, Livraison Continue avec validation humaine vs Déploiement Continu automatisé de bout en bout), métriques d'ingénierie DORA et Shift-Left Testing.
+  - `02-gestion-configuration-ansible.md` + `quiz-gestion-configuration-ansible.yaml` : Architecture sans agent (Agentless via SSH / Python), inventaires d'hôtes et variables, modules idempotents (`apt`, `template`, `file`, `systemd`), playbooks YAML, templates Jinja2 (`.j2`), élévation `become: true`, et exécution conditionnelle de `handlers` de rechargement.
+  - `03-pipelines-cicd-github-actions-gitlab-ci.md` + `quiz-pipelines-cicd-github-actions-gitlab-ci.yaml` : Pipelines CI/CD modernes, structure YAML des workflows, déclencheurs `push`/`pull_request`, exécuteurs `runs-on: ubuntu-latest`, dépendances ordonnées `needs: [test]`, sécurisation par GitHub Secrets chiffrés, mise en cache npm et stratégies de déploiement (Rolling, Blue/Green, Canary).
+  - `04-infrastructure-as-code-terraform.md` + `quiz-infrastructure-as-code-terraform.yaml` : Approche déclarative de l'IaC avec Terraform / OpenTofu, fournisseurs (Providers Cloud, Proxmox, Docker), blocs `resource` et `data`, rôle critique du fichier d'état `terraform.tfstate` avec Remote Backend et verrouillage d'état, cycle de vie (`init`, `plan`, `apply`, `destroy`), variables et outputs.
+  - `05-supervision-observabilite-prometheus-grafana.md` + `quiz-supervision-observabilite-prometheus-grafana.yaml` : Piliers de l'observabilité (Logs, Métriques, Traces), modèle de tirage périodique (Pull Scraping) de Prometheus, exportateurs (`node_exporter`, `cAdvisor`), requêtes PromQL (`rate()`, agrégations), Alertmanager, tableaux de bord Grafana et concepts SRE (SLI, SLO, SLA, Budget d'erreur).
+  - **2 Labs autonomes de niveau 2_files avec suites de tests complètes** :
+    - `lab-ansible-deploiement` (`deploiement-automatise-ansible`) : Conception d'un playbook Ansible `playbook.yml` complet pour provisionner Nginx sur le groupe `webservers` (installation `apt`, template Jinja2 vers `sites-available/app.conf`, lien symbolique `sites-enabled/app.conf`, suppression de `default`, activation du service `systemd` et handler `state: reloaded`).
+    - `lab-pipeline-cicd` (`definition-pipeline-cicd-github-actions`) : Conception d'un workflow GitHub Actions `deploy.yml` complet (déclencheurs `push`/`pull_request` sur `main`, job `test` avec `actions/checkout`, `actions/setup-node`, `npm ci`, `npm run lint`, `npm test`, et job `deploy` avec `needs: test`, condition `main`, build, archivage d'artefacts `actions/upload-artifact@v4` et secret chiffré).
+
+### 21. Validations Globales Post-Automatisation-DevOps
+- `node content/validate.mjs` : **100 % valide** :
+  - **2 parcours opérationnels** (`annee-1`, `annee-2`).
+  - **12 modules opérationnels** (8 en 1ère année, 4 en 2ème année).
+  - **64 leçons rédigées et validées**.
+  - **64 quiz d'évaluation (332 questions avec explications pédagogiques)**.
+  - **28 ateliers pratiques (Labs)**.
+  - **87 / 87 tests de validateurs passants** sur les suites de fixtures.
+- `pnpm content:validate` : 100 % valide (18/18 tests Zod passants).
+- `node scripts/check-file-size.mjs` : 100 % conforme D-13 (331 fichiers analysés, 0 violation > 400 lignes).
+- `node scripts/check-theme-classes.mjs` : 100 % conforme bi-thème (0 violation).
+- `pnpm test --force` : 100 % vert (357 tests passants dans le monorepo).
+- `pnpm build --force` : 100 % réussi.
+
+
 
 
 

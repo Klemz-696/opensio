@@ -1,0 +1,16 @@
+name: "Pipeline CI/CD Production"
+
+# TODO: Configurer les déclencheurs (push et pull_request sur main)
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  # TODO: Configurer le job test (checkout, setup-node avec cache, npm ci, npm run lint, npm test)
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v4
+
+  # TODO: Configurer le job deploy (needs: test, if main push, build, upload-artifact, deploy secret)

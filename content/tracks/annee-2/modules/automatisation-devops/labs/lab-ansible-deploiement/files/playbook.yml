@@ -1,0 +1,19 @@
+---
+# playbook.yml - Déploiement automatisé du serveur Web Nginx
+
+- name: "Déploiement et configuration de Nginx"
+  hosts: webservers
+  # TODO: Configurer become: true et les variables
+
+  tasks:
+    # TODO: Tâche 1 - Installer le paquet nginx (apt)
+
+    # TODO: Tâche 2 - Déployer le template de configuration (template)
+
+    # TODO: Tâche 3 - Activer le site avec un lien symbolique (file, state: link)
+
+    # TODO: Tâche 4 - Supprimer le site par défaut (file, state: absent)
+
+    # TODO: Tâche 5 - Démarrer et activer le service (systemd)
+
+  # TODO: Déclarer la section handlers pour recharger Nginx (state: reloaded)

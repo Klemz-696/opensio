@@ -1,0 +1,33 @@
+name: "Pipeline CI/CD sans dépendance needs"
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+      - run: npm ci
+      - run: npm run lint
+      - run: npm test
+
+  deploy:
+    runs-on: ubuntu-latest
+    # Absence de needs: test (déploiement en parallèle risqué)
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+      - run: npm ci
+      - run: npm run build
+      - uses: actions/upload-artifact@v4
+        with:
+          path: dist/
+      - run: echo "Deploying"
+        env:
+          KEY: ${{ secrets.DEPLOY_KEY }}
