@@ -1,0 +1,15 @@
+{
+  "rules": [
+    {
+      "id": "incidents-vip",
+      "name": "Routage Incidents VIP",
+      "active": true,
+      "conditions": { "demandeur_groupe": "Direction" },
+      "actions": {
+        "groupe_technicien": "Support N2 VIP",
+        "sla_tto_minutes": 15,
+        "sla_ttr_minutes": 120
+      }
+    }
+  ]
+}

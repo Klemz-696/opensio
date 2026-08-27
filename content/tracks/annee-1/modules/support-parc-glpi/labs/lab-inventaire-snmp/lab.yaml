@@ -1,0 +1,71 @@
+slug: configuration-decouverte-snmp
+title: "Configuration de Découverte Réseau et Inventaire SNMP"
+level: 2_files
+max_score: 100
+estimated_minutes: 45
+context: |
+  Vous êtes administrateur réseau et parc informatique.
+  Afin de maintenir une cartographie fidèle des équipements actifs (commutateurs de distribution Cisco, routeurs pare-feu et copieurs réseau multifonctions), vous devez formaliser la configuration de la tâche de découverte et d'inventaire SNMP dans le fichier `snmp-discovery.yaml`.
+
+  Spécifications du fichier `snmp-discovery.yaml` :
+  1. Section `task` :
+     - `name` : `Decouverte et Inventaire SNMP Infrastructure`
+     - `enabled` : `true`
+     - `agent_proxy` : FQDN ou IP de l'agent passerelle (ex: `agent-srv-glpi.entreprise.lan` ou `192.168.10.10`).
+  2. Section `targets` (Plages d'adresses IP cibles) :
+     - Plage 1 (Commutateurs & Cœur de réseau) : `192.168.10.1-192.168.10.50` (ou notation CIDR `192.168.10.0/24`), type : `network_devices` / `switches`.
+     - Plage 2 (Copieurs & Imprimantes bureautiques) : `192.168.20.1-192.168.20.30` (ou `192.168.20.0/24`), type : `printers`.
+  3. Section `credentials_snmp` (Profils d'authentification) :
+     - Profil SNMP v2c : `version: 2c`, communauté `opensio-snmp-ro`, `port: 161`.
+     - Profil SNMP v3 : `version: 3`, utilisateur `sec-admin`, `security_level: "authPriv"`, `auth_proto: "SHA"`, `priv_proto: "AES"`.
+  4. Section `options` (Liaisons et cartographie) :
+     - `link_lldp_cdp: true` (Association automatique des ports physiques).
+     - `update_arp_table: true` (Récupération des correspondances IP/MAC).
+
+objectives:
+  - "Définir les périmètres IP de découverte réseau et de balayage d'adresses"
+  - "Configurer des profils d'authentification SNMP v2c et SNMP v3 sécurisés (authPriv)"
+  - "Activer la découverte de topologie par protocoles de voisinage LLDP/CDP"
+  - "Assurer l'automatisation de l'inventaire matériel sans agent pour les équipements actifs"
+
+prerequisites:
+  - "inventaire-automatise-agents"
+  - "reseaux-fondamentaux"
+
+files:
+  editable:
+    - path: snmp-discovery.yaml
+      description: "Fichier YAML de configuration de la tâche de découverte et d'inventaire SNMP"
+
+hints:
+  - cost_percent: 10
+    text: "Respectez les sections YAML principales : 'task', 'targets', 'credentials_snmp' et 'options'."
+  - cost_percent: 10
+    text: "Pour SNMP v3, déclarez 'security_level: authPriv' avec 'auth_proto: SHA' et 'priv_proto: AES'."
+  - cost_percent: 10
+    text: "N'oubliez pas d'activer 'link_lldp_cdp: true' pour cartographier les ports des commutateurs."
+
+validation:
+  type: script
+  image: opensio/validator-glpi-snmp:latest
+  timeout_seconds: 30
+  checks:
+    - id: task_header_and_proxy
+      required: true
+      points: 20
+      description: "Définition de la tâche et déclaration de l'agent proxy GLPI"
+    - id: targets_ip_ranges
+      required: true
+      points: 30
+      description: "Définition des plages IP pour les commutateurs (192.168.10.x) et imprimantes (192.168.20.x)"
+    - id: credentials_snmp_v2c_v3
+      required: true
+      points: 30
+      description: "Profils d'authentification SNMP v2c (communauté) et SNMP v3 sécurisé (authPriv, SHA, AES)"
+    - id: topology_lldp_options
+      required: true
+      points: 20
+      description: "Activation des options de topologie LLDP/CDP et lecture des tables ARP"
+
+scoring:
+  floor_percent: 50

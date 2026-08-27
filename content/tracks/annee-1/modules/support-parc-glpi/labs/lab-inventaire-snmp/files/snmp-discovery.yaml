@@ -1,0 +1,18 @@
+# Configuration de Découverte Réseau et Inventaire SNMP GLPI
+task:
+  name: "Decouverte et Inventaire SNMP Infrastructure"
+  enabled: true
+  agent_proxy: "agent-srv-glpi.entreprise.lan"
+
+targets:
+  - name: "Commutateurs Reseau"
+    # TODO: Renseigner la plage IP et le type
+    ip_range: ""
+    type: ""
+
+credentials_snmp:
+  # TODO: Configurer les profils SNMP v2c et v3 (authPriv, SHA, AES)
+
+options:
+  link_lldp_cdp: false
+  update_arp_table: false

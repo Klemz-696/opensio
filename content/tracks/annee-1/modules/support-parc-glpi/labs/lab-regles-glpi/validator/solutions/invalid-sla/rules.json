@@ -1,0 +1,37 @@
+{
+  "rules": [
+    {
+      "id": "incidents-vip",
+      "name": "Routage VIP",
+      "active": true,
+      "conditions": { "demandeur_groupe": "Direction" },
+      "actions": {
+        "groupe_technicien": "Support N2 VIP",
+        "sla_tto_minutes": 240,
+        "sla_ttr_minutes": 2880
+      }
+    },
+    {
+      "id": "panne-reseau",
+      "name": "Routage Reseau",
+      "active": true,
+      "conditions": { "categorie": "Reseau" },
+      "actions": {
+        "groupe_technicien": "Equipe Reseau",
+        "sla_tto_minutes": 30,
+        "sla_ttr_minutes": 240
+      }
+    },
+    {
+      "id": "demandes-bureautique",
+      "name": "Routage Bureautique",
+      "active": true,
+      "conditions": { "type": "Demande" },
+      "actions": {
+        "groupe_technicien": "Centre de Services N1",
+        "sla_tto_minutes": 120,
+        "sla_ttr_minutes": 1440
+      }
+    }
+  ]
+}
