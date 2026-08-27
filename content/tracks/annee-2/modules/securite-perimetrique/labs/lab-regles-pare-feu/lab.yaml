@@ -1,0 +1,84 @@
+slug: configuration-pare-feu-stateful-nftables
+title: "Configuration d'un Pare-feu Périmétrique avec État (nftables)"
+level: 2_files
+max_score: 100
+estimated_minutes: 45
+context: |
+  Vous êtes administrateur sécurité et devez configurer le pare-feu périmétrique de l'entreprise (`FW-EDGE`) sous Linux `nftables` via le fichier `/etc/nftables.conf` (nommé `nftables.conf`).
+
+  Interfaces réseau de la passerelle de filtrage :
+  - `eth0` : Réseau interne LAN (`192.168.10.0/24`)
+  - `eth1` : Réseau externe WAN / Internet (`203.0.113.0/24`)
+  - `eth2` : Zone démilitarisée DMZ (`192.168.50.0/24`, Reverse Proxy `192.168.50.10`)
+
+  Spécifications attendues dans `nftables.conf` :
+  1. **Structure globale** :
+     - Directive initiale `flush ruleset` pour purger les anciennes règles.
+     - Table `inet filter` (filtrage avec état) et table `ip nat` (translation d'adresses).
+  2. **Chaîne `input` (Trafic local au pare-feu)** :
+     - Politique par défaut `drop`.
+     - Accepter la boucle locale `lo`.
+     - Suivi d'état : `ct state invalid drop` et `ct state { established, related } accept`.
+     - Autoriser SSH (port 22) uniquement depuis l'interface LAN `eth0`.
+     - Journaliser les paquets rejetés avec le préfixe `"NFT-INPUT-DROP: "`.
+  3. **Chaîne `forward` (Trafic routé inter-zones)** :
+     - Politique par défaut `drop`.
+     - Suivi d'état : `ct state invalid drop` et `ct state { established, related } accept`.
+     - Autoriser le trafic sortant du LAN (`eth0`) vers le WAN (`eth1`).
+     - Autoriser le trafic du LAN (`eth0`) vers la DMZ (`eth2`).
+     - Autoriser l'accès public depuis le WAN (`eth1`) vers le Reverse Proxy DMZ (`192.168.50.10`) sur les ports HTTP (80) et HTTPS (443).
+     - Confinement DMZ : **aucun flux général n'est autorisé de la DMZ (`eth2`) vers le LAN (`eth0`)**.
+     - Journaliser les paquets rejetés avec le préfixe `"NFT-FWD-DROP: "`.
+  4. **Table `ip nat` (Translation)** :
+     - Chaîne `prerouting` : redirection de port (DNAT) pour les ports 80 et 443 du WAN (`eth1`) vers l'adresse DMZ `192.168.50.10`.
+     - Chaîne `postrouting` : masquage des adresses sources (`masquerade`) lors de la sortie vers Internet sur `eth1`.
+
+objectives:
+  - "Concevoir un jeu de règles de filtrage étanche sous nftables respectant le principe Default-Deny"
+  - "Implémenter le suivi d'état des connexions (conntrack : NEW, ESTABLISHED, RELATED, INVALID)"
+  - "Isoler hermétiquement la zone démilitarisée (DMZ) vis-à-vis du réseau local (LAN)"
+  - "Configurer la translation de destination (DNAT) et de source (Masquerade)"
+  - "Mettre en place la journalisation des flux illégitimes pour l'audit et la détection d'intrusions"
+
+prerequisites:
+  - "principes-securite-perimetrique-zones"
+  - "pare-feu-stateful-et-filtrage"
+  - "nat-securise-et-exposition-services"
+
+files:
+  editable:
+    - path: nftables.conf
+      description: "Fichier de configuration principal des règles de filtrage et NAT nftables"
+
+hints:
+  - cost_percent: 10
+    text: "Pensez à débuter le fichier par 'flush ruleset' et à déclarer 'policy drop' sur les chaînes input et forward."
+  - cost_percent: 10
+    text: "Placez toujours 'ct state invalid drop' et 'ct state { established, related } accept' en tête de chaque chaîne de filtrage."
+  - cost_percent: 10
+    text: "La table nat doit contenir 'chain prerouting { type nat hook prerouting priority dstnat; }' et 'chain postrouting { type nat hook postrouting priority srcnat; }'."
+
+validation:
+  type: script
+  image: opensio/validator-nftables:latest
+  timeout_seconds: 30
+  checks:
+    - id: nftables_structure_and_flush
+      required: true
+      points: 25
+      description: "Structure globale valide (flush ruleset, tables inet filter et ip nat)"
+    - id: input_chain_stateful_and_ssh
+      required: true
+      points: 25
+      description: "Chaîne input : policy drop, suivi d'état (established, related, invalid) et accès SSH restreint au LAN"
+    - id: forward_chain_zones_and_dmz_rules
+      required: true
+      points: 25
+      description: "Chaîne forward : policy drop, flux LAN->WAN et WAN->DMZ (80/443), confinement DMZ->LAN"
+    - id: nat_dnat_and_masquerade
+      required: true
+      points: 25
+      description: "Table NAT : DNAT ports 80/443 vers DMZ (192.168.50.10) et Masquerade sur WAN eth1"
+
+scoring:
+  floor_percent: 50

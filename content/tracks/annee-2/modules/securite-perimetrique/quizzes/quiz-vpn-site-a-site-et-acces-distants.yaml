@@ -1,0 +1,79 @@
+slug: quiz-vpn-site-a-site-et-acces-distants
+title: "Quiz — VPN Site-à-Site et Accès Distants"
+passing_score: 80
+position: 4
+questions:
+  - kind: single
+    prompt: "Dans le protocole de tunnelisation moderne WireGuard, sur quel principe cryptographique repose le routage et le filtrage des paquets ?"
+    choices:
+      - id: a
+        text: "Le Cryptokey Routing (association stricte d'une clé publique à une liste d'adresses ou sous-réseaux IP autorisés dans AllowedIPs)"
+      - id: b
+        text: "La signature sur un registre papier conservé dans un coffre"
+      - id: c
+        text: "L'échange de mots de passe en texte clair par email"
+      - id: d
+        text: "L'adresse MAC de la passerelle par défaut du FAI"
+    correct:
+      - a
+    explanation: "WireGuard associe chaque clé publique de pair à un ensemble d'adresses IP autorisées (`AllowedIPs`), garantissant l'authentification et le routage cryptographique."
+
+  - kind: single
+    prompt: "Dans un fichier de configuration WireGuard (wg0.conf), à quoi sert la directive 'PersistentKeepalive = 25' sous la section [Peer] ?"
+    choices:
+      - id: a
+        text: "À envoyer un paquet de battement de cœur toutes les 25 secondes pour maintenir ouvertes les tables d'état des routeurs NAT intermédiaires"
+      - id: b
+        text: "À redémarrer le système d'exploitation toutes les 25 minutes"
+      - id: c
+        text: "À limiter la vitesse de téléchargement à 25 Ko/s"
+      - id: d
+        text: "À changer le mot de passe utilisateur toutes les 25 heures"
+    correct:
+      - a
+    explanation: "La directive `PersistentKeepalive` évite l'expiration des traductions d'adresses dans les routeurs NAT et pare-feu d'état lorsque le tunnel est inactif."
+
+  - kind: single
+    prompt: "Dans la suite de protocoles IPsec, quel protocole assure à la fois le chiffrement (confidentialité) ET l'intégrité/authentification des données ?"
+    choices:
+      - id: a
+        text: "ESP (Encapsulating Security Payload, Protocole IP 50)"
+      - id: b
+        text: "AH (Authentication Header, Protocole IP 51 - intégrité seule sans chiffrement)"
+      - id: c
+        text: "ICMP (Protocole IP 1)"
+      - id: d
+        text: "IGMP (Protocole IP 2)"
+    correct:
+      - a
+    explanation: "Le protocole ESP d'IPsec offre la confidentialité (chiffrement du payload) combinée à l'intégrité et l'authentification des paquets."
+
+  - kind: single
+    prompt: "Quelle est la différence fondamentale entre un VPN Site-à-Site et un VPN Nomade (Remote Access) ?"
+    choices:
+      - id: a
+        text: "Le VPN Site-à-Site relie en permanence deux routeurs pour interconnecter des réseaux entiers de façon transparente, alors que le VPN Nomade connecte un poste individuel distant via un client logiciel"
+      - id: b
+        text: "Le VPN Site-à-Site n'utilise pas de chiffrement alors que le VPN Nomade en utilise un"
+      - id: c
+        text: "Le VPN Nomade ne fonctionne que le week-end"
+      - id: d
+        text: "Le VPN Site-à-Site nécessite l'installation d'un logiciel sur chaque smartphone des collaborateurs"
+    correct:
+      - a
+    explanation: "Le VPN Site-à-Site interconnecte de manière transparente deux infrastructures réseau physiques via leurs passerelles, sans agent sur les postes clients."
+
+  - kind: single
+    prompt: "Selon les recommandations cryptographiques de l'ANSSI, quelle propriété garantit que la compromission future de la clé privée à long terme d'un serveur ne permettra pas de déchiffrer les sessions VPN passées enregistrées par un attaquant ?"
+    choices:
+      - id: a
+        text: "La confidentialité persistante (Perfect Forward Secrecy - PFS via échange de clés éphémères Diffie-Hellman)"
+      - id: b
+        text: "L'utilisation d'un mot de passe de plus de 8 caractères"
+      - id: c
+        text: "La désactivation de la carte réseau Wi-Fi"
+      - id: d
+        text: "L'archivage des logs sur disque dur USB"
+    correct:
+      - a
+    explanation: "La propriété PFS (Perfect Forward Secrecy) génère une clé de session unique et temporaire par échange Diffie-Hellman, empêchant le déchiffrement rétroactif des flux passés."
