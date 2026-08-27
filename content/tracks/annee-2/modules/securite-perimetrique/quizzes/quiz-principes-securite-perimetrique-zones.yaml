@@ -1,0 +1,79 @@
+slug: quiz-principes-securite-perimetrique-zones
+title: "Quiz — Principes de la Sécurité Périmétrique et Zones"
+passing_score: 80
+position: 1
+questions:
+  - kind: single
+    prompt: "Quelle est la règle d'or fondamentale de conception et de filtrage concernant une Zone Démilitarisée (DMZ) ?"
+    choices:
+      - id: a
+        text: "Un équipement situé en DMZ ne doit jamais être en mesure d'initier une connexion directe vers le réseau interne de production (LAN)"
+      - id: b
+        text: "Tous les serveurs de la DMZ doivent obligatoirement utiliser des adresses IP publiques non filtrées"
+      - id: c
+        text: "La DMZ ne doit jamais posséder de connexion vers Internet"
+      - id: d
+        text: "Les postes de travail des employés doivent être installés dans la DMZ"
+    correct:
+      - a
+    explanation: "Le confinement strict de la DMZ garantit que la compromission d'un serveur exposé ne permet pas à un attaquant d'attaquer directement le réseau interne LAN."
+
+  - kind: single
+    prompt: "Que préconise le principe de 'Défense en Profondeur' (Defense-in-Depth) dans une infrastructure de sécurité informatique ?"
+    choices:
+      - id: a
+        text: "Superposer plusieurs niveaux de mécanismes défensifs indépendants (pare-feu, segmentation, durcissement, EDR, MFA) afin qu'aucune faille unique ne compromette le système"
+      - id: b
+        text: "Installer uniquement le pare-feu le plus cher du marché sur la liaison Internet"
+      - id: c
+        text: "Creuser des tranchées physiques autour du centre de données"
+      - id: d
+        text: "Autoriser tous les flux par défaut sur le réseau local"
+    correct:
+      - a
+    explanation: "La défense en profondeur multiplie les barrières de protection pour ralentir, détecter et bloquer une intrusion même si le pare-feu périmétrique est franchi."
+
+  - kind: single
+    prompt: "Quel est l'objectif premier d'un réseau dédié à l'administration Out-of-Band (Management OOB) ?"
+    choices:
+      - id: a
+        text: "Isoler totalement les interfaces d'administration des équipements (iLO, SSH commutateurs) sur un réseau physique/logique distinct sans accès direct depuis Internet"
+      - id: b
+        text: "Accélérer la navigation Web des visiteurs en Wi-Fi"
+      - id: c
+        text: "Héberger les jeux vidéo des techniciens en astreinte"
+      - id: d
+        text: "Partager des fichiers multimédias sur les téléviseurs de l'entreprise"
+    correct:
+      - a
+    explanation: "Le réseau OOB garantit que les interfaces d'administration critiques ne sont jamais exposées aux flux utilisateurs ni au trafic Internet."
+
+  - kind: single
+    prompt: "Quelle est la devise directrice du modèle de sécurité 'Zero Trust' ?"
+    choices:
+      - id: a
+        text: "'Never trust, always verify' — aucun utilisateur ni équipement ne bénéficie d'une confiance implicite, même situé à l'intérieur du réseau local"
+      - id: b
+        text: "'Trust everyone on the local LAN'"
+      - id: c
+        text: "'Refuse all network traffic forever'"
+      - id: d
+        text: "'Passwords must never be changed'"
+    correct:
+      - a
+    explanation: "Le modèle Zero Trust exige l'authentification et l'autorisation continue de chaque transaction quel que soit son point d'origine."
+
+  - kind: single
+    prompt: "Dans une matrice de flux de pare-feu d'entreprise, que signifie la politique par défaut 'Default-Deny' ?"
+    choices:
+      - id: a
+        text: "Tout trafic réseau qui n'est pas explicitement autorisé par une règle préalable est automatiquement rejeté et journalisé"
+      - id: b
+        text: "Tous les utilisateurs sont interdits d'accès Internet le week-end"
+      - id: c
+        text: "Tous les paquets sont acceptés sans inspection"
+      - id: d
+        text: "Les mots de passe administrateurs sont révoqués chaque soir"
+    correct:
+      - a
+    explanation: "La règle fondamentale de filtrage interdit par défaut l'ensemble des communications non expressément déclarées comme légitimes."

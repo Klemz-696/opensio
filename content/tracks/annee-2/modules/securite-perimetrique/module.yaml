@@ -1,0 +1,25 @@
+slug: securite-perimetrique
+title: "Sécurité Périmétrique, Pare-feu & Filtrage Réseau"
+description: "Conception d'architectures de sécurité étanches (LAN, DMZ, WAN), filtrage avec état (Stateful Firewall nftables), NAT/PAT sécurisé, VPN IPsec/WireGuard et durcissement d'équipements."
+position: 2
+difficulty: 3
+estimated_minutes: 550
+competency_refs:
+  - "B2.1"
+  - "B2.2"
+  - "B3.1"
+lessons:
+  - principes-securite-perimetrique-zones
+  - pare-feu-stateful-et-filtrage
+  - nat-securise-et-exposition-services
+  - vpn-site-a-site-et-acces-distants
+  - durcissement-perimetrique-et-protection
+quizzes:
+  - quiz-principes-securite-perimetrique-zones
+  - quiz-pare-feu-stateful-et-filtrage
+  - quiz-nat-securise-et-exposition-services
+  - quiz-vpn-site-a-site-et-acces-distants
+  - quiz-durcissement-perimetrique-et-protection
+labs:
+  - configuration-pare-feu-stateful-nftables
+  - configuration-tunnel-vpn-wireguard
