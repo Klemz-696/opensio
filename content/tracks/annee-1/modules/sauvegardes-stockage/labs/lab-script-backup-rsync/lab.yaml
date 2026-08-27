@@ -1,0 +1,76 @@
+slug: script-sauvegarde-rsync-rotation
+title: "Script de Sauvegarde Automatisée avec rsync et Contrôle SHA-256"
+level: 2_files
+max_score: 100
+estimated_minutes: 45
+context: |
+  Vous êtes administrateur système en charge de la sauvegarde des serveurs de fichiers et données applicatives sous Linux Debian.
+  Vous devez concevoir un script d'administration robuste `backup.sh` exécuté chaque nuit par une tâche planifiée Cron.
+
+  Spécifications du script `backup.sh` :
+  1. En-tête sécurisé Bash avec mode strict : `#!/bin/bash` et `set -euo pipefail`.
+  2. Variables configurables :
+     - `SOURCE_DIR="/srv/data"`
+     - `BACKUP_DIR="/backup/archives"`
+     - `LOG_FILE="/var/log/backup.log"`
+     - `RETENTION_DAYS=7`
+     - Horodatage `DATE=$(date +%Y%m%d_%H%M%S)`
+  3. Synchronisation et archivage avec `rsync` :
+     - Mode archive (`-a`), exclusion des fichiers temporaires (`--exclude="*.tmp"`, `--exclude="*.cache"`), suppression miroir (`--delete`).
+  4. Contrôle d'intégrité cryptographique :
+     - Calcul automatique de l'empreinte SHA-256 de l'archive ou des données avec `sha256sum` enregistré dans `checksums.sha256`.
+  5. Politique de rétention et rotation :
+     - Recherche et purge automatique des sauvegardes de plus de 7 jours via `find "${BACKUP_DIR}" -type f -name "*.tar.gz" -mtime +${RETENTION_DAYS} -delete` (ou commande équivalente).
+  6. Journalisation et code retour :
+     - Enregistrement des horodatages de début et fin dans `${LOG_FILE}` avec code retour d'exécution (`exit 0` en cas de succès).
+
+objectives:
+  - "Écrire un script Bash d'exploitation sécurisé avec gestion des erreurs"
+  - "Automatiser la synchronisation rsync avec exclusion et options d'archivage"
+  - "Générer une empreinte de contrôle SHA-256 pour vérifier l'intégrité des sauvegardes"
+  - "Implémenter une rotation automatique des sauvegardes selon la politique de rétention"
+  - "Journaliser les opérations d'administration dans un fichier de logs dédié"
+
+prerequisites:
+  - "outils-sauvegarde-linux"
+  - "linux-administration"
+
+files:
+  editable:
+    - path: backup.sh
+      description: "Script Shell Bash de sauvegarde automatisée, rotation et contrôle SHA-256"
+
+hints:
+  - cost_percent: 10
+    text: "Utilisez 'set -euo pipefail' en début de script pour interrompre l'exécution à la moindre erreur imprévue."
+  - cost_percent: 10
+    text: "Pensez à utiliser l'option '-a' et '--delete' avec rsync pour préserver les permissions et synchroniser l'état miroir."
+  - cost_percent: 10
+    text: "Générez le hash SHA-256 avec la commande 'sha256sum ... >> checksums.sha256'."
+  - cost_percent: 10
+    text: "Pour la rotation des fichiers de plus de 7 jours, utilisez 'find ... -mtime +7 -delete'."
+
+validation:
+  type: script
+  image: opensio/validator-backup:latest
+  timeout_seconds: 30
+  checks:
+    - id: bash_header_and_safety
+      required: true
+      points: 20
+      description: "En-tête shebang Bash et mode strict (set -euo pipefail / set -e)"
+    - id: rsync_options_and_sync
+      required: true
+      points: 30
+      description: "Commande rsync avec mode archive (-a), exclusion (*.tmp) et suppression (--delete)"
+    - id: sha256_integrity_check
+      required: true
+      points: 25
+      description: "Génération et enregistrement de l'empreinte SHA-256 (checksums.sha256)"
+    - id: rotation_and_logging
+      required: true
+      points: 25
+      description: "Rotation automatique des anciennes archives (find -mtime) et journalisation des logs"
+
+scoring:
+  floor_percent: 50

@@ -1,0 +1,82 @@
+slug: matrice-pca-pra-rpo-rto
+title: "Élaboration d'une Matrice PCA/PRA et Politiques RTO/RPO"
+level: 2_files
+max_score: 100
+estimated_minutes: 45
+context: |
+  Vous intervenez en tant que consultant en infrastructure et sécurité au sein d'une entreprise industrielle.
+  La direction générale vous charge de formaliser la matrice de continuité d'activité du Plan de Continuité (PCA) et Plan de Reprise d'Activité (PRA) dans le fichier `plan-continuite.csv`.
+
+  Services à intégrer dans la matrice :
+  1. `Active Directory DS` (Annuaire d'entreprise et authentification centralisée) :
+     - Criticité : `Critique` (Niveau 1).
+     - RPO cible : `<= 1h`.
+     - RTO cible : `<= 30min` (Restauration instantanée prioritaire).
+     - Stratégie : `System State + Snapshot VM immuable`.
+     - Périodicité test de restauration : `Hebdomadaire`.
+  2. `ERP PostgreSQL` (Base de données des commandes et facturation) :
+     - Criticité : `Critique` (Niveau 1).
+     - RPO cible : `<= 15min` (Archivage continu des journaux de transactions WAL).
+     - RTO cible : `<= 1h`.
+     - Stratégie : `Dump complet quotidien + WAL continu`.
+     - Périodicité test de restauration : `Hebdomadaire`.
+  3. `Serveur de Fichiers` (Partages administratifs, RH et Comptabilité) :
+     - Criticité : `Moyenne` (Niveau 2).
+     - RPO cible : `<= 24h` (Sauvegarde nocturne quotidienne).
+     - RTO cible : `<= 4h`.
+     - Stratégie : `Incrémentale rsync/Borg avec rétention GFS`.
+     - Périodicité test de restauration : `Mensuel`.
+  4. `Serveur de Logs & Archivage` (Conservation des traces d'audit et conformité) :
+     - Criticité : `Faible` (Niveau 3).
+     - RPO cible : `<= 7j` (Sauvegarde hebdomadaire).
+     - RTO cible : `<= 48h`.
+     - Stratégie : `Complète hebdomadaire compressée sur stockage froid`.
+     - Périodicité test de restauration : `Trimestriel`.
+
+objectives:
+  - "Évaluer et hiérarchiser les services selon leur criticité pour l'organisation"
+  - "Définir des engagements de RTO et RPO cohérents avec les contraintes techniques"
+  - "Associer la technologie de sauvegarde appropriée à chaque niveau de service"
+  - "Établir un calendrier formel de tests de restauration conforme à l'ISO 27001"
+
+prerequisites:
+  - "restauration-metriques-rto-rpo"
+  - "strategie-sauvegarde-3-2-1"
+
+files:
+  editable:
+    - path: plan-continuite.csv
+      description: "Matrice de continuité d'activité (Service, Criticite, RPO_Cible, RTO_Cible, Strategie_Sauvegarde, Frequence_Test_Restauration)"
+
+hints:
+  - cost_percent: 10
+    text: "Respectez les colonnes : Service, Criticite, RPO_Cible, RTO_Cible, Strategie_Sauvegarde, Frequence_Test_Restauration."
+  - cost_percent: 10
+    text: "Pour l'ERP PostgreSQL, le RPO doit être très court (ex: 15 min) avec archivage des journaux WAL."
+  - cost_percent: 10
+    text: "Pour l'Active Directory, le RTO doit être inférieur ou égal à 30 minutes."
+
+validation:
+  type: script
+  image: opensio/validator-pca:latest
+  timeout_seconds: 30
+  checks:
+    - id: services_presence_and_structure
+      required: true
+      points: 25
+      description: "Présence des 4 services d'entreprise et structure CSV valide"
+    - id: rpo_targets_valid
+      required: true
+      points: 25
+      description: "Objectifs de perte de données RPO cohérents avec la criticité métier"
+    - id: rto_targets_valid
+      required: true
+      points: 25
+      description: "Objectifs de temps de reprise RTO réalistes et conformes"
+    - id: backup_strategy_and_tests
+      required: true
+      points: 25
+      description: "Stratégies techniques et planification des tests de restauration"
+
+scoring:
+  floor_percent: 50
