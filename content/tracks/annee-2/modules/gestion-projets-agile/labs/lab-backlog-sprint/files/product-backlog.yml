@@ -1,0 +1,13 @@
+# product-backlog.yml - Product Backlog du Projet OpenSIO
+
+user_stories:
+  - id: "US-01"
+    title: "Authentification des étudiants"
+    # as_a: "..."
+    # i_want: "..."
+    # so_that: "..."
+    # acceptance_criteria: [...]
+    # story_points: ...
+    # priority: "Must"
+
+  # TODO: Déclarer US-02, US-03, US-04

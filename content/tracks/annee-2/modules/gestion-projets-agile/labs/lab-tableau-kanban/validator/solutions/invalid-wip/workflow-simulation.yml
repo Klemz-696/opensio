@@ -1,0 +1,8 @@
+tasks:
+  - id: "TASK-101"
+    title: "Tâche incohérente"
+    created_date: "2026-08-05"
+    in_progress_date: "2026-08-01"
+    done_date: "2026-08-07"
+    lead_time_days: 2
+    cycle_time_days: 6 # Incohérent : Cycle > Lead

@@ -1,0 +1,44 @@
+user_stories:
+  - id: "US-01"
+    title: "Connexion sécurisée des étudiants"
+    as_a: "Étudiant inscrit en BTS SIO"
+    i_want: "Me connecter avec mon adresse académique et un mot de passe sécurisé"
+    so_that: "Accéder à mes cours et mes travaux pratiques en toute confidentialité"
+    acceptance_criteria:
+      - "Formulaire avec validation d'email et mot de passe de 12 caractères minimum"
+      - "Génération d'un jeton JWT sécurisé après authentification réussie"
+      - "Message d'erreur explicite en cas d'identifiants incorrects"
+    story_points: 5
+    priority: "Must"
+
+  - id: "US-02"
+    title: "Consultation du catalogue de modules"
+    as_a: "Étudiant ou enseignant"
+    i_want: "Parcourir la liste des modules par année et thématique"
+    so_that: "Sélectionner les parcours d'apprentissage adaptés à mes objectifs"
+    acceptance_criteria:
+      - "Affichage des modules sous forme de cartes avec durée et niveau de difficulté"
+      - "Filtres interactifs par mots-clés et blocs de compétences"
+    story_points: 3
+    priority: "Must"
+
+  - id: "US-03"
+    title: "Passage d'un quiz d'évaluation"
+    as_a: "Étudiant suivant une leçon"
+    i_want: "Répondre aux questions du quiz et obtenir mon score immédiatement"
+    so_that: "Valider ma compréhension des concepts abordés"
+    acceptance_criteria:
+      - "Affichage des questions à choix unique avec explication pédagogique"
+      - "Calcul du score en temps réel avec seuil de réussite à 80 %"
+    story_points: 8
+    priority: "Must"
+
+  - id: "US-04"
+    title: "Téléchargement du relevé de compétences"
+    as_a: "Étudiant certifié"
+    i_want: "Exporter mon bilan de compétences au format PDF"
+    so_that: "Présenter mes acquis lors des entretiens de stage ou d'embauche"
+    acceptance_criteria:
+      - "Génération d'un fichier PDF contenant les badges et scores obtenus"
+    story_points: 5
+    priority: "Should"

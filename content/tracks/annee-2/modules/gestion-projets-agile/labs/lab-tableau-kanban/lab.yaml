@@ -1,0 +1,69 @@
+slug: configuration-tableau-kanban-wip
+title: "Mise en Place d'un Tableau Kanban avec Limites WIP et Simulation de Flux"
+level: 2_files
+max_score: 100
+estimated_minutes: 45
+context: |
+  Vous êtes Scrum Master et devez concevoir le tableau Kanban pour optimiser le flux de travail de l'équipe de développement et support IT d'OpenSIO.
+
+  Vous devez configurer :
+  1. **`kanban-board.yml`** :
+     - Nom du tableau : `board_name: "OpenSIO Core Team Kanban"`
+     - Déclarer au moins 5 colonnes ordonnées : `backlog`, `analysis`, `in_progress`, `review_test`, `done`
+     - Définir des limites de travail en cours explicites (`wip_limit`) sur les colonnes actives (ex: `wip_limit: 3` sur `in_progress`, `wip_limit: 2` sur `review_test`)
+     - Spécifier les critères de sortie (`exit_criteria`) pour chaque étape
+  2. **`workflow-simulation.yml`** :
+     - Déclarer une simulation de flux de tickets (`tasks`)
+     - Renseigner les dates clés (`created_date`, `in_progress_date`, `done_date`)
+     - Calculer les métriques associées : `lead_time_days` et `cycle_time_days`
+     - Veiller à ce que le nombre de tâches simultanées en cours respecte rigoureusement la limite WIP configurée (aucun dépassement de capacité)
+
+objectives:
+  - "Concevoir un tableau Kanban d'équipe avec colonnes et règles de passage claires"
+  - "Appliquer des limites de travail en cours (WIP) pour éliminer les goulots d'étranglement"
+  - "Calculer et analyser les métriques de flux clés : Lead Time et Cycle Time"
+  - "Simuler le flux de traitement sans saturer la capacité de l'équipe"
+
+prerequisites:
+  - "methodologies-agiles-scrum-kanban"
+  - "suivi-pilotage-indicateurs-burndown-charts"
+
+files:
+  editable:
+    - path: kanban-board.yml
+      description: "Fichier de configuration du tableau Kanban, colonnes et limites WIP"
+    - path: workflow-simulation.yml
+      description: "Fichier de simulation du flux de tâches et calcul des métriques de temps"
+
+hints:
+  - cost_percent: 10
+    text: "Dans kanban-board.yml, déclarez les colonnes sous 'columns:' avec leur 'name', 'wip_limit' et 'exit_criteria'."
+  - cost_percent: 10
+    text: "N'oubliez pas que le Cycle Time mesure la durée entre in_progress_date et done_date."
+  - cost_percent: 10
+    text: "Vérifiez que le Lead Time est toujours supérieur ou égal au Cycle Time."
+
+validation:
+  type: script
+  image: opensio/validator-kanban:latest
+  timeout_seconds: 30
+  checks:
+    - id: kanban_board_columns_structure
+      required: true
+      points: 25
+      description: "Structure du Tableau : déclaration d'au moins 5 colonnes ordonnées (backlog, analysis, in_progress, review_test, done)"
+    - id: wip_limits_and_exit_criteria
+      required: true
+      points: 25
+      description: "Gouvernance du Flux : limites WIP explicites sur les colonnes actives et critères de sortie (exit_criteria)"
+    - id: workflow_tasks_simulation
+      required: true
+      points: 25
+      description: "Simulation de Tâches : modélisation de tickets avec dates de création, prise en charge et livraison"
+    - id: lead_and_cycle_time_metrics_coherence
+      required: true
+      points: 25
+      description: "Cohérence Métrologique : calcul exact du Lead Time et Cycle Time avec respect strict des limites WIP"
+
+scoring:
+  floor_percent: 50

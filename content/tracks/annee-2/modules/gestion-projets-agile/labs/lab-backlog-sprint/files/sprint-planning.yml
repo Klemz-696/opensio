@@ -1,0 +1,13 @@
+# sprint-planning.yml - Planification et Engagement du Sprint 1
+
+sprint_number: 1
+
+# TODO: Définir l'objectif du Sprint (sprint_goal)
+# sprint_goal: "..."
+
+# TODO: Définir la capacité de l'équipe (20 SP)
+team_capacity_sp: 20
+
+# TODO: Sélectionner les User Stories du Sprint 1 dont la somme des SP est <= 20
+selected_stories:
+  - "US-01"

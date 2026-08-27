@@ -1,0 +1,67 @@
+slug: structuration-backlog-planification-sprint
+title: "Structuration d'un Product Backlog et Planification de Sprint Agile"
+level: 2_files
+max_score: 100
+estimated_minutes: 45
+context: |
+  Vous jouez le rôle de Product Owner et Scrum Master pour le projet de portail étudiant OpenSIO. Vous devez formaliser le Product Backlog et planifier le premier Sprint de développement.
+
+  Vous devez configurer :
+  1. **`product-backlog.yml`** :
+     - Déclarer au moins 4 User Stories sous `user_stories:`
+     - Chaque User Story doit comporter : `id` (ex: US-01), `title`, `as_a`, `i_want`, `so_that`, une liste `acceptance_criteria`, une estimation en `story_points` (valeurs Fibonacci : 1, 2, 3, 5, 8, 13) et une priorité `priority` (Must, Should, Could)
+  2. **`sprint-planning.yml`** :
+     - Définir `sprint_number: 1`
+     - Rédiger un objectif de Sprint explicite (`sprint_goal`)
+     - Définir la capacité de l'équipe (`team_capacity_sp: 20`)
+     - Sélectionner les User Stories du Sprint 1 (`selected_stories`) de sorte que la somme des Story Points ne dépasse pas la capacité de 20 points tout en maximisant la valeur livrée (engagement entre 15 et 20 points)
+
+objectives:
+  - "Structurer un Product Backlog conforme aux standards de l'Agilité"
+  - "Rédiger des User Stories complètes selon le formalisme En tant que / Je veux / Afin de"
+  - "Associer des critères d'acceptation précis et des Story Points selon la suite de Fibonacci"
+  - "Planifier un Sprint cohérent en alignant un objectif métier (Sprint Goal) et la capacité d'équipe"
+
+prerequisites:
+  - "methodologies-agiles-scrum-kanban"
+  - "planification-backlog-user-stories-estimation"
+
+files:
+  editable:
+    - path: product-backlog.yml
+      description: "Fichier de définition du Product Backlog et des User Stories"
+    - path: sprint-planning.yml
+      description: "Fichier de planification et engagement du Sprint 1"
+
+hints:
+  - cost_percent: 10
+    text: "Dans product-backlog.yml, assurez-vous de renseigner 'as_a', 'i_want' et 'so_that' pour chaque story."
+  - cost_percent: 10
+    text: "Utilisez uniquement des valeurs de la suite de Fibonacci pour story_points (1, 2, 3, 5, 8, 13)."
+  - cost_percent: 10
+    text: "Dans sprint-planning.yml, vérifiez que la somme des points des stories sélectionnées est <= 20."
+
+validation:
+  type: script
+  image: opensio/validator-agile:latest
+  timeout_seconds: 30
+  checks:
+    - id: product_backlog_structure_and_stories
+      required: true
+      points: 25
+      description: "Product Backlog : structure générale et déclaration d'au moins 4 User Stories avec as_a / i_want / so_that"
+    - id: acceptance_criteria_and_story_points
+      required: true
+      points: 25
+      description: "Qualité des Stories : critères d'acceptation testables et estimations en Story Points (Fibonacci)"
+    - id: sprint_goal_and_capacity_definition
+      required: true
+      points: 25
+      description: "Cadrage du Sprint : définition de l'objectif (sprint_goal) et de la capacité d'équipe (team_capacity_sp: 20)"
+    - id: sprint_backlog_selection_and_velocity_fit
+      required: true
+      points: 25
+      description: "Engagement du Sprint : sélection cohérente de stories respectant la capacité de l'équipe (15-20 SP)"
+
+scoring:
+  floor_percent: 50
