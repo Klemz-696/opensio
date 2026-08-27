@@ -9,71 +9,73 @@ questions:
       - id: a
         text: "Elle élimine la présence d'un mot de passe Administrateur local identique sur toutes les machines en générant un mot de passe fort et unique par poste avec rotation automatique, bloquant les attaques Pass-the-Hash"
       - id: b
-        text: "Elle supprime le besoin de sauvegarder les fichiers de l'entreprise"
+        text: "Elle supprime le besoin de sauvegarder les fichiers des serveurs"
       - id: c
-        text: "Elle permet à n'importe quel stagiaire de modifier le schéma Active Directory"
+        text: "Elle permet à tout utilisateur standard de modifier la configuration réseau"
       - id: d
-        text: "Elle remplace le protocole Kerberos par du texte en clair"
+        text: "Elle désactive automatiquement le pare-feu Windows sur les postes clients"
     correct:
       - a
-    explanation: "Windows LAPS empêche la propagation d'une compromission (mouvements latéraux) en attribuant un secret exclusif et régulièrement renouvelé à chaque compte Administrateur local."
+    explanation: "Windows LAPS empêche la propagation d'une compromission (mouvements latéraux) en attribuant un secret exclusif et régulièrement renouvelé au compte Administrateur local de chaque machine."
 
   - kind: single
-    prompt: "Pourquoi est-il fortement recommandé de désactiver le protocole SMBv1 via GPO sur l'ensemble d'un parc Windows Server et client ?"
+    prompt: "Pourquoi est-il impératif de désactiver le protocole SMBv1 via GPO sur l'ensemble d'un parc Windows Server et postes clients ?"
     choices:
       - id: a
-        text: "SMBv1 est un protocole obsolète, non chiffré et notoirement vulnérable à des attaques de type EternalBlue exploitées par des rançongiciels destructeurs (ex: WannaCry, NotPetya)"
+        text: "SMBv1 est un protocole obsolète, non chiffré et notoirement vulnérable à des attaques exploitées par des rançongiciels destructeurs (ex: WannaCry via EternalBlue)"
       - id: b
-        text: "Parce que SMBv1 consomme trop d'encre lors de l'impression"
+        text: "Parce que SMBv1 empêche la création de documents Word"
       - id: c
-        text: "Parce que SMBv1 n'est compatible qu'avec les souris filaires"
+        text: "Parce que SMBv1 n'est utilisable que sur des écrans cathodiques"
       - id: d
-        text: "Parce que SMBv1 bloque l'accès au menu Démarrer"
+        text: "Parce que SMBv1 bloque l'accès à la calculatrice Windows"
     correct:
       - a
-    explanation: "La désactivation de SMBv1 au profit de SMBv2/SMBv3 chiffré est une mesure d'hygiène informatique élémentaire pour bloquer la propagation de malwares sur le réseau."
+    explanation: "La désactivation de SMBv1 au profit de SMBv2/SMBv3 chiffré est une mesure d'hygiène fondamentale pour éliminer des failles historiques exploitées par les vers et ransomwares."
+
+  - kind: multiple
+    prompt: "Quels événements de sécurité Windows (Event IDs) doivent déclencher une attention prioritaire dans un centre des opérations de sécurité (SOC) ?"
+    choices:
+      - id: a
+        text: "Event ID 4625 : Échec répété d'ouverture de session (détection de force brute ou pulvérisation de mots de passe)"
+      - id: b
+        text: "Event ID 4728 ou 4732 : Ajout d'un membre à un groupe de sécurité privilégié (ex: Domain Admins)"
+      - id: c
+        text: "Event ID 7045 : Installation d'un nouveau service Windows non planifié"
+      - id: d
+        text: "Event ID 4624 : Ouverture de session normale au début de la journée de travail"
+    correct:
+      - a
+      - b
+      - c
+    explanation: "Les événements 4625 (attaques d'authentification), 4728/4732 (élévation de privilèges au niveau domaine) et 7045 (création de service / persistance) sont des signaux critiques de compromission. L'Event ID 4624 correspond aux ouvertures de sessions légitimes régulières."
 
   - kind: single
-    prompt: "Quel événement de sécurité Windows (Event ID) dans l'Observateur d'événements signale un échec d'authentification (tentative de connexion refusée) ?"
+    prompt: "À quoi sert la technologie de chiffrement BitLocker associée à un module matériel TPM 2.0 sur les serveurs et postes Windows ?"
     choices:
       - id: a
-        text: "Event ID 4625"
+        text: "À chiffrer intégralement le volume système au repos afin de protéger les données et les hachages de mots de passe contre le vol physique du disque dur ou le démarrage sur système pirate"
       - id: b
-        text: "Event ID 4624"
+        text: "À empêcher les virus de transiter par les câbles Ethernet"
       - id: c
-        text: "Event ID 1000"
+        text: "À filtrer automatiquement les courriers indésirables dans la boîte mail"
       - id: d
-        text: "Event ID 7036"
+        text: "À augmenter la fréquence d'horloge du processeur"
     correct:
       - a
-    explanation: "L'Event ID 4625 consigne les échecs d'ouverture de session, permettant aux outils de détection SOC de repérer les attaques par force brute ou pulvérisation de mots de passe."
+    explanation: "BitLocker verrouille les données sur le disque et conditionne le déchiffrement à la validation de l'intégrité de la séquence de démarrage par la puce matérielle TPM 2.0."
 
   - kind: single
-    prompt: "Quel événement de sécurité Windows (Event ID) doit immédiatement déclencher une alerte de sévérité critique dans un centre des opérations de sécurité (SOC) ?"
+    prompt: "Quel est le rôle principal des règles ASR (Attack Surface Reduction) de Microsoft Defender ?"
     choices:
       - id: a
-        text: "Event ID 4728 ou 4732 (Ajout d'un membre à un groupe de sécurité privilégié tel que Domain Admins ou Enterprise Admins)"
+        text: "Bloquer proactivement les comportements malveillants typiques (création de processus par Office, extraction d'identifiants depuis LSASS, scripts obfusqués)"
       - id: b
-        text: "Event ID 4624 (Ouverture de session normale le matin)"
+        text: "Désinstaller automatiquement les logiciels non développés par Microsoft"
       - id: c
-        text: "Event ID 7040 (Modification du type de démarrage d'un service)"
+        text: "Réduire la luminosité de l'écran lors des attaques cyber"
       - id: d
-        text: "Event ID 105 (Mise à jour de l'heure système NTP)"
+        text: "Limiter la vitesse de la carte réseau à 10 Mbit/s"
     correct:
       - a
-    explanation: "L'ajout d'un compte dans un groupe d'administration du domaine est une étape classique d'élévation de privilèges ou de persistance malveillante qui doit être auditée en temps réel."
-
-  - kind: single
-    prompt: "À quoi sert la technologie de chiffrement de lecteur BitLocker associée à un module matériel TPM 2.0 sur les serveurs et postes Windows ?"
-    choices:
-      - id: a
-        text: "À chiffrer intégralement le volume système au repos afin de protéger les données et les hachages de mots de passe contre le vol physique du disque dur ou le démarrage sur clé USB pirate"
-      - id: b
-        text: "À empêcher les virus d'entrer par les câbles réseau"
-      - id: c
-        text: "À nettoyer automatiquement les spams dans Outlook"
-      - id: d
-        text: "À augmenter la vitesse de la carte graphique"
-    correct:
-      - a
-    explanation: "BitLocker verrouille les données sur le disque et conditionne le déchiffrement à l'intégrité de la séquence de démarrage validée par la puce TPM matérielle."
+    explanation: "Les règles ASR ciblent et neutralisent les techniques favorites des attaquants (macros malveillantes créant des shells, injection de code dans LSASS pour voler des hashs)."

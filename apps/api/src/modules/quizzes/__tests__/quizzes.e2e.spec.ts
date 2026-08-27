@@ -78,7 +78,7 @@ describe.skipIf(!process.env.DATABASE_URL)(
       } catch {
         isDbConnected = false;
       }
-    });
+    }, 30000);
 
     afterAll(async () => {
       if (prisma && isDbConnected) {

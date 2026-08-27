@@ -16,7 +16,7 @@ questions:
         text: "DisableAdminLogin false"
     correct:
       - a
-    explanation: "`PermitRootLogin no` force les administrateurs à se connecter avec leur compte individuel nominatif avant d'élever leurs privilèges avec `sudo`, assurant une traçabilité complète."
+    explanation: "`PermitRootLogin no` contraint les administrateurs à se connecter avec leur propre compte nominatif avant d'élever leurs privilèges avec `sudo`, garantissant l'imputabilité des actions."
 
   - kind: single
     prompt: "À quoi sert l'activation de 'net.ipv4.tcp_syncookies = 1' dans les paramètres du noyau Linux (/etc/sysctl.d/) ?"
@@ -24,44 +24,45 @@ questions:
       - id: a
         text: "À protéger le serveur contre les attaques par déni de service de type TCP SYN Flood en évitant la saturation de la file d'attente de connexions semi-ouvertes"
       - id: b
-        text: "À enregistrer les préférences de navigation des utilisateurs Web"
+        text: "À stocker les préférences de navigation des utilisateurs du serveur Web"
       - id: c
-        text: "À distribuer des récompenses sous forme de cookies virtuels"
+        text: "À générer des jetons d'authentification pour les requêtes HTTP"
       - id: d
-        text: "À accélérer le téléchargement des fichiers MP3"
+        text: "À accélérer le téléchargement des fichiers volumineux sur le réseau"
     correct:
       - a
-    explanation: "Les TCP SYN cookies permettent de répondre aux demandes de connexion sans allouer de structure mémoire tant que le handshake TCP 3-way n'est pas finalisé."
+    explanation: "Les TCP SYN cookies permettent de répondre aux demandes d'établissement de session sans allouer d'espace mémoire dans la table des états tant que le client n'a pas renvoyé le paquet ACK final."
 
   - kind: single
-    prompt: "Quel est le rôle du démon système 'auditd' sous Linux ?"
+    prompt: "Quel est le rôle du sous-système 'auditd' sous Linux ?"
     choices:
       - id: a
-        text: "Intercepter et journaliser de manière inviolable les appels système critiques, les modifications de fichiers sensibles (/etc/passwd, /etc/sudoers) et les élévations de privilèges"
+        text: "Intercepter et consigner de manière inaltérable les appels système critiques, les modifications de fichiers sensibles (/etc/passwd, /etc/sudoers) et les élévations de privilèges"
       - id: b
-        text: "Jouer de la musique d'ambiance lors des connexions SSH"
+        text: "Jouer une notification sonore lors de chaque connexion SSH"
       - id: c
-        text: "Nettoyer automatiquement la corbeille de l'utilisateur"
+        text: "Nettoyer automatiquement la corbeille de tous les utilisateurs"
       - id: d
-        text: "Vérifier l'orthographe des commandes tapées dans le terminal"
+        text: "Corriger automatiquement la syntaxe des scripts Shell"
     correct:
       - a
-    explanation: "`auditd` est le sous-système de traçabilité légale et de sécurité du noyau Linux, indispensable pour l'audit de conformité et l'investigation forensics."
+    explanation: "`auditd` est le sous-système de traçabilité légale et de sécurité du noyau Linux, indispensable pour l'audit de conformité et l'investigation post-incident."
 
-  - kind: single
-    prompt: "Comment un système de Contrôle d'Accès Obligatoire (MAC) tel qu'AppArmor ou SELinux renforce-t-il la sécurité d'un service en cas d'exploitation d'une faille ?"
+  - kind: multiple
+    prompt: "Quels avantages apporte la mise en œuvre d'un système de Contrôle d'Accès Obligatoire (MAC) tel qu'AppArmor ou SELinux ?"
     choices:
       - id: a
-        text: "Il applique des profils stricts de confinement qui interdisent au processus d'accéder aux fichiers non autorisés ou d'ouvrir des sockets réseau imprévus, même s'il est exécuté en root"
+        text: "Il confine chaque service applicatif dans un profil strict limitant ses accès disques et réseau, même si l'attaquant obtient les privilèges de l'utilisateur du service ou de root"
       - id: b
-        text: "Il remplace le processeur par un modèle plus récent"
+        text: "Il permet de bloquer l'exécution de shells arbitraires ou l'accès aux fichiers sensibles non déclarés dans la politique"
       - id: c
-        text: "Il formate le disque dur à chaque redémarrage"
+        text: "Il accélère la vitesse physique de rotation des disques durs"
       - id: d
-        text: "Il désactive complètement le pare-feu local"
+        text: "Il remplace le besoin d'appliquer des correctifs de sécurité"
     correct:
       - a
-    explanation: "Le modèle MAC supplante les permissions Unix traditionnelles (DAC) pour confiner un processus compromis dans une boîte hermétique selon un profil de sécurité prédéfini."
+      - b
+    explanation: "Le modèle MAC supplante les droits Unix traditionnels (DAC) en instaurant des barrières étanches autour des processus. Il n'a en revanche aucun effet matériel et ne dispense jamais d'appliquer les patchs de sécurité."
 
   - kind: single
     prompt: "Que garantit le paramètre noyau 'kernel.randomize_va_space = 2' (ASLR) ?"
@@ -69,11 +70,11 @@ questions:
       - id: a
         text: "La randomisation complète de l'espace d'adressage mémoire (pile, tas, bibliothèques partagées), empêchant un attaquant de prédire les adresses cibles lors d'un dépassement de tampon (Buffer Overflow)"
       - id: b
-        text: "Le mélange aléatoire de l'ordre des disques durs"
+        text: "L'inversion aléatoire des numéros de ports TCP du serveur"
       - id: c
-        text: "L'attribution d'une adresse IP dynamique à chaque seconde"
+        text: "Le renommage automatique des fichiers toutes les heures"
       - id: d
-        text: "La suppression aléatoire d'anciens emails"
+        text: "La suppression des sessions inactives après 2 minutes"
     correct:
       - a
-    explanation: "L'ASLR (Address Space Layout Randomization) rend extrêmement difficile l'exploitation des failles de mémoire en modifiant l'emplacement mémoire des composants à chaque exécution."
+    explanation: "L'ASLR (Address Space Layout Randomization) au niveau 2 modifie l'emplacement en mémoire des composants du programme à chaque exécution, rendant l'exploitation de failles mémoire extrêmement difficile."
