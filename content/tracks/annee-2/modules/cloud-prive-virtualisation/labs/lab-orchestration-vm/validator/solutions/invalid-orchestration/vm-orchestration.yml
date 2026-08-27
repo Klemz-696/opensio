@@ -1,0 +1,5 @@
+# Configuration sans template ni mode lié
+name: srv-web-prod
+cores: 2
+memory_mb: 4096
+# Manque template_id et clone_mode
