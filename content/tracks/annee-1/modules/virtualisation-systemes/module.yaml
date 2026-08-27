@@ -1,0 +1,25 @@
+slug: virtualisation-systemes
+title: "Virtualisation & Hyperviseurs (Type 1 & Type 2)"
+description: "Concepts fondamentaux de la virtualisation, hyperviseurs Bare-Metal vs Hosted, architecture Proxmox VE (KVM & LXC), réseaux virtuels (Bridges, VLANs), modèles de VMs, automatisation Cloud-Init et dimensionnement des ressources."
+position: 5
+difficulty: 2
+estimated_minutes: 500
+competency_refs:
+  - "B1.1"
+  - "B1.5"
+  - "B2.3"
+lessons:
+  - hyperviseurs-type1-type2
+  - architecture-proxmox-ve
+  - reseau-virtuel-bridges-vlans
+  - modeles-clones-lies-cloudinit
+  - dimensionnement-ressources-quotas
+quizzes:
+  - quiz-hyperviseurs-type1-type2
+  - quiz-architecture-proxmox-ve
+  - quiz-reseau-virtuel-bridges-vlans
+  - quiz-modeles-clones-lies-cloudinit
+  - quiz-dimensionnement-ressources-quotas
+labs:
+  - configuration-cloudinit-vm
+  - configuration-interfaces-proxmox

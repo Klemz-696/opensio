@@ -1,0 +1,80 @@
+slug: quiz-hyperviseurs-type1-type2
+title: "Quiz — Hyperviseurs Type 1 et Type 2"
+passing_score: 80
+position: 1
+questions:
+  - kind: single
+    prompt: "Quelle est la caractéristique principale d'un hyperviseur de Type 1 (Bare-Metal) par rapport à un hyperviseur de Type 2 (Hosted) ?"
+    choices:
+      - id: a
+        text: "Il s'exécute directement sur le matériel physique sans nécessiter de système d'exploitation hôte préalable"
+      - id: b
+        text: "Il s'exécute comme une application logicielle au-dessus de Windows 11 ou macOS"
+      - id: c
+        text: "Il ne permet de virtualiser que des conteneurs Linux sans virtualisation matérielle"
+      - id: d
+        text: "Il nécessite obligatoirement une émulation logicielle complète de toutes les instructions CPU"
+    correct:
+      - a
+    explanation: "Un hyperviseur Type 1 (ex: Proxmox VE, VMware ESXi) s'installe directement sur le matériel (Bare-Metal), ce qui lui confère des performances supérieures et une latence minimale."
+
+  - kind: multiple
+    prompt: "Quelles extensions matérielles de processeur permettent l'assistance à la virtualisation par le CPU ?"
+    choices:
+      - id: a
+        text: "Intel VT-x"
+      - id: b
+        text: "AMD-V (SVM)"
+      - id: c
+        text: "NVIDIA CUDA"
+      - id: d
+        text: "Intel Hyper-Threading"
+    correct:
+      - a
+      - b
+    explanation: "Intel VT-x et AMD-V (SVM) sont les jeux d'instructions matériels dédiés à l'exécution directe des instructions privilégiées par l'hyperviseur."
+
+  - kind: single
+    prompt: "Dans le couple KVM / QEMU sous Linux, quel est le rôle précis de KVM ?"
+    choices:
+      - id: a
+        text: "C'est un module du noyau Linux qui transforme le noyau en hyperviseur et gère l'accès direct aux vCPUs et à la RAM"
+      - id: b
+        text: "C'est un émulateur en espace utilisateur qui émule les périphériques PCI et cartes graphiques"
+      - id: c
+        text: "C'est une interface graphique web pour gérer des conteneurs Docker"
+      - id: d
+        text: "C'est un protocole de transfert de fichiers chiffré pour disques durs virtuels"
+    correct:
+      - a
+    explanation: "KVM (Kernel-based Virtual Machine) est le module noyau assurant la gestion des vCPUs et de la mémoire via VT-x/AMD-V, tandis que QEMU gère l'émulation des périphériques en espace utilisateur."
+
+  - kind: single
+    prompt: "Quel est le bénéfice majeur de l'utilisation des pilotes paravirtualisés VirtIO (virtio-net, virtio-scsi) ?"
+    choices:
+      - id: a
+        text: "Ils éliminent la surcharge d'émulation matérielle pour offrir des débits et des temps d'accès disques/réseau quasi natifs"
+      - id: b
+        text: "Ils permettent de convertir automatiquement une VM en conteneur Docker"
+      - id: c
+        text: "Ils empêchent toute connexion SSH vers les machines virtuelles"
+      - id: d
+        text: "Ils obligent la VM à fonctionner sans carte réseau physique"
+    correct:
+      - a
+    explanation: "Les pilotes VirtIO permettent à la VM invitée de dialoguer directement avec l'hyperviseur sans subir la lenteur de l'émulation d'anciennes puces matérielles (ex: carte réseau e1000 ou contrôleur IDE)."
+
+  - kind: single
+    prompt: "Quelle commande Linux permet de vérifier que le processeur physique prend en charge la virtualisation matérielle ?"
+    choices:
+      - id: a
+        text: "egrep -c '(vmx|svm)' /proc/cpuinfo"
+      - id: b
+        text: "systemctl status virtualbox"
+      - id: c
+        text: "uname -r"
+      - id: d
+        text: "df -h /proc/kvm"
+    correct:
+      - a
+    explanation: "La recherche des drapeaux 'vmx' (Intel) ou 'svm' (AMD) dans /proc/cpuinfo permet de valider la présence et l'activation des instructions de virtualisation matérielle dans le BIOS/UEFI."
