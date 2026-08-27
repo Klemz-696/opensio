@@ -55,12 +55,11 @@ mindmap
 
 ## 📊 2. État des Lieux du Contenu OpenSIO
 
-Actuellement, la plateforme dispose d'un parcours **1ère année (`annee-1`)** amorcé avec **2 modules complets**, validés à 100 % par `@opensio/content-schema` et `content/validate.mjs` :
+Actuellement, la plateforme dispose du parcours **1ère année (`annee-1`)** complet avec ses **8 modules opérationnels**, validés à 100 % par `@opensio/content-schema` et `content/validate.mjs` :
 
-- **`reseaux-fondamentaux`** : 7 leçons, 7 quiz (35 questions), 4 ateliers pratiques (labs niveau 2).
-- **`windows-server-ad`** : 6 leçons, 6 quiz (42 questions), 3 ateliers pratiques (labs niveau 2).
-- **Total opérationnel** : 13 leçons, 13 quiz (77 questions), 7 labs.
-- **Parcours 2ème année (`annee-2`)** : à initialiser.
+- **8 modules complétés** : `reseaux-fondamentaux`, `windows-server-ad`, `linux-administration`, `services-reseau-linux`, `virtualisation-systemes`, `sauvegardes-stockage`, `support-parc-glpi`, `anglais-technique`.
+- **Total opérationnel 1ère année** : 44 leçons, 44 quiz (232 questions), 20 labs pratiques autonomes (63 tests validateurs).
+- **Parcours 2ème année (`annee-2`)** : initialisé avec son fichier `track.yaml` et son premier module placeholder `routage-interconnexion`.
 
 ---
 
@@ -72,14 +71,15 @@ La cartographie complète comporte **19 modules** (8 en 1ère année, 11 en 2èm
 
 | # | Slug proposé | Titre du module | Statut | Leçons cibles | Labs cibles | Blocs couverts |
 |---|---|---|---|:---:|:---:|---|
-| 1 | `reseaux-fondamentaux` | Réseaux : fondamentaux | **Existant** | 7 | 4 | B2.1, B2.2 |
-| 2 | `windows-server-ad` | Windows Server & Active Directory | **Existant** | 6 | 3 | B1.1, B1.2, B2.1, B2.3 |
-| 3 | `linux-administration` | Linux : administration système & services de base | **À créer** | 6 | 3 | B1.1, B1.2, B2.3 |
-| 4 | `services-reseau-linux` | Services réseau Linux (DNS, DHCP, NTP) | **À créer** | 5 | 2 | B2.1, B2.2, B2.3 |
-| 5 | `virtualisation-systemes` | Virtualisation & Hyperviseurs (Type 1 & Type 2) | **À créer** | 5 | 2 | B1.1, B1.5, B2.3 |
-| 6 | `sauvegardes-stockage` | Stockage, Sauvegardes & Continuité d'activité | **À créer** | 5 | 2 | B1.1, B2.3, B3.4 |
-| 7 | `support-parc-glpi` | Gestion de parc & Gestion des incidents (ITIL / GLPI) | **À créer** | 5 | 2 | B1.1, B1.2, B1.5 |
-| 8 | `anglais-technique` | Anglais technique pour les systèmes et réseaux | **À créer** | 5 | 2 | E2, B1.2, B2.1 |
+| 1 | `reseaux-fondamentaux` | Réseaux : fondamentaux | **Complet** | 7 | 4 | B2.1, B2.2 |
+| 2 | `windows-server-ad` | Windows Server & Active Directory | **Complet** | 6 | 3 | B1.1, B1.2, B2.1, B2.3 |
+| 3 | `linux-administration` | Linux : administration système & services de base | **Complet** | 6 | 3 | B1.1, B1.2, B2.3 |
+| 4 | `services-reseau-linux` | Services réseau Linux (DNS, DHCP, NTP) | **Complet** | 5 | 2 | B2.1, B2.2, B2.3 |
+| 5 | `virtualisation-systemes` | Virtualisation & Hyperviseurs (Type 1 & Type 2) | **Complet** | 5 | 2 | B1.1, B1.5, B2.3 |
+| 6 | `sauvegardes-stockage` | Stockage, Sauvegardes & Continuité d'activité | **Complet** | 5 | 2 | B1.1, B2.3, B3.4 |
+| 7 | `support-parc-glpi` | Gestion de parc & Gestion des incidents (ITIL / GLPI) | **Complet** | 5 | 2 | B1.1, B1.2, B1.5 |
+| 8 | `anglais-technique` | Anglais technique pour les systèmes et réseaux | **Complet** | 5 | 2 | E2, B1.2, B2.1 |
+
 
 ### 3.2. Parcours 2ème Année (`annee-2`) — Spécialisation, Sécurité, DevOps & Cloud
 

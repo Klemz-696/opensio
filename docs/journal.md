@@ -1232,8 +1232,27 @@ Création complète du nouveau module `windows-server-ad` comprenant 6 leçons, 
 - `pnpm content:validate` : 100 % valide (18/18 tests Zod passants).
 - `node scripts/check-file-size.mjs` : 100 % conforme D-13 (331 fichiers analysés, 0 violation > 400 lignes).
 - `node scripts/check-theme-classes.mjs` : 100 % conforme bi-thème (0 violation).
-- `pnpm test --force` : 100 % vert (357 tests passants dans le monorepo).
-- `pnpm build --force` : 100 % réussi.
+### 13. Phase 2.3 — Initialisation du Parcours 2ème Année (`annee-2`)
+- **Fichier de parcours `content/tracks/annee-2/track.yaml`** :
+  - Slug : `annee-2`
+  - Titre : `BTS SIO SISR — 2ème année`
+  - Description : `Réseaux avancés et routage, sécurité périmétrique et filtrage, conteneurisation Docker, automatisation DevOps et cybersécurité.`
+  - Position : 2
+- **Module placeholder `content/tracks/annee-2/modules/routage-interconnexion/module.yaml`** :
+  - Slug : `routage-interconnexion`
+  - Titre : `Routage Dynamique, OSPF & Interconnexion Réseau`
+  - Position : 1, Difficulté : 3, Estimation : 550 min, Blocs : B2.1, B2.2
+  - Validation réussie de la structure multitrack par `@opensio/content-schema`, le moteur de synchronisation et `content/validate.mjs`.
+- **Mise à jour de `docs/modules-map.md`** :
+  - Mise à jour de l'état des lieux (8 modules de 1ère année complétés, 11 modules de 2ème année cartographiés).
+- **Validations globales multitrack** :
+  - `node content/validate.mjs` : 2 parcours, 9 modules, 44 leçons, 44 quiz, 20 labs, 63/63 tests validateurs passants (100 % valide).
+  - `pnpm content:validate` : 18/18 tests passants.
+  - `node scripts/check-file-size.mjs` : 100 % conforme D-13 (0 violation > 400 lignes).
+  - `node scripts/check-theme-classes.mjs` : 100 % conforme bi-thème (0 violation).
+  - `pnpm test --force` : 100 % vert (357 tests passants dans le monorepo).
+  - `pnpm build --force` : 100 % réussi.
+
 
 
 
