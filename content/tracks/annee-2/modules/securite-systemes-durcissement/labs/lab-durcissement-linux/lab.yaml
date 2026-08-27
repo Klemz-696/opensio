@@ -1,0 +1,72 @@
+slug: durcissement-serveur-linux-ansible
+title: "Durcissement Automatisé d'un Serveur Linux avec Ansible et Sysctl"
+level: 2_files
+max_score: 100
+estimated_minutes: 45
+context: |
+  Vous êtes administrateur Système et Sécurité et devez concevoir le socle d'automatisation pour durcir les serveurs Linux de l'entreprise conformément aux recommandations de l'ANSSI et aux benchmarks CIS.
+
+  Vous devez configurer :
+  1. **`hardening-playbook.yml`** :
+     - Playbook Ansible ciblant le groupe `servers` avec élévation de privilèges (`become: true`)
+     - Tâche de durcissement OpenSSH : déployer `/etc/ssh/sshd_config.d/99-hardening.conf` avec `PermitRootLogin no`, `PasswordAuthentication no`, `PubkeyAuthentication yes` et `MaxAuthTries 3`
+     - Tâche de déploiement des paramètres noyau `/etc/sysctl.d/99-security.conf` avec rechargement sysctl
+     - Tâche d'installation et activation des composants de sécurité : `auditd` et `ufw`
+     - Handler pour le rechargement du service `ssh` / `sshd`
+  2. **`sysctl-security.conf`** :
+     - Protection SYN Flood : `net.ipv4.tcp_syncookies = 1`
+     - Filtrage Reverse Path (Anti-Spoofing) : `net.ipv4.conf.all.rp_filter = 1` et `net.ipv4.conf.default.rp_filter = 1`
+     - Rejet des redirections ICMP : `net.ipv4.conf.all.accept_redirects = 0` et `net.ipv4.conf.default.accept_redirects = 0`
+     - Désactivation du routage de paquets : `net.ipv4.ip_forward = 0`
+     - Randomisation de l'espace mémoire (ASLR) : `kernel.randomize_va_space = 2`
+
+objectives:
+  - "Rédiger un playbook Ansible de durcissement reproductible et idempotent"
+  - "Verrouiller le service OpenSSH contre les attaques de force brute et accès non nominatifs"
+  - "Sécuriser les paramètres réseau et mémoire du noyau Linux via sysctl"
+  - "Mettre en œuvre les services d'audit (auditd) et de filtrage d'hôte (ufw)"
+
+prerequisites:
+  - "linux-administration"
+  - "automatisation-devops"
+  - "durcissement-systemes-linux-ssh-auditd"
+
+files:
+  editable:
+    - path: hardening-playbook.yml
+      description: "Playbook Ansible d'application du durcissement système"
+    - path: sysctl-security.conf
+      description: "Fichier de paramètres de sécurité du noyau Linux"
+
+hints:
+  - cost_percent: 10
+    text: "Dans hardening-playbook.yml, assurez-vous d'avoir 'become: true' et de définir un handler pour recharger sshd."
+  - cost_percent: 10
+    text: "Dans sysctl-security.conf, activez 'tcp_syncookies = 1' et 'rp_filter = 1'."
+  - cost_percent: 10
+    text: "N'oubliez pas d'installer 'auditd' et 'ufw' avec le module 'ansible.builtin.apt'."
+
+validation:
+  type: script
+  image: opensio/validator-ansible:latest
+  timeout_seconds: 30
+  checks:
+    - id: ssh_hardening_playbook_tasks
+      required: true
+      points: 25
+      description: "Playbook SSH : configuration stricte (PermitRootLogin no, PasswordAuthentication no) et handler de rechargement"
+    - id: security_services_installation
+      required: true
+      points: 25
+      description: "Services de Sécurité : installation et activation des paquets auditd et ufw"
+    - id: sysctl_network_protection
+      required: true
+      points: 25
+      description: "Noyau Réseau : protection TCP SYN Cookies, filtrage anti-usurpation (rp_filter) et rejet des redirections ICMP"
+    - id: sysctl_kernel_memory_protection
+      required: true
+      points: 25
+      description: "Mémoire et Déploiement : randomisation ASLR (kernel.randomize_va_space = 2) et rechargement sysctl dans Ansible"
+
+scoring:
+  floor_percent: 50

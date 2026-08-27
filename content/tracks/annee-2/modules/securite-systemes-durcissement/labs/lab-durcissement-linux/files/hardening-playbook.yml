@@ -1,0 +1,17 @@
+---
+# hardening-playbook.yml - Playbook Ansible de Durcissement Système
+- name: Application du durcissement système Linux (ANSSI / CIS)
+  hosts: servers
+  become: true
+
+  tasks:
+    # TODO: Configurer OpenSSH dans /etc/ssh/sshd_config.d/99-hardening.conf
+    # (PermitRootLogin no, PasswordAuthentication no, PubkeyAuthentication yes, MaxAuthTries 3)
+    # et notifier le handler de rechargement sshd
+
+    # TODO: Déployer sysctl-security.conf vers /etc/sysctl.d/99-security.conf et appliquer
+
+    # TODO: Installer et activer les services auditd et ufw
+
+  handlers:
+    # TODO: Définir le handler pour recharger le service SSH
