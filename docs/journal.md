@@ -1163,4 +1163,29 @@ Création complète du nouveau module `windows-server-ad` comprenant 6 leçons, 
 - `pnpm test --force` : 100 % vert (357 tests passants dans le monorepo).
 - `pnpm build --force` : 100 % réussi.
 
+### 7. Phase 2.2 — Production du Module `sauvegardes-stockage`
+- **Module `sauvegardes-stockage`** (5 leçons, 5 quiz, 2 labs) :
+  - `01-technologies-stockage-raid.md` + `quiz-technologies-stockage-raid.yaml` : Technologies de disques (HDD SAS/SATA, SSD NVMe U.2/PCIe), protocoles réseau DAS, NAS (NFS/SMB), SAN (iSCSI, Fibre Channel), RAID matériel vs logiciel (`mdadm`), niveaux RAID 0, 1, 5, 6, 10 (capacités, tolérances) et disques Hot-Spare.
+  - `02-strategie-sauvegarde-3-2-1.md` + `quiz-strategie-sauvegarde-3-2-1.yaml` : Règle du 3-2-1-1-0 (immuabilité WORM / S3 Object Lock, Air-Gap, 0 erreur), typologie complète / différentielle / incrémentale / incrémentale inverse, déduplication au bloc et rétention GFS (_Grandfather-Father-Son_).
+  - `03-outils-sauvegarde-linux.md` + `quiz-outils-sauvegarde-linux.yaml` : Synchronisation et miroirs `rsync` (`-a`, `--delete`, `--link-dest`), solutions dédupliquées BorgBackup / Restic, automatisation Cron (`/etc/cron.d/`) et Timers systemd, contrôle d'intégrité SHA-256.
+  - `04-outils-sauvegarde-windows-veeam.md` + `quiz-outils-sauvegarde-windows-veeam.yaml` : Clichés instantanés Windows VSS (_Volume Shadow Copy Service_), sauvegarde de l'état du système Active Directory (System State) et mode DSRM, architecture Veeam Backup & Replication (Proxy, Repository Linux immuable, CBT, Instant VM Recovery).
+  - `05-restauration-metriques-rto-rpo.md` + `quiz-restauration-metriques-rto-rpo.yaml` : Démarches PCA (haute disponibilité sans coupure) vs PRA (reconstruction après sinistre), métriques temporelles RTO, RPO, MTD ($RTO < MTD$), calendrier de tests périodiques de restauration ANSSI / ISO 27001 et matrice de criticité.
+  - **2 Labs autonomes de niveau 2_files avec suites de tests complètes** :
+    - `lab-script-backup-rsync` (`script-sauvegarde-rsync-rotation`) : Script Bash `backup.sh` avec mode strict `set -euo pipefail`, synchronisation `rsync` (-a, --delete, --exclude), calcul d'empreinte `sha256sum` dans `checksums.sha256`, rotation des archives de plus de 7 jours (`find -mtime`) et journalisation `backup.log`.
+    - `lab-plan-pca-rpo` (`matrice-pca-pra-rpo-rto`) : Matrice de continuité d'activité `plan-continuite.csv` classant les 4 services d'entreprise (AD DS, ERP PostgreSQL, Fichiers, Logs) avec RTO cible, RPO cible, stratégies techniques et fréquence des tests de restauration.
+
+### 8. Validations Globales Post-Sauvegardes
+- `node content/validate.mjs` : **100 % valide** :
+  - 6 modules opérationnels (`reseaux-fondamentaux`, `windows-server-ad`, `linux-administration`, `services-reseau-linux`, `virtualisation-systemes`, `sauvegardes-stockage`).
+  - 34 leçons rédigées et validées.
+  - 34 quiz d'évaluation (182 questions).
+  - 16 ateliers pratiques (Labs).
+  - **50 / 50 tests de validateurs passants** sur les suites de fixtures.
+- `pnpm content:validate` : 100 % valide (18/18 tests Zod passants).
+- `node scripts/check-file-size.mjs` : 100 % conforme D-13 (331 fichiers analysés, 0 violation > 400 lignes).
+- `node scripts/check-theme-classes.mjs` : 100 % conforme bi-thème (0 violation).
+- `pnpm test --force` : 100 % vert (357 tests passants dans le monorepo).
+- `pnpm build --force` : 100 % réussi.
+
+
 

@@ -1,0 +1,79 @@
+slug: quiz-restauration-metriques-rto-rpo
+title: "Quiz — Continuité d'Activité et Métriques RTO/RPO"
+passing_score: 80
+position: 5
+questions:
+  - kind: single
+    prompt: "Que représente le RPO (Recovery Point Objective) pour une base de données de production ?"
+    choices:
+      - id: a
+        text: "La quantité maximale de données (exprimée en durée) que l'organisation peut tolérer de perdre lors d'un sinistre"
+      - id: b
+        text: "Le temps nécessaire pour réinstaller le système d'exploitation"
+      - id: c
+        text: "Le prix mensuel de l'abonnement de stockage cloud"
+      - id: d
+        text: "Le nombre maximal d'utilisateurs connectés en simultané"
+    correct:
+      - a
+    explanation: "Le RPO mesure la fraîcheur des données restaurées (ex: un RPO de 15 minutes impose des sauvegardes ou archivages de logs au moins toutes les 15 minutes)."
+
+  - kind: single
+    prompt: "Que représente le RTO (Recovery Time Objective) lors de la survenue d'un sinistre ?"
+    choices:
+      - id: a
+        text: "La durée maximale admissible pour restaurer le service et le rendre opérationnel pour les utilisateurs"
+      - id: b
+        text: "La date d'expiration de la licence logicielle de l'antivirus"
+      - id: c
+        text: "Le nombre total de téraoctets sauvegardés par an"
+      - id: d
+        text: "Le délai légal de conservation des bulletins de paie"
+    correct:
+      - a
+    explanation: "Le RTO quantifie le temps d'arrêt maximal toléré avant que l'interruption ne cause des dommages inacceptables à l'entreprise."
+
+  - kind: single
+    prompt: "Quelle est la différence fondamentale entre un PCA (Plan de Continuité d'Activité) et un PRA (Plan de Reprise d'Activité) ?"
+    choices:
+      - id: a
+        text: "Le PCA vise à maintenir le fonctionnement en continu (haute disponibilité sans rupture), tandis que le PRA organise la reconstruction et le redémarrage après sinistre"
+      - id: b
+        text: "Le PCA ne s'applique qu'au matériel et le PRA qu'aux logiciels"
+      - id: c
+        text: "Le PRA est gratuit alors que le PCA est payant"
+      - id: d
+        text: "Le PCA est réservé aux serveurs Linux et le PRA aux serveurs Windows"
+    correct:
+      - a
+    explanation: "Le PCA s'appuie sur la redondance active (clusters, réplication) pour éviter toute coupure, tandis que le PRA prévoit les procédures de reconstruction à partir des sauvegardes."
+
+  - kind: single
+    prompt: "Quelle relation temporelle doit impérativement être respectée entre le RTO et la MTD (Maximum Tolerable Downtime) ?"
+    choices:
+      - id: a
+        text: "RTO doit être strictement inférieur à MTD (RTO < MTD)"
+      - id: b
+        text: "RTO doit être strictement supérieur à MTD (RTO > MTD)"
+      - id: c
+        text: "RTO doit être égal au double du MTD"
+      - id: d
+        text: "Il n'existe aucun lien entre ces deux métriques"
+    correct:
+      - a
+    explanation: "Si le temps de reprise (RTO) dépasse la durée maximale admissible (MTD), la survie financière ou juridique de l'entreprise est directement menacée."
+
+  - kind: single
+    prompt: "Pourquoi l'ANSSI et la norme ISO 27001 imposent-elles d'effectuer régulièrement des tests de restauration complets ?"
+    choices:
+      - id: a
+        text: "Parce qu'une sauvegarde sans test de restauration régulier ne garantit en rien que les données sont intègres, complètes et restaurables le jour d'un incident réel"
+      - id: b
+        text: "Pour effacer automatiquement les fichiers sauvegardés"
+      - id: c
+        text: "Pour vérifier la vitesse de frappe au clavier des administrateurs"
+      - id: d
+        text: "Pour remplacer les clés de chiffrement par des mots de passe plus courts"
+    correct:
+      - a
+    explanation: "Seul un test de restauration en environnement isolé permet de valider la cohérence des données, l'efficacité des procédures documentées et le respect des objectifs de RTO/RPO."
