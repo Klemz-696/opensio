@@ -1,0 +1,9 @@
+# vm-orchestration.yml - Manifeste d'orchestration de VM
+
+# TODO: Déclarer template_id et clone_mode: linked
+
+# TODO: Déclarer cores, memory_mb, disk_size_gb
+
+# TODO: Déclarer le réseau (bridge: vnet-frontend)
+
+# TODO: Déclarer l'injection Cloud-Init et la politique de snapshot

@@ -1,0 +1,79 @@
+slug: quiz-plateforme-cloud-prive-proxmox-openstack
+title: "Quiz — Plateformes de Cloud Privé Proxmox et OpenStack"
+passing_score: 80
+position: 3
+questions:
+  - kind: single
+    prompt: "Dans l'architecture modulaire d'OpenStack, quel composant est responsable de l'ordonnancement, du provisionnement et du cycle de vie des instances de calcul (VMs) ?"
+    choices:
+      - id: a
+        text: "Nova"
+      - id: b
+        text: "Keystone"
+      - id: c
+        text: "Neutron"
+      - id: d
+        text: "Glance"
+    correct:
+      - a
+    explanation: "Nova est le cœur de calcul d'OpenStack, chargé de piloter les hyperviseurs KVM et de placer intelligemment les instances de machines virtuelles."
+
+  - kind: single
+    prompt: "Quel composant d'OpenStack assure le service d'authentification centralisée, la gestion des identités et le contrôle d'accès RBAC pour toutes les API ?"
+    choices:
+      - id: a
+        text: "Keystone"
+      - id: b
+        text: "Cinder"
+      - id: c
+        text: "Swift"
+      - id: d
+        text: "Horizon"
+    correct:
+      - a
+    explanation: "Keystone est le service d'identité d'OpenStack qui valide les jetons d'authentification et distribue le catalogue d'API accessibles aux utilisateurs."
+
+  - kind: single
+    prompt: "Comment Proxmox VE assure-t-il la synchronisation en temps réel de sa configuration de cluster entre tous les nœuds ?"
+    choices:
+      - id: a
+        text: "Grâce à Corosync et à son système de fichiers partagé en mémoire pmxcfs (/etc/pve)"
+      - id: b
+        text: "En envoyant des clés USB par la poste tous les soirs"
+      - id: c
+        text: "Via des requêtes FTP manuelles"
+      - id: d
+        text: "En interdisant d'avoir plus d'un seul serveur"
+    correct:
+      - a
+    explanation: "`pmxcfs` est un système de fichiers basé sur une base SQLite distribuée en mémoire et synchronisée via le moteur de cluster Corosync sur tous les nœuds."
+
+  - kind: single
+    prompt: "Dans un Cloud Privé multi-tenant, à quoi sert la mise en place de 'Quotas de ressources' par projet ou département ?"
+    choices:
+      - id: a
+        text: "À limiter le nombre maximal de vCPUs, de RAM, d'espace disque et d'adresses IP alloués à un groupe pour empêcher la saturation du cluster et garantir l'équité"
+      - id: b
+        text: "À interdire aux développeurs de se connecter le week-end"
+      - id: c
+        text: "À limiter le nombre de caractères autorisés dans les mots de passe"
+      - id: d
+        text: "À bloquer le téléchargement de vidéos sur YouTube"
+    correct:
+      - a
+    explanation: "Les quotas permettent une gouvernance saine des ressources partagées et empêchent un projet individuel de monopoliser la mémoire ou le stockage du cluster."
+
+  - kind: single
+    prompt: "Quel protocole réseau d'encapsulation de niveau 2 sur niveau 3 est couramment utilisé dans les réseaux SDN de Cloud Privé (Proxmox SDN, Neutron) pour créer des sous-réseaux virtuels isolés ?"
+    choices:
+      - id: a
+        text: "VXLAN (Virtual Extensible LAN)"
+      - id: b
+        text: "FTP"
+      - id: c
+        text: "POP3"
+      - id: d
+        text: "Telnet"
+    correct:
+      - a
+    explanation: "VXLAN permet d'encapsuler des trames Ethernet de niveau 2 dans des paquets UDP de niveau 3, dépassant la limite des 4096 VLANs classiques et facilitant le routage inter-hyperviseurs."

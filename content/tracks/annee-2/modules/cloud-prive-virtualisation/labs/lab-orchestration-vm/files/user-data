@@ -1,0 +1,10 @@
+#cloud-config
+# user-data - Configuration Cloud-Init
+
+# TODO: Configurer hostname et fqdn
+
+# TODO: Déclarer l'utilisateur devops (groups: sudo, sudo sans mdp, ssh_authorized_keys)
+
+# TODO: Déclarer la liste packages (qemu-guest-agent, nginx)
+
+# TODO: Déclarer runcmd pour activer les services

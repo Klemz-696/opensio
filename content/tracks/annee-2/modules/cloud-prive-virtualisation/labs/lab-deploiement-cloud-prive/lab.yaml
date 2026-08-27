@@ -1,0 +1,68 @@
+slug: configuration-cluster-cloud-prive
+title: "Déploiement et Configuration d'un Cluster Cloud Privé avec SDN et Quotas"
+level: 2_files
+max_score: 100
+estimated_minutes: 45
+context: |
+  Vous êtes administrateur Cloud et devez configurer l'infrastructure d'un cluster Cloud Privé d'entreprise (Proxmox VE / KVM) avec réseau Software-Defined (SDN) et gouvernance des quotas.
+
+  Vous devez configurer :
+  1. **`cluster-config.yml`** :
+     - Nom du cluster : `cluster_name: "opensio-cloud-prive"`
+     - Déclarer 3 nœuds membres (`pve-node-01`, `pve-node-02`, `pve-node-03`) avec leurs adresses IP de réseau de cluster (réseau Corosync dédié)
+     - Activer la haute disponibilité (`ha_enabled: true`)
+     - Définir un pool de ressources multi-tenant (`resource_pools`) pour le projet `project-data` avec quotas stricts (`max_vcpus: 16`, `max_memory_mb: 65536`, `max_storage_gb: 1000`)
+  2. **`sdn-zones.cfg`** :
+     - Définir une zone SDN de type `vxlan` nommée `zone-prod` avec MTU 1450 et liste des pairs (peers)
+     - Définir les VNets `vnet-frontend` (tag/vnet ID 10000) et `vnet-backend` (tag/vnet ID 10001) avec sous-réseau `192.168.100.0/24` et passerelle `192.168.100.1`
+
+objectives:
+  - "Structurer la topologie d'un cluster d'hyperviseurs KVM à haute disponibilité avec Quorum Corosync"
+  - "Mettre en œuvre la gouvernance multi-tenant par pools de ressources et quotas matériels"
+  - "Concevoir des réseaux SDN encapsulés en VXLAN pour l'isolation inter-machines"
+  - "Définir des sous-réseaux virtuels (VNets) et des passerelles de routage"
+
+prerequisites:
+  - "linux-administration"
+  - "reseaux-fondamentaux"
+  - "plateforme-cloud-prive-proxmox-openstack"
+
+files:
+  editable:
+    - path: cluster-config.yml
+      description: "Fichier de configuration du cluster, de ses nœuds et des quotas"
+    - path: sdn-zones.cfg
+      description: "Fichier de configuration des zones et VNets SDN"
+
+hints:
+  - cost_percent: 10
+    text: "Dans cluster-config.yml, déclarez 3 nœuds sous la clé 'nodes:' avec leurs adresses IP de cluster."
+  - cost_percent: 10
+    text: "Pour les quotas, spécifiez 'max_vcpus', 'max_memory_mb' et 'max_storage_gb' sous 'resource_pools'."
+  - cost_percent: 10
+    text: "Dans sdn-zones.cfg, déclarez la zone avec 'zone: vxlan' et les VNets avec leurs tags et subnets."
+
+validation:
+  type: script
+  image: opensio/validator-cloud:latest
+  timeout_seconds: 30
+  checks:
+    - id: cluster_nodes_and_ha_config
+      required: true
+      points: 25
+      description: "Configuration du Cluster : 3 nœuds avec adresses de cluster dédiées et haute disponibilité activée"
+    - id: resource_pools_and_quotas
+      required: true
+      points: 25
+      description: "Gouvernance et Quotas : définition d'un pool multi-tenant avec plafonds CPU, RAM et stockage"
+    - id: sdn_zone_definition
+      required: true
+      points: 25
+      description: "Zone SDN : configuration de la zone VXLAN (zone-prod, MTU 1450, pairs inter-nœuds)"
+    - id: sdn_vnets_and_subnets
+      required: true
+      points: 25
+      description: "VNets et Sous-réseaux : déclaration de vnet-frontend et vnet-backend avec adressage IP et passerelle"
+
+scoring:
+  floor_percent: 50
