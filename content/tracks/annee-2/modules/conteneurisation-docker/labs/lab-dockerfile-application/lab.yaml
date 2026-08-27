@@ -1,0 +1,74 @@
+slug: construction-image-docker-optimisee
+title: "Construction d'une Image Docker Sécurisée et Multi-Stage (Node.js API)"
+level: 2_files
+max_score: 100
+estimated_minutes: 45
+context: |
+  Vous êtes ingénieur DevOps et devez concevoir le fichier `Dockerfile` d'une API web Node.js / TypeScript d'entreprise.
+
+  Pour respecter les standards de sécurité et d'optimisation de production, vous devez implémenter un **build multi-étapes (Multi-Stage Build)**.
+
+  Spécifications attendues dans `Dockerfile` :
+  1. **Étape 1 (Builder)** :
+     - Image de base : `node:22-alpine AS builder`
+     - Répertoire de travail : `WORKDIR /app`
+     - Optimisation de cache : copier d'abord `package*.json ./` puis lancer `RUN npm ci`
+     - Copier l'ensemble des sources (`COPY . .`) et compiler l'application (`RUN npm run build`)
+  2. **Étape 2 (Production)** :
+     - Image de base runtime légère : `node:22-alpine`
+     - Répertoire de travail : `WORKDIR /app`
+     - Variables d'environnement : `ENV NODE_ENV=production` et `ENV PORT=3000`
+     - Dépendances de production : copier `package*.json ./` et installer uniquement les dépendances de production (`RUN npm ci --omit=dev` ou `--only=production`)
+     - Récupération des artefacts : copier le dossier compilé `/app/dist` depuis l'étape builder (`COPY --from=builder /app/dist ./dist`)
+     - Sécurité : exécuter l'application sous le compte non-root `USER node`
+     - Documentation : `EXPOSE 3000`
+     - Démarrage : `CMD ["node", "dist/main.js"]` (en syntaxe tableau JSON exec)
+
+objectives:
+  - "Structurer un Dockerfile en plusieurs étapes (Multi-Stage Build) pour éliminer les dépendances de build"
+  - "Exploiter la mise en cache des calques Docker lors de l'installation des dépendances npm"
+  - "Sécuriser le conteneur en appliquant le principe du moindre privilège avec USER node"
+  - "Déclarer la commande de démarrage en forme exec (JSON array) pour garantir la gestion des signaux PID 1"
+
+prerequisites:
+  - "linux-administration"
+  - "principes-conteneurisation-et-cycle-vie"
+  - "dockerfile-construction-et-bonnes-pratiques"
+
+files:
+  editable:
+    - path: Dockerfile
+      description: "Fichier Dockerfile de construction de l'image de production"
+
+hints:
+  - cost_percent: 10
+    text: "Déclarez la première étape avec 'FROM node:22-alpine AS builder' et la seconde avec 'FROM node:22-alpine'."
+  - cost_percent: 10
+    text: "Pour copier les fichiers compilés depuis l'étape de build, utilisez 'COPY --from=builder /app/dist ./dist'."
+  - cost_percent: 10
+    text: "N'oubliez pas d'ajouter 'USER node' avant l'instruction 'CMD [\"node\", \"dist/main.js\"]' pour la sécurité non-root."
+
+validation:
+  type: script
+  image: opensio/validator-dockerfile:latest
+  timeout_seconds: 30
+  checks:
+    - id: multistage_structure_and_base_images
+      required: true
+      points: 25
+      description: "Structure multi-étapes valide (FROM ... AS builder et stage de production)"
+    - id: builder_dependencies_and_compilation
+      required: true
+      points: 25
+      description: "Étape builder : WORKDIR, cache des package*.json, npm ci et npm run build"
+    - id: production_stage_copy_and_env
+      required: true
+      points: 25
+      description: "Étape production : ENV NODE_ENV=production, COPY --from=builder et EXPOSE 3000"
+    - id: security_non_root_and_cmd_exec
+      required: true
+      points: 25
+      description: "Sécurité : USER node non-root et commande de démarrage CMD au format exec JSON"
+
+scoring:
+  floor_percent: 50

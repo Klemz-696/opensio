@@ -87,9 +87,9 @@ La cartographie complète comporte **19 modules** (8 en 1ère année, 11 en 2èm
 |---|---|---|---|:---:|:---:|---|
 | 9 | `routage-interconnexion` | Routage dynamique & Interconnexion de réseaux | **Complet** | 5 | 2 | B2.1, B2.2 |
 | 10 | `securite-perimetrique` | Sécurité périmétrique, Pare-feu & Filtrage réseau | **Complet** | 5 | 2 | B2.1, B2.2, B3.1 |
-| 11 | `serveurs-web-pki-tls` | Services Web, Reverse Proxy & Infrastructure PKI / TLS | **À créer** | 6 | 3 | B2.3, B3.2, B3.3 |
-| 12 | `vpn-acces-distants` | Réseaux privés virtuels (VPN) & Accès distants sécurisés | **À créer** | 5 | 2 | B2.1, B2.2, B3.2, B3.3 |
-| 13 | `conteneurisation-docker` | Conteneurisation d'applications avec Docker & Compose | **À créer** | 6 | 3 | B1.5, B2.3, B3.3 |
+| 11 | `conteneurisation-docker` | Conteneurisation d'applications avec Docker & Compose | **Complet** | 5 | 2 | B2.1, B2.2, B2.3 |
+| 12 | `serveurs-web-pki-tls` | Services Web, Reverse Proxy & Infrastructure PKI / TLS | **À créer** | 6 | 3 | B2.3, B3.2, B3.3 |
+| 13 | `vpn-acces-distants` | Réseaux privés virtuels (VPN) & Accès distants sécurisés | **À créer** | 5 | 2 | B2.1, B2.2, B3.2, B3.3 |
 | 14 | `scripting-automatisation` | Scripting système & Automatisation (Bash & PowerShell) | **À créer** | 6 | 2 | B1.1, B2.3 |
 | 15 | `supervision-metrologie` | Supervision des infrastructures, Métrologie & Alerting | **À créer** | 5 | 2 | B1.2, B2.3, B3.4 |
 | 16 | `cybersecurite-durcissement-audit` | Cybersécurité : Durcissement, Audit & Gestion des vulnérabilités | **À créer** | 6 | 3 | B3.1, B3.2, B3.3, B3.4 |
