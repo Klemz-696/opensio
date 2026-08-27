@@ -1278,6 +1278,32 @@ Création complète du nouveau module `windows-server-ad` comprenant 6 leçons, 
 - `pnpm test --force` : 100 % vert (357 tests passants dans le monorepo).
 - `pnpm build --force` : 100 % réussi.
 
+### 16. Phase 2.3 — Production du Module `securite-perimetrique` (2ème Année SISR)
+- **Module `securite-perimetrique`** (5 leçons, 5 quiz, 2 labs) :
+  - `01-principes-securite-perimetrique-zones.md` + `quiz-principes-securite-perimetrique-zones.yaml` : Modèle périmétrique vs Zero Trust ("Never trust, always verify"), découpage en zones de sécurité (LAN, DMZ, WAN, Management OOB), règle d'or d'étanchéité de la DMZ (aucun flux initié vers le LAN), principes de Défense en Profondeur et matrice d'urbanisation de flux d'entreprise.
+  - `02-pare-feu-stateful-et-filtrage.md` + `quiz-pare-feu-stateful-et-filtrage.yaml` : Filtrage sans état (Stateless) vs avec état (Stateful Inspection), module conntrack Linux et ses 4 états de session (NEW, ESTABLISHED, RELATED, INVALID), syntaxe et architecture `nftables` (famille `inet`, chaînes `input`, `forward`, `output` avec politique `policy drop`), audit et journalisation.
+  - `03-nat-securise-et-exposition-services.md` + `quiz-nat-securise-et-exposition-services.yaml` : Analyse des risques de l'exposition directe de serveurs, architecture de publication sécurisée en DMZ (Reverse Proxy Nginx, WAF), configuration du DNAT (Port Forwarding) et SNAT / Masquerade sous `nftables`, réduction de la surface d'attaque (Rate Limiting, IP Whitelisting).
+  - `04-vpn-site-a-site-et-acces-distants.md` + `quiz-vpn-site-a-site-et-acces-distants.yaml` : Propriétés de sécurité VPN (Confidentialité, Intégrité HMAC, Authentification, Anti-Rejeu), topologies Site-à-Site vs Nomade, comparatif IPsec (IKEv2/ESP) vs WireGuard vs OpenVPN, cryptokey routing WireGuard et recommandations ANSSI (PFS, AES-GCM, ChaCha20-Poly1305).
+  - `05-durcissement-perimetrique-et-protection.md` + `quiz-durcissement-perimetrique-et-protection.yaml` : Durcissement des équipements réseau (bannissement Telnet/HTTP/SNMPv1-v2, forçage SSHv2 avec clés asymétriques, architecture AAA avec RADIUS/TACACS+), protection anti-usurpation uRPF, sécurisation de couche 2 sur commutateurs (DHCP Snooping, Dynamic ARP Inspection, Port Security) et mitigation anti-DDoS (SYN Cookies).
+  - **2 Labs autonomes de niveau 2_files avec suites de tests complètes** :
+    - `lab-regles-pare-feu` (`configuration-pare-feu-stateful-nftables`) : Configuration complète du pare-feu avec état sous `nftables` dans `nftables.conf` (flush ruleset, tables inet filter et ip nat, chaînes input/forward en policy drop, conntrack, flux LAN->WAN, WAN->DMZ ports 80/443, DNAT vers 192.168.50.10, Masquerade sur eth1 et confinement DMZ).
+    - `lab-vpn-site-a-site` (`configuration-tunnel-vpn-wireguard`) : Configuration complète du tunnel VPN WireGuard dans `wg0.conf` sur la passerelle Siège (Address 10.100.0.1/30, ListenPort 51820, PrivateKey, PublicKey distante, Endpoint 198.51.100.20:51820, AllowedIPs incluant 10.100.0.2/32 et 192.168.20.0/24, PersistentKeepalive 25).
+
+### 17. Validations Globales Post-Sécurité-Périmétrique
+- `node content/validate.mjs` : **100 % valide** :
+  - **2 parcours opérationnels** (`annee-1`, `annee-2`).
+  - **10 modules opérationnels** (8 en 1ère année, 2 en 2ème année).
+  - **54 leçons rédigées et validées**.
+  - **54 quiz d'évaluation (282 questions avec explications pédagogiques)**.
+  - **24 ateliers pratiques (Labs)**.
+  - **75 / 75 tests de validateurs passants** sur les suites de fixtures.
+- `pnpm content:validate` : 100 % valide (18/18 tests Zod passants).
+- `node scripts/check-file-size.mjs` : 100 % conforme D-13 (331 fichiers analysés, 0 violation > 400 lignes).
+- `node scripts/check-theme-classes.mjs` : 100 % conforme bi-thème (0 violation).
+- `pnpm test --force` : 100 % vert (357 tests passants dans le monorepo).
+- `pnpm build --force` : 100 % réussi.
+
+
 
 
 
