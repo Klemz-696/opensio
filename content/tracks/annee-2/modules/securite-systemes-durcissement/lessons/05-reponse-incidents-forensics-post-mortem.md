@@ -2,18 +2,20 @@
 slug: reponse-incidents-forensics-post-mortem
 title: "Réponse aux Incidents Cyber, Forensics de Base, Confinement et Retour d'Expérience (Post-Mortem)"
 version: 1.0.0
-last_reviewed: "2026-08-27"
+last_reviewed: "2026-08-28"
 difficulty: 3
 estimated_minutes: 50
 objectives:
-  - "Maîtriser les 6 étapes du cycle de réponse à incident (NIST SP 800-61 / ISO 27035)"
+  - "Maîtriser les 6 phases du cycle de réponse aux incidents de sécurité (NIST SP 800-61 / ISO 27035)"
   - "Isoler et confiner une machine compromise sans détruire les preuves volatiles en mémoire vive"
-  - "Identifier et classifier les indicateurs de compromission (IoC) : hashs de fichiers, IPs, domaines C2"
-  - "Appliquer les principes d'investigation numérique légale (Forensics) et l'ordre de volatilité (RFC 3227)"
-  - "Rédiger un rapport de retour d'expérience (Post-Mortem / Lessons Learned) pour renforcer l'infrastructure"
+  - "Appliquer l'ordre de volatilité des preuves numériques conformément à la RFC 3227"
+  - "Effectuer un triage forensique de base sous Linux (processus suspects, sockets, persistances)"
+  - "Identifier les indicateurs de compromission (IoC) et formaliser un rapport de retour d'expérience (Post-Mortem)"
 prerequisites:
   - "linux-administration"
   - "principes-durcissement-guides-anssi-cis"
+  - "reseaux-fondamentaux"
+  - "securite-perimetrique"
 competency_refs:
   - "B2.2"
   - "B3.1"
@@ -25,53 +27,118 @@ references:
     url: "https://csrc.nist.gov/publications/detail/sp/800-61/rev-2/final"
   - label: "RFC 3227 - Guidelines for Evidence Collection and Archiving"
     url: "https://datatracker.ietf.org/doc/html/rfc3227"
+  - label: "ANSSI - Organiser la réponse à incident de sécurité informatique"
+    url: "https://cyber.gouv.fr/publications/organiser-la-reponse-incident-de-securite-informatique"
 ---
 
 # Réponse aux Incidents Cyber, Forensics de Base, Confinement et Retour d'Expérience (Post-Mortem)
 
-Lorsqu'une intrusion est suspectée ou confirmée, la rapidité et la méthode de l'équipe de réponse aux incidents déterminent si l'attaque sera circonscrite en quelques minutes ou se transformera en catastrophe majeure pour l'organisation.
+Aucun système d'information n'est invulnérable. Lorsqu'une intrusion ou un comportement anormal est détecté, la rigueur méthodologique et la rapidité d'exécution de l'équipe d'intervention conditionnent la limitation des impacts opérationnels et la préservation de la réputation de l'organisation.
 
 ---
 
-## 1. Le Cycle de Gestion des Incidents (NIST SP 800-61)
+## 1. Le Cycle de Gestion des Incidents (NIST SP 800-61 / ISO 27035)
+
+Le cadre du NIST découpe la réponse aux incidents de sécurité en **6 étapes séquentielles** :
 
 ```mermaid
-graph TD
-    PREP["1. Préparation : Playbooks, outils, accès et astreintes"] --> DETECT["2. Détection & Analyse : Corrélation SIEM/EDR, triage"]
-    DETECT --> CONT["3. Confinement : Quarantaine réseau (Ne PAS éteindre la VM)"]
-    CONT --> ERAD["4. Éradication : Suppression malwares, révocation accès"]
-    ERAD --> REC["5. Récupération : Restauration saine, reprise surveillée"]
-    REC --> RETEX["6. Retour d'Expérience (Post-Mortem) : Rapport & plan d'action"]
+flowchart TD
+    PREP["1. Préparation<br/>• Outils forensiques, astreintes, playbooks, sauvegardes hors ligne"] --> DETECT["2. Détection & Analyse<br/>• Triage des alertes SIEM/EDR, qualification de l'incident, portée"]
+    DETECT --> CONT["3. Confinement (Containment)<br/>• Quarantaine réseau, blocage C2 (SANS ÉTEINDRE LA MACHINE)"]
+    CONT --> ERAD["4. Éradication<br/>• Suppression des malwares, fermeture des failles, révocation des accès"]
+    ERAD --> REC["5. Récupération (Recovery)<br/>• Restauration saine, reprise sous supervision renforcée"]
+    REC --> RETEX["6. Retour d'Expérience (Post-Mortem)<br/>• Analyse de cause racine, chronologie, plan d'actions correctives"]
+    RETEX -.->|Amélioration continue| PREP
 ```
 
 ---
 
-## 2. Confinement et Respect de l'Ordre de Volatilité (RFC 3227)
+## 2. Confinement et Ordre de Volatilité des Preuves (RFC 3227)
 
-L'erreur la plus fréquente lors de la détection d'un ransomware ou d'un pirate consiste à débrancher la prise électrique ou éteindre la machine. **Éteindre la machine détruit immédiatement toutes les preuves critiques résidant en mémoire vive (RAM)** (clés de chiffrement, processus malveillants injectés, connexions réseau actives).
+L'erreur la plus critique et fréquente commise lors de la découverte d'une attaque (ransomware, backdoor) consiste à débrancher brutalement la prise électrique ou éteindre la machine virtuelle.
+
+> **Conséquence fatale** : l'extinction détruit instantanément la mémoire vive (RAM). Or, c'est en RAM que résident les clés de déchiffrement, les processus malveillants injectés sans écriture sur disque (*Fileless Malware*), les sessions ouvertes et les adresses IP des serveurs de commande et contrôle (C2).
 
 ```text
-┌─────────────────────────────────────────────────────────────┐
-│          ORDRE DE VOLATILITÉ DES PREUVES (RFC 3227)         │
-├─────────────────────────────────────────────────────────────┤
-│ 1. Plus volatile  : Registres CPU, mémoire cache            │
-│ 2. Très volatile  : Mémoire vive (RAM)                      │
-│ 3. Volatile       : Tables de routage, connexions réseau    │
-│ 4. Persistant     : Disques durs virtuels, systèmes de fich.│
-│ 5. Très stable    : Journaux distants (Syslog centralisé)   │
-└─────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────────┐
+│              ORDRE DE VOLATILITÉ DES PREUVES (RFC 3227)                 │
+├─────────────────────────────────────────────────────────────────────────┤
+│ 1. Plus volatile  : Registres CPU, mémoire cache du processeur          │
+│ 2. Très volatile  : Mémoire vive (RAM), tables de routage, connexions   │
+│ 3. Volatile       : État du noyau, processus actifs, fichiers temporaires│
+│ 4. Persistant     : Disques durs virtuels, partitions, logs locaux       │
+│ 5. Très stable    : Journaux distants (SIEM centralisé), sauvegardes    │
+└─────────────────────────────────────────────────────────────────────────┘
 ```
 
-### Bonne pratique d'isolation :
-- Couper l'interface réseau virtuelle (déconnexion du vSwitch / quarantaine VLAN) ou bloquer le trafic via le pare-feu local sans éteindre le système d'exploitation.
-- Réaliser un instantané mémoire (*Memory Dump* ou Snapshot VM avec état RAM) avant toute manipulation.
+### Bonne pratique d'isolation réseau :
+1. Déconnecter l'interface réseau virtuelle au niveau de l'hyperviseur (déconnexion du port group vSwitch ou bascule vers un VLAN de quarantaine isolé).
+2. Effectuer un instantané mémoire (*Snapshot VM avec état RAM* ou dump mémoire avec l'outil `LiME`).
+3. Bloquer tout trafic sortant avec le pare-feu local sans redémarrer le système d'exploitation.
 
 ---
 
-## 3. Le Rapport de Post-Mortem (Lessons Learned)
+## 3. Commandes de Triage et Diagnostic Forensics sous Linux
 
-Après la remédiation de l'incident, l'équipe produit un document formel structuré :
-1. **Résumé exécutif** : Impact métier, durée d'indisponibilité, données touchées.
-2. **Chronologie détaillée des événements** : Heure exacte de l'intrusion initiale, étapes de propagation, heure de détection et heure de reprise.
-3. **Vecteur initial de compromission** : Faille logicielle non patchée, hameçonnage (*phishing*), mot de passe faible, compte de service compromis.
-4. **Plan d'actions correctives** : Durcissement des GPO, mise en œuvre du MFA obligatoire, déploiement d'un agent EDR sur les serveurs orphelins.
+Lors de la phase initiale d'investigation sur un serveur compromis, l'administrateur collecte les artefacts système sans altérer l'état de la machine :
+
+```bash
+# 1. Inspecter les connexions réseau actives et processus en écoute
+ss -tulpn
+
+# 2. Identifier les processus anormaux et leurs chemins d'exécution
+ps auxf
+ls -l /proc/<PID>/exe
+
+# 3. Vérifier les mécanismes de persistance automatique
+crontab -l
+ls -la /etc/cron* /var/spool/cron/crontabs/
+systemctl list-timers --all
+cat /etc/ld.so.preload 2>/dev/null
+
+# 4. Examiner les clés SSH autorisées sur tous les comptes
+find /home /root -name "authorized_keys" -exec ls -la {} \;
+
+# 5. Analyser les dernières connexions et tentatives échouées
+last -n 20
+lastb -n 20
+journalctl -u ssh --since "2 hours ago"
+```
+
+---
+
+## 4. Indicateurs de Compromission (IoC - *Indicators of Compromise*)
+
+Les **IoC** sont les empreintes numériques laissées par l'attaquant au cours de son intrusion. Ils permettent d'auditer l'ensemble du parc informatique pour détecter d'autres machines infectées :
+
+- **Empreintes cryptographiques de fichiers** : hachage SHA-256 d'un binaire ou d'un script suspect.
+- **Réseau** : adresses IP publiques malveillantes, noms de domaines dynamiques utilisés pour le C2.
+- **Système** : clés de registre Windows modifiées, nouveaux services créés avec des noms aléatoires.
+
+---
+
+## 5. Le Rapport de Post-Mortem (Lessons Learned)
+
+Une fois la crise résolue et les systèmes restaurés, l'équipe rédige un rapport formel d'analyse post-incident :
+
+```text
+┌─────────────────────────────────────────────────────────────────────────┐
+│                STRUCTURE DU RAPPORT DE POST-MORTEM                      │
+├─────────────────────────────────────────────────────────────────────────┤
+│ 1. RÉSUMÉ EXÉCUTIF                                                      │
+│    • Impact métier, durée d'indisponibilité, volume de données touchées.│
+├─────────────────────────────────────────────────────────────────────────┤
+│ 2. CHRONOLOGIE DÉTAILLÉE DES ÉVÉNEMENTS (Timeline)                      │
+│    • T0 : Intrusion initiale (Vecteur d'entrée).                        │
+│    • T1 : Détection par le SOC / l'administrateur.                      │
+│    • T2 : Confinement et neutralisation de la menace.                   │
+│    • T3 : Rétablissement complet des services.                          │
+├─────────────────────────────────────────────────────────────────────────┤
+│ 3. ANALYSE DE LA CAUSE RACINE (Root Cause Analysis)                     │
+│    • Faille CVE non patchée, mot de passe faible sans MFA, phishing...  │
+├─────────────────────────────────────────────────────────────────────────┤
+│ 4. PLAN D'ACTIONS CORRECTIVES (CAPA)                                    │
+│    • Mesures techniques : durcissement GPO, MFA obligatoire, EDR.       │
+│    • Mesures organisationnelles : formation des équipes, révision GTR.  │
+└─────────────────────────────────────────────────────────────────────────┘
+```

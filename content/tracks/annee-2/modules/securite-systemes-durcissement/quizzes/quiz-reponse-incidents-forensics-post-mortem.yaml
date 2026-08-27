@@ -4,76 +4,78 @@ passing_score: 80
 position: 5
 questions:
   - kind: single
-    prompt: "Selon le standard RFC 3227 sur l'ordre de volatilité des preuves numériques, quelle source d'information disparaît en premier si une machine compromise est brusquement éteinte ?"
+    prompt: "Selon le standard RFC 3227 sur l'ordre de volatilité des preuves numériques, quelle source d'information disparaît irrémédiablement en premier si une machine compromise est brusquement éteinte ?"
     choices:
       - id: a
         text: "La mémoire vive (RAM), les registres CPU, les connexions réseau actives et la liste des processus en cours d'exécution"
       - id: b
-        text: "Les fichiers texte enregistrés sur le disque dur SSD"
+        text: "Les fichiers journaux archivés sur un serveur distant (SIEM)"
       - id: c
-        text: "Les câbles réseau dans la baie"
+        text: "Les fichiers statiques enregistrés sur le disque dur SSD"
       - id: d
-        text: "L'historique des emails stockés sur le serveur central"
+        text: "Les câbles réseau dans la baie informatique"
     correct:
       - a
-    explanation: "La RAM et les registres sont des mémoires volatiles qui s'effacent instantanément à l'extinction, détruisant les clés de déchiffrement et les traces du malware en mémoire."
+    explanation: "La RAM et les registres sont des mémoires hautement volatiles qui s'effacent instantanément à l'extinction, détruisant les clés de déchiffrement et les traces des malwares opérant en mémoire."
 
   - kind: single
     prompt: "Quelle est l'action prioritaire et correcte lors de la phase de 'Confinement' (Containment) lorsqu'un serveur est suspecté d'être infecté par un pirate ou un rançongiciel ?"
     choices:
       - id: a
-        text: "Isoler le serveur du reste du réseau (déconnexion du vSwitch / mise en quarantaine VLAN) sans éteindre le système d'exploitation afin d'empêcher les mouvements latéraux tout en préservant la mémoire pour l'investigation"
+        text: "Isoler le serveur du réseau (déconnexion vSwitch / quarantaine VLAN) sans éteindre le système d'exploitation afin d'empêcher les mouvements latéraux tout en préservant la mémoire pour l'investigation"
       - id: b
         text: "Éteindre violemment le serveur en débranchant la prise électrique"
       - id: c
         text: "Formater immédiatement le disque dur sans sauvegarder la mémoire"
       - id: d
-        text: "Envoyer un email au pirate pour négocier le prix de la rançon"
+        text: "Contacter le pirate par courriel pour négocier le montant de la rançon"
     correct:
       - a
-    explanation: "Le confinement bloque la propagation latérale et les communications vers le serveur pirate (C2) tout en maintenant l'état en mémoire vive pour l'analyse forensique."
+    explanation: "Le confinement bloque la propagation latérale et les flux vers le serveur C2 tout en maintenant l'état en mémoire vive intact pour l'analyse forensique."
 
-  - kind: single
-    prompt: "Qu'est-ce qu'un 'IoC' (Indicator of Compromise) en cybersécurité ?"
+  - kind: multiple
+    prompt: "Quels éléments constituent des indicateurs de compromission (IoC - Indicators of Compromise) exploitables lors d'une réponse à incident ?"
     choices:
       - id: a
-        text: "Un élément technique ou preuve numérique (empreinte SHA256 d'un malware, adresse IP malveillante, nom de domaine C2, clé de registre anormale) attestant d'une intrusion ou d'une activité malveillante"
+        text: "L'empreinte cryptographique SHA-256 d'un binaire ou d'un script malveillant"
       - id: b
-        text: "Un certificat de formation pour les administrateurs"
+        text: "Une adresse IP ou un nom de domaine de serveur Command & Control (C2)"
       - id: c
-        text: "Le mot de passe par défaut d'une imprimante"
+        text: "Une clé de registre anormale assurant la persistance d'un malware"
       - id: d
-        text: "La facture d'achat d'un commutateur réseau"
+        text: "Le modèle de processeur Intel ou AMD de la machine hôte"
     correct:
       - a
-    explanation: "Les IoC sont partagés entre équipes de sécurité pour détecter la présence d'une menace spécifique sur l'ensemble des équipements du système d'information."
+      - b
+      - c
+    explanation: "Les IoC (hashs de fichiers, domaines C2, modifications de registre anormales) sont les preuves techniques signant l'activité de l'attaquant. Le modèle de processeur est un composant standard légitime."
 
   - kind: single
-    prompt: "Dans le cycle de réponse à incident (NIST SP 800-61), quel est le but principal de l'étape finale de 'Retour d'expérience' (Post-Mortem / Lessons Learned) ?"
+    prompt: "Dans le cycle de réponse à incident (NIST SP 800-61), quel est l'objectif fondamental de l'étape de 'Retour d'expérience' (Post-Mortem / Lessons Learned) ?"
     choices:
       - id: a
-        text: "Analyser objectivement le déroulement de la crise, identifier la cause racine (Root Cause), documenter la chronologie et définir un plan d'actions correctives pour éviter la réapparition de l'incident"
+        text: "Analyser objectivement le déroulement de la crise, identifier la cause racine (Root Cause), formaliser la chronologie et définir un plan d'actions correctives pour éviter la réapparition de l'incident"
       - id: b
-        text: "Désigner publiquement un coupable pour le licencier"
+        text: "Désigner publiquement un employé responsable pour le sanctionner"
       - id: c
-        text: "Supprimer tous les journaux de sécurité pour repartir de zéro"
+        text: "Supprimer tous les journaux de sécurité pour effacer les traces du piratage"
       - id: d
-        text: "Acheter un nouveau serveur sans changer la configuration"
+        text: "Acheter un nouveau serveur identique sans modifier la politique de durcissement"
     correct:
       - a
-    explanation: "Le Post-Mortem permet à l'organisation de tirer des enseignements concrets de l'attaque pour combler les failles organisationnelles et techniques découvertes."
+    explanation: "Le rapport de Post-Mortem permet à l'organisation de tirer des enseignements objectifs pour combler les faiblesses organisationnelles et techniques identifiées lors de la crise."
 
   - kind: single
-    prompt: "Quelle commande Linux permet d'inspecter rapidement les connexions réseau actives et les processus associés en écoute lors d'une première analyse d'incident ?"
+    prompt: "Quelle commande Linux permet d'inspecter rapidement les connexions réseau actives et les processus associés en écoute lors d'un triage forensique d'urgence ?"
     choices:
       - id: a
-        text: "ss -tlpn (ou netstat -tlpn)"
+        text: "ss -tulpn (ou netstat -tulpn)"
       - id: b
         text: "cat /dev/null"
       - id: c
-        text: "reboot --force"
+        text: "shutdown -h now"
       - id: d
         text: "rm -rf /var/log"
     correct:
       - a
-    explanation: "`ss -tlpn` liste l'ensemble des sockets TCP/UDP ouverts avec les numéros de ports et les PID des processus correspondants, mettant en évidence les backdoors en écoute."
+    explanation: "`ss -tulpn` liste l'ensemble des sockets TCP et UDP ouverts avec les numéros de ports, adresses d'écoute et les PID des processus associés, révélant immédiatement les portes dérobées en écoute."
