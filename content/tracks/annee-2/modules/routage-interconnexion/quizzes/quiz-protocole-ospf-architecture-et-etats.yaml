@@ -1,0 +1,79 @@
+slug: quiz-protocole-ospf-architecture-et-etats
+title: "Quiz — OSPFv2 : Architecture et États"
+passing_score: 80
+position: 2
+questions:
+  - kind: single
+    prompt: "Dans une architecture hiérarchique OSPF multi-zones, quelle zone est le cœur obligatoire auquel toutes les autres zones doivent être raccordées ?"
+    choices:
+      - id: a
+        text: "La zone Backbone (Area 0 ou 0.0.0.0)"
+      - id: b
+        text: "La zone Stub (Area 1)"
+      - id: c
+        text: "La zone NSSA (Not-So-Stubby Area 255)"
+      - id: d
+        text: "La zone DMZ (Area 99)"
+    correct:
+      - a
+    explanation: "Dans le standard OSPFv2 (RFC 2328), la zone Backbone Area 0 est la zone centrale d'échange obligatoire interconnectant toutes les zones non-backbone."
+
+  - kind: single
+    prompt: "Dans la machine à états d'adjacence OSPF, à quelle étape l'élection du DR (Designated Router) et du BDR a-t-elle lieu sur un segment broadcast ?"
+    choices:
+      - id: a
+        text: "À l'état 2-Way"
+      - id: b
+        text: "À l'état Init"
+      - id: c
+        text: "À l'état ExStart"
+      - id: d
+        text: "À l'état Loading"
+    correct:
+      - a
+    explanation: "Dès que la communication bidirectionnelle est validée (état 2-Way), les routeurs procèdent à l'élection du DR et du BDR."
+
+  - kind: single
+    prompt: "Quels sont les deux critères successifs utilisés pour élire le Designated Router (DR) sur un segment réseau multi-accès Ethernet ?"
+    choices:
+      - id: a
+        text: "1. Priorité d'interface la plus élevée (ip ospf priority) puis 2. Router-ID le plus élevé"
+      - id: b
+        text: "1. Adresse MAC la plus petite puis 2. Numéro de port du switch"
+      - id: c
+        text: "1. Vitesse du processeur puis 2. Quantité de mémoire vive"
+      - id: d
+        text: "1. Heure de mise sous tension puis 2. Version de l'OS"
+    correct:
+      - a
+    explanation: "L'élection compare d'abord la priorité d'interface (0 à 255, 0 disqualifiant le routeur), puis départage par le Router-ID le plus grand."
+
+  - kind: single
+    prompt: "Quelle anomalie réseau provoque systématiquement le blocage de deux routeurs OSPF voisins dans l'état 'ExStart' ou 'Exchange' ?"
+    choices:
+      - id: a
+        text: "Une discordance de taille de MTU (MTU Mismatch) entre les interfaces interconnectées"
+      - id: b
+        text: "Un mot de passe Wi-Fi incorrect"
+      - id: c
+        text: "L'absence de serveur DNS sur le réseau"
+      - id: d
+        text: "Une adresse IPv6 configurée sur le port"
+    correct:
+      - a
+    explanation: "En phase ExStart/Exchange, les routeurs s'échangent des paquets DBD. Si la taille de MTU diffère, les paquets DBD de taille maximale sont ignorés ou rejetés, figeant la session."
+
+  - kind: single
+    prompt: "Pourquoi est-il fortement recommandé de modifier la bande passante de référence par défaut (100 Mbps) avec la commande 'auto-cost reference-bandwidth' ?"
+    choices:
+      - id: a
+        text: "Parce que par défaut, tous les liens de 100 Mbps, 1 Gbps et 10 Gbps obtiennent le même coût OSPF de 1, empêchant le choix du lien le plus rapide"
+      - id: b
+        text: "Pour crypter les paquets OSPF avec l'algorithme AES-256"
+      - id: c
+        text: "Pour forcer le passage automatique en IPv6"
+      - id: d
+        text: "Pour désactiver le protocole Spanning Tree sur le commutateur"
+    correct:
+      - a
+    explanation: "La formule historique (100 Mbps / Bande passante) tronque à 1 tout lien supérieur ou égal à 100 Mbps. Rehausser la référence (ex: 100 000 pour 100 Gbps) permet de différencier le coût des liens Gigabit et 10G."

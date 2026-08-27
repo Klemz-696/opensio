@@ -1,0 +1,70 @@
+slug: configuration-routage-dynamique-ospf
+title: "Déploiement et Optimisation du Routage Dynamique OSPFv2"
+level: 2_files
+max_score: 100
+estimated_minutes: 45
+context: |
+  Vous êtes ingénieur réseau au sein d'une infrastructure d'entreprise distribuée.
+  Vous devez configurer le routeur central `R1-CORE` exécutant la pile de routage FRRouting (FRR) via le fichier de configuration `frr.conf`.
+
+  Spécifications techniques pour `R1-CORE` :
+  1. **Processus OSPFv2 & Identifiant** :
+     - Router-ID : `10.255.255.1`
+     - Ajustement de la bande passante de référence à 100 Gbps : `auto-cost reference-bandwidth 100000`
+  2. **Interconnexions et Coûts de liaison** :
+     - Interface `eth1` (vers R2, liaison principale 10 Gbps, réseau `10.0.0.0/30`) : coût forcé `ip ospf cost 10`
+     - Interface `eth2` (vers R3, liaison secondaire 1 Gbps, réseau `10.0.0.4/30`) : coût forcé `ip ospf cost 100`
+     - Interface `lo` (Loopback, IP `10.255.255.1/32`) : incluse dans l'Area 0
+  3. **Réseau Local Utilisateur et Sécurité** :
+     - Interface `eth0` (LAN Utilisateur `192.168.100.0/24`, IP `192.168.100.254/24`) : annoncée dans l'Area 0, mais configurée en **passive-interface** (`passive-interface eth0`) pour ne pas émettre de paquets Hello vers les postes clients
+  4. **Annonce de Passerelle de dernier recours** :
+     - Injection de la route par défaut vers Internet dans OSPF : `default-information originate`
+
+objectives:
+  - "Configurer le processus de routage OSPFv2 et assigner un Router-ID déterministe"
+  - "Annoncer les réseaux d'interconnexion et les LANs dans la zone Backbone Area 0"
+  - "Sécuriser les interfaces utilisateur via la directive passive-interface"
+  - "Influencer le choix des routes en ajustant les coûts d'interfaces et la bande passante de référence"
+  - "Propager la route par défaut vers l'ensemble du domaine de routage d'entreprise"
+
+prerequisites:
+  - "principes-routage-statique-dynamique"
+  - "protocole-ospf-architecture-et-etats"
+
+files:
+  editable:
+    - path: frr.conf
+      description: "Fichier de configuration du démon de routage FRRouting OSPFv2"
+
+hints:
+  - cost_percent: 10
+    text: "Déclarez 'router ospf' avec 'ospf router-id 10.255.255.1' et 'auto-cost reference-bandwidth 100000'."
+  - cost_percent: 10
+    text: "Positionnez 'passive-interface eth0' sous le bloc router ospf pour protéger le réseau local."
+  - cost_percent: 10
+    text: "Configurez les coûts sous les blocs d'interface : 'interface eth1' avec 'ip ospf cost 10' et 'interface eth2' avec 'ip ospf cost 100'."
+
+validation:
+  type: script
+  image: opensio/validator-ospf:latest
+  timeout_seconds: 30
+  checks:
+    - id: router_id_and_reference_bandwidth
+      required: true
+      points: 25
+      description: "Configuration du Router-ID (10.255.255.1) et de la référence de bande passante (100000)"
+    - id: ospf_area0_network_advertisements
+      required: true
+      points: 25
+      description: "Annonce de tous les réseaux (10.0.0.0/30, 10.0.0.4/30, 192.168.100.0/24, lo) dans l'Area 0"
+    - id: interface_costs_and_metrics
+      required: true
+      points: 25
+      description: "Définition des coûts métriques sur les interfaces d'interconnexion (eth1=10, eth2=100)"
+    - id: passive_interface_and_default_originate
+      required: true
+      points: 25
+      description: "Activation de passive-interface sur eth0 et propagation default-information originate"
+
+scoring:
+  floor_percent: 50
