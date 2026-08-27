@@ -1,0 +1,79 @@
+slug: quiz-tickets-incident-et-support
+title: "Quiz — Tickets d'Incident et Support IT"
+passing_score: 80
+position: 3
+questions:
+  - kind: single
+    prompt: "In a professional IT support ticket, what does the 'Workaround' section describe?"
+    choices:
+      - id: a
+        text: "A temporary mitigation or alternative procedure that allows the user or system to keep working while the permanent fix is being developed"
+      - id: b
+        text: "The total monetary cost of the damaged hardware"
+      - id: c
+        text: "The home address of the technician on call"
+      - id: d
+        text: "The legal terms of the user employment contract"
+    correct:
+      - a
+    explanation: "Le 'Workaround' (solution de contournement) permet de restaurer le service opérationnel temporairement en attendant la correction définitive du bogue."
+
+  - kind: single
+    prompt: "When an incident ticket cannot be resolved by the Service Desk (Tier 1) and requires network engineering expertise, what is the proper action phrase in English?"
+    choices:
+      - id: a
+        text: "'Escalate the ticket to Tier 2 Network Support'"
+      - id: b
+        text: "'Discard the ticket to recycle bin'"
+      - id: c
+        text: "'Shutdown the user mailbox'"
+      - id: d
+        text: "'Downgrade the ticket to unassigned spam'"
+    correct:
+      - a
+    explanation: "'To escalate a ticket' est le terme consacré pour transférer un incident vers un niveau de support supérieur (Tier 2 / Tier 3)."
+
+  - kind: single
+    prompt: "What does 'Root Cause Analysis (RCA)' mean in ITIL problem management?"
+    choices:
+      - id: a
+        text: "The formal process of discovering the fundamental, underlying reason why an incident occurred in order to prevent it from happening again"
+      - id: b
+        text: "The speed test of the internet router"
+      - id: c
+        text: "The number of emails sent by the CEO"
+      - id: d
+        text: "The inventory barcode scan of a laptop"
+    correct:
+      - a
+    explanation: "L'analyse RCA vise à identifier la cause racine originelle du dysfonctionnement pour éradiquer définitivement le problème."
+
+  - kind: single
+    prompt: "Which of the following phrases is the most polite and professional way to ask an English-speaking user for diagnostic details?"
+    choices:
+      - id: a
+        text: "'Could you please provide a screenshot of the error message and specify when the issue first occurred?'"
+      - id: b
+        text: "'Give me your screen now.'"
+      - id: c
+        text: "'You made a mistake in your password, fix it yourself.'"
+      - id: d
+        text: "'Why did you break the server again?'"
+    correct:
+      - a
+    explanation: "Une communication professionnelle utilise des formules de politesse ('Could you please...') et cible des éléments techniques précis (capture d'écran, heure d'apparition)."
+
+  - kind: single
+    prompt: "When hardware (such as a core switch module) has failed under warranty and must be replaced by the vendor, what process is initiated?"
+    choices:
+      - id: a
+        text: "An RMA (Return Merchandise Authorization) request"
+      - id: b
+        text: "A DNS zone transfer"
+      - id: c
+        text: "A factory reset of all office printers"
+      - id: d
+        text: "A DHCP broadcast renewal"
+    correct:
+      - a
+    explanation: "La procédure RMA (Return Merchandise Authorization) permet le retour et le remplacement de matériel défectueux sous garantie constructeur."

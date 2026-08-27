@@ -1,0 +1,79 @@
+slug: quiz-vocabulaire-infrastructure-reseau
+title: "Quiz — Vocabulaire Infrastructure et Réseaux"
+passing_score: 80
+position: 1
+questions:
+  - kind: single
+    prompt: "In server hardware terminology, what does a 'Hot-Swappable' component (such as a hard drive or PSU) allow an administrator to do?"
+    choices:
+      - id: a
+        text: "Replace or insert the hardware component while the server remains powered on and running without rebooting"
+      - id: b
+        text: "Cool down the server room by increasing fan speed"
+      - id: c
+        text: "Change the server administrator password automatically"
+      - id: d
+        text: "Convert an Ethernet cable into an optical fiber link"
+    correct:
+      - a
+    explanation: "Un composant 'Hot-swappable' (ou hot-plug) peut être remplacé à chaud sans interrompre le fonctionnement ni couper l'alimentation du serveur."
+
+  - kind: single
+    prompt: "Which optical transceiver form factor is commonly used for 10 Gigabit Ethernet fiber connections in top-of-rack switches?"
+    choices:
+      - id: a
+        text: "SFP+ (Enhanced Small Form-Factor Pluggable)"
+      - id: b
+        text: "VGA connector"
+      - id: c
+        text: "RJ11 telephone jack"
+      - id: d
+        text: "SATA cable"
+    correct:
+      - a
+    explanation: "Le module SFP+ est le standard d'émetteur-récepteur optique pour les liaisons 10 Gbps (les modules QSFP+ servant généralement pour 40/100 Gbps)."
+
+  - kind: single
+    prompt: "In an English technical report, what does the term 'Legacy system' specifically refer to?"
+    choices:
+      - id: a
+        text: "An outdated, obsolete computer system or application that is still in use because it performs critical business functions"
+      - id: b
+        text: "A completely brand-new server purchased yesterday"
+      - id: c
+        text: "A software that is strictly protected by lawyers"
+      - id: d
+        text: "A legally certified digital signature"
+    correct:
+      - a
+    explanation: "'Legacy' est un faux-ami signifiant 'hérité / ancien / obsolète' et non 'légal'."
+
+  - kind: single
+    prompt: "What is the primary function of a 'Patch Panel' inside a network rack?"
+    choices:
+      - id: a
+        text: "To organize, terminate, and cleanly route structured Ethernet cabling between wall sockets and switches"
+      - id: b
+        text: "To download security updates from Microsoft servers"
+      - id: c
+        text: "To provide uninterrupted battery power during electrical blackouts"
+      - id: d
+        text: "To compress hard disk drives"
+    correct:
+      - a
+    explanation: "Le panneau de brassage (Patch panel) est un boîtier passif regroupant les arrivées des câbles réseau des prises murales avant brassage vers les switchs."
+
+  - kind: single
+    prompt: "What does the technical term 'Throughput' mean when monitoring network interfaces?"
+    choices:
+      - id: a
+        text: "The actual volume of data successfully delivered and transmitted per second over the network"
+      - id: b
+        text: "The physical weight of the network switch"
+      - id: c
+        text: "The total number of dropped packets during a DDoS attack"
+      - id: d
+        text: "The length in meters of the fiber optic cable"
+    correct:
+      - a
+    explanation: "'Throughput' désigne le débit utile réel constaté par seconde (par opposition à 'Bandwidth' qui est la capacité maximale théorique du canal)."

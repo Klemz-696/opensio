@@ -1,0 +1,74 @@
+slug: analyse-documentation-technique-anglais
+title: "Analyse de Documentation Technique et Diagnostic Opérationnel en Anglais"
+level: 2_files
+max_score: 100
+estimated_minutes: 40
+context: |
+  Vous êtes administrateur systèmes et sécurité.
+  Vous recevez un bulletin de sécurité constructeur (Security Advisory) et un extrait de journal d'erreurs Nginx / OpenSSL en anglais sur un serveur web de production :
+  - Bulletin : `CVE-2026-4019` — Vulnérabilité critique de renégociation de session TLS OpenSSL (Score CVSS 9.8).
+  - Extrait du log `/var/log/nginx/error.log` :
+    `2026/08/27 15:42:10 [emerg] 1402#1402: *89401 SSL_do_handshake() failed (SSL: error:0A000102:SSL routines::unsupported protocol) while SSL handshaking, client: 198.51.100.24, server: 0.0.0.0:443`
+  - Version installée : `openssl 1.1.1w` (version obsolète vulnérable).
+
+  Vous devez analyser cette alerte et formaliser votre diagnostic opérationnel dans le fichier structuré `diagnostic.json`.
+
+  Spécifications attendues dans `diagnostic.json` :
+  1. Section `incident_analysis` :
+     - `service` : `Nginx / OpenSSL` (ou `Web Server TLS`).
+     - `severity_level` : `Emergency` (ou `Critical` / `CVSS 9.8`).
+     - `root_cause` : Explication de la cause racine (échec de négociation TLS sur version OpenSSL obsolète vulnérable CVE-2026-4019).
+  2. Section `remediation_plan` :
+     - `immediate_action` : Mise à niveau de sécurité des paquets (`apt update && apt install --only-upgrade openssl nginx`).
+     - `configuration_change` : Restriction stricte des protocoles autorisés (`ssl_protocols TLSv1.2 TLSv1.3;`).
+     - `post_check_command` : Commande de test de syntaxe et rechargement (`nginx -t && systemctl reload nginx`).
+     - `estimated_downtime_minutes` : `<= 5` (rechargement à chaud du démon web).
+
+objectives:
+  - "Interpréter un avis de sécurité officiel en anglais (Security Advisory et score CVSS)"
+  - "Analyser une ligne de journal d'erreur système et identifier la cause racine"
+  - "Établir un plan de remédiation technique sécurisé (mise à jour et durcissement TLS)"
+  - "Restituer un diagnostic opérationnel dans un format JSON standardisé"
+
+prerequisites:
+  - "analyse-logs-et-messages-erreur"
+  - "securite-sauvegardes-bonnes-pratiques"
+  - "lecture-documentation-et-rfcs"
+
+files:
+  editable:
+    - path: diagnostic.json
+      description: "Rapport d'analyse d'incident, cause racine et plan de remédiation au format JSON"
+
+hints:
+  - cost_percent: 10
+    text: "Le niveau de sévérité doit refléter la gravité de l'alerte (Critical ou Emergency, CVSS 9.8)."
+  - cost_percent: 10
+    text: "Dans le plan de remédiation, prévoyez la mise à jour des paquets et la restriction aux protocoles TLSv1.2 et TLSv1.3."
+  - cost_percent: 10
+    text: "La commande de validation doit utiliser 'nginx -t' suivi du rechargement sans coupure."
+
+validation:
+  type: script
+  image: opensio/validator-diag-en:latest
+  timeout_seconds: 30
+  checks:
+    - id: json_structure_and_service
+      required: true
+      points: 25
+      description: "Structure JSON valide et identification du service Nginx / OpenSSL"
+    - id: severity_and_cve_analysis
+      required: true
+      points: 25
+      description: "Évaluation de la sévérité (Critical / Emergency, CVSS 9.8) et de la cause racine"
+    - id: remediation_patch_and_hardening
+      required: true
+      points: 25
+      description: "Plan de remédiation : mise à jour des paquets et durcissement TLSv1.2 / TLSv1.3"
+    - id: validation_command_and_downtime
+      required: true
+      points: 25
+      description: "Commande de vérification (nginx -t / reload) et estimation de downtime <= 5 min"
+
+scoring:
+  floor_percent: 50

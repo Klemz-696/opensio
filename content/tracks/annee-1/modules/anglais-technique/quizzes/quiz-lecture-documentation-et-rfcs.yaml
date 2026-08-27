@@ -1,0 +1,79 @@
+slug: quiz-lecture-documentation-et-rfcs
+title: "Quiz — Lecture de Documentation et RFCs"
+passing_score: 80
+position: 2
+questions:
+  - kind: single
+    prompt: "According to IETF RFC 2119 standards, what is the exact normative meaning of the keyword 'MUST NOT' in a protocol specification?"
+    choices:
+      - id: a
+        text: "The item or behavior is an absolute prohibition and is strictly forbidden for compliance"
+      - id: b
+        text: "The item is optional but recommended on Fridays"
+      - id: c
+        text: "The vendor can choose whatever they prefer"
+      - id: d
+        text: "The server will reboot automatically if this occurs"
+    correct:
+      - a
+    explanation: "Selon la RFC 2119, 'MUST NOT' (ou SHALL NOT) indique une interdiction formelle et absolue pour qu'une implémentation soit déclarée conforme."
+
+  - kind: single
+    prompt: "In a Linux manual page (man page), which section displays the formal command syntax, mandatory arguments, and optional flags?"
+    choices:
+      - id: a
+        text: "SYNOPSIS"
+      - id: b
+        text: "SEE ALSO"
+      - id: c
+        text: "AUTHOR"
+      - id: d
+        text: "COPYRIGHT"
+    correct:
+      - a
+    explanation: "La section 'SYNOPSIS' détaille la grammaire exacte et les paramètres requis ou facultatifs de la commande."
+
+  - kind: single
+    prompt: "When reading an installation guide, what does a 'Deprecation Notice' indicate to the system administrator?"
+    choices:
+      - id: a
+        text: "The mentioned feature or command is outdated and will be permanently removed in future releases, so administrators should stop using it"
+      - id: b
+        text: "The software has become completely free of charge"
+      - id: c
+        text: "The user must reinstall the entire operating system right now"
+      - id: d
+        text: "The hardware manufacturer has gone bankrupt"
+    correct:
+      - a
+    explanation: "Un avis de dépréciation ('Deprecation Notice') avertit qu'une directive ou API est obsolète et sera définitivement éliminée dans les versions futures."
+
+  - kind: single
+    prompt: "What does the instruction 'Append the following lines to /etc/hosts' instruct the administrator to do?"
+    choices:
+      - id: a
+        text: "Add the lines to the very end of the file /etc/hosts without erasing existing content"
+      - id: b
+        text: "Delete all existing content in /etc/hosts and replace it"
+      - id: c
+        text: "Encrypt the /etc/hosts file with a password"
+      - id: d
+        text: "Print the file on a physical paper printer"
+    correct:
+      - a
+    explanation: "Le verbe 'to append' signifie ajouter à la suite (à la fin) sans écraser le contenu existant (équivalent de `>>`)."
+
+  - kind: single
+    prompt: "In IETF RFC documents, how does 'SHOULD' differ from 'MUST'?"
+    choices:
+      - id: a
+        text: "'MUST' is an absolute requirement, whereas 'SHOULD' is a strong recommendation where valid exceptions may exist if the implications are fully understood"
+      - id: b
+        text: "'SHOULD' means strictly forbidden while 'MUST' means optional"
+      - id: c
+        text: "There is no difference between the two terms"
+      - id: d
+        text: "'SHOULD' applies only to hardware while 'MUST' applies to software"
+    correct:
+      - a
+    explanation: "'MUST' impose une obligation incontournable, alors que 'SHOULD' constitue une recommandation forte autorisant des exceptions motivées."
