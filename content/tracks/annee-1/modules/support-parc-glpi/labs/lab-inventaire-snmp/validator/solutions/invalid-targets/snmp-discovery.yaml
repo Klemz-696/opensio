@@ -1,0 +1,22 @@
+# Configuration Erronée : Plages IP manquantes
+task:
+  name: "Decouverte SNMP"
+  enabled: true
+  agent_proxy: "agent-srv-glpi.entreprise.lan"
+
+targets:
+  # Erreur : plages IP absentes
+  - name: "Cible Invalide"
+    ip_range: ""
+
+credentials_snmp:
+  - version: "2c"
+    community: "opensio-snmp-ro"
+  - version: 3
+    security_level: "authPriv"
+    auth_proto: "SHA"
+    priv_proto: "AES"
+
+options:
+  link_lldp_cdp: true
+  update_arp_table: true

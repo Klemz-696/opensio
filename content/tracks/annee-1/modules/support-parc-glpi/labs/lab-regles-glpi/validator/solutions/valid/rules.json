@@ -1,0 +1,52 @@
+{
+  "rules": [
+    {
+      "id": "incidents-vip",
+      "name": "Routage Incidents VIP & Direction",
+      "active": true,
+      "conditions": {
+        "demandeur_groupe": "Direction Generale",
+        "titre_contient": "[URGENT VIP]"
+      },
+      "actions": {
+        "urgence": "tres_haute",
+        "priorite": "tres_haute",
+        "groupe_technicien": "Support N2 VIP",
+        "sla_tto_minutes": 15,
+        "sla_ttr_minutes": 120
+      }
+    },
+    {
+      "id": "panne-reseau",
+      "name": "Routage Panne Reseau & Commutateur",
+      "active": true,
+      "conditions": {
+        "categorie": "Reseau",
+        "mots_cles": ["panne commutateur", "coupure vlan", "switch"]
+      },
+      "actions": {
+        "impact": "haut",
+        "priorite": "haute",
+        "groupe_technicien": "Equipe Reseau & Securite",
+        "sla_tto_minutes": 30,
+        "sla_ttr_minutes": 240
+      }
+    },
+    {
+      "id": "demandes-bureautique",
+      "name": "Routage Demandes Standards Bureautique",
+      "active": true,
+      "conditions": {
+        "type": "Demande",
+        "categorie": "Bureautique / Postes"
+      },
+      "actions": {
+        "urgence": "moyenne",
+        "priorite": "moyenne",
+        "groupe_technicien": "Centre de Services N1",
+        "sla_tto_minutes": 120,
+        "sla_ttr_minutes": 1440
+      }
+    }
+  ]
+}

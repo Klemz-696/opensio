@@ -1,0 +1,22 @@
+# Configuration Erronée : SNMP v3 incomplet
+task:
+  name: "Decouverte SNMP"
+  enabled: true
+  agent_proxy: "agent-srv-glpi.entreprise.lan"
+
+targets:
+  - name: "Switch"
+    ip_range: "192.168.10.1-192.168.10.50"
+  - name: "Printer"
+    ip_range: "192.168.20.1-192.168.20.30"
+
+credentials_snmp:
+  - version: "2c"
+    community: "opensio-snmp-ro"
+  # Erreur : SNMPv3 sans authPriv ni chiffrement AES
+  - version: 3
+    security_level: "noAuthNoPriv"
+
+options:
+  link_lldp_cdp: true
+  update_arp_table: true

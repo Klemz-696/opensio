@@ -1,0 +1,25 @@
+slug: support-parc-glpi
+title: "Gestion de Parc Informatique, Support & ITIL (GLPI)"
+description: "Bonnes pratiques ITIL de gestion des services informatiques, déploiement et administration de GLPI, inventaire automatisé avec GLPI Agent et découverte SNMP, gestion du cycle de vie des tickets d'assistance avec règles d'affectation et SLA, habilitations et gestion des actifs (ITAM)."
+position: 7
+difficulty: 1
+estimated_minutes: 450
+competency_refs:
+  - "B1.1"
+  - "B1.2"
+  - "B1.5"
+lessons:
+  - principes-itil-et-support
+  - architecture-glpi-et-deploiement
+  - inventaire-automatise-agents
+  - gestion-tickets-et-sla
+  - habilitations-et-cycle-de-vie
+quizzes:
+  - quiz-principes-itil-et-support
+  - quiz-architecture-glpi-et-deploiement
+  - quiz-inventaire-automatise-agents
+  - quiz-gestion-tickets-et-sla
+  - quiz-habilitations-et-cycle-de-vie
+labs:
+  - regles-routage-tickets-sla
+  - configuration-decouverte-snmp
