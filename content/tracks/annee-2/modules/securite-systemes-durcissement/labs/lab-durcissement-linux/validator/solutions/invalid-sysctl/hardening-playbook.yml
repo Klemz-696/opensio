@@ -1,0 +1,39 @@
+---
+- name: Application du durcissement système Linux (ANSSI / CIS)
+  hosts: servers
+  become: true
+
+  tasks:
+    - name: Déploiement de la configuration SSH durcie
+      ansible.builtin.copy:
+        dest: /etc/ssh/sshd_config.d/99-hardening.conf
+        content: |
+          PermitRootLogin no
+          PasswordAuthentication no
+          PubkeyAuthentication yes
+        owner: root
+        group: root
+        mode: '0600'
+      notify: Recharger SSH
+
+    - name: Installation des paquets de sécurité
+      ansible.builtin.apt:
+        name:
+          - auditd
+          - ufw
+        state: present
+
+    - name: Activation des services
+      ansible.builtin.systemd:
+        name: "{{ item }}"
+        state: started
+        enabled: true
+      loop:
+        - auditd
+        - ufw
+
+  handlers:
+    - name: Recharger SSH
+      ansible.builtin.systemd:
+        name: ssh
+        state: reloaded

@@ -1,0 +1,79 @@
+slug: quiz-durcissement-windows-server-gpo-laps
+title: "Quiz — Durcissement Windows Server et LAPS"
+passing_score: 80
+position: 3
+questions:
+  - kind: single
+    prompt: "Quel problème de sécurité critique la solution Windows LAPS (Local Administrator Password Solution) résout-elle dans un environnement Active Directory ?"
+    choices:
+      - id: a
+        text: "Elle élimine la présence d'un mot de passe Administrateur local identique sur toutes les machines en générant un mot de passe fort et unique par poste avec rotation automatique, bloquant les attaques Pass-the-Hash"
+      - id: b
+        text: "Elle supprime le besoin de sauvegarder les fichiers de l'entreprise"
+      - id: c
+        text: "Elle permet à n'importe quel stagiaire de modifier le schéma Active Directory"
+      - id: d
+        text: "Elle remplace le protocole Kerberos par du texte en clair"
+    correct:
+      - a
+    explanation: "Windows LAPS empêche la propagation d'une compromission (mouvements latéraux) en attribuant un secret exclusif et régulièrement renouvelé à chaque compte Administrateur local."
+
+  - kind: single
+    prompt: "Pourquoi est-il fortement recommandé de désactiver le protocole SMBv1 via GPO sur l'ensemble d'un parc Windows Server et client ?"
+    choices:
+      - id: a
+        text: "SMBv1 est un protocole obsolète, non chiffré et notoirement vulnérable à des attaques de type EternalBlue exploitées par des rançongiciels destructeurs (ex: WannaCry, NotPetya)"
+      - id: b
+        text: "Parce que SMBv1 consomme trop d'encre lors de l'impression"
+      - id: c
+        text: "Parce que SMBv1 n'est compatible qu'avec les souris filaires"
+      - id: d
+        text: "Parce que SMBv1 bloque l'accès au menu Démarrer"
+    correct:
+      - a
+    explanation: "La désactivation de SMBv1 au profit de SMBv2/SMBv3 chiffré est une mesure d'hygiène informatique élémentaire pour bloquer la propagation de malwares sur le réseau."
+
+  - kind: single
+    prompt: "Quel événement de sécurité Windows (Event ID) dans l'Observateur d'événements signale un échec d'authentification (tentative de connexion refusée) ?"
+    choices:
+      - id: a
+        text: "Event ID 4625"
+      - id: b
+        text: "Event ID 4624"
+      - id: c
+        text: "Event ID 1000"
+      - id: d
+        text: "Event ID 7036"
+    correct:
+      - a
+    explanation: "L'Event ID 4625 consigne les échecs d'ouverture de session, permettant aux outils de détection SOC de repérer les attaques par force brute ou pulvérisation de mots de passe."
+
+  - kind: single
+    prompt: "Quel événement de sécurité Windows (Event ID) doit immédiatement déclencher une alerte de sévérité critique dans un centre des opérations de sécurité (SOC) ?"
+    choices:
+      - id: a
+        text: "Event ID 4728 ou 4732 (Ajout d'un membre à un groupe de sécurité privilégié tel que Domain Admins ou Enterprise Admins)"
+      - id: b
+        text: "Event ID 4624 (Ouverture de session normale le matin)"
+      - id: c
+        text: "Event ID 7040 (Modification du type de démarrage d'un service)"
+      - id: d
+        text: "Event ID 105 (Mise à jour de l'heure système NTP)"
+    correct:
+      - a
+    explanation: "L'ajout d'un compte dans un groupe d'administration du domaine est une étape classique d'élévation de privilèges ou de persistance malveillante qui doit être auditée en temps réel."
+
+  - kind: single
+    prompt: "À quoi sert la technologie de chiffrement de lecteur BitLocker associée à un module matériel TPM 2.0 sur les serveurs et postes Windows ?"
+    choices:
+      - id: a
+        text: "À chiffrer intégralement le volume système au repos afin de protéger les données et les hachages de mots de passe contre le vol physique du disque dur ou le démarrage sur clé USB pirate"
+      - id: b
+        text: "À empêcher les virus d'entrer par les câbles réseau"
+      - id: c
+        text: "À nettoyer automatiquement les spams dans Outlook"
+      - id: d
+        text: "À augmenter la vitesse de la carte graphique"
+    correct:
+      - a
+    explanation: "BitLocker verrouille les données sur le disque et conditionne le déchiffrement à l'intégrité de la séquence de démarrage validée par la puce TPM matérielle."

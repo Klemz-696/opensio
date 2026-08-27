@@ -1,0 +1,25 @@
+slug: securite-systemes-durcissement
+title: "Sécurité des Systèmes, Durcissement & Gestion des Vulnérabilités"
+description: "Principes de durcissement des systèmes d'exploitation (Linux & Windows Server), benchmarks CIS et recommandations ANSSI, gestion automatisée des correctifs (Patch Management), évaluation des vulnérabilités CVE/CVSS et réponse aux incidents de sécurité."
+position: 7
+difficulty: 3
+estimated_minutes: 550
+competency_refs:
+  - "B2.1"
+  - "B2.2"
+  - "B3.1"
+lessons:
+  - principes-durcissement-guides-anssi-cis
+  - durcissement-systemes-linux-ssh-auditd
+  - durcissement-windows-server-gpo-laps
+  - gestion-correctifs-vulnerabilites-cve
+  - reponse-incidents-forensics-post-mortem
+quizzes:
+  - quiz-principes-durcissement-guides-anssi-cis
+  - quiz-durcissement-systemes-linux-ssh-auditd
+  - quiz-durcissement-windows-server-gpo-laps
+  - quiz-gestion-correctifs-vulnerabilites-cve
+  - quiz-reponse-incidents-forensics-post-mortem
+labs:
+  - durcissement-serveur-linux-ansible
+  - politique-patch-management-automatise

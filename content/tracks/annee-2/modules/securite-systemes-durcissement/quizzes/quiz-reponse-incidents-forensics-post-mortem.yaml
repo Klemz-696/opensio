@@ -1,0 +1,79 @@
+slug: quiz-reponse-incidents-forensics-post-mortem
+title: "Quiz — Réponse aux Incidents et Forensics"
+passing_score: 80
+position: 5
+questions:
+  - kind: single
+    prompt: "Selon le standard RFC 3227 sur l'ordre de volatilité des preuves numériques, quelle source d'information disparaît en premier si une machine compromise est brusquement éteinte ?"
+    choices:
+      - id: a
+        text: "La mémoire vive (RAM), les registres CPU, les connexions réseau actives et la liste des processus en cours d'exécution"
+      - id: b
+        text: "Les fichiers texte enregistrés sur le disque dur SSD"
+      - id: c
+        text: "Les câbles réseau dans la baie"
+      - id: d
+        text: "L'historique des emails stockés sur le serveur central"
+    correct:
+      - a
+    explanation: "La RAM et les registres sont des mémoires volatiles qui s'effacent instantanément à l'extinction, détruisant les clés de déchiffrement et les traces du malware en mémoire."
+
+  - kind: single
+    prompt: "Quelle est l'action prioritaire et correcte lors de la phase de 'Confinement' (Containment) lorsqu'un serveur est suspecté d'être infecté par un pirate ou un rançongiciel ?"
+    choices:
+      - id: a
+        text: "Isoler le serveur du reste du réseau (déconnexion du vSwitch / mise en quarantaine VLAN) sans éteindre le système d'exploitation afin d'empêcher les mouvements latéraux tout en préservant la mémoire pour l'investigation"
+      - id: b
+        text: "Éteindre violemment le serveur en débranchant la prise électrique"
+      - id: c
+        text: "Formater immédiatement le disque dur sans sauvegarder la mémoire"
+      - id: d
+        text: "Envoyer un email au pirate pour négocier le prix de la rançon"
+    correct:
+      - a
+    explanation: "Le confinement bloque la propagation latérale et les communications vers le serveur pirate (C2) tout en maintenant l'état en mémoire vive pour l'analyse forensique."
+
+  - kind: single
+    prompt: "Qu'est-ce qu'un 'IoC' (Indicator of Compromise) en cybersécurité ?"
+    choices:
+      - id: a
+        text: "Un élément technique ou preuve numérique (empreinte SHA256 d'un malware, adresse IP malveillante, nom de domaine C2, clé de registre anormale) attestant d'une intrusion ou d'une activité malveillante"
+      - id: b
+        text: "Un certificat de formation pour les administrateurs"
+      - id: c
+        text: "Le mot de passe par défaut d'une imprimante"
+      - id: d
+        text: "La facture d'achat d'un commutateur réseau"
+    correct:
+      - a
+    explanation: "Les IoC sont partagés entre équipes de sécurité pour détecter la présence d'une menace spécifique sur l'ensemble des équipements du système d'information."
+
+  - kind: single
+    prompt: "Dans le cycle de réponse à incident (NIST SP 800-61), quel est le but principal de l'étape finale de 'Retour d'expérience' (Post-Mortem / Lessons Learned) ?"
+    choices:
+      - id: a
+        text: "Analyser objectivement le déroulement de la crise, identifier la cause racine (Root Cause), documenter la chronologie et définir un plan d'actions correctives pour éviter la réapparition de l'incident"
+      - id: b
+        text: "Désigner publiquement un coupable pour le licencier"
+      - id: c
+        text: "Supprimer tous les journaux de sécurité pour repartir de zéro"
+      - id: d
+        text: "Acheter un nouveau serveur sans changer la configuration"
+    correct:
+      - a
+    explanation: "Le Post-Mortem permet à l'organisation de tirer des enseignements concrets de l'attaque pour combler les failles organisationnelles et techniques découvertes."
+
+  - kind: single
+    prompt: "Quelle commande Linux permet d'inspecter rapidement les connexions réseau actives et les processus associés en écoute lors d'une première analyse d'incident ?"
+    choices:
+      - id: a
+        text: "ss -tlpn (ou netstat -tlpn)"
+      - id: b
+        text: "cat /dev/null"
+      - id: c
+        text: "reboot --force"
+      - id: d
+        text: "rm -rf /var/log"
+    correct:
+      - a
+    explanation: "`ss -tlpn` liste l'ensemble des sockets TCP/UDP ouverts avec les numéros de ports et les PID des processus correspondants, mettant en évidence les backdoors en écoute."
