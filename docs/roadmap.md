@@ -129,3 +129,58 @@ La version **v1.0** constituera l'aboutissement de la plateforme OpenSIO pour le
 - Déploiement de scénarios d'ateliers d'infrastructure complexes comprenant plusieurs machines interconnectées (ex : _1 Routeur pare-feu + 1 Serveur Web en DMZ + 1 Serveur AD DS + 1 Poste client_).
 - Isolation réseau stricte entre apprenants par Software-Defined Networking (SDN Proxmox avec zones VxLAN ou VLANs dédiés par session) afin d'éviter tout conflit d'adresses IP ou diffusion parasite.
 - Utilisation de modèles de disques maîtres (_Linked Clones_) permettant un démarrage quasi instantané (< 15 secondes) de topologies multi-VMs tout en minimisant l'empreinte disque sur le stockage de virtualisation.
+
+---
+
+## 📚 4. Feuille de Route Pédagogique — Lot D3 & Contenu SISR
+
+Conformément à la spécification contractuelle du Blueprint (§25.1) et à la cartographie complète détaillée dans [`docs/modules-map.md`](./modules-map.md), le contenu pédagogique d'OpenSIO s'étend sur l'intégralité du programme national **BTS SIO option SISR** (1ère et 2ème année).
+
+### 4.1. État d'avancement du Catalogue
+
+| Parcours / Track | Modules livrés | Modules à créer | Total modules | Leçons opérationnelles | Labs opérationnels |
+|---|:---:|:---:|:---:|:---:|:---:|
+| **1ère Année (`annee-1`)** | 2 (`reseaux-fondamentaux`, `windows-server-ad`) | 6 | 8 | 13 | 7 |
+| **2ème Année (`annee-2`)** | 0 | 11 | 11 | 0 | 0 |
+| **Total Global** | **2** | **17** | **19** | **13** | **7** |
+
+### 4.2. Planification des Phases de Production de Contenu
+
+```
+[Phase 1 : Cartographie des Modules] (Lot D3 - Terminé)
+     │
+     ▼
+[Phase 2.1 : Socle Systèmes & Services 1ère Année]
+  ├── linux-administration (6 leçons, 3 labs)
+  └── services-reseau-linux (5 leçons, 2 labs)
+     │
+     ▼
+[Phase 2.2 : Infrastructure & Support 1ère Année]
+  ├── virtualisation-systemes (5 leçons, 2 labs)
+  ├── sauvegardes-stockage (5 leçons, 2 labs)
+  ├── support-parc-glpi (5 leçons, 2 labs)
+  └── anglais-technique (5 leçons, 2 labs)
+     │
+     ▼
+[Phase 2.3 : Réseaux Avancés, Sécurité & Web 2ème Année]
+  ├── routage-interconnexion (5 leçons, 2 labs)
+  ├── securite-pare-feu-filtrage (6 leçons, 3 labs)
+  ├── serveurs-web-pki-tls (6 leçons, 3 labs)
+  └── vpn-acces-distants (5 leçons, 2 labs)
+     │
+     ▼
+[Phase 2.4 : Automatisation, DevOps & Métrologie 2ème Année]
+  ├── scripting-automatisation (6 leçons, 2 labs)
+  ├── conteneurisation-docker (6 leçons, 3 labs)
+  ├── supervision-metrologie (5 leçons, 2 labs)
+  └── automatisation-ansible (5 leçons, 2 labs)
+     │
+     ▼
+[Phase 2.5 : Cybersécurité Avancée, Haute Disponibilité & Cloud]
+  ├── cybersecurite-durcissement-audit (6 leçons, 3 labs)
+  ├── haute-disponibilite-clustering (5 leçons, 2 labs)
+  └── cloud-hybride-cicd (5 leçons, 2 labs)
+```
+
+> 📖 Pour le détail complet des fiches modules, blocs de compétences associés, barèmes et jeux d'essais, consulter [`docs/modules-map.md`](./modules-map.md).
+
