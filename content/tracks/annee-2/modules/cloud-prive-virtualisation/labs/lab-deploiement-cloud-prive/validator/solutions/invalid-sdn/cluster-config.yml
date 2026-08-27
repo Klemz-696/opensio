@@ -1,0 +1,17 @@
+cluster_name: "opensio-cloud-prive"
+
+nodes:
+  - name: pve-node-01
+    ip: 10.10.98.11
+  - name: pve-node-02
+    ip: 10.10.98.12
+  - name: pve-node-03
+    ip: 10.10.98.13
+
+ha_enabled: true
+
+resource_pools:
+  - name: project-data
+    max_vcpus: 16
+    max_memory_mb: 65536
+    max_storage_gb: 1000

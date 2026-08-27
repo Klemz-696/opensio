@@ -1,0 +1,14 @@
+# cluster-config.yml - Configuration du Cluster Cloud Privé
+
+cluster_name: "opensio-cloud-prive"
+
+# TODO: Déclarer les 3 nœuds du cluster avec leurs adresses IP de réseau de cluster
+nodes:
+  - name: pve-node-01
+    # ip: ...
+
+# TODO: Activer la haute disponibilité (ha_enabled: true)
+
+# TODO: Définir le pool de ressources project-data et ses quotas (max_vcpus, max_memory_mb, max_storage_gb)
+resource_pools:
+  - name: project-data

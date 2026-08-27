@@ -1,0 +1,79 @@
+slug: quiz-orchestration-hybridation-vm-conteneurs
+title: "Quiz — Orchestration et Hybridation VMs/Conteneurs"
+passing_score: 80
+position: 4
+questions:
+  - kind: single
+    prompt: "Quel est l'avantage principal de la technique des 'Clones Liés' (Linked Clones) par rapport à un clonage intégral (Full Clone) d'une machine virtuelle ?"
+    choices:
+      - id: a
+        text: "Le provisionnement est quasi instantané et n'occupe que quelques mégaoctets au départ grâce au mécanisme de Copy-on-Write s'appuyant sur le template parent"
+      - id: b
+        text: "Le clone lié double automatiquement la vitesse du processeur"
+      - id: c
+        text: "Le clone lié ne nécessite aucune adresse IP"
+      - id: d
+        text: "Le clone lié efface le disque dur du template parent"
+    correct:
+      - a
+    explanation: "Les Linked Clones partagent les blocs en lecture seule du template de référence et n'écrivent que les modifications différentielles, économisant temps et stockage."
+
+  - kind: single
+    prompt: "À quel moment et comment l'outil Cloud-Init configure-t-il une nouvelle instance de machine virtuelle ?"
+    choices:
+      - id: a
+        text: "Automatiquement lors du tout premier démarrage du système invité en lisant des métadonnées et directives de configuration fournies (user-data, network-config)"
+      - id: b
+        text: "Uniquement après l'intervention manuelle d'un technicien en salle des serveurs"
+      - id: c
+        text: "Tous les ans le 1er janvier à minuit"
+      - id: d
+        text: "Avant même que la machine virtuelle ne soit créée"
+    correct:
+      - a
+    explanation: "Cloud-Init initialise au premier boot le réseau, le nom d'hôte, les utilisateurs, les clés SSH publiques et les paquets logiciels nécessaires sans intervention humaine."
+
+  - kind: single
+    prompt: "En quoi consiste la 'Virtualisation Imbriquée' (Nested Virtualization) ?"
+    choices:
+      - id: a
+        text: "À exécuter un hyperviseur (et ses propres machines virtuelles ou conteneurs) à l'intérieur d'une machine virtuelle elle-même hébergée sur un hyperviseur physique"
+      - id: b
+        text: "À ranger les serveurs physiques les uns dans les autres"
+      - id: c
+        text: "À créer des dossiers dans des sous-dossiers sur le bureau"
+      - id: d
+        text: "À brancher deux câbles d'alimentation sur la même prise"
+    correct:
+      - a
+    explanation: "La virtualisation imbriquée transmet les instructions de virtualisation CPU (VT-x/AMD-V) à la VM invitée, permettant de faire tourner KVM ou des clusters Kubernetes dans des VMs."
+
+  - kind: single
+    prompt: "Pourquoi associe-t-on couramment des machines virtuelles KVM et des conteneurs applicatifs (ex: Kubernetes/Docker) au sein d'une même architecture ?"
+    choices:
+      - id: a
+        text: "Pour combiner l'isolation forte et la résilience matérielle des VMs avec l'agilité, la portabilité et la densité de déploiement des conteneurs"
+      - id: b
+        text: "Parce que les conteneurs sont obligatoires pour allumer les écrans"
+      - id: c
+        text: "Pour doubler la consommation électrique du centre de données"
+      - id: d
+        text: "Parce que Linux ne supporte pas les machines virtuelles seules"
+    correct:
+      - a
+    explanation: "L'hybridation tire le meilleur parti des deux technologies : la VM sécurise l'environnement d'exécution, et le conteneur optimise le déploiement applicatif."
+
+  - kind: single
+    prompt: "Quel bloc déclaratif dans un fichier user-data Cloud-Init permet d'injecter une clé SSH publique pour un utilisateur afin d'interdire l'accès par mot de passe ?"
+    choices:
+      - id: a
+        text: "ssh_authorized_keys: sous la définition de l'utilisateur"
+      - id: b
+        text: "password_clear: 'admin123'"
+      - id: c
+        text: "enable_telnet: true"
+      - id: d
+        text: "firewall_disable: yes"
+    correct:
+      - a
+    explanation: "La directive `ssh_authorized_keys` dépose automatiquement les clés publiques dans le fichier `.ssh/authorized_keys` de l'utilisateur, garantissant un accès sécurisé immédiat."

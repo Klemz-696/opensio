@@ -1378,6 +1378,32 @@ Création complète du nouveau module `windows-server-ad` comprenant 6 leçons, 
 - `pnpm test --force` : 100 % vert (357 tests passants dans le monorepo).
 - `pnpm build --force` : 100 % réussi.
 
+### 24. Phase 2.3 — Production du Module `cloud-prive-virtualisation` (2ème Année SISR)
+- **Module `cloud-prive-virtualisation`** (5 leçons, 5 quiz, 2 labs) :
+  - `01-concepts-cloud-computing-modeles-hybrides.md` + `quiz-concepts-cloud-computing-modeles-hybrides.yaml` : Modèles de service IaaS/PaaS/SaaS (NIST), modèles de déploiement (Public, Privé, Hybride, Multi-Cloud), impacts financiers CapEx vs OpEx, souveraineté numérique, RGPD, qualification SecNumCloud de l'ANSSI et Cloud Bursting.
+  - `02-virtualisation-avancee-kvm-libvirt-clusters.md` + `quiz-virtualisation-avancee-kvm-libvirt-clusters.yaml` : Module noyau KVM, émulateur QEMU, pilotes paravirtualisés VirtIO, gestion en CLI via libvirt et `virsh`, stockage distribué Ceph RBD/iSCSI, Live Migration sans coupure, Quorum Corosync et Fencing (STONITH) anti-Split-Brain.
+  - `03-plateforme-cloud-prive-proxmox-openstack.md` + `quiz-plateforme-cloud-prive-proxmox-openstack.yaml` : Architecture hyperconvergée Proxmox VE (pmxcfs, SDN, Ceph), architecture modulaire OpenStack (Keystone, Nova, Neutron, Cinder, Glance, Horizon), isolation multi-tenant, pools de ressources, quotas stricts et réseaux VXLAN.
+  - `04-orchestration-hybridation-vm-conteneurs.md` + `quiz-orchestration-hybridation-vm-conteneurs.yaml` : Coexistence des paradigmes VMs (KVM) et Conteneurs (LXC/Docker/Kubernetes), virtualisation imbriquée (Nested Virtualization), provisionnement instantané par Templates et Clones Liés (Linked Clones), automatisation au boot par Cloud-Init (`user-data`), et pilotage déclaratif IaC.
+  - `05-exploitation-supervision-securite-cloud-prive.md` + `quiz-exploitation-supervision-securite-cloud-prive.yaml` : Capacity Planning, gestion de l'Overcommitment CPU/RAM (KSM, Ballooning), sauvegardes dédupliquées par blocs (Proxmox Backup Server / Dirty Bitmaps QEMU), segmentation réseau des flux (Management OOB, Corosync, Stockage, Public) et durcissement des accès hyperviseurs.
+  - **2 Labs autonomes de niveau 2_files avec suites de tests complètes** :
+    - `lab-deploiement-cloud-prive` (`configuration-cluster-cloud-prive`) : Conception de la topologie d'un cluster Cloud Privé (`cluster-config.yml` avec 3 nœuds, réseau de cluster dédié, HA activée et pool multi-tenant `project-data` avec quotas) et réseau SDN (`sdn-zones.cfg` avec zone VXLAN `zone-prod`, MTU 1450, pairs et VNets frontend/backend avec sous-réseaux et passerelles).
+    - `lab-orchestration-vm` (`orchestration-vm-templates-cloudinit`) : Automatisation de VM avec Cloud-Init (`user-data` avec entête `#cloud-config`, hostname, utilisateur `devops` sudo sans mdp + clé SSH, paquets `qemu-guest-agent`/`nginx` et `runcmd`) et manifeste d'orchestration (`vm-orchestration.yml` avec template ID 9000, clone lié `linked`, sizing, attachement au VNet SDN et snapshot initial `snapshot_before_deploy: true`).
+
+### 25. Validations Globales Post-Cloud-Prive-Virtualisation
+- `node content/validate.mjs` : **100 % valide** :
+  - **2 parcours opérationnels** (`annee-1`, `annee-2`).
+  - **14 modules opérationnels** (8 en 1ère année, 6 en 2ème année).
+  - **74 leçons rédigées et validées**.
+  - **74 quiz d'évaluation (382 questions avec explications pédagogiques)**.
+  - **32 ateliers pratiques (Labs)**.
+  - **99 / 99 tests de validateurs passants** sur les suites de fixtures.
+- `pnpm content:validate` : 100 % valide (18/18 tests Zod passants).
+- `node scripts/check-file-size.mjs` : 100 % conforme D-13 (331 fichiers analysés, 0 violation > 400 lignes).
+- `node scripts/check-theme-classes.mjs` : 100 % conforme bi-thème (0 violation).
+- `pnpm test --force` : 100 % vert (357 tests passants dans le monorepo).
+- `pnpm build --force` : 100 % réussi.
+
+
 
 
 
