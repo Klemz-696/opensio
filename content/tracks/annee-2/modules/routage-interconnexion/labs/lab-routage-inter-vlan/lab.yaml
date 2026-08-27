@@ -1,0 +1,68 @@
+slug: configuration-routage-inter-vlan
+title: "Configuration et Déploiement du Routage Inter-VLAN (RoaS & SVI)"
+level: 2_files
+max_score: 100
+estimated_minutes: 45
+context: |
+  Vous êtes administrateur réseaux et devez assurer l'interconnexion de 3 sous-réseaux VLANs d'entreprise :
+  - **VLAN 10 — Direction & Admin** : `192.168.10.0/24` (Passerelle : `192.168.10.254`)
+  - **VLAN 20 — Production & R&D** : `192.168.20.0/24` (Passerelle : `192.168.20.254`)
+  - **VLAN 30 — Invités & Wi-Fi** : `192.168.30.0/24` (Passerelle : `192.168.30.254`)
+
+  Vous devez rédiger la configuration complète des équipements dans le fichier `intervlan.ios` pour deux architectures :
+  1. **Routeur d'accès `R-GATEWAY` en Router-on-a-Stick (RoaS)** :
+     - Interface physique `GigabitEthernet0/0/0` sans IP (`no ip address`, `no shutdown`).
+     - Sous-interfaces logiques `g0/0/0.10`, `g0/0/0.20`, `g0/0/0.30` avec encapsulation IEEE 802.1Q (`encapsulation dot1Q <vlan-id>`) et attribution des adresses IP de passerelle.
+  2. **Commutateur de niveau 3 `SW-CORE-L3` avec interfaces SVI** :
+     - Activation du routage IPv4 : `ip routing`.
+     - Déclaration de la base VLAN : `vlan 10`, `vlan 20`, `vlan 30`.
+     - Configuration des passerelles virtuelles SVI : `interface Vlan10`, `interface Vlan20`, `interface Vlan30`.
+     - Configuration du port de liaison montante en Trunk : `switchport mode trunk`.
+
+objectives:
+  - "Créer et configurer des sous-interfaces logiques Router-on-a-Stick"
+  - "Appliquer l'encapsulation 802.1Q et associer le tag VLAN correspondant"
+  - "Activer le moteur de routage IPv4 sur commutateur multicouche (Switch L3)"
+  - "Déployer les interfaces virtuelles SVI et configurer les ports Trunk 802.1Q"
+
+prerequisites:
+  - "reseaux-fondamentaux"
+  - "routage-inter-vlan-sous-interfaces"
+
+files:
+  editable:
+    - path: intervlan.ios
+      description: "Script de configuration Cisco IOS pour le routeur RoaS et le commutateur L3 SVI"
+
+hints:
+  - cost_percent: 10
+    text: "Sur le routeur, commencez par 'encapsulation dot1Q 10' avant de saisir 'ip address 192.168.10.254 255.255.255.0'."
+  - cost_percent: 10
+    text: "Sur le switch L3, n'oubliez pas la commande globale 'ip routing' pour activer la commutation de paquets."
+  - cost_percent: 10
+    text: "Pour les SVIs, configurez 'interface Vlan10', 'interface Vlan20' et 'interface Vlan30' avec leurs adresses respectives."
+
+validation:
+  type: script
+  image: opensio/validator-intervlan:latest
+  timeout_seconds: 30
+  checks:
+    - id: roas_subinterfaces_encapsulation
+      required: true
+      points: 25
+      description: "Configuration Router-on-a-Stick (sous-interfaces .10, .20, .30 avec encapsulation dot1Q et adresses IP)"
+    - id: switch_l3_ip_routing_and_vlans
+      required: true
+      points: 25
+      description: "Activation de 'ip routing' et création des VLANs 10, 20 et 30 sur le switch L3"
+    - id: switch_l3_svi_configuration
+      required: true
+      points: 25
+      description: "Configuration des interfaces virtuelles SVI (Vlan10, Vlan20, Vlan30) avec leurs passerelles"
+    - id: trunk_ports_and_descriptions
+      required: true
+      points: 25
+      description: "Configuration du port Trunk 802.1Q (switchport mode trunk) et activation des ports"
+
+scoring:
+  floor_percent: 50

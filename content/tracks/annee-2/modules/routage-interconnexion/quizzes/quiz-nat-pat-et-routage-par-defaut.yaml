@@ -1,0 +1,79 @@
+slug: quiz-nat-pat-et-routage-par-defaut
+title: "Quiz — NAT/PAT et Routage par Défaut"
+passing_score: 80
+position: 4
+questions:
+  - kind: single
+    prompt: "Comment le mécanisme de PAT (Port Address Translation / Overload / Masquerade) parvient-il à faire partager une seule adresse IP publique à des centaines d'équipements internes ?"
+    choices:
+      - id: a
+        text: "En réécrivant les numéros de ports TCP/UDP sources des connexions sortantes (plage 1024 à 65535) et en maintenant une table de correspondance dynamique"
+      - id: b
+        text: "En compressant les paquets IP au format ZIP avant émission"
+      - id: c
+        text: "En attribuant une adresse MAC différente chaque seconde"
+      - id: d
+        text: "En coupant la connexion des autres utilisateurs dès qu'un nouvel utilisateur se connecte"
+    correct:
+      - a
+    explanation: "Le PAT différencie les flux concurrents provenant de la même IP publique en attribuant un numéro de port source unique à chaque session dans la table de translation."
+
+  - kind: single
+    prompt: "Dans la terminologie de translation d'adresses réseau (NAT), que désigne précisément le terme 'Inside Local' ?"
+    choices:
+      - id: a
+        text: "L'adresse IP privée d'origine attribuée à un hôte sur le réseau interne avant toute opération de translation"
+      - id: b
+        text: "L'adresse IP publique vue par les serveurs distants sur Internet"
+      - id: c
+        text: "L'adresse IP de destination du serveur Web hébergé chez Google"
+      - id: d
+        text: "L'adresse MAC de la carte réseau locale"
+    correct:
+      - a
+    explanation: "'Inside Local' correspond à l'adresse IP privée locale attribuée à l'équipement au sein du réseau d'entreprise (ex: 192.168.1.50)."
+
+  - kind: single
+    prompt: "Quelle commande permet au routeur frontière d'injecter et de propager automatiquement sa route par défaut (0.0.0.0/0) à l'ensemble des routeurs du domaine OSPF ?"
+    choices:
+      - id: a
+        text: "default-information originate (sous le processus router ospf)"
+      - id: b
+        text: "ip route default send-all"
+      - id: c
+        text: "ospf broadcast 0.0.0.0"
+      - id: d
+        text: "redistribute internet force"
+    correct:
+      - a
+    explanation: "La directive `default-information originate` génère un LSA de type externe (Type 5) pour annoncer la passerelle de dernier recours aux autres routeurs OSPF."
+
+  - kind: single
+    prompt: "Dans quelle situation un administrateur réseau met-il en place un NAT Statique (One-to-One) ?"
+    choices:
+      - id: a
+        text: "Pour rendre un serveur interne (ex: serveur Web DMZ ou passerelle VPN) accessible de manière permanente depuis Internet sur une adresse IP publique fixe dédiée"
+      - id: b
+        text: "Pour permettre aux smartphones des invités de naviguer sur les réseaux sociaux en Wi-Fi"
+      - id: c
+        text: "Pour accélérer les téléchargements sur les postes bureautiques"
+      - id: d
+        text: "Pour synchroniser l'horloge système NTP"
+    correct:
+      - a
+    explanation: "Le NAT statique 1:1 associe de manière fixe une IP publique à une IP privée, idéal pour la publication de services en DMZ."
+
+  - kind: single
+    prompt: "Parmi les plages d'adresses suivantes, laquelle fait partie des adresses IPv4 privées non routables sur Internet définies par la RFC 1918 ?"
+    choices:
+      - id: a
+        text: "172.16.0.0 à 172.31.255.255 (/12)"
+      - id: b
+        text: "8.8.8.0 à 8.8.8.255"
+      - id: c
+        text: "203.0.113.0 à 203.0.113.255"
+      - id: d
+        text: "1.1.1.0 à 1.1.1.255"
+    correct:
+      - a
+    explanation: "Les trois plages privées de la RFC 1918 sont 10.0.0.0/8, 172.16.0.0/12 et 192.168.0.0/16. Les routeurs d'Internet ne les routent jamais publiquement."

@@ -1,12 +1,24 @@
 slug: routage-interconnexion
 title: "Routage Dynamique, OSPF & Interconnexion Réseau"
-description: "Conception et déploiement d'architectures d'interconnexion complexes, routage dynamique OSPF mono-zone et multi-zones, redondance de passerelle VRRP/HSRP et routage inter-VLAN avancé."
+description: "Conception et déploiement d'architectures d'interconnexion complexes, routage dynamique OSPF mono-zone et multi-zones, routage inter-VLAN 802.1Q / SVI, NAT/PAT et diagnostic avancé."
 position: 1
 difficulty: 3
 estimated_minutes: 550
 competency_refs:
   - "B2.1"
   - "B2.2"
-lessons: []
-quizzes: []
-labs: []
+lessons:
+  - principes-routage-statique-dynamique
+  - protocole-ospf-architecture-et-etats
+  - routage-inter-vlan-sous-interfaces
+  - nat-pat-et-routage-par-defaut
+  - supervision-et-diagnostic-routage
+quizzes:
+  - quiz-principes-routage-statique-dynamique
+  - quiz-protocole-ospf-architecture-et-etats
+  - quiz-routage-inter-vlan-sous-interfaces
+  - quiz-nat-pat-et-routage-par-defaut
+  - quiz-supervision-et-diagnostic-routage
+labs:
+  - configuration-routage-dynamique-ospf
+  - configuration-routage-inter-vlan

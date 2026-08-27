@@ -1,0 +1,65 @@
+! ==========================================
+! PARTIE 1 : ROUTEUR R-GATEWAY (Router-on-a-Stick)
+! ==========================================
+hostname R-GATEWAY
+!
+interface GigabitEthernet0/0/0
+ no ip address
+ no shutdown
+!
+interface GigabitEthernet0/0/0.10
+ description Passerelle Direction & Admin
+ encapsulation dot1Q 10
+ ip address 192.168.10.254 255.255.255.0
+ no shutdown
+!
+interface GigabitEthernet0/0/0.20
+ description Passerelle Production & R&D
+ encapsulation dot1Q 20
+ ip address 192.168.20.254 255.255.255.0
+ no shutdown
+!
+interface GigabitEthernet0/0/0.30
+ description Passerelle Invités & Wi-Fi
+ encapsulation dot1Q 30
+ ip address 192.168.30.254 255.255.255.0
+ no shutdown
+!
+
+! ==========================================
+! PARTIE 2 : COMMUTATEUR SW-CORE-L3 (SVI)
+! ==========================================
+hostname SW-CORE-L3
+!
+ip routing
+!
+vlan 10
+ name Direction-Admin
+!
+vlan 20
+ name Production-RD
+!
+vlan 30
+ name Invites-WiFi
+!
+interface Vlan10
+ description SVI Direction
+ ip address 192.168.10.254 255.255.255.0
+ no shutdown
+!
+interface Vlan20
+ description SVI Production
+ ip address 192.168.20.254 255.255.255.0
+ no shutdown
+!
+interface Vlan30
+ description SVI Invites
+ ip address 192.168.30.254 255.255.255.0
+ no shutdown
+!
+interface GigabitEthernet1/0/24
+ description Trunk vers Switch Acces
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ no shutdown
+!
