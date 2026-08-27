@@ -1,0 +1,8 @@
+# /etc/fstab: static file system information.
+# <file system> <mount point> <type> <options> <dump> <pass>
+UUID=11111111-2222-3333-4444-555555555555 / ext4 defaults,noatime 0 1
+UUID=aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee /boot ext4 defaults 0 2
+UUID=22222222-3333-4444-5555-666666666666 /var/www ext4 defaults,nodev,nosuid,noatime 0 2
+UUID=33333333-4444-5555-6666-777777777777 /tmp ext4 defaults,nodev,nosuid,noexec 0 2
+UUID=44444444-5555-6666-7777-888888888888 /var/lib/postgresql xfs defaults,noatime,nodev 0 2
+UUID=99999999-8888-7777-6666-555555555555 none swap sw 0 0

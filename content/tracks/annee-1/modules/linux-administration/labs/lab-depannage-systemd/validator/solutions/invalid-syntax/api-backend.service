@@ -1,0 +1,17 @@
+[Unit]
+Description=API Backend
+After=network.target
+
+[Service]
+User=appuser
+Group=appuser
+WorkingDirectory=/opt/api-backend
+ExecStart=/usr/bin/node /opt/api-backend/dist/main.js
+Restart=always
+EnvironmentFile=/opt/api-backend/.env
+NoNewPrivileges=true
+ProtectSystem=full
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,57 @@
+slug: configuration-dhcp-kea
+title: "Déploiement et configuration d'un serveur DHCP moderne ISC Kea"
+level: 2_files
+max_score: 100
+estimated_minutes: 40
+context: |
+  Vous devez configurer le serveur DHCP moderne ISC Kea (`/etc/kea/kea-dhcp4.conf`) pour le réseau d'entreprise :
+  1. Interface d'écoute : `eth0`.
+  2. Base de stockage des baux : `memfile` persistante vers `/var/lib/kea/kea-leases4.csv`.
+  3. Durées de baux globales : durée de vie valide `86400` secondes (24h) et renouvellement `43200` secondes (12h).
+  4. Sous-réseau n°1 (`192.168.20.0/24`, id `1`) :
+     - Plage dynamique (pool) : `192.168.20.50 - 192.168.20.200`.
+     - Passerelle par défaut (option `routers`) : `192.168.20.254`.
+     - Serveurs DNS (option `domain-name-servers`) : `192.168.20.10, 1.1.1.1`.
+     - Domaine DNS (option `domain-name`) : `prod.entreprise.lan`.
+     - Réservation statique : machine `srv-nas-01`, adresse MAC `00:11:22:33:44:55`, adresse IP fixe `192.168.20.15`.
+
+objectives:
+  - "Structurer un fichier de configuration JSON valide pour ISC Kea"
+  - "Définir les interfaces, la base de baux et les timers de renouvellement"
+  - "Configurer un sous-réseau IPv4 avec pool d'adresses et options DHCP standard"
+  - "Paramétrer une réservation statique d'adresse IP par adresse MAC"
+
+prerequisites:
+  - "serveur-dhcp-linux"
+
+files:
+  editable:
+    - path: kea-dhcp4.conf
+      description: "Fichier de configuration principal JSON du démon Kea DHCPv4"
+
+hints:
+  - cost_percent: 10
+    text: "Le fichier doit respecter une syntaxe JSON strictement valide (pas de virgule traînante)."
+  - cost_percent: 10
+    text: "La directive 'option-data' contient la liste des options distribuées avec leurs champs 'name' et 'data'."
+
+validation:
+  type: script
+  image: opensio/validator-kea:latest
+  timeout_seconds: 30
+  checks:
+    - id: json_structure_and_globals_valid
+      required: true
+      points: 30
+      description: "Syntaxe JSON valide, interface eth0, lease-database et timers configurés"
+    - id: subnet_and_pool_valid
+      required: true
+      points: 40
+      description: "Sous-réseau 192.168.20.0/24 et plage 192.168.20.50 - 192.168.20.200 conformes"
+    - id: options_and_reservation_valid
+      required: true
+      points: 30
+      description: "Options DHCP (routers, domain-name-servers, domain-name) et réservation MAC validées"
+
+scoring:
+  floor_percent: 50
