@@ -1,0 +1,34 @@
+# Configuration Validée de Découverte Réseau et Inventaire SNMP GLPI
+task:
+  name: "Decouverte et Inventaire SNMP Infrastructure"
+  enabled: true
+  agent_proxy: "agent-srv-glpi.entreprise.lan"
+  schedule: "0 2 * * *"
+
+targets:
+  - name: "Commutateurs Reseau Distribution"
+    ip_range: "192.168.10.1-192.168.10.50"
+    type: "network_devices"
+  - name: "Imprimantes et Copieurs Bureautiques"
+    ip_range: "192.168.20.1-192.168.20.30"
+    type: "printers"
+
+credentials_snmp:
+  - name: "Profil SNMPv2 Lecture"
+    version: "2c"
+    community: "opensio-snmp-ro"
+    port: 161
+  - name: "Profil SNMPv3 Securise"
+    version: 3
+    username: "sec-admin"
+    security_level: "authPriv"
+    auth_proto: "SHA"
+    auth_passphrase: "AuthSecretKey2026!"
+    priv_proto: "AES"
+    priv_passphrase: "PrivEncryptionKey2026!"
+    port: 161
+
+options:
+  link_lldp_cdp: true
+  update_arp_table: true
+  auto_create_devices: true

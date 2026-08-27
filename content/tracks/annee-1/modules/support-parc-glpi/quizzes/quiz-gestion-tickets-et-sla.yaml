@@ -1,0 +1,79 @@
+slug: quiz-gestion-tickets-et-sla
+title: "Quiz — Gestion des Tickets et SLA"
+passing_score: 80
+position: 4
+questions:
+  - kind: single
+    prompt: "Quel est l'ordre chronologique normal des statuts d'un ticket dans GLPI lors d'un cycle de traitement standard ?"
+    choices:
+      - id: a
+        text: "Nouveau -> En cours (Assigné) -> Résolu -> Clos"
+      - id: b
+        text: "Clos -> Résolu -> En cours -> Nouveau"
+      - id: c
+        text: "Nouveau -> En attente -> Supprimé"
+      - id: d
+        text: "En cours -> Nouveau -> Clos -> En attente"
+    correct:
+      - a
+    explanation: "Le ticket est créé (Nouveau), pris en charge par un technicien (En cours), pourvu d'une solution (Résolu), puis définitivement validé et archivé (Clos)."
+
+  - kind: single
+    prompt: "Comment GLPI calcule-t-il automatiquement la Priorité d'un ticket d'assistance ?"
+    choices:
+      - id: a
+        text: "Par la matrice croisée entre l'Urgence (délai souhaité) et l'Impact (nombre d'utilisateurs ou criticité du service affecté)"
+      - id: b
+        text: "En tirant un nombre aléatoire entre 1 et 5"
+      - id: c
+        text: "En fonction de la longueur du message rédigé par l'utilisateur"
+      - id: d
+        text: "Selon l'ordre alphabétique du nom de famille du demandeur"
+    correct:
+      - a
+    explanation: "La matrice Urgence / Impact est la règle ITIL standard garantissant un arbitrage objectif des priorités de traitement."
+
+  - kind: single
+    prompt: "Quel est l'intérêt principal du moteur de règles métier d'affectation automatique dans GLPI ?"
+    choices:
+      - id: a
+        text: "Router instantanément les tickets vers le bon groupe technique (ex: Réseau, ERP) et appliquer le bon SLA selon des mots-clés ou l'entité sans tri manuel"
+      - id: b
+        text: "Supprimer les tickets qui contiennent des fautes d'orthographe"
+      - id: c
+        text: "Répondre automatiquement 'Non' à toutes les demandes d'achat"
+      - id: d
+        text: "Empêcher les techniciens de prendre des pauses"
+    correct:
+      - a
+    explanation: "Les règles métier automatisent la qualification, l'affectation et les SLA pour réduire à zéro le temps de pré-qualification humaine des tickets entrants."
+
+  - kind: single
+    prompt: "Dans la gestion des SLA, qu'est-ce qu'une règle d'escalade automatique sur échéance proche ?"
+    choices:
+      - id: a
+        text: "Une action déclenchée automatiquement (ex: notification, changement de technicien ou alerte responsable) lorsque 75 % ou 100 % du temps imparti est atteint"
+      - id: b
+        text: "Une augmentation de la facture d'électricité"
+      - id: c
+        text: "L'annulation de la garantie du matériel"
+      - id: d
+        text: "La fermeture immédiate de l'entreprise"
+    correct:
+      - a
+    explanation: "L'escalade automatique prévient les dépassements d'engagements contractuels en alertant les parties prenantes avant la rupture du SLA."
+
+  - kind: single
+    prompt: "Quand un ticket passe au statut 'Résolu', pourquoi ne passe-t-il pas directement au statut 'Clos' ?"
+    choices:
+      - id: a
+        text: "Pour permettre au demandeur de tester et d'approuver ou refuser la solution apportée avant la clôture administrative définitive"
+      - id: b
+        text: "Parce que GLPI bloque pendant 48 heures pour maintenance"
+      - id: c
+        text: "Parce que le technicien doit obligatoirement rédiger un rapport papier"
+      - id: d
+        text: "Parce que les statuts Résolu et Clos n'existent pas"
+    correct:
+      - a
+    explanation: "L'étape de résolution soumet la solution au demandeur. Si l'incident persiste, l'utilisateur peut rouvrir le ticket sans devoir en créer un nouveau."

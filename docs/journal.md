@@ -1187,5 +1187,30 @@ Création complète du nouveau module `windows-server-ad` comprenant 6 leçons, 
 - `pnpm test --force` : 100 % vert (357 tests passants dans le monorepo).
 - `pnpm build --force` : 100 % réussi.
 
+### 9. Phase 2.2 — Production du Module `support-parc-glpi`
+- **Module `support-parc-glpi`** (5 leçons, 5 quiz, 2 labs) :
+  - `01-principes-itil-et-support.md` + `quiz-principes-itil-et-support.yaml` : Référentiel ITIL v4, typologie des événements (Incident vs Demande de service vs Problème vs Changement), niveaux de support et chaîne d'escalade (N1, N2, N3), conventions de service (SLA, OLA, UC) et métriques TTO / TTR / FCR.
+  - `02-architecture-glpi-et-deploiement.md` + `quiz-architecture-glpi-et-deploiement.yaml` : Architecture LAMP de GLPI (Apache/Nginx, MariaDB, PHP 8.2/8.3-FPM, cron), arborescence hiérarchique des entités (multi-sites, sous-entités, récursivité) et profils RBAC (Self-Service, Technician, Admin, Super-Admin).
+  - `03-inventaire-automatise-agents.md` + `quiz-inventaire-automatise-agents.yaml` : Fonctionnement et télémétrie de GLPI Agent (rapports JSON, collecte matérielle et logicielle), déploiement massif par GPO Active Directory / script, découverte réseau et inventaire SNMP (switches, imprimantes, routeurs, association des ports LLDP/CDP et tables ARP).
+  - `04-gestion-tickets-et-sla.md` + `quiz-gestion-tickets-et-sla.yaml` : Cycle de vie normalisé d'un ticket (Nouveau, En cours, En attente, Résolu, Clos), matrice de priorité Urgence / Impact, moteur de règles métier d'affectation automatique, et gestion des SLA (TTO, TTR, escalades automatiques).
+  - `05-habilitations-et-cycle-de-vie.md` + `quiz-habilitations-et-cycle-de-vie.yaml` : Cycle de vie des actifs ITAM (Commande, En stock, En service, En réparation, Réforme D3E), effacement sécurisé NIST 800-88, gestion des licences logicielles (OEM, Volume, SaaS) et synchronisation d'annuaire Active Directory / LDAPS.
+  - **2 Labs autonomes de niveau 2_files avec suites de tests complètes** :
+    - `lab-regles-glpi` (`regles-routage-tickets-sla`) : Fichier déclaratif JSON `rules.json` configurant 3 règles métier complètes (incidents VIP avec SLA TTR $\le$ 2h / TTO $\le$ 15min, pannes réseau vers équipe Réseau SLA TTR $\le$ 4h, demandes bureautiques vers N1 SLA TTR $\le$ 24h).
+    - `lab-inventaire-snmp` (`configuration-decouverte-snmp`) : Fichier déclaratif YAML `snmp-discovery.yaml` définissant la tâche d'inventaire réseau avec agent proxy, plages IP commutateurs (192.168.10.x) et copieurs (192.168.20.x), profils SNMP v2c et SNMP v3 sécurisé (`authPriv`, SHA, AES) et options de topologie LLDP/ARP.
+
+### 10. Validations Globales Post-GLPI
+- `node content/validate.mjs` : **100 % valide** :
+  - 7 modules opérationnels (`reseaux-fondamentaux`, `windows-server-ad`, `linux-administration`, `services-reseau-linux`, `virtualisation-systemes`, `sauvegardes-stockage`, `support-parc-glpi`).
+  - 39 leçons rédigées et validées.
+  - 39 quiz d'évaluation (207 questions).
+  - 18 ateliers pratiques (Labs).
+  - **57 / 57 tests de validateurs passants** sur les suites de fixtures.
+- `pnpm content:validate` : 100 % valide (18/18 tests Zod passants).
+- `node scripts/check-file-size.mjs` : 100 % conforme D-13 (331 fichiers analysés, 0 violation > 400 lignes).
+- `node scripts/check-theme-classes.mjs` : 100 % conforme bi-thème (0 violation).
+- `pnpm test --force` : 100 % vert (357 tests passants dans le monorepo).
+- `pnpm build --force` : 100 % réussi.
+
+
 
 
