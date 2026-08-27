@@ -1,0 +1,14 @@
+# docker-compose.yml - Pile Applicative 3-Tiers
+
+services:
+  # TODO: Configurer le service proxy (nginx:alpine, port 80:80, frontend-net, depends_on backend healthy)
+
+  # TODO: Configurer le service backend (build: ., frontend-net + backend-net, depends_on database healthy, healthcheck)
+
+  # TODO: Configurer le service database (postgres:16-alpine, volume db_data, backend-net, healthcheck pg_isready)
+
+  # TODO: Configurer le service cache (redis:7-alpine, backend-net)
+
+# TODO: Déclarer la section volumes (db_data)
+
+# TODO: Déclarer la section networks (frontend-net, backend-net)

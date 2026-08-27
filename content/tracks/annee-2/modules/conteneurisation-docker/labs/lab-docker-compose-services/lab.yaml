@@ -1,0 +1,87 @@
+slug: deploiement-stack-docker-compose
+title: "Déploiement d'une Pile Multi-Services avec Docker Compose (Nginx, Node, Postgres, Redis)"
+level: 2_files
+max_score: 100
+estimated_minutes: 45
+context: |
+  Vous êtes administrateur infrastructures et devez orchestrer une pile applicative complète 3-tiers à l'aide de Docker Compose via le fichier `docker-compose.yml`.
+
+  La pile applicative se compose de 4 microservices :
+  1. **`proxy`** (Reverse Proxy frontal) :
+     - Image : `nginx:alpine`
+     - Exposition des ports : `"80:80"` et `"443:443"` (ou `"80:80"`)
+     - Réseau : connecté uniquement à `frontend-net`
+     - Dépendance : attend que `backend` soit opérationnel (`depends_on` avec `condition: service_healthy`)
+     - Politique de redémarrage : `restart: unless-stopped`
+  2. **`backend`** (API applicative) :
+     - Construction : `build: .`
+     - Environnement : variables de connexion `DATABASE_URL` et `REDIS_HOST`
+     - Réseaux : connecté à la fois à `frontend-net` (pour le proxy) et `backend-net` (pour la BDD et le cache)
+     - Dépendance : attend que la base de données soit saine (`depends_on` `database` avec `condition: service_healthy`)
+     - Sonde de santé : `healthcheck` HTTP sur `http://localhost:3000/health`
+     - Politique : `restart: unless-stopped`
+  3. **`database`** (Base de données relationnelle) :
+     - Image : `postgres:16-alpine`
+     - Environnement : `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD`
+     - Persistance : volume nommé `db_data` monté sur `/var/lib/postgresql/data`
+     - Réseau : connecté uniquement à `backend-net` (**aucun port ne doit être exposé publiquement**)
+     - Sonde de santé : `healthcheck` avec la commande `pg_isready`
+     - Politique : `restart: unless-stopped`
+  4. **`cache`** (Moteur de cache mémoire) :
+     - Image : `redis:7-alpine`
+     - Réseau : connecté uniquement à `backend-net`
+     - Politique : `restart: unless-stopped`
+  5. **Déclarations racines** :
+     - Déclaration du volume persistant `db_data`
+     - Déclaration des deux réseaux isolés `frontend-net` et `backend-net`
+
+objectives:
+  - "Déclarer une architecture multi-services complète et ordonnancée sous Docker Compose"
+  - "Implémenter une segmentation réseau étanche séparant le trafic public (frontend) des données (backend)"
+  - "Configurer des sondes de santé (Healthchecks) et des conditions de démarrage strictes"
+  - "Assurer la persistance des données via des volumes nommés déclarés à la racine"
+
+prerequisites:
+  - "reseaux-fondamentaux"
+  - "principes-conteneurisation-et-cycle-vie"
+  - "dockerfile-construction-et-bonnes-pratiques"
+  - "volumes-stockage-et-persistance"
+  - "orchestration-multi-services-docker-compose"
+
+files:
+  editable:
+    - path: docker-compose.yml
+      description: "Fichier d'orchestration multi-services Docker Compose"
+
+hints:
+  - cost_percent: 10
+    text: "Pensez à déclarer les 4 services (proxy, backend, database, cache) sous la clé 'services:'."
+  - cost_percent: 10
+    text: "Pour la sécurité, n'exposez pas les ports de PostgreSQL ni de Redis vers l'hôte : ils communiquent uniquement via 'backend-net'."
+  - cost_percent: 10
+    text: "Déclarez 'db_data:' sous la section racine 'volumes:' et 'frontend-net:', 'backend-net:' sous 'networks:'."
+
+validation:
+  type: script
+  image: opensio/validator-docker-compose:latest
+  timeout_seconds: 30
+  checks:
+    - id: services_definitions_and_images
+      required: true
+      points: 25
+      description: "Définition des 4 services (proxy, backend, database, cache) avec images et build appropriés"
+    - id: networks_isolation_and_ports
+      required: true
+      points: 25
+      description: "Segmentation réseau : proxy sur frontend-net (port 80), database/cache sur backend-net non exposé, backend sur les deux réseaux"
+    - id: volumes_persistence_and_restart
+      required: true
+      points: 25
+      description: "Persistance et résilience : volume db_data sur /var/lib/postgresql/data, section volumes racine et restart: unless-stopped"
+    - id: healthchecks_and_depends_on
+      required: true
+      points: 25
+      description: "Fiabilité : sondes de santé (pg_isready, curl health) et depends_on avec condition: service_healthy"
+
+scoring:
+  floor_percent: 50

@@ -1303,6 +1303,32 @@ Création complète du nouveau module `windows-server-ad` comprenant 6 leçons, 
 - `pnpm test --force` : 100 % vert (357 tests passants dans le monorepo).
 - `pnpm build --force` : 100 % réussi.
 
+### 18. Phase 2.3 — Production du Module `conteneurisation-docker` (2ème Année SISR)
+- **Module `conteneurisation-docker`** (5 leçons, 5 quiz, 2 labs) :
+  - `01-principes-conteneurisation-et-cycle-vie.md` + `quiz-principes-conteneurisation-et-cycle-vie.yaml` : Virtualisation classique (VM / hyperviseur) vs Conteneurisation (OS-level virtualization), mécanismes noyau Linux (`namespaces` pour l'isolation et `cgroups` pour la limitation matérielle), calques en lecture seule d'images et couche d'écriture éphémère Copy-on-Write (Overlay2), cycle de vie complet (`run`, `exec`, `logs`, `stop` avec signal SIGTERM, `rm`, `prune`).
+  - `02-dockerfile-construction-et-bonnes-pratiques.md` + `quiz-dockerfile-construction-et-bonnes-pratiques.yaml` : Instructions d'un Dockerfile (`FROM`, `WORKDIR`, `COPY`, `RUN`, `ENV`, `EXPOSE`, `USER`, `CMD` vs `ENTRYPOINT`), exploitation du cache de calques (copie ordonnée des dépendances), fichier `.dockerignore`, sécurité non-root et construction multi-étapes (**Multi-Stage Builds**) réduisant la taille des images de 90 %.
+  - `03-reseau-docker-et-communication-inter-conteneurs.md` + `quiz-reseau-docker-et-communication-inter-conteneurs.yaml` : Pilotes de réseau Docker (`bridge`, `host`, `none`, `macvlan`, `overlay`), publication et mappage de ports (`-p hôte:conteneur`), réseaux personnalisés (User-Defined Bridges) et serveur DNS intégré de Docker (`127.0.0.11`) pour la découverte automatique par nom de conteneur.
+  - `04-volumes-stockage-et-persistance.md` + `quiz-volumes-stockage-et-persistance.yaml` : Éphémérité du stockage conteneurisé par défaut, comparaison des 3 modes de persistance (Volumes nommés gérés par Docker, Bind Mounts pour le développement et l'injection de conf `:ro`, tmpfs en mémoire vive), procédures de sauvegarde et restauration de volumes via conteneur éphémère.
+  - `05-orchestration-multi-services-docker-compose.md` + `quiz-orchestration-multi-services-docker-compose.yaml` : Orchestration 3-tiers multi-conteneurs avec Docker Compose (`compose.yaml`), segmentation réseau isolée (frontend/backend), sondes de santé (`healthcheck` avec `pg_isready`), démarrage ordonné (`depends_on` avec `condition: service_healthy`), politiques de redémarrage `restart: unless-stopped` et mise à l'échelle (`--scale`).
+  - **2 Labs autonomes de niveau 2_files avec suites de tests complètes** :
+    - `lab-dockerfile-application` (`construction-image-docker-optimisee`) : Conception d'un Dockerfile multi-stage pour une API Node.js TypeScript (étape builder avec cache package*.json et `npm ci`, étape production minimale avec `COPY --from=builder`, variable `ENV NODE_ENV=production`, `USER node` non-root et `CMD ["node", "dist/main.js"]`).
+    - `lab-docker-compose-services` (`deploiement-stack-docker-compose`) : Conception d'un fichier `docker-compose.yml` complet pour une pile 3-tiers (proxy Nginx port 80 sur frontend-net, backend Node.js sur frontend-net et backend-net avec healthcheck, database PostgreSQL sur backend-net avec volume nommé `db_data` et healthcheck `pg_isready`, cache Redis sur backend-net, et `restart: unless-stopped`).
+
+### 19. Validations Globales Post-Conteneurisation-Docker
+- `node content/validate.mjs` : **100 % valide** :
+  - **2 parcours opérationnels** (`annee-1`, `annee-2`).
+  - **11 modules opérationnels** (8 en 1ère année, 3 en 2ème année).
+  - **59 leçons rédigées et validées**.
+  - **59 quiz d'évaluation (307 questions avec explications pédagogiques)**.
+  - **26 ateliers pratiques (Labs)**.
+  - **81 / 81 tests de validateurs passants** sur les suites de fixtures.
+- `pnpm content:validate` : 100 % valide (18/18 tests Zod passants).
+- `node scripts/check-file-size.mjs` : 100 % conforme D-13 (331 fichiers analysés, 0 violation > 400 lignes).
+- `node scripts/check-theme-classes.mjs` : 100 % conforme bi-thème (0 violation).
+- `pnpm test --force` : 100 % vert (357 tests passants dans le monorepo).
+- `pnpm build --force` : 100 % réussi.
+
+
 
 
 

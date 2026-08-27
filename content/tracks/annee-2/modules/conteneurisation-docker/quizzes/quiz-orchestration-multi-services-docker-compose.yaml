@@ -1,0 +1,79 @@
+slug: quiz-orchestration-multi-services-docker-compose
+title: "Quiz — Orchestration Multi-Services avec Docker Compose"
+passing_score: 80
+position: 5
+questions:
+  - kind: single
+    prompt: "Dans un fichier docker-compose.yml, à quoi sert la directive 'depends_on' couplée à 'condition: service_healthy' ?"
+    choices:
+      - id: a
+        text: "À différer le démarrage d'un service applicatif (ex: API) jusqu'à ce que le service prérequis (ex: Base de données) ait validé son test de santé (healthcheck)"
+      - id: b
+        text: "À fusionner les conteneurs en un seul processus"
+      - id: c
+        text: "À redémarrer le serveur hôte si la base de données s'arrête"
+      - id: d
+        text: "À dupliquer automatiquement le code source"
+    correct:
+      - a
+    explanation: "Sans `condition: service_healthy`, `depends_on` démarre seulement le conteneur cible sans attendre qu'il soit réellement prêt à traiter des requêtes réseau."
+
+  - kind: single
+    prompt: "Quelle politique de redémarrage (restart policy) permet de relancer automatiquement un conteneur en cas de plantage ou de redémarrage de l'hôte, SAUF si l'administrateur l'a explicitement arrêté ?"
+    choices:
+      - id: a
+        text: "restart: unless-stopped"
+      - id: b
+        text: "restart: no"
+      - id: c
+        text: "restart: always-force"
+      - id: d
+        text: "restart: on-crash-only"
+    correct:
+      - a
+    explanation: "`unless-stopped` redémarre le conteneur en permanence sauf s'il a fait l'objet d'un `docker stop` ou `docker compose down` manuel préalable."
+
+  - kind: single
+    prompt: "Quelle commande Docker Compose permet de détruire tous les conteneurs et réseaux d'une pile applicative TOUT EN supprimant également les volumes nommés déclarés ?"
+    choices:
+      - id: a
+        text: "docker compose down -v (ou --volumes)"
+      - id: b
+        text: "docker compose stop"
+      - id: c
+        text: "docker compose kill"
+      - id: d
+        text: "docker compose pause"
+    correct:
+      - a
+    explanation: "L'option `-v` ou `--volumes` de `docker compose down` ordonne la purge complète des conteneurs, réseaux et volumes associés à la pile."
+
+  - kind: single
+    prompt: "Comment tester et auditer l'état de santé d'un conteneur PostgreSQL directement dans sa section 'healthcheck' sous Docker Compose ?"
+    choices:
+      - id: a
+        text: "test: [\"CMD-SHELL\", \"pg_isready -U user -d appdb\"]"
+      - id: b
+        text: "test: [\"PING\", \"google.com\"]"
+      - id: c
+        text: "test: [\"RESTART\"]"
+      - id: d
+        text: "test: [\"KILL\"]"
+    correct:
+      - a
+    explanation: "La commande `pg_isready` teste si le serveur PostgreSQL est pleinement initialisé et en mesure d'accepter de nouvelles connexions TCP."
+
+  - kind: single
+    prompt: "Quelle commande Docker Compose permet de créer instantanément 3 réplicas (instances) du service 'backend' pour assurer de la répartition de charge ?"
+    choices:
+      - id: a
+        text: "docker compose up -d --scale backend=3"
+      - id: b
+        text: "docker compose clone backend 3"
+      - id: c
+        text: "docker compose duplicate --times=3"
+      - id: d
+        text: "docker compose multiply backend"
+    correct:
+      - a
+    explanation: "L'option `--scale <service>=<nombre>` permet la mise à l'échelle horizontale simple des services sans mapping de port hôte statique."
