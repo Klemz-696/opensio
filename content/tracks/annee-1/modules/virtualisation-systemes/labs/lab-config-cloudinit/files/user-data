@@ -1,0 +1,28 @@
+#cloud-config
+
+# Configuration du nom d'hôte
+hostname: TODO_HOSTNAME
+fqdn: TODO_FQDN
+manage_etc_hosts: true
+
+# Mises à jour des paquets
+package_update: true
+package_upgrade: true
+
+# Création du compte administrateur et clé SSH
+users:
+  - name: TODO_USERNAME
+    gecos: Administrateur Système
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    groups: sudo, adm
+    shell: /bin/bash
+    ssh_authorized_keys:
+      - TODO_SSH_KEY
+
+# Paquets indispensables
+packages:
+  - TODO_PACKAGES
+
+# Commandes de fin de déploiement (Agent QEMU + Pare-feu UFW)
+runcmd:
+  - TODO_COMMANDS
