@@ -95,9 +95,41 @@ describe('Composants du Tableau de bord (Dashboard)', () => {
   it('DashboardHeader rend le nom de l\'utilisateur et les badges de synthèse', () => {
     render(<DashboardHeader displayName="Lucas SISR" overview={mockDashboardData.overview} />);
     expect(screen.getByText('Lucas SISR')).toBeDefined();
-    expect(screen.getByText(/4\/10 leçons terminées/)).toBeDefined();
-    expect(screen.getByText(/1\/2 quiz réussis/)).toBeDefined();
+    expect(screen.getByText(/4\/10/)).toBeDefined();
+    expect(screen.getByText(/leçons terminées/)).toBeDefined();
+    expect(screen.getByText(/1\/2/)).toBeDefined();
+    expect(screen.getByText(/quiz réussis/)).toBeDefined();
+    expect(screen.getByText("1 h d'apprentissage")).toBeDefined();
   });
+
+  it('DashboardHeader affiche "Temps d\'apprentissage : --" lorsque le temps total est de 0 ou non renseigné', () => {
+    const zeroTimeOverview = {
+      ...mockDashboardData.overview,
+      totalTimeSpentSeconds: 0,
+    };
+    render(<DashboardHeader displayName="Nouveau SISR" overview={zeroTimeOverview} />);
+    expect(screen.getByText("Temps d'apprentissage : --")).toBeDefined();
+    expect(screen.queryByText("Non spécifié d'apprentissage")).toBeNull();
+  });
+
+  it('DashboardHeader formate correctement le temps d\'apprentissage quand il est supérieur à zéro', () => {
+    const customTimeOverview = {
+      ...mockDashboardData.overview,
+      totalTimeSpentSeconds: 1500, // 25 min
+    };
+    render(<DashboardHeader displayName="Lucas SISR" overview={customTimeOverview} />);
+    expect(screen.getByText("25 min d'apprentissage")).toBeDefined();
+  });
+
+  it('DashboardHeader affiche "< 1 min d\'apprentissage" pour les durées très courtes (< 30s)', () => {
+    const shortTimeOverview = {
+      ...mockDashboardData.overview,
+      totalTimeSpentSeconds: 15,
+    };
+    render(<DashboardHeader displayName="Lucas SISR" overview={shortTimeOverview} />);
+    expect(screen.getByText("< 1 min d'apprentissage")).toBeDefined();
+  });
+
 
   it('DashboardStats affiche les 4 KPI principaux', () => {
     render(<DashboardStats overview={mockDashboardData.overview} />);
