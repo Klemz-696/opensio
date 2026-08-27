@@ -1,0 +1,79 @@
+slug: quiz-principes-devops-et-culture-cicd
+title: "Quiz — Principes DevOps et Culture CI/CD"
+passing_score: 80
+position: 1
+questions:
+  - kind: single
+    prompt: "Quelle est la différence fondamentale entre la Livraison Continue (Continuous Delivery) et le Déploiement Continu (Continuous Deployment) ?"
+    choices:
+      - id: a
+        text: "En Livraison Continue, le déploiement en production nécessite une approbation humaine manuelle finale, tandis qu'en Déploiement Continu tout commit validé par les tests part directement en production sans intervention"
+      - id: b
+        text: "La Livraison Continue ne fonctionne qu'avec des serveurs Windows"
+      - id: c
+        text: "Le Déploiement Continu n'exécute aucun test automatisé"
+      - id: d
+        text: "La Livraison Continue est réservée aux entreprises de moins de 10 personnes"
+    correct:
+      - a
+    explanation: "La Livraison Continue prépare automatiquement des artefacts prêts à être mis en production à tout moment, mais conserve une porte d'approbation manuelle. Le Déploiement Continu automatise la mise en production de bout en bout."
+
+  - kind: single
+    prompt: "Que représentent les 4 lettres de l'acronyme 'CAMS', socle de la culture DevOps ?"
+    choices:
+      - id: a
+        text: "Culture, Automation, Measurement, Sharing"
+      - id: b
+        text: "Code, Architecture, Management, Security"
+      - id: c
+        text: "Continuous, Agile, Modular, Scalable"
+      - id: d
+        text: "Compute, Access, Memory, Storage"
+    correct:
+      - a
+    explanation: "Le modèle CAMS définit les 4 piliers indispensables pour réussir une transformation DevOps : Culture, Automatisation, Mesure et Partage."
+
+  - kind: single
+    prompt: "Dans le programme de recherche DORA, que mesure la métrique 'Lead Time for Changes' ?"
+    choices:
+      - id: a
+        text: "Le temps écoulé entre le moment où une modification de code est validée (commit) et son déploiement effectif en production"
+      - id: b
+        text: "Le nombre de réunions tenues par les développeurs par semaine"
+      - id: c
+        text: "La durée de validité du mot de passe de l'administrateur"
+      - id: d
+        text: "Le temps nécessaire pour acheter un nouveau serveur physique"
+    correct:
+      - a
+    explanation: "Le 'Lead Time for Changes' mesure l'agilité et la rapidité du cycle de livraison logiciel depuis la fin du développement jusqu'à l'exécution en production."
+
+  - kind: single
+    prompt: "En quoi consiste la pratique du 'Shift-Left Testing' dans un cycle de développement moderne ?"
+    choices:
+      - id: a
+        text: "À intégrer et exécuter les tests de qualité et de sécurité le plus tôt possible dès les premières étapes du cycle de développement (sur les postes locaux et en CI)"
+      - id: b
+        text: "À décaler toutes les réunions de tests vers la gauche du tableau blanc"
+      - id: c
+        text: "À ne tester l'application qu'une fois en production le week-end"
+      - id: d
+        text: "À supprimer les tests unitaires pour gagner du temps"
+    correct:
+      - a
+    explanation: "Le principe 'Shift-Left' avance les contrôles de conformité et de sécurité au plus près du développeur, ce qui réduit drastiquement le coût de correction des anomalies."
+
+  - kind: single
+    prompt: "Quelle métrique DORA mesure le temps moyen nécessaire à une organisation technique pour rétablir un service à la suite d'un incident de production ?"
+    choices:
+      - id: a
+        text: "Time to Restore Service (ou Mean Time to Recovery - MTTR)"
+      - id: b
+        text: "Deployment Frequency"
+      - id: c
+        text: "Change Failure Rate"
+      - id: d
+        text: "Lines of Code Written"
+    correct:
+      - a
+    explanation: "Le MTTR (ou Time to Restore Service) évalue l'efficacité des équipes à détecter, diagnostiquer et corriger les pannes opérationnelles."

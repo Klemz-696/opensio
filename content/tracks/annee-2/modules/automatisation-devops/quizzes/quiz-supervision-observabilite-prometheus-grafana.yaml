@@ -1,0 +1,79 @@
+slug: quiz-supervision-observabilite-prometheus-grafana
+title: "Quiz — Supervision et Observabilité Prometheus/Grafana"
+passing_score: 80
+position: 5
+questions:
+  - kind: single
+    prompt: "Comment le serveur Prometheus collecte-t-il les métriques des cibles et des exportateurs (ex: node_exporter) ?"
+    choices:
+      - id: a
+        text: "Par un modèle de tirage (Pull Scraping) : Prometheus envoie périodiquement des requêtes HTTP GET sur le endpoint /metrics de chaque cible"
+      - id: b
+        text: "Par l'envoi continu de paquets broadcast UDP sur le port 161"
+      - id: c
+        text: "En lisant les fichiers journaux dans /var/log/syslog"
+      - id: d
+        text: "En demandant aux utilisateurs de remplir un formulaire chaque soir"
+    correct:
+      - a
+    explanation: "Prometheus interroge activement à intervalle régulier (*scrape_interval*) les endpoints HTTP exposés par les exportateurs pour ingérer les séries temporelles."
+
+  - kind: single
+    prompt: "Dans le paradigme de l'Observabilité, quelle est la distinction fondamentale entre une Métrique et un Journal (Log) ?"
+    choices:
+      - id: a
+        text: "Une métrique est une valeur numérique mesurable indexée dans le temps (CPU, RAM, req/s), tandis qu'un journal est un événement textuel décrivant un contexte spécifique avec un horodatage"
+      - id: b
+        text: "Une métrique ne fonctionne que sous Linux alors qu'un journal ne fonctionne que sous Windows"
+      - id: c
+        text: "Un journal est toujours chiffré en AES-256 alors qu'une métrique est publique"
+      - id: d
+        text: "Il n'existe aucune différence, ce sont des synonymes stricts"
+    correct:
+      - a
+    explanation: "Les métriques fournissent une vision quantitative synthétique et agrégée des systèmes, alors que les logs apportent le détail qualitatif nécessaire au diagnostic post-incident."
+
+  - kind: single
+    prompt: "Dans la culture SRE (Site Reliability Engineering), quelle est la définition d'un SLO (Service Level Objective) ?"
+    choices:
+      - id: a
+        text: "L'objectif cible interne de performance ou de disponibilité (ex: 99.9% de requêtes HTTP réussies) que l'équipe technique s'engage à respecter pour satisfaire les utilisateurs"
+      - id: b
+        text: "Le contrat commercial avec pénalités financières signé avec les clients (SLA)"
+      - id: c
+        text: "Le nombre maximal de développeurs dans l'équipe"
+      - id: d
+        text: "L'adresse IP du serveur de supervision"
+    correct:
+      - a
+    explanation: "Le SLO est la cible interne définie par l'équipe pour guider ses priorités d'ingénierie et réguler son rythme de déploiement via le budget d'erreur."
+
+  - kind: single
+    prompt: "Dans le langage de requêtes PromQL, que calcule la fonction 'rate(http_requests_total[5m])' ?"
+    choices:
+      - id: a
+        text: "Le taux moyen d'augmentation par seconde du compteur de requêtes HTTP sur une fenêtre glissante de 5 minutes"
+      - id: b
+        text: "La note de satisfaction des utilisateurs sur 5 étoiles"
+      - id: c
+        text: "Le prix en euros de l'infrastructure sur 5 mois"
+      - id: d
+        text: "Le nombre total de fichiers supprimés depuis 5 minutes"
+    correct:
+      - a
+    explanation: "La fonction `rate()` est indispensable pour transformer un compteur monotone croissant (*Counter*) en un débit par seconde représentatif de la charge instantanée."
+
+  - kind: single
+    prompt: "Quel composant de l'écosystème Prometheus est dédié au regroupement, à la déduplication et à l'envoi des notifications d'alerte (Slack, Email, PagerDuty) ?"
+    choices:
+      - id: a
+        text: "Alertmanager"
+      - id: b
+        text: "cAdvisor"
+      - id: c
+        text: "node_exporter"
+      - id: d
+        text: "Kibana"
+    correct:
+      - a
+    explanation: "`Alertmanager` reçoit les alertes déclenchées par les règles de Prometheus, les filtre, supprime les doublons en cascade et les achemine vers les canaux de communication adéquats."
