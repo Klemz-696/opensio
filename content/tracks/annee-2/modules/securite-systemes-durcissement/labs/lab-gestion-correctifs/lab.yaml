@@ -1,0 +1,70 @@
+slug: politique-patch-management-automatise
+title: "Mise en Place d'une Stratégie de Patch Management et Mises à Jour de Sécurité Automatisées"
+level: 2_files
+max_score: 100
+estimated_minutes: 45
+context: |
+  Vous êtes administrateur Système et devez déployer une politique stricte d'automatisation des correctifs de sécurité critiques (Patch Management) sur le parc de serveurs Linux à l'aide de l'outil `unattended-upgrades`.
+
+  Vous devez configurer :
+  1. **`50unattended-upgrades`** :
+     - Restreindre les dépôts autorisés à la seule suite de sécurité : `"${distro_id}:${distro_codename}-security"`
+     - Déclarer une liste de paquets exclus (`Package-Blacklist`) pour protéger les services sensibles d'une mise à jour inattendue (ex: `mysql-server`, `nginx`)
+     - Supprimer automatiquement les dépendances et anciens noyaux orphelins (`Remove-Unused-Dependencies "true"`)
+     - Configurer le redémarrage automatique en cas de besoin (`Automatic-Reboot "true"`) pendant la fenêtre nocturne autorisée (`Automatic-Reboot-Time "03:30"`)
+  2. **`02periodic`** :
+     - Activer la mise à jour quotidienne de l'index des paquets (`Update-Package-Lists "1"`)
+     - Activer le téléchargement quotidien automatique des paquets (`Download-Upgradeable-Packages "1"`)
+     - Activer l'application quotidienne des mises à jour (`Unattended-Upgrade "1"`)
+     - Configurer l'auto-nettoyage hebdomadaire du cache apt (`AutocleanInterval "7"`)
+
+objectives:
+  - "Maîtriser la configuration fine d'un outil de Patch Management automatisé sous Linux"
+  - "Restreindre les mises à jour automatiques aux seuls correctifs de sécurité officiels"
+  - "Planifier des fenêtres de maintenance nocturnes pour les redémarrages de serveurs"
+  - "Protéger les bases de données et services critiques grâce à une liste noire de paquets"
+
+prerequisites:
+  - "linux-administration"
+  - "principes-durcissement-guides-anssi-cis"
+  - "gestion-correctifs-vulnerabilites-cve"
+
+files:
+  editable:
+    - path: 50unattended-upgrades
+      description: "Fichier de configuration des origines et règles de mises à jour automatiques"
+    - path: 02periodic
+      description: "Fichier de périodicité d'exécution des tâches APT"
+
+hints:
+  - cost_percent: 10
+    text: "Dans 50unattended-upgrades, vérifiez la syntaxe 'Unattended-Upgrade::Allowed-Origins'."
+  - cost_percent: 10
+    text: "Pensez à spécifier l'heure de redémarrage nocturne 'Unattended-Upgrade::Automatic-Reboot-Time \"03:30\";'."
+  - cost_percent: 10
+    text: "Dans 02periodic, activez toutes les directives quotidiennes avec la valeur \"1\"."
+
+validation:
+  type: script
+  image: opensio/validator-patch:latest
+  timeout_seconds: 30
+  checks:
+    - id: security_repositories_and_blacklist
+      required: true
+      points: 25
+      description: "Dépôts et Exclusion : restriction aux dépôts -security et déclaration de la liste noire de paquets critiques"
+    - id: reboot_and_cleanup_policy
+      required: true
+      points: 25
+      description: "Fenêtrage et Nettoyage : redémarrage automatique en fenêtre nocturne et suppression des dépendances orphelines"
+    - id: periodic_update_and_download
+      required: true
+      points: 25
+      description: "Périodicité APT : mise à jour quotidienne des index et pré-téléchargement des paquets de correctifs"
+    - id: periodic_upgrade_and_autoclean
+      required: true
+      points: 25
+      description: "Application et Maintenance : déclenchement automatique quotidien et nettoyage hebdomadaire du cache"
+
+scoring:
+  floor_percent: 50

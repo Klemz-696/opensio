@@ -1,0 +1,79 @@
+slug: quiz-durcissement-systemes-linux-ssh-auditd
+title: "Quiz — Durcissement des Systèmes Linux"
+passing_score: 80
+position: 2
+questions:
+  - kind: single
+    prompt: "Quelle directive dans la configuration OpenSSH (/etc/ssh/sshd_config) interdit formellement l'ouverture directe d'une session par le compte administrateur root ?"
+    choices:
+      - id: a
+        text: "PermitRootLogin no"
+      - id: b
+        text: "AllowRootAccess yes"
+      - id: c
+        text: "RootPasswordRequired true"
+      - id: d
+        text: "DisableAdminLogin false"
+    correct:
+      - a
+    explanation: "`PermitRootLogin no` force les administrateurs à se connecter avec leur compte individuel nominatif avant d'élever leurs privilèges avec `sudo`, assurant une traçabilité complète."
+
+  - kind: single
+    prompt: "À quoi sert l'activation de 'net.ipv4.tcp_syncookies = 1' dans les paramètres du noyau Linux (/etc/sysctl.d/) ?"
+    choices:
+      - id: a
+        text: "À protéger le serveur contre les attaques par déni de service de type TCP SYN Flood en évitant la saturation de la file d'attente de connexions semi-ouvertes"
+      - id: b
+        text: "À enregistrer les préférences de navigation des utilisateurs Web"
+      - id: c
+        text: "À distribuer des récompenses sous forme de cookies virtuels"
+      - id: d
+        text: "À accélérer le téléchargement des fichiers MP3"
+    correct:
+      - a
+    explanation: "Les TCP SYN cookies permettent de répondre aux demandes de connexion sans allouer de structure mémoire tant que le handshake TCP 3-way n'est pas finalisé."
+
+  - kind: single
+    prompt: "Quel est le rôle du démon système 'auditd' sous Linux ?"
+    choices:
+      - id: a
+        text: "Intercepter et journaliser de manière inviolable les appels système critiques, les modifications de fichiers sensibles (/etc/passwd, /etc/sudoers) et les élévations de privilèges"
+      - id: b
+        text: "Jouer de la musique d'ambiance lors des connexions SSH"
+      - id: c
+        text: "Nettoyer automatiquement la corbeille de l'utilisateur"
+      - id: d
+        text: "Vérifier l'orthographe des commandes tapées dans le terminal"
+    correct:
+      - a
+    explanation: "`auditd` est le sous-système de traçabilité légale et de sécurité du noyau Linux, indispensable pour l'audit de conformité et l'investigation forensics."
+
+  - kind: single
+    prompt: "Comment un système de Contrôle d'Accès Obligatoire (MAC) tel qu'AppArmor ou SELinux renforce-t-il la sécurité d'un service en cas d'exploitation d'une faille ?"
+    choices:
+      - id: a
+        text: "Il applique des profils stricts de confinement qui interdisent au processus d'accéder aux fichiers non autorisés ou d'ouvrir des sockets réseau imprévus, même s'il est exécuté en root"
+      - id: b
+        text: "Il remplace le processeur par un modèle plus récent"
+      - id: c
+        text: "Il formate le disque dur à chaque redémarrage"
+      - id: d
+        text: "Il désactive complètement le pare-feu local"
+    correct:
+      - a
+    explanation: "Le modèle MAC supplante les permissions Unix traditionnelles (DAC) pour confiner un processus compromis dans une boîte hermétique selon un profil de sécurité prédéfini."
+
+  - kind: single
+    prompt: "Que garantit le paramètre noyau 'kernel.randomize_va_space = 2' (ASLR) ?"
+    choices:
+      - id: a
+        text: "La randomisation complète de l'espace d'adressage mémoire (pile, tas, bibliothèques partagées), empêchant un attaquant de prédire les adresses cibles lors d'un dépassement de tampon (Buffer Overflow)"
+      - id: b
+        text: "Le mélange aléatoire de l'ordre des disques durs"
+      - id: c
+        text: "L'attribution d'une adresse IP dynamique à chaque seconde"
+      - id: d
+        text: "La suppression aléatoire d'anciens emails"
+    correct:
+      - a
+    explanation: "L'ASLR (Address Space Layout Randomization) rend extrêmement difficile l'exploitation des failles de mémoire en modifiant l'emplacement mémoire des composants à chaque exécution."

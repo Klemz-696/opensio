@@ -1403,6 +1403,32 @@ Création complète du nouveau module `windows-server-ad` comprenant 6 leçons, 
 - `pnpm test --force` : 100 % vert (357 tests passants dans le monorepo).
 - `pnpm build --force` : 100 % réussi.
 
+### 26. Phase 2.3 — Production du Module `securite-systemes-durcissement` (2ème Année SISR)
+- **Module `securite-systemes-durcissement`** (5 leçons, 5 quiz, 2 labs) :
+  - `01-principes-durcissement-guides-anssi-cis.md` + `quiz-principes-durcissement-guides-anssi-cis.yaml` : Réduction de la surface d'attaque, principe du moindre privilège, défense en profondeur (Defense in Depth), benchmarks CIS (Level 1 / Level 2) et recommandations de durcissement de l'ANSSI (Minimal, Intermédiaire, Renforcé, Haut).
+  - `02-durcissement-systemes-linux-ssh-auditd.md` + `quiz-durcissement-systemes-linux-ssh-auditd.yaml` : Durcissement OpenSSH (`PermitRootLogin no`, `PasswordAuthentication no`, clés uniquement), pile réseau sécurisée sysctl (SYN Cookies, rp_filter, ICMP redirects, ip_forward=0), randomisation mémoire ASLR (`randomize_va_space=2`), journalisation `auditd` et contrôle d'accès obligatoire MAC (AppArmor/SELinux).
+  - `03-durcissement-windows-server-gpo-laps.md` + `quiz-durcissement-windows-server-gpo-laps.yaml` : Stratégies de groupe (GPO) Active Directory, suppression des protocoles obsolètes (SMBv1, LLMNR, NTLMv1), solution Windows LAPS contre le Pass-the-Hash, chiffrement BitLocker/TPM et audit des journaux de sécurité (Event IDs 4624, 4625, 4720, 4728/4732).
+  - `04-gestion-correctifs-vulnerabilites-cve.md` + `quiz-gestion-correctifs-vulnerabilites-cve.yaml` : Cycle de Patch Management d'entreprise, dictionnaire CVE, échelle de score CVSS v3.1 (Low à Critical), fenêtrage de maintenance et automatisation des correctifs de sécurité critiques avec `unattended-upgrades`.
+  - `05-reponse-incidents-forensics-post-mortem.md` + `quiz-reponse-incidents-forensics-post-mortem.yaml` : Cycle de réponse à incident (NIST SP 800-61 / ISO 27035 : Préparation, Détection, Confinement, Éradication, Récupération, Post-Mortem), ordre de volatilité (RFC 3227), préservation de la mémoire vive (RAM) et indicateurs de compromission (IoC).
+  - **2 Labs autonomes de niveau 2_files avec suites de tests complètes** :
+    - `lab-durcissement-linux` (`durcissement-serveur-linux-ansible`) : Playbook Ansible `hardening-playbook.yml` pour durcir OpenSSH, installer/activer `auditd` et `ufw`, déployer les paramètres noyau `sysctl-security.conf` (SYN Cookies, rp_filter, ASLR) et notifier le rechargement de SSH.
+    - `lab-gestion-correctifs` (`politique-patch-management-automatise`) : Déploiement de la configuration de mise à jour automatique `50unattended-upgrades` (restriction `-security`, blacklist `mysql-server`/`nginx`, redémarrage nocturne 03:30) et `02periodic` (tâches quotidiennes et autoclean hebdomadaire).
+
+### 27. Validations Globales Post-Securite-Systemes-Durcissement
+- `node content/validate.mjs` : **100 % valide** :
+  - **2 parcours opérationnels** (`annee-1`, `annee-2`).
+  - **15 modules opérationnels** (8 en 1ère année, 7 en 2ème année).
+  - **79 leçons rédigées et validées**.
+  - **79 quiz d'évaluation (407 questions avec explications pédagogiques)**.
+  - **34 ateliers pratiques (Labs)**.
+  - **105 / 105 tests de validateurs passants** sur les suites de fixtures.
+- `pnpm content:validate` : 100 % valide (18/18 tests Zod passants).
+- `node scripts/check-file-size.mjs` : 100 % conforme D-13 (331 fichiers analysés, 0 violation > 400 lignes).
+- `node scripts/check-theme-classes.mjs` : 100 % conforme bi-thème (0 violation).
+- `pnpm test --force` : 100 % vert (357 tests passants dans le monorepo).
+- `pnpm build --force` : 100 % réussi.
+
+
 
 
 

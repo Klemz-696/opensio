@@ -1,0 +1,79 @@
+slug: quiz-principes-durcissement-guides-anssi-cis
+title: "Quiz — Principes de Durcissement et Guides ANSSI/CIS"
+passing_score: 80
+position: 1
+questions:
+  - kind: single
+    prompt: "En quoi consiste concrètement la démarche de 'réduction de la surface d'attaque' sur un serveur en production ?"
+    choices:
+      - id: a
+        text: "À désactiver tous les démons et services réseau inutilisés, supprimer les compilateurs ou paquets superflus et fermer les ports non indispensables pour limiter les vecteurs de compromission"
+      - id: b
+        text: "À réduire physiquement la taille de la baie informatique dans le centre de données"
+      - id: c
+        text: "À interdire l'accès à Internet à tous les employés de l'entreprise"
+      - id: d
+        text: "À éteindre les écrans des serveurs la nuit"
+    correct:
+      - a
+    explanation: "Chaque paquet ou port inutile représente une vulnérabilité potentielle : minimiser les composants actifs réduit mathématiquement le risque d'exploitation."
+
+  - kind: single
+    prompt: "Quel est le principe fondamental du 'moindre privilège' (Least Privilege) en administration des systèmes ?"
+    choices:
+      - id: a
+        text: "Accorder à chaque utilisateur, service ou processus uniquement les permissions strictement nécessaires à l'exécution de sa tâche légitime, sans droits excessifs"
+      - id: b
+        text: "Donner les droits administrateur root à tous les stagiaires pour éviter les tickets de support"
+      - id: c
+        text: "Bloquer l'accès en lecture à tous les fichiers sans exception"
+      - id: d
+        text: "Utiliser un mot de passe de 4 caractères pour simplifier la saisie"
+    correct:
+      - a
+    explanation: "Le moindre privilège cantonne l'impact d'une éventuelle compromission en empêchant un compte de service ou utilisateur d'altérer l'ensemble de l'OS."
+
+  - kind: single
+    prompt: "Que préconise le concept de 'Défense en profondeur' (Defense in Depth) ?"
+    choices:
+      - id: a
+        text: "La mise en place de plusieurs couches de sécurité indépendantes et complémentaires (pare-feu local, contrôle d'accès obligatoire MAC, chiffrement, audit) pour qu'aucune défaillance unique ne permette une intrusion totale"
+      - id: b
+        text: "Le creusement d'un fossé physique autour du centre de données"
+      - id: c
+        text: "L'installation exclusive d'un seul pare-feu périmétrique très cher"
+      - id: d
+        text: "La suppression de toutes les sauvegardes"
+    correct:
+      - a
+    explanation: "La défense en profondeur garantit que si le périmètre réseau cède, les mécanismes internes de l'hôte continuent de protéger les données et de détecter l'intrus."
+
+  - kind: single
+    prompt: "Dans les guides de durcissement GNU/Linux de l'ANSSI, que caractérise le niveau 'Intermédiaire' par rapport au niveau 'Minimal' ?"
+    choices:
+      - id: a
+        text: "Il impose des durcissements avancés pour serveurs d'entreprise (SSH par clé publique exclusivement, durcissement réseau sysctl, audit des commandes avec auditd)"
+      - id: b
+        text: "Il interdit complètement l'utilisation de Linux"
+      - id: c
+        text: "Il autorise les mots de passe vides pour les comptes de test"
+      - id: d
+        text: "Il supprime l'obligation d'appliquer les correctifs de sécurité"
+    correct:
+      - a
+    explanation: "Le niveau Intermédiaire de l'ANSSI constitue le socle standard de référence pour les serveurs en réseau d'entreprise."
+
+  - kind: single
+    prompt: "Quelle est la différence entre les profils 'Level 1' et 'Level 2' dans les benchmarks CIS (Center for Internet Security) ?"
+    choices:
+      - id: a
+        text: "Le profil Level 1 regroupe les règles de sécurité indispensables sans impact fonctionnel, tandis que le Level 2 apporte un durcissement plus sévère pouvant limiter certaines fonctionnalités pour environnements hautement sécurisés"
+      - id: b
+        text: "Le Level 1 concerne les ordinateurs portables et le Level 2 les smartphones"
+      - id: c
+        text: "Le Level 2 est une ancienne version abandonnée du Level 1"
+      - id: d
+        text: "Il n'y a aucune différence technique entre les deux niveaux"
+    correct:
+      - a
+    explanation: "Les benchmarks CIS séparent les bonnes pratiques universelles (Level 1) des durcissements stricts nécessitant des ajustements opérationnels (Level 2)."
