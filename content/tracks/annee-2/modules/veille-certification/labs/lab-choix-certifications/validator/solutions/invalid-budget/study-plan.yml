@@ -1,0 +1,9 @@
+weekly_study_hours: 50 # Trop élevé (> 15 h)
+prep_weeks_per_cert: 2 # Trop court (< 8 semaines)
+
+resources:
+  - "Livre"
+  - "Vidéos"
+  - "Labs"
+
+lab_environment: "Home lab sous Proxmox VE."

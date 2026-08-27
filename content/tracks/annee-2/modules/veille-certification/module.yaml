@@ -1,0 +1,24 @@
+slug: veille-certification
+title: "Veille Technologique, Certifications Professionnelles IT & Insertion SISR"
+description: "Méthodes de veille technologique active et curation, panorama des certifications IT (Linux, Réseaux, Cloud, DevOps, Sécurité), préparation aux examens, valorisation du portfolio technique et stratégie d'insertion professionnelle SISR."
+position: 9
+difficulty: 2
+estimated_minutes: 400
+competency_refs:
+  - "B1.1"
+  - "B3.4"
+lessons:
+  - methodologie-veille-technologique-curation
+  - panorama-certifications-it-systemes-reseaux
+  - preparation-examens-certification-methodologie
+  - portfolio-technique-visibilite-open-source
+  - insertion-professionnelle-entretiens-carrieres-sisr
+quizzes:
+  - quiz-methodologie-veille-technologique-curation
+  - quiz-panorama-certifications-it-systemes-reseaux
+  - quiz-preparation-examens-certification-methodologie
+  - quiz-portfolio-technique-visibilite-open-source
+  - quiz-insertion-professionnelle-entretiens-carrieres-sisr
+labs:
+  - elaboration-plan-veille-technologique
+  - construction-parcours-certification-it
