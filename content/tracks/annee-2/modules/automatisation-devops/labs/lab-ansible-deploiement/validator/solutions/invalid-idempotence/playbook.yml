@@ -1,0 +1,9 @@
+---
+- name: "Playbook non idempotent basé sur des commandes shell brutes"
+  hosts: webservers
+  become: true
+  tasks:
+    - name: "Installation via commande shell non idempotente"
+      ansible.builtin.shell: apt-get install -y nginx
+    - name: "Démarrage du service"
+      ansible.builtin.shell: systemctl restart nginx
