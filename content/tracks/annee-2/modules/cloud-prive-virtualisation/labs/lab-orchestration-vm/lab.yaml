@@ -1,0 +1,72 @@
+slug: orchestration-vm-templates-cloudinit
+title: "Orchestration et Provisionnement Automatisé de VMs avec Cloud-Init et Snapshots"
+level: 2_files
+max_score: 100
+estimated_minutes: 45
+context: |
+  Vous êtes ingénieur Cloud et devez automatiser le provisionnement d'instances de machines virtuelles KVM à partir d'un template de base à l'aide de Cloud-Init et d'un manifeste d'orchestration.
+
+  Vous devez configurer :
+  1. **`user-data`** :
+     - Déclarer l'entête `#cloud-config`
+     - Définir `hostname: srv-web-prod` et `fqdn: srv-web-prod.opensio.local`
+     - Créer l'utilisateur `devops` avec privilèges `sudo` et clé publique dans `ssh_authorized_keys`
+     - Déclarer les paquets `qemu-guest-agent` et `nginx` sous `packages:`
+     - Activer et démarrer les services sous `runcmd:`
+  2. **`vm-orchestration.yml`** :
+     - Définir la référence au template (`template_id: 9000`)
+     - Spécifier le mode de clonage lié (`clone_mode: linked`)
+     - Définir les spécifications matérielles : `cores: 2`, `memory_mb: 4096`, `disk_size_gb: 20`
+     - Configurer le rattachement réseau au VNet (`bridge: vnet-frontend`)
+     - Activer l'injection Cloud-Init et une politique de snapshot initial (`snapshot_before_deploy: true`)
+
+objectives:
+  - "Rédiger des configurations Cloud-Init déclaratives (user-data) complètes et sécurisées"
+  - "Automatiser l'installation du qemu-guest-agent pour la supervision et les sauvegardes à chaud"
+  - "Déployer des clones liés (Linked Clones) pour un provisionnement instantané économe en stockage"
+  - "Associer des politiques de snapshots préventifs au cycle de déploiement de VMs"
+
+prerequisites:
+  - "linux-administration"
+  - "virtualisation-avancee-kvm-libvirt-clusters"
+  - "orchestration-hybridation-vm-conteneurs"
+
+files:
+  editable:
+    - path: user-data
+      description: "Fichier de configuration Cloud-Init pour l'initialisation de l'invité"
+    - path: vm-orchestration.yml
+      description: "Manifeste d'orchestration de la machine virtuelle et politique de snapshot"
+
+hints:
+  - cost_percent: 10
+    text: "N'oubliez pas la première ligne obligatoire '#cloud-config' dans le fichier user-data."
+  - cost_percent: 10
+    text: "Pour le clonage rapide, spécifiez 'clone_mode: linked' dans vm-orchestration.yml."
+  - cost_percent: 10
+    text: "Assurez-vous d'inclure 'qemu-guest-agent' dans la liste des paquets à installer."
+
+validation:
+  type: script
+  image: opensio/validator-cloudinit:latest
+  timeout_seconds: 30
+  checks:
+    - id: cloud_init_header_and_users
+      required: true
+      points: 25
+      description: "Cloud-Init Base : entête #cloud-config, hostname et utilisateur devops avec clé SSH et sudo"
+    - id: cloud_init_packages_and_runcmd
+      required: true
+      points: 25
+      description: "Logiciels et Services : installation de qemu-guest-agent et nginx avec activation sous runcmd"
+    - id: vm_cloning_and_hardware_specs
+      required: true
+      points: 25
+      description: "Spécifications de la VM : template parent, mode clone lié (linked) et dimensionnement CPU/RAM/Disque"
+    - id: vm_network_and_snapshot_policy
+      required: true
+      points: 25
+      description: "Réseau et Protection : rattachement au VNet SDN et politique de snapshot avant mise en service"
+
+scoring:
+  floor_percent: 50

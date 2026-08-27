@@ -1,0 +1,4 @@
+# Fichier sans #cloud-config
+hostname: test
+users:
+  - name: root

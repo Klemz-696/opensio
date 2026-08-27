@@ -1,0 +1,79 @@
+slug: quiz-concepts-cloud-computing-modeles-hybrides
+title: "Quiz — Concepts du Cloud Computing et Modèles Hybrides"
+passing_score: 80
+position: 1
+questions:
+  - kind: single
+    prompt: "Dans le modèle de référence du NIST, quelle est la responsabilité principale du client lorsqu'il souscrit à un service IaaS (Infrastructure as a Service) ?"
+    choices:
+      - id: a
+        text: "La gestion et la maintenance du système d'exploitation invité, des correctifs de sécurité, des applications et des données, tandis que le fournisseur gère le matériel physique et la virtualisation"
+      - id: b
+        text: "Le remplacement physique des disques durs défectueux dans le centre de données"
+      - id: c
+        text: "La conception des puces électroniques du processeur"
+      - id: d
+        text: "Uniquement la personnalisation de la couleur de l'interface graphique"
+    correct:
+      - a
+    explanation: "En IaaS, le fournisseur fournit les briques matérielles et de virtualisation, tandis que le client conserve l'entière responsabilité logicielle de son système d'exploitation et de ses applications."
+
+  - kind: single
+    prompt: "En quoi consiste la pratique du 'Cloud Bursting' dans une architecture de Cloud Hybride ?"
+    choices:
+      - id: a
+        text: "Au débordement temporaire et automatisé de charges de travail applicatives vers un Cloud public lorsque la capacité maximale du Cloud privé interne est atteinte lors d'un pic de charge"
+      - id: b
+        text: "À la destruction physique des serveurs en fin de vie"
+      - id: c
+        text: "À l'extinction de tous les serveurs à 18h pour économiser de l'énergie"
+      - id: d
+        text: "À l'envoi massif d'emails promotionnels aux utilisateurs"
+    correct:
+      - a
+    explanation: "Le Cloud Bursting permet à une entreprise de dimensionner son Cloud privé pour la charge moyenne et d'absorber les pics exceptionnels via la flexibilité du Cloud public."
+
+  - kind: single
+    prompt: "Sur le plan financier, quelle est la distinction fondamentale entre un modèle CapEx et un modèle OpEx ?"
+    choices:
+      - id: a
+        text: "CapEx désigne un investissement en capital initial pour l'achat d'équipements matériels, tandis qu'OpEx désigne des dépenses d'exploitation opérationnelles payées à l'usage"
+      - id: b
+        text: "CapEx ne concerne que les entreprises de moins de 5 salariés"
+      - id: c
+        text: "OpEx exige de payer l'intégralité du matériel 10 ans à l'avance"
+      - id: d
+        text: "Il n'y a aucune différence comptable entre les deux termes"
+    correct:
+      - a
+    explanation: "Le Cloud privé sur site repose initialement sur du CapEx (achat de serveurs et baies), alors que le Cloud public repose sur de l'OpEx (facturation mensuelle à la consommation)."
+
+  - kind: single
+    prompt: "Pourquoi la qualification SecNumCloud délivrée par l'ANSSI est-elle devenue un critère de référence pour l'hébergement cloud en France ?"
+    choices:
+      - id: a
+        text: "Elle garantit le plus haut niveau d'exigence en matière de cybersécurité et protège les données contre les lois extraterritoriales non européennes"
+      - id: b
+        text: "Elle rend l'électricité gratuite pour les centres de données"
+      - id: c
+        text: "Elle interdit l'utilisation de pare-feu réseau"
+      - id: d
+        text: "Elle oblige à utiliser uniquement le navigateur Internet Explorer"
+    correct:
+      - a
+    explanation: "SecNumCloud assure que le prestataire respecte des standards de sécurité drastiques et garantit l'étanchéité juridique face aux lois extraterritoriales étrangères."
+
+  - kind: single
+    prompt: "Quel est l'un des risques majeurs associés au 'Vendor Lock-in' (verrouillage propriétaire) lors du recours exclusif à un fournisseur de Cloud public ?"
+    choices:
+      - id: a
+        text: "La difficulté technique et le coût exorbitant pour migrer ses applications et données vers un autre fournisseur en cas de hausse des tarifs ou de changement de stratégie"
+      - id: b
+        text: "Le risque que l'écran de l'ordinateur devienne bleu"
+      - id: c
+        text: "L'obligation d'embaucher uniquement des ingénieurs certifiés par l'État"
+      - id: d
+        text: "L'impossibilité de se connecter le week-end"
+    correct:
+      - a
+    explanation: "L'utilisation de services propriétaires fermés rend les entreprises captives de leur fournisseur initial, d'où l'intérêt des standards ouverts et des stratégies multi-cloud."
