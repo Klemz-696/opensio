@@ -1,0 +1,73 @@
+services:
+  # ─── 1. Reverse Proxy Frontal ───
+  proxy:
+    image: nginx:alpine
+    container_name: app-proxy
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - frontend-net
+    restart: unless-stopped
+
+  # ─── 2. API Backend Node.js ───
+  backend:
+    build: .
+    container_name: app-backend
+    environment:
+      DATABASE_URL: postgres://user:secret@database:5432/appdb
+      REDIS_HOST: cache
+    depends_on:
+      database:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    networks:
+      - frontend-net
+      - backend-net
+    restart: unless-stopped
+
+  # ─── 3. Base de données PostgreSQL ───
+  database:
+    image: postgres:16-alpine
+    container_name: app-database
+    environment:
+      POSTGRES_DB: appdb
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: secret
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d appdb"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - backend-net
+    restart: unless-stopped
+
+  # ─── 4. Cache Redis ───
+  cache:
+    image: redis:7-alpine
+    container_name: app-cache
+    networks:
+      - backend-net
+    restart: unless-stopped
+
+# ─── Volumes Persistants ───
+volumes:
+  db_data:
+    name: app-postgres-data
+
+# ─── Réseaux Dédiés ───
+networks:
+  frontend-net:
+    driver: bridge
+  backend-net:
+    driver: bridge

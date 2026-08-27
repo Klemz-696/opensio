@@ -1,0 +1,39 @@
+services:
+  proxy:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    networks:
+      - frontend-net
+    restart: unless-stopped
+
+  backend:
+    build: .
+    networks:
+      - frontend-net
+      - backend-net
+    restart: unless-stopped
+
+  database:
+    image: postgres:16-alpine
+    # Violation critique : port BDD exposé publiquement
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - backend-net
+    restart: unless-stopped
+
+  cache:
+    image: redis:7-alpine
+    networks:
+      - backend-net
+    restart: unless-stopped
+
+volumes:
+  db_data:
+
+networks:
+  frontend-net:
+  backend-net:
