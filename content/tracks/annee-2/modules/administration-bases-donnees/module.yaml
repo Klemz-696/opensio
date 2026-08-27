@@ -1,0 +1,25 @@
+slug: administration-bases-donnees
+title: "Administration des Bases de Données (PostgreSQL & MySQL)"
+description: "Modélisation relationnelle et NoSQL, transactions ACID, administration système SGBD, optimisation des requêtes et haute disponibilité."
+position: 10
+difficulty: 3
+estimated_minutes: 550
+competency_refs:
+  - "B2.1"
+  - "B2.2"
+  - "B2.3"
+lessons:
+  - concepts-bases-de-donnees-sgbd-acid
+  - modelisation-relationnelle-et-sql
+  - administration-postgresql-mysql-exploitation
+  - performance-optimisation-requetes-index
+  - haute-disponibilite-replication-sgbd
+quizzes:
+  - quiz-concepts-bases-de-donnees-sgbd-acid
+  - quiz-modelisation-relationnelle-et-sql
+  - quiz-administration-postgresql-mysql-exploitation
+  - quiz-performance-optimisation-requetes-index
+  - quiz-haute-disponibilite-replication-sgbd
+labs:
+  - lab-modelisation-sql
+  - lab-administration-postgresql

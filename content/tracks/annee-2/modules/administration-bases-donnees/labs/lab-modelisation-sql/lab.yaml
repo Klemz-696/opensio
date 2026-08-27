@@ -1,0 +1,93 @@
+slug: lab-modelisation-sql
+title: "Conception Relationnelle, Schéma DDL & Intégrité des Données SQL"
+level: 2_files
+max_score: 100
+estimated_minutes: 45
+context: |
+  Vous êtes administrateur de bases de données et devez concevoir l'infrastructure relationnelle d'un système de gestion de tickets d'assistance informatique (Helpdesk) d'entreprise.
+
+  Vous devez rédiger l'intégralité du script DDL dans le fichier `schema.sql` pour créer les tables normalisées en 3FN, les contraintes d'intégrité référentielle, les index d'optimisation et une vue d'agrégation statistique.
+
+  Le modèle de données comprend 4 tables et 1 vue :
+  1. **`departements`** :
+     - `id_departement` : Clé primaire auto-incrémentée (`SERIAL` ou `BIGSERIAL`)
+     - `nom_departement` : Chaîne (`VARCHAR(80)`), obligatoire (`NOT NULL`), unique (`UNIQUE`)
+     - `code_service` : Chaîne (`VARCHAR(10)`), obligatoire, unique
+     - `actif` : Booléen (`BOOLEAN`), obligatoire, valeur par défaut `TRUE`
+  2. **`utilisateurs`** :
+     - `id_utilisateur` : Clé primaire (`BIGSERIAL` ou `SERIAL`)
+     - `id_departement` : Clé étrangère vers `departements(id_departement)`, obligatoire
+     - `nom` : Chaîne (`VARCHAR(60)`), obligatoire
+     - `prenom` : Chaîne (`VARCHAR(60)`), obligatoire
+     - `email` : Chaîne (`VARCHAR(255)`), obligatoire, unique (`UNIQUE`)
+     - `role_utilisateur` : Chaîne (`VARCHAR(30)`), obligatoire, défaut `'UTILISATEUR'`, contrainte `CHECK` limitant aux valeurs `('UTILISATEUR', 'TECHNICIEN', 'ADMINISTRATEUR')`
+  3. **`tickets_support`** :
+     - `id_ticket` : Clé primaire (`BIGSERIAL` ou `SERIAL`)
+     - `id_demandeur` : Clé étrangère vers `utilisateurs(id_utilisateur)` avec suppression en cascade (`ON DELETE CASCADE`), obligatoire
+     - `id_technicien` : Clé étrangère vers `utilisateurs(id_utilisateur)` avec mise à null (`ON DELETE SET NULL`), optionnel
+     - `titre` : Chaîne (`VARCHAR(200)`), obligatoire
+     - `description` : Texte (`TEXT`), obligatoire
+     - `priorite` : Chaîne, obligatoire, contrainte `CHECK (priorite IN ('BASSE', 'MOYENNE', 'HAUTE', 'CRITIQUE'))`
+     - `statut` : Chaîne, obligatoire, défaut `'NOUVEAU'`, contrainte `CHECK (statut IN ('NOUVEAU', 'EN_COURS', 'RESOLU', 'CLOS'))`
+     - `date_creation` : Horodatage (`TIMESTAMP WITH TIME ZONE`), obligatoire, défaut `CURRENT_TIMESTAMP`
+     - `date_cloture` : Horodatage optionnel
+  4. **`commentaires_ticket`** :
+     - `id_commentaire` : Clé primaire (`BIGSERIAL` ou `SERIAL`)
+     - `id_ticket` : Clé étrangère vers `tickets_support(id_ticket)` avec suppression en cascade (`ON DELETE CASCADE`), obligatoire
+     - `id_auteur` : Clé étrangère vers `utilisateurs(id_utilisateur)` avec suppression en cascade (`ON DELETE CASCADE`), obligatoire
+     - `message` : Texte (`TEXT`), obligatoire
+     - `date_publication` : Horodatage (`TIMESTAMP WITH TIME ZONE`), obligatoire, défaut `CURRENT_TIMESTAMP`
+  5. **Index & Optimisations** :
+     - Index composite `idx_tickets_statut_date` sur `tickets_support(statut, date_creation)`
+     - Index `idx_tickets_demandeur` sur `tickets_support(id_demandeur)`
+     - Index `idx_commentaires_ticket` sur `commentaires_ticket(id_ticket)`
+  6. **Vue de Reporting** :
+     - Vue `v_statistiques_departement` effectuant une jointure entre départements, utilisateurs et tickets, calculant le total de tickets par département (`COUNT`), le nombre de tickets actifs (`NOUVEAU` ou `EN_COURS`), et regroupant par département (`GROUP BY`).
+
+objectives:
+  - "Concevoir un schéma DDL SQL complet, rigoureux et normalisé en 3FN"
+  - "Déclarer des contraintes d'intégrité strictes (PRIMARY KEY, FOREIGN KEY, UNIQUE, CHECK, NOT NULL)"
+  - "Configurer les actions de propagation référentielle appropriées (ON DELETE CASCADE et ON DELETE SET NULL)"
+  - "Créer des index stratégiques simples et composites pour optimiser les requêtes fréquentes"
+  - "Rédiger une vue SQL intégrant jointures multi-tables et calculs d'agrégations avec GROUP BY"
+
+prerequisites:
+  - "modelisation-relationnelle-et-sql"
+
+files:
+  editable:
+    - path: schema.sql
+      description: "Script DDL de création des tables, contraintes, index et vues du Helpdesk"
+
+hints:
+  - cost_percent: 10
+    text: "Respectez l'ordre de création des tables : créez d'abord les tables indépendantes (departements, utilisateurs) avant les tables dépendantes (tickets_support, commentaires_ticket)."
+  - cost_percent: 10
+    text: "Pour les contraintes CHECK de statut et priorité, utilisez la syntaxe 'CHECK (colonne IN (...))'."
+  - cost_percent: 10
+    text: "Dans la vue v_statistiques_departement, utilisez des jointures LEFT JOIN pour inclure également les départements n'ayant encore aucun ticket associé."
+
+validation:
+  type: script
+  image: opensio/validator-sql:latest
+  timeout_seconds: 30
+  checks:
+    - id: tables_and_types_definition
+      required: true
+      points: 25
+      description: "Création complète des 4 tables (departements, utilisateurs, tickets_support, commentaires_ticket) avec types adaptés"
+    - id: integrity_constraints_and_fks
+      required: true
+      points: 25
+      description: "Définition des clés primaires, contraintes FOREIGN KEY (avec ON DELETE CASCADE/SET NULL), contraintes UNIQUE et CHECK"
+    - id: indexes_and_optimizations
+      required: true
+      points: 25
+      description: "Création des index requis (index composite statut/date_creation, index demandeur et index ticket commentaire)"
+    - id: reporting_view_and_aggregation
+      required: true
+      points: 25
+      description: "Création de la vue v_statistiques_departement avec jointures, calculs de comptage et clause GROUP BY"
+
+scoring:
+  floor_percent: 50

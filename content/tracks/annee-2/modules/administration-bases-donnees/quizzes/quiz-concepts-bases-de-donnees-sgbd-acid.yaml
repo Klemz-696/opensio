@@ -1,0 +1,83 @@
+slug: quiz-concepts-bases-de-donnees-sgbd-acid
+title: "Quiz — Concepts des Bases de Données, NoSQL, Transactions & ACID"
+passing_score: 80
+position: 1
+questions:
+  - kind: single
+    prompt: "Quelle propriété ACID garantit que si une transaction échoue en cours d'exécution, aucune de ses opérations partielles n'est conservée ?"
+    choices:
+      - id: a
+        text: "La Cohérence (Consistency)"
+      - id: b
+        text: "L'Atomicité (Atomicity)"
+      - id: c
+        text: "L'Isolation (Isolation)"
+      - id: d
+        text: "La Durabilité (Durability)"
+    correct:
+      - b
+    explanation: "L'Atomicité garantit le principe du 'Tout ou Rien' : soit l'intégralité des opérations de la transaction réussit et est validée par COMMIT, soit en cas d'erreur ou d'interruption, la transaction est intégralement annulée par ROLLBACK sans laisser d'état intermédiaire."
+
+  - kind: multiple
+    prompt: "Quels modèles de bases de données appartiennent à la famille non-relationnelle NoSQL ?"
+    choices:
+      - id: a
+        text: "Base orientée Document (ex: MongoDB)"
+      - id: b
+        text: "Base relationnelle tabulaire (ex: PostgreSQL)"
+      - id: c
+        text: "Base Clé-Valeur (ex: Redis)"
+      - id: d
+        text: "Base orientée Graphe (ex: Neo4j)"
+    correct:
+      - a
+      - c
+      - d
+    explanation: "Les quatre grandes familles NoSQL sont les bases Document (MongoDB), Clé-Valeur (Redis), Colonnes larges (Cassandra) et Graphe (Neo4j). PostgreSQL est un SGBD relationnel-objet (SQL classique)."
+
+  - kind: single
+    prompt: "Dans le contexte des transactions concurrentes, qu'est-ce qu'une 'Lecture sale' (Dirty Read) ?"
+    choices:
+      - id: a
+        text: "Une lecture qui échoue en raison d'une panne disque"
+      - id: b
+        text: "La lecture d'une ligne modifiée par une autre transaction qui n'a pas encore été validée (non COMMIT)"
+      - id: c
+        text: "L'apparition de nouvelles lignes insérées lors d'une seconde exécution de la même requête"
+      - id: d
+        text: "La lecture de données corrompues suite à une attaque par injection SQL"
+    correct:
+      - b
+    explanation: "Une lecture sale (Dirty Read) survient lorsqu'une transaction T1 lit une valeur altérée par une transaction T2 concurrente qui n'est pas encore validée. Si T2 fait un ROLLBACK, T1 aura exploité une donnée fictive qui n'a jamais existé en base."
+
+  - kind: single
+    prompt: "Quel niveau d'isolation SQL ANSI est le niveau par défaut sous PostgreSQL et protège contre les lectures sales tout en autorisant les lectures non reproductibles ?"
+    choices:
+      - id: a
+        text: "Read Uncommitted"
+      - id: b
+        text: "Read Committed"
+      - id: c
+        text: "Repeatable Read"
+      - id: d
+        text: "Serializable"
+    correct:
+      - b
+    explanation: "Sous PostgreSQL, le niveau par défaut est 'Read Committed'. Il garantit qu'une requête ne voit que les données validées avant le début de la requête (bloquant les Dirty Reads), mais deux lectures successives dans la même transaction peuvent observer des valeurs différentes si une autre transaction valide entre-temps."
+
+  - kind: multiple
+    prompt: "Quelles affirmations relatives au mécanisme MVCC (Multi-Version Concurrency Control) sont exactes ?"
+    choices:
+      - id: a
+        text: "Les lecteurs ne bloquent pas les rédacteurs, et les rédacteurs ne bloquent pas les lecteurs"
+      - id: b
+        text: "Une mise à jour (UPDATE) supprime immédiatement la ligne physique sur disque"
+      - id: c
+        text: "Chaque transaction accède à un instantané (snapshot) cohérent des données au moment de sa création"
+      - id: d
+        text: "Les anciennes versions de lignes devenues obsolètes doivent être nettoyées par VACUUM sous PostgreSQL"
+    correct:
+      - a
+      - c
+      - d
+    explanation: "En MVCC, les opérations de lecture et d'écriture ne se bloquent pas mutuellement. Un UPDATE crée une nouvelle version du tuple et marque l'ancien comme mort sans l'écraser immédiatement sur le disque. C'est pourquoi un processus de purge périodique (VACUUM sous PostgreSQL) est indispensable pour libérer l'espace."
