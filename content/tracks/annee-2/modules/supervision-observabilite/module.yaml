@@ -1,0 +1,25 @@
+slug: supervision-observabilite
+title: "Supervision, Observabilité, Métrologie & Centralisation des Logs"
+description: "Principes de la supervision et observabilité, collecte de métriques avec Prometheus, tableaux de bord Grafana, gestion et centralisation des logs avec Loki, et traçage distribué OpenTelemetry."
+position: 5
+difficulty: 3
+estimated_minutes: 550
+competency_refs:
+  - "B2.1"
+  - "B2.2"
+  - "B3.1"
+lessons:
+  - concepts-supervision-alerting-sli-slo
+  - collecte-metriques-promql-retention
+  - visualisation-tableaux-bord-grafana
+  - gestion-centralisation-logs-loki
+  - traces-distribuees-observabilite-opentelemetry
+quizzes:
+  - quiz-concepts-supervision-alerting-sli-slo
+  - quiz-collecte-metriques-promql-retention
+  - quiz-visualisation-tableaux-bord-grafana
+  - quiz-gestion-centralisation-logs-loki
+  - quiz-traces-distribuees-observabilite-opentelemetry
+labs:
+  - configuration-supervision-prometheus-grafana
+  - centralisation-logs-promtail-loki

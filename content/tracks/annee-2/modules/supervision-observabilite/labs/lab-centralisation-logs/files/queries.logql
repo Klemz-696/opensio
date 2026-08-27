@@ -1,0 +1,7 @@
+# queries.logql - Requêtes LogQL
+
+# TODO: Requête 1 - Filtrer les logs Nginx contenant des erreurs 5xx
+# Exemple: {job="nginx", env="production"} ...
+
+# TODO: Requête 2 - Calculer le débit d'erreurs 5xx par seconde sur 5 minutes
+# Exemple: sum(rate(...[5m]))

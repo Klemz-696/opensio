@@ -1,0 +1,8 @@
+# alerts.yml - Règles d'alerte Prometheus
+
+groups:
+  - name: production-alerts
+    rules:
+      # TODO: Définir l'alerte InstanceDown (up == 0)
+
+      # TODO: Définir l'alerte HighCpuUsage (> 85%)

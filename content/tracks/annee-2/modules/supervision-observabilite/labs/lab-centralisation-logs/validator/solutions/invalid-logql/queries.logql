@@ -1,0 +1,2 @@
+# Requête invalide sans sélecteur ni filtre
+SELECT * FROM logs;

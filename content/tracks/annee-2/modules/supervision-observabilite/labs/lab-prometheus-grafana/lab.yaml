@@ -1,0 +1,68 @@
+slug: configuration-supervision-prometheus-grafana
+title: "Configuration de la Collecte Prometheus, des Règles d'Alerte et d'un Dashboard Grafana"
+level: 2_files
+max_score: 100
+estimated_minutes: 45
+context: |
+  Vous êtes administrateur système et devez déployer et configurer la supervision métrologique de la plateforme de production à l'aide de Prometheus.
+
+  Vous devez configurer :
+  1. **`prometheus.yml`** :
+     - Définir `scrape_interval: 15s` et `evaluation_interval: 15s` dans `global`
+     - Déclarer le chargement du fichier de règles d'alerte `alerts.yml` dans `rule_files`
+     - Configurer le scraping du job `node-exporter` (port 9100) et du job `nginx-exporter` (port 9113 ou 8080)
+  2. **`alerts.yml`** :
+     - Définir un groupe de règles d'alerte (`groups`)
+     - Alerte `InstanceDown` : déclenchée si `up == 0` pendant au moins `1m`, avec sévérité `critical`, `summary` et `description`
+     - Alerte `HighCpuUsage` : déclenchée si l'utilisation CPU moyenne dépasse 85 % pendant au moins `5m`, avec sévérité `warning`, `summary` et `description`
+
+objectives:
+  - "Structurer la configuration de collecte par tirage (Pull Scraping) de Prometheus"
+  - "Définir des cibles et des intervalles de scrape cohérents"
+  - "Écrire des règles d'alerte déclaratives avec expressions PromQL, délais de persistance et annotations"
+  - "Classer les alertes par niveau de sévérité (Warning / Critical)"
+
+prerequisites:
+  - "linux-administration"
+  - "concepts-supervision-alerting-sli-slo"
+  - "collecte-metriques-promql-retention"
+
+files:
+  editable:
+    - path: prometheus.yml
+      description: "Fichier de configuration principal du serveur Prometheus"
+    - path: alerts.yml
+      description: "Fichier de déclaration des règles d'alerte Prometheus"
+
+hints:
+  - cost_percent: 10
+    text: "Pensez à déclarer 'rule_files: [alerts.yml]' dans prometheus.yml pour charger vos alertes."
+  - cost_percent: 10
+    text: "Pour l'alerte InstanceDown, l'expression PromQL attendue est 'up == 0' avec 'for: 1m'."
+  - cost_percent: 10
+    text: "Pour HighCpuUsage, utilisez l'expression '100 - (avg by (instance) (rate(node_cpu_seconds_total{mode=\"idle\"}[5m])) * 100) > 85'."
+
+validation:
+  type: script
+  image: opensio/validator-prometheus:latest
+  timeout_seconds: 30
+  checks:
+    - id: prometheus_scrape_configs
+      required: true
+      points: 25
+      description: "Configuration Prometheus : intervalles globaux, rule_files et scrape_configs pour node-exporter et web"
+    - id: alerting_rules_structure
+      required: true
+      points: 25
+      description: "Structure des alertes : définition des règles InstanceDown et HighCpuUsage avec for et severity"
+    - id: promql_expressions_validity
+      required: true
+      points: 25
+      description: "Validité PromQL : expressions de détection (up == 0, seuil CPU > 85 %)"
+    - id: annotations_and_runbook
+      required: true
+      points: 25
+      description: "Annotations et messages : présence de summary et description clairs pour chaque alerte"
+
+scoring:
+  floor_percent: 50

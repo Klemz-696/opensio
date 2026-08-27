@@ -1,0 +1,79 @@
+slug: quiz-traces-distribuees-observabilite-opentelemetry
+title: "Quiz — Traces Distribuées et OpenTelemetry"
+passing_score: 80
+position: 5
+questions:
+  - kind: single
+    prompt: "Dans une architecture microservices, quelle est la définition précise d'une 'Trace' distribuée ?"
+    choices:
+      - id: a
+        text: "Le cheminement complet de bout en bout d'une requête ou d'une transaction à travers l'ensemble des microservices et bases de données, identifié par un Trace ID unique"
+      - id: b
+        text: "L'adresse MAC de la carte réseau"
+      - id: c
+        text: "Le fichier de sauvegarde du disque dur"
+      - id: d
+        text: "La signature électronique de l'administrateur"
+    correct:
+      - a
+    explanation: "Une Trace retrace le parcours intégral d'une requête à travers les différents services, permettant de mesurer le temps passé dans chaque composant."
+
+  - kind: single
+    prompt: "Dans le modèle de traçage d'OpenTelemetry, qu'est-ce qu'une 'Span' ?"
+    choices:
+      - id: a
+        text: "Une unité de travail discrète et chronométrée exécutée par un service donné (nom d'opération, heure de début, durée, statut et attributs clé-valeur)"
+      - id: b
+        text: "Une pause obligatoire de 15 minutes pour les développeurs"
+      - id: c
+        text: "Un câble réseau reliant deux commutateurs"
+      - id: d
+        text: "Une commande clavier pour redémarrer Linux"
+    correct:
+      - a
+    explanation: "Chaque transaction est composée d'un arbre hiérarchique de Spans (Span racine puis Spans enfants) représentant chaque action (appel HTTP, requête SQL, etc.)."
+
+  - kind: single
+    prompt: "Comment les microservices transmettent-ils le contexte de trace (Trace ID, Span ID) entre eux lors d'un appel réseau HTTP selon le standard W3C ?"
+    choices:
+      - id: a
+        text: "En injectant l'en-tête HTTP standardisé 'traceparent' dans la requête"
+      - id: b
+        text: "En gravant le numéro sur une clé USB"
+      - id: c
+        text: "En modifiant l'adresse IP source du paquet TCP"
+      - id: d
+        text: "En redémarrant le serveur distant"
+    correct:
+      - a
+    explanation: "La norme W3C Trace Context définit l'en-tête `traceparent` qui permet à tous les microservices de propager le contexte sans rupture de corrélation."
+
+  - kind: single
+    prompt: "Quels sont les trois composants internes du pipeline de traitement d'un Collecteur OpenTelemetry (OTel Collector) ?"
+    choices:
+      - id: a
+        text: "Receivers (Réception des données), Processors (Transformation/Filtrage/Batch), Exporters (Envoi vers les backends)"
+      - id: b
+        text: "Compile, Link, Run"
+      - id: c
+        text: "Input, Keyboard, Screen"
+      - id: d
+        text: "Read, Write, Execute"
+    correct:
+      - a
+    explanation: "L'architecture modulaire du collecteur OTel repose sur les Receivers (ingestion), les Processors (traitement en mémoire) et les Exporters (expédition vers Tempo, Prometheus, Loki)."
+
+  - kind: single
+    prompt: "Comment l'injection du 'trace_id' dans les journaux applicatifs (Logs) permet-elle d'accélérer la résolution des incidents ?"
+    choices:
+      - id: a
+        text: "Elle permet de passer instantanément d'une trace lente dans Grafana/Tempo aux lignes de logs exactes générées par cette même requête dans Loki"
+      - id: b
+        text: "Elle augmente la vitesse du processeur de 50%"
+      - id: c
+        text: "Elle supprime automatiquement toutes les erreurs 500"
+      - id: d
+        text: "Elle permet d'éviter l'écriture de tests unitaires"
+    correct:
+      - a
+    explanation: "La corrélation via le `trace_id` unifie les traces (où le temps est perdu) et les logs (pourquoi l'erreur s'est produite), divisant le temps de diagnostic (MTTR)."
