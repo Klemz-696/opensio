@@ -1,0 +1,79 @@
+slug: quiz-volumes-stockage-et-persistance
+title: "Quiz — Volumes et Persistance"
+passing_score: 80
+position: 4
+questions:
+  - kind: single
+    prompt: "Pourquoi est-il impératif d'utiliser un Volume Nommé (Named Volume) pour stocker les données d'un système de gestion de bases de données (PostgreSQL, MySQL) sous Docker ?"
+    choices:
+      - id: a
+        text: "Pour garantir la persistance des données sur l'hôte indépendamment du cycle de vie des conteneurs, tout en bénéficiant de performances I/O optimales gérées par le moteur Docker"
+      - id: b
+        text: "Parce que Docker refuse de démarrer une base de données sans volume"
+      - id: c
+        text: "Pour compresser automatiquement la base de données en format zip"
+      - id: d
+        text: "Pour dupliquer les données sur toutes les machines du réseau"
+    correct:
+      - a
+    explanation: "Les volumes nommés persistent dans `/var/lib/docker/volumes/` même après suppression du conteneur (`docker rm`), protégeant les données applicatives critiques."
+
+  - kind: single
+    prompt: "Quelle est la principale différence entre un Volume Nommé et un Montage Lié (Bind Mount) ?"
+    choices:
+      - id: a
+        text: "Un volume nommé est géré et isolé dans l'espace de stockage de Docker, tandis qu'un bind mount monte un chemin arbitraire quelconque du système de fichiers de la machine hôte"
+      - id: b
+        text: "Un volume nommé ne peut stocker que des fichiers textes alors qu'un bind mount stocke des binaires"
+      - id: c
+        text: "Un bind mount est chiffré alors qu'un volume nommé ne l'est jamais"
+      - id: d
+        text: "Les bind mounts ne fonctionnent que sous Linux"
+    correct:
+      - a
+    explanation: "Les volumes nommés sont managés par Docker (`/var/lib/docker/volumes/`), alors que les bind mounts ciblent un dossier local spécifique de l'hôte (ex: `./config/nginx.conf`)."
+
+  - kind: single
+    prompt: "Dans quel cas d'usage précis le type de montage 'tmpfs' est-il particulièrement recommandé ?"
+    choices:
+      - id: a
+        text: "Pour stocker des données temporaires hautement sensibles ou des caches en mémoire RAM afin qu'aucun octet ne soit écrit sur le disque dur physique"
+      - id: b
+        text: "Pour archiver des sauvegardes sur le long terme (5 ans)"
+      - id: c
+        text: "Pour partager des vidéos entre plusieurs conteneurs"
+      - id: d
+        text: "Pour installer le système d'exploitation de base"
+    correct:
+      - a
+    explanation: "Le montage `tmpfs` réside exclusivement en mémoire vive (RAM). À l'arrêt du conteneur, les données volatiles sont immédiatement purgées sans trace sur disque."
+
+  - kind: single
+    prompt: "Comment monter un fichier de configuration de l'hôte (ex: nginx.conf) dans un conteneur en garantissant que le conteneur ne pourra pas le modifier (lecture seule) ?"
+    choices:
+      - id: a
+        text: "En ajoutant le suffixe :ro à l'option de montage (ex: -v /chemin/nginx.conf:/etc/nginx/nginx.conf:ro)"
+      - id: b
+        text: "En utilisant l'option --lock-file"
+      - id: c
+        text: "En modifiant les permissions du fichier en 777"
+      - id: d
+        text: "En supprimant le fichier après démarrage"
+    correct:
+      - a
+    explanation: "Le drapeau `:ro` (*read-only*) interdit toute écriture depuis le conteneur sur le point de montage hôte."
+
+  - kind: single
+    prompt: "Quelle commande permet d'éliminer tous les volumes Docker qui ne sont plus attachés à aucun conteneur (nettoyage de volumes orphelins) ?"
+    choices:
+      - id: a
+        text: "docker volume prune"
+      - id: b
+        text: "docker rm -f all"
+      - id: c
+        text: "rm -rf /var/lib/docker"
+      - id: d
+        text: "docker clean storage"
+    correct:
+      - a
+    explanation: "`docker volume prune` supprime de manière sécurisée l'ensemble des volumes anonymes ou nommés inutilisés pour libérer de l'espace disque."

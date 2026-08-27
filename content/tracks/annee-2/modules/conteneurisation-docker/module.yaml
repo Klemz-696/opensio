@@ -1,0 +1,25 @@
+slug: conteneurisation-docker
+title: "Conteneurisation d'Applications & Orchestration avec Docker"
+description: "Principes de la virtualisation légère, création d'images optimisées multi-stage, réseaux et persistance des données, et orchestration multi-services avec Docker Compose."
+position: 3
+difficulty: 3
+estimated_minutes: 550
+competency_refs:
+  - "B2.1"
+  - "B2.2"
+  - "B2.3"
+lessons:
+  - principes-conteneurisation-et-cycle-vie
+  - dockerfile-construction-et-bonnes-pratiques
+  - reseau-docker-et-communication-inter-conteneurs
+  - volumes-stockage-et-persistance
+  - orchestration-multi-services-docker-compose
+quizzes:
+  - quiz-principes-conteneurisation-et-cycle-vie
+  - quiz-dockerfile-construction-et-bonnes-pratiques
+  - quiz-reseau-docker-et-communication-inter-conteneurs
+  - quiz-volumes-stockage-et-persistance
+  - quiz-orchestration-multi-services-docker-compose
+labs:
+  - construction-image-docker-optimisee
+  - deploiement-stack-docker-compose
