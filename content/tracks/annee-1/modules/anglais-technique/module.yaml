@@ -1,0 +1,25 @@
+slug: anglais-technique
+title: "Anglais Technique pour l'Administration Systèmes et Réseaux"
+description: "Vocabulaire technique anglais appliqué aux systèmes, réseaux et à la sécurité informatique, lecture de documentations officielles et de RFCs, analyse de journaux d'erreurs et rédaction professionnelle de tickets de support IT."
+position: 8
+difficulty: 1
+estimated_minutes: 350
+competency_refs:
+  - "B1.1"
+  - "B1.2"
+  - "B2.1"
+lessons:
+  - vocabulaire-infrastructure-reseau
+  - lecture-documentation-et-rfcs
+  - tickets-incident-et-support
+  - analyse-logs-et-messages-erreur
+  - securite-sauvegardes-bonnes-pratiques
+quizzes:
+  - quiz-vocabulaire-infrastructure-reseau
+  - quiz-lecture-documentation-et-rfcs
+  - quiz-tickets-incident-et-support
+  - quiz-analyse-logs-et-messages-erreur
+  - quiz-securite-sauvegardes-bonnes-pratiques
+labs:
+  - redaction-ticket-support-anglais
+  - analyse-documentation-technique-anglais

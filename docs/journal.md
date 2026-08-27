@@ -1211,6 +1211,31 @@ Création complète du nouveau module `windows-server-ad` comprenant 6 leçons, 
 - `pnpm test --force` : 100 % vert (357 tests passants dans le monorepo).
 - `pnpm build --force` : 100 % réussi.
 
+### 11. Phase 2.2 — Production du Module `anglais-technique` (Clôture Parcours 1ère Année SISR)
+- **Module `anglais-technique`** (5 leçons, 5 quiz, 2 labs) :
+  - `01-vocabulaire-infrastructure-reseau.md` + `quiz-vocabulaire-infrastructure-reseau.yaml` : Lexique anglophone du matériel serveur (chassis, rack, redundant PSUs, hot-swappable drives, NIC, HBA, throughput), connectique réseau (patch cord/panel, SFP+ transceivers, managed switches, default gateway) et pièges des faux-amis (legacy, facility, location, deprecate).
+  - `02-lecture-documentation-et-rfcs.md` + `quiz-lecture-documentation-et-rfcs.yaml` : Mots-clés normatifs IETF RFC 2119 (MUST, MUST NOT, SHOULD, SHOULD NOT, MAY), structure formelle des pages de manuel UNIX/Linux (NAME, SYNOPSIS, OPTIONS, RETURN VALUE) et analyse de guides de déploiement éditeurs.
+  - `03-tickets-incident-et-support.md` + `quiz-tickets-incident-et-support.yaml` : Rédaction de tickets d'assistance professionnels (Summary, Severity P1/P2/P3, Symptoms, Steps to Reproduce, Workaround, RCA), communication utilisateur polie en anglais et retours constructeur RMA.
+  - `04-analyse-logs-et-messages-erreur.md` + `quiz-analyse-logs-et-messages-erreur.yaml` : Interprétation des niveaux Syslog RFC 5424 (Emergency à Debug), analyse des messages d'erreur système courants (`Connection refused`, `No space left on device`, `Permission denied`), codes d'état Web/HTTP et fiches de procédures d'exploitation (SOP).
+  - `05-securite-sauvegardes-bonnes-pratiques.md` + `quiz-securite-sauvegardes-bonnes-pratiques.yaml` : Terminologie cyberdéfense (Vulnerabilities, CVE, CVSS Score, Exploits, Hardening, Patch Management), principes de sécurité (Least Privilege, Defense in Depth, Zero Trust, Air-Gap) et analyse de Security Advisories.
+  - **2 Labs autonomes de niveau 2_files avec suites de tests complètes** :
+    - `lab-ticket-support-anglais` (`redaction-ticket-support-anglais`) : Rédaction d'un rapport d'incident formel en anglais dans `ticket.md` qualifiant une panne critique PostgreSQL (ERP indisponible, 150 utilisateurs bloqués, diagnostic disque 100% plein, contournement 2 Go libérés et demande d'extension de partition de 50 Go au N2).
+    - `lab-documentation-technique` (`analyse-documentation-technique-anglais`) : Analyse d'un avis de sécurité CVE-2026-4019 et d'un journal d'erreur Nginx/OpenSSL dans `diagnostic.json` avec qualification de sévérité Emergency/CVSS 9.8, plan de mise à niveau des paquets, durcissement TLSv1.2/1.3 et vérification sans coupure `nginx -t && systemctl reload nginx`.
+
+### 12. Bilan Global — 100 % du Parcours 1ère Année SISR Finalisé
+- `node content/validate.mjs` : **100 % valide** :
+  - **8 modules opérationnels** (`reseaux-fondamentaux`, `windows-server-ad`, `linux-administration`, `services-reseau-linux`, `virtualisation-systemes`, `sauvegardes-stockage`, `support-parc-glpi`, `anglais-technique`).
+  - **44 leçons rédigées et validées**.
+  - **44 quiz d'évaluation (232 questions avec explications pédagogiques)**.
+  - **20 ateliers pratiques (Labs)**.
+  - **63 / 63 tests de validateurs passants** sur les suites de fixtures.
+- `pnpm content:validate` : 100 % valide (18/18 tests Zod passants).
+- `node scripts/check-file-size.mjs` : 100 % conforme D-13 (331 fichiers analysés, 0 violation > 400 lignes).
+- `node scripts/check-theme-classes.mjs` : 100 % conforme bi-thème (0 violation).
+- `pnpm test --force` : 100 % vert (357 tests passants dans le monorepo).
+- `pnpm build --force` : 100 % réussi.
+
+
 
 
 
