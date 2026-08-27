@@ -1,0 +1,83 @@
+slug: quiz-haute-disponibilite-replication-sgbd
+title: "Quiz — Haute Disponibilité, Réplication & Sauvegardes Point-in-Time"
+passing_score: 80
+position: 5
+questions:
+  - kind: single
+    prompt: "Dans le cadre d'un Plan de Reprise d'Activité (PRA), que représente l'indicateur RPO (Recovery Point Objective) pour une base de données ?"
+    choices:
+      - id: a
+        text: "Le temps maximal nécessaire pour redémarrer le serveur après une panne"
+      - id: b
+        text: "La quantité maximale ou durée de données qu'une organisation accepte de perdre lors d'un sinistre"
+      - id: c
+        text: "Le pourcentage de requêtes servies par le cache mémoire"
+      - id: d
+        text: "Le coût financier horaire d'une interruption de service"
+    correct:
+      - b
+    explanation: "Le RPO (Recovery Point Objective) mesure la perte maximale de données tolérée exprimée en temps (ex: RPO = 0 seconde avec réplication synchrone, ou RPO = 15 minutes si la sauvegarde est basée sur un intervalle d'archivage). Le temps pour redémarrer le service est quant à lui mesuré par le RTO (Recovery Time Objective)."
+
+  - kind: multiple
+    prompt: "Quels mécanismes et éléments sont indispensables pour mettre en place une réplication physique continue (Streaming Replication) sous PostgreSQL ?"
+    choices:
+      - id: a
+        text: "Le journal des transactions Write-Ahead Log (WAL) configuré avec wal_level = replica"
+      - id: b
+        text: "Un utilisateur avec le privilège REPLICATION déclaré dans pg_hba.conf"
+      - id: c
+        text: "L'outil pg_basebackup pour initialiser la copie binaire conforme du nœud primaire vers le secondaire"
+      - id: d
+        text: "Un câble série RS-232 reliant obligatoirement les deux serveurs"
+    correct:
+      - a
+      - b
+      - c
+    explanation: "La réplication en continu sous PostgreSQL s'appuie sur le flux de segments WAL (wal_level = replica), un compte de réplication dédié autorisé dans pg_hba.conf, et une amorce binaire réalisée via pg_basebackup pour synchroniser l'état initial des nœuds."
+
+  - kind: single
+    prompt: "Quel est l'inconvénient principal de la réplication synchrone stricte ('synchronous_commit = on') par rapport à la réplication asynchrone ?"
+    choices:
+      - id: a
+        text: "Elle entraîne une perte systématique des 10 dernières minutes de données"
+      - id: b
+        text: "Elle augmente la latence de chaque écriture (COMMIT) et peut bloquer les écritures sur le primaire si le réplica devient injoignable"
+      - id: c
+        text: "Elle interdit la création de clés primaires sur les tables"
+      - id: d
+        text: "Elle ne fonctionne que sur le système d'exploitation Windows"
+    correct:
+      - b
+    explanation: "En réplication synchrone, chaque transaction COMMIT doit attendre que le réplica secondaire confirme la bonne réception et l'écriture du journal WAL sur son disque. Si le réseau est lent ou si le réplica plante, le serveur primaire se retrouve bloqué en attente, dégradant la disponibilité au profit d'un RPO de zéro."
+
+  - kind: single
+    prompt: "Dans un cluster de bases de données distribué, qu'est-ce que le phénomène de 'Split-Brain' et comment l'évite-t-on ?"
+    choices:
+      - id: a
+        text: "Une surchauffe des processeurs multi-cœurs évitée par un système de watercooling"
+      - id: b
+        text: "Une scission réseau où deux sous-groupes de nœuds se croient chacun maîtres légitimes et acceptent des écritures contradictoires, évitée grâce à une règle de quorum majoritaire (> 50 %)"
+      - id: c
+        text: "La corruption d'un fichier de configuration corrigée par un simple redémarrage"
+      - id: d
+        text: "Une saturation de la mémoire swap évitée par l'ajout de barrettes RAM"
+    correct:
+      - b
+    explanation: "Le Split-Brain survient lors d'une rupture de liaison inter-nœuds : les deux segments isolés continuent d'écrire de manière divergente, créant des données incohérentes irréconciliables. L'exigence d'un quorum majoritaire strict (plus de la moitié des voix) empêche le groupe minoritaire de s'auto-promouvoir maître."
+
+  - kind: multiple
+    prompt: "Quels composants et directives sont utilisés pour effectuer une restauration à un instant précis dans le passé (Point-in-Time Recovery - PITR) sous PostgreSQL ?"
+    choices:
+      - id: a
+        text: "Une sauvegarde physique de référence (base backup)"
+      - id: b
+        text: "La totalité des segments WAL archivés depuis la date de la sauvegarde de référence"
+      - id: c
+        text: "La directive recovery_target_time dans la configuration pour borner la fin du rejeu"
+      - id: d
+        text: "La suppression irréversible du dossier /etc/postgresql"
+    correct:
+      - a
+      - b
+      - c
+    explanation: "Le PITR repose sur la restauration de la sauvegarde physique de base (pg_basebackup), suivie du rejeu continu des journaux WAL archivés jusqu'à la date/heure exacte spécifiée dans recovery_target_time (ou recovery_target_xid), permettant d'annuler une erreur humaine survenue à une seconde précise."

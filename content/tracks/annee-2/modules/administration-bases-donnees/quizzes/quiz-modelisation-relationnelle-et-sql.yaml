@@ -1,0 +1,83 @@
+slug: quiz-modelisation-relationnelle-et-sql
+title: "Quiz — Modélisation des Données & Requêtage SQL Avancé"
+passing_score: 80
+position: 2
+questions:
+  - kind: single
+    prompt: "Lors du passage d'un MCD à un MLD, comment se traduit une association binaire de cardinalités (1,1) d'un côté et (0,N) de l'autre ?"
+    choices:
+      - id: a
+        text: "Par la création d'une table associative de jointure"
+      - id: b
+        text: "Par la migration de la clé primaire de l'entité (0,N) comme clé étrangère dans la table de l'entité (1,1)"
+      - id: c
+        text: "Par la fusion obligatoire des deux tables en une seule entité"
+      - id: d
+        text: "Par l'ajout d'une colonne de type tableau (Array)"
+    correct:
+      - b
+    explanation: "Dans une relation 1:N (ou 0:N / 1:1), la table représentant l'entité ayant la cardinalité (1,1) reçoit la clé primaire de l'autre entité en tant que clé étrangère (Foreign Key). Une table associative n'est requise que pour les relations N:M (0:n / 0:n)."
+
+  - kind: single
+    prompt: "Quelle condition caractérise la Troisième Forme Normale (3FN) par rapport à la Deuxième Forme Normale (2FN) ?"
+    choices:
+      - id: a
+        text: "Toutes les colonnes doivent être de type numérique"
+      - id: b
+        text: "Tous les attributs doivent être atomiques et indivisibles"
+      - id: c
+        text: "Aucun attribut non-clé ne doit dépendre d'un autre attribut non-clé (absence de dépendance transitive)"
+      - id: d
+        text: "Chaque table doit comporter au moins deux clés étrangères"
+    correct:
+      - c
+    explanation: "La 3FN exige que la 2FN soit respectée et qu'il n'existe aucune dépendance fonctionnelle transitive entre attributs non-clés. Chaque attribut doit dépendre directement et uniquement de la clé primaire ('La clé, toute la clé, et rien que la clé')."
+
+  - kind: multiple
+    prompt: "Quelles clauses d'action d'intégrité référentielle peuvent être définies sur une contrainte FOREIGN KEY en SQL ?"
+    choices:
+      - id: a
+        text: "ON DELETE CASCADE (supprime automatiquement les lignes enfants liées)"
+      - id: b
+        text: "ON DELETE SET NULL (passe la valeur de la clé étrangère enfant à NULL)"
+      - id: c
+        text: "ON DELETE RESTRICT (bloque la suppression de la ligne parente si des enfants existent)"
+      - id: d
+        text: "ON DELETE REBOOT (redémarre le service PostgreSQL)"
+    correct:
+      - a
+      - b
+      - c
+    explanation: "Les actions valides sur une clé étrangère lors d'une suppression ou d'une mise à jour sont CASCADE, SET NULL, SET DEFAULT, RESTRICT et NO ACTION. L'option 'REBOOT' est fantaisiste."
+
+  - kind: single
+    prompt: "Quelle est la différence fondamentale entre une vue standard (CREATE VIEW) et une vue matérialisée (CREATE MATERIALIZED VIEW) ?"
+    choices:
+      - id: a
+        text: "Une vue standard stocke les données physiquement sur disque alors qu'une vue matérialisée est virtuelle"
+      - id: b
+        text: "Une vue standard est une requête réexécutée à chaque appel, tandis qu'une vue matérialisée stocke physiquement le résultat et doit être rafraîchie"
+      - id: c
+        text: "Une vue matérialisée ne peut contenir aucune clause WHERE ni GROUP BY"
+      - id: d
+        text: "Une vue standard est accessible uniquement par l'utilisateur postgres"
+    correct:
+      - b
+    explanation: "Une vue classique est un simple alias nommé d'une requête SQL réévaluée dynamiquement lors de chaque consultation. À l'inverse, une vue matérialisée calcule et écrit le résultat sur disque pour des performances de lecture maximales, nécessitant un rafraîchissement explicite (REFRESH MATERIALIZED VIEW)."
+
+  - kind: multiple
+    prompt: "Dans une requête DQL, quelles instructions permettent d'agréger et filtrer des données de groupes ?"
+    choices:
+      - id: a
+        text: "GROUP BY pour regrouper les lignes ayant des valeurs communes"
+      - id: b
+        text: "HAVING pour appliquer des conditions de filtre sur les résultats de fonctions d'agrégation (ex: COUNT(*) > 5)"
+      - id: c
+        text: "WHERE pour filtrer les lignes individuelles avant le calcul des agrégations"
+      - id: d
+        text: "VACUUM pour regrouper les index sur disque"
+    correct:
+      - a
+      - b
+      - c
+    explanation: "Dans le cycle de traitement SQL, WHERE filtre les lignes individuelles d'origine, GROUP BY regroupe les lignes restantes selon les colonnes spécifiées, et HAVING filtre les groupes formés en évaluant des conditions d'agrégation (SUM, COUNT, AVG). VACUUM est une commande de maintenance, pas de DQL."
