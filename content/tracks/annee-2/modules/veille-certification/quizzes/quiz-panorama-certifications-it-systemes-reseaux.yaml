@@ -1,0 +1,79 @@
+slug: quiz-panorama-certifications-it-systemes-reseaux
+title: "Quiz — Panorama des Certifications IT"
+passing_score: 80
+position: 2
+questions:
+  - kind: single
+    prompt: "Quelle certification internationale de référence valide les compétences d'un administrateur réseau sur les protocoles de routage, commutation, sécurité et bases d'automatisation ?"
+    choices:
+      - id: a
+        text: "Cisco CCNA (Cisco Certified Network Associate - 200-301)"
+      - id: b
+        text: "Permis de conduire B"
+      - id: c
+        text: "Brevet de secourisme PSC1"
+      - id: d
+        text: "Certification bureautique TOSA Word"
+    correct:
+      - a
+    explanation: "Le CCNA de Cisco est la certification de référence mondiale pour attester des compétences fondamentales et intermédiaires en réseaux informatiques."
+
+  - kind: single
+    prompt: "Quelle est la particularité distinctive de l'examen de certification Red Hat RHCSA (EX200) par rapport à un examen de type QCM ?"
+    choices:
+      - id: a
+        text: "Il s'agit d'une épreuve 100 % pratique en situation réelle sur un système Red Hat Enterprise Linux en ligne de commande, où le candidat doit configurer et dépanner des services"
+      - id: b
+        text: "L'examen consiste à réciter l'alphabet à l'envers"
+      - id: c
+        text: "Il est composé uniquement de 10 questions vrai/faux en français"
+      - id: d
+        text: "L'épreuve se déroule sur une feuille de papier avec un crayon à papier"
+    correct:
+      - a
+    explanation: "Le RHCSA est un examen 'Performance-Based' réputé pour son exigence, mesurant la capacité réelle d'un administrateur à opérer en CLI sous contrainte de temps."
+
+  - kind: single
+    prompt: "Quelle certification est particulièrement reconnue pour valider les compétences d'administration sur le Cloud de Microsoft Azure ?"
+    choices:
+      - id: a
+        text: "Microsoft Certified: Azure Administrator Associate (AZ-104)"
+      - id: b
+        text: "Google Analytics Individual Qualification"
+      - id: c
+        text: "Adobe Photoshop Certified Expert"
+      - id: d
+        text: "Oracle DBA Master 1999"
+    correct:
+      - a
+    explanation: "L'AZ-104 est la certification intermédiaire phare pour administrer les identités, le stockage, le calcul et les réseaux virtuels sur Microsoft Azure."
+
+  - kind: single
+    prompt: "Quelle est la durée de validité standard de la grande majorité des certifications professionnelles IT (Cisco, AWS, Microsoft, CompTIA) ?"
+    choices:
+      - id: a
+        text: "3 ans (avec possibilité de renouvellement par recertification ou crédits de formation continue)"
+      - id: b
+        text: "À vie sans aucune condition"
+      - id: c
+        text: "6 mois seulement"
+      - id: d
+        text: "50 ans"
+    correct:
+      - a
+    explanation: "Le cycle de 3 ans garantit que les compétences des professionnels certifiés restent alignées avec les évolutions technologiques constantes de l'industrie."
+
+  - kind: single
+    prompt: "Quelle certification de la Cloud Native Computing Foundation (CNCF) sanctionne une expertise pratique sur la gestion de clusters Kubernetes ?"
+    choices:
+      - id: a
+        text: "CKA (Certified Kubernetes Administrator)"
+      - id: b
+        text: "Scrum Master PSM-I"
+      - id: c
+        text: "ITIL Foundation v4"
+      - id: d
+        text: "TOEIC Listening and Reading"
+    correct:
+      - a
+    explanation: "Le CKA est l'examen pratique standard de la Linux Foundation / CNCF pour certifier la maîtrise de l'installation, configuration et maintenance de clusters Kubernetes."

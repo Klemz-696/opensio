@@ -1,0 +1,18 @@
+target_role: "Administrateur Systèmes, Cloud & Réseaux"
+
+certifications:
+  - code: "200-301"
+    title: "CCNA"
+    vendor: "Cisco"
+    level: "associe"
+    estimated_cost_eur: 300
+    target_quarter: "2026-Q4"
+
+  - code: "AZ-104"
+    title: "Azure Administrator"
+    vendor: "Microsoft"
+    level: "associe"
+    estimated_cost_eur: 165
+    target_quarter: "2027-Q2"
+
+total_budget_eur: 1000 # Incohérent : 300 + 165 = 465 != 1000

@@ -1,0 +1,4 @@
+target_role: "IT"
+certifications:
+  - code: "123" # Une seule certif incomplète
+total_budget_eur: 0

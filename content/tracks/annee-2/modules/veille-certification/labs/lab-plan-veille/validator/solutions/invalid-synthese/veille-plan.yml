@@ -1,0 +1,24 @@
+theme: "Sécurité des Infrastructures Cloud et Conteneurs"
+frequency: "20 minutes quotidiennes"
+
+tools:
+  - "FreshRSS"
+  - "Obsidian"
+
+sources:
+  - name: "CERT-FR"
+    type: "institutionnel/securite"
+    url: "https://www.cert.ssi.gouv.fr/feed/"
+    channel: "rss"
+  - name: "CNCF"
+    type: "editeur/standard"
+    url: "https://www.cncf.io/feed/"
+    channel: "rss"
+  - name: "NVD NIST"
+    type: "institutionnel/securite"
+    url: "https://nvd.nist.gov/vuln/data-feeds"
+    channel: "api/alert"
+  - name: "Reddit r/sysadmin"
+    type: "communaute/rex"
+    url: "https://www.reddit.com/r/sysadmin/.rss"
+    channel: "rss"
