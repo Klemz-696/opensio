@@ -82,6 +82,68 @@
   border-radius: 0 8px 8px 0;
 }
 
+/* Wrapper pour scroll horizontal sur mobile (tableaux larges) */
+.lesson-prose-table-wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin: 1.5rem 0;
+  border-radius: 10px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.07);
+  border: 1px solid #e2e8f0;
+}
+
+.lesson-prose-table-wrapper table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0; /* marge portée par le wrapper */
+  font-size: 0.95rem;
+  min-width: 480px; /* force le scroll plutôt qu'un écrasement */
+}
+
+.lesson-prose-table-wrapper th,
+.lesson-prose-table-wrapper td {
+  border: 0;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 0.7rem 1rem;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.lesson-prose-table-wrapper thead th {
+  background: linear-gradient(180deg, #f1f5f9 0%, #e8eef4 100%);
+  color: #0f172a;
+  font-weight: 700;
+  font-size: 0.875rem;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  border-bottom: 2px solid #cbd5e1;
+}
+
+.lesson-prose-table-wrapper thead th:first-child {
+  border-radius: 10px 0 0 0;
+}
+
+.lesson-prose-table-wrapper thead th:last-child {
+  border-radius: 0 10px 0 0;
+}
+
+.lesson-prose-table-wrapper tbody tr:nth-child(even) {
+  background-color: #f8fafc;
+}
+
+.lesson-prose-table-wrapper tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.lesson-prose-table-wrapper tbody tr {
+  transition: background-color 0.12s ease;
+}
+
+.lesson-prose-table-wrapper tbody tr:hover {
+  background-color: #eff6ff;
+}
+
+/* Legacy fallback : tableaux GFM non wrappés */
 .lesson-prose table {
   width: 100%;
   border-collapse: collapse;
@@ -104,6 +166,17 @@
 
 .lesson-prose tr:nth-child(even) {
   background-color: #f8fafc;
+}
+
+/* KaTeX — intégration thème clair */
+.lesson-prose .katex {
+  font-size: 1.1em;
+}
+
+.lesson-prose .katex-display {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.5rem 0;
 }
 
 .lesson-prose hr {
@@ -164,6 +237,32 @@
   background: rgba(56, 189, 248, 0.05);
 }
 
+/* Dark mode — wrapper tableaux GFM */
+.dark .lesson-prose-table-wrapper {
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.35);
+}
+
+.dark .lesson-prose-table-wrapper th,
+.dark .lesson-prose-table-wrapper td {
+  border-bottom-color: rgba(255, 255, 255, 0.07);
+}
+
+.dark .lesson-prose-table-wrapper thead th {
+  background: linear-gradient(180deg, rgba(30, 41, 59, 0.85) 0%, rgba(15, 23, 42, 0.7) 100%);
+  color: #f1f5f9;
+  border-bottom-color: rgba(255, 255, 255, 0.12);
+}
+
+.dark .lesson-prose-table-wrapper tbody tr:nth-child(even) {
+  background-color: rgba(15, 23, 42, 0.4);
+}
+
+.dark .lesson-prose-table-wrapper tbody tr:hover {
+  background-color: rgba(56, 189, 248, 0.06);
+}
+
+/* Dark mode — legacy fallback */
 .dark .lesson-prose th,
 .dark .lesson-prose td {
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -176,6 +275,17 @@
 
 .dark .lesson-prose tr:nth-child(even) {
   background-color: rgba(15, 23, 42, 0.4);
+}
+
+/* KaTeX — intégration thème sombre */
+.dark .lesson-prose .katex {
+  color: #e2e8f0;
+}
+
+.dark .lesson-prose .katex-display {
+  background: rgba(15, 23, 42, 0.3);
+  border-radius: 6px;
+  padding: 0.75rem 1rem;
 }
 
 .dark .lesson-prose hr {
