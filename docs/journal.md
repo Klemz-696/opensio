@@ -1240,6 +1240,54 @@ Création complète du nouveau module `windows-server-ad` comprenant 6 leçons, 
   - Position : 2
 - **Module placeholder `content/tracks/annee-2/modules/routage-interconnexion/module.yaml`** :
   - Slug : `routage-interconnexion`
+
+---
+
+## 2026-08-28 — [Lot D4] : Finalisation du Contenu 2ème Année — Modules 3 à 9 (bilan)
+
+**PRs** : #40 à #48 (`content/d4-*` → `main`)
+
+Production et validation de 9 modules supplémentaires du parcours `annee-2` (5 leçons, 5 quiz et 2 labs chacun, validateurs niveau 2_files avec suites de fixtures) :
+
+| # | Module | Focus | Labs |
+|---|---|---|---|
+| 1 | `routage-interconnexion` | Routage statique/dynamique, OSPF mono/multi-zones, inter-VLAN, NAT/PAT | OSPF, inter-VLAN |
+| 2 | `securite-perimetrique` | Zones/DMZ, nftables, NAT, appliances UTM, durcissement | Filtrage DMZ, NAT |
+| 3 | `conteneurisation-docker` | Images, volumes/réseaux, Compose, durcissement conteneurs | Dockerfile, Compose |
+| 4 | `automatisation-devops` | Culture CI/CD, Ansible, pipelines GitHub Actions/GitLab, Terraform, Prometheus/Grafana | Playbook Ansible, pipeline CI |
+| 5 | `supervision-observabilite` | Métriques/logs/traces, alerting, observabilité applicative | Supervision |
+| 6 | `cloud-prive-virtualisation` | Virtualisation avancée, cloud privé, conteneurs de calcul | Provisionnement |
+| 7 | `securite-systemes-durcissement` | Référentiels ANSSI/CIS, durcissement Linux/Windows, audits défensifs | Durcissement SSH, audit |
+| 8 | `administration-bases-donnees` | SQL/PostgreSQL, sauvegarde/restauration, optimisation, droits | Administration SQL |
+| 9 | `veille-certification` | Veille technologique, préparation certifications, CV & entretiens | Veille, certification |
+
+### Bilan consolidé après Lot D4
+- `node content/validate.mjs` : **100 % valide** — 2 tracks, **17 modules**, **89 leçons**, **89 quiz (457 questions)**, **38 labs**, **117/117 tests de validateurs** passants.
+- `pnpm content:validate` : 18/18 tests Zod ; `node scripts/check-file-size.mjs` : 0 violation D-13 ; `check-theme-classes` : 0 violation ; `pnpm lint` : 0 erreur.
+- `content:sync` : idempotence confirmée (tous compteurs « inchangés ») ; CI GitHub verte sur `main` (runs #46 à #48).
+- Restent à produire en `annee-2` : `serveurs-web-pki-tls` (fiche #11) et `vpn-acces-distants` (fiche #12) de `docs/modules-map.md`.
+
+### Difficultés & décisions
+- La cartographie initiale a été renommée/consolidée en production (détail dans `docs/roadmap.md` §4.1) ; décision consignée plutôt que renommage rétroactif des fiches pour préserver l'historique des PRs.
+
+---
+
+## 2026-08-28 — Audit v1-readiness : état des lieux complet, hygiène de sécurité & rattrapage documentaire
+
+**Branche** : `docs/audit-v1-readiness` (issue de `audit/v1-readiness`)
+
+### Réalisations
+- **Rejouage des validations contractuelles** (Instructions §4) : `pnpm lint` (0 erreur, 14 warnings), `pnpm typecheck` (4/4), `pnpm test` (API 228 + web 111 + content-schema 18 = **357 tests Vitest passants** + 117 tests validateurs), `check-file-size` (0 violation, 10 avertissements ≥ 300 lignes), `content:sync` idempotent, `check-theme-classes` (0 violation). CI GitHub : 6 derniers runs `main` verts.
+- **Sécurité** : `.env.test` (racine) et `apps/api/.env.test` contenaient un secret JWT effectif et étaient suivis par git — violation de la règle blueprint « ne jamais committer de secret, même temporaire ». **Correction** : retrait du suivi (`git rm --cached`, fichiers conservés localement) + ajout au `.gitignore` ; la CI fournit ses propres variables et `apps/api/test/setup-env.ts` gère l'absence du fichier (fallback + dérivation `opensio` → `opensio_test`). Scan des scripts/infra/workflows : aucun secret en dur (générateurs uniquement).
+- **Conformité blueprint §6** : aucune implémentation v1.0 anticipée — Proxmox présent uniquement dans les énumérations de types (`LAB_RUNNER`), l'interface `LabRunner` et un label de badge ; aucun code noVNC/websockify.
+- **Rattrapage documentaire** : `docs/roadmap.md` §4.1/§4.2 (tableaux d'avancement et statut des phases), `README.md` (état réel du catalogue 17/19 modules, 470+ tests, `pnpm 11`, remplacement de la référence morte `pnpm doctor`, correction `scripts/backup-db.sh` → `scripts/backup.sh`).
+- **Rapport d'audit** : `docs/audit/v1-readiness.md` (constats classés, preuves rejouables, décisions).
+- **Nettoyage** : suppression de l'artefact local obsolète `ci-fail.log` (échec ShellCheck du 25/08 déjà corrigé par `fix/ci-shellcheck`, fusionnée dans `main`).
+
+### Prochaines étapes (approuvées par le commanditaire)
+1. Production du module `serveurs-web-pki-tls` (6 leçons, 6 quiz, 3 labs) — branche `content/d4-serveurs-web-pki-tls`.
+2. Production du module `vpn-acces-distants` (5 leçons, 5 quiz, 2 labs) — branche `content/d4-vpn-acces-distants`.
+3. Clôture : `docs/roadmap.md` §4.1 à 19/19 modules, journal final.
   - Titre : `Routage Dynamique, OSPF & Interconnexion Réseau`
   - Position : 1, Difficulté : 3, Estimation : 550 min, Blocs : B2.1, B2.2
   - Validation réussie de la structure multitrack par `@opensio/content-schema`, le moteur de synchronisation et `content/validate.mjs`.

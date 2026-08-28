@@ -140,9 +140,11 @@ Conformément à la spécification contractuelle du Blueprint (§25.1) et à la 
 
 | Parcours / Track | Modules livrés | Modules à créer | Total modules | Leçons opérationnelles | Labs opérationnels |
 |---|:---:|:---:|:---:|:---:|:---:|
-| **1ère Année (`annee-1`)** | 2 (`reseaux-fondamentaux`, `windows-server-ad`) | 6 | 8 | 13 | 7 |
-| **2ème Année (`annee-2`)** | 0 | 11 | 11 | 0 | 0 |
-| **Total Global** | **2** | **17** | **19** | **13** | **7** |
+| **1ère Année (`annee-1`)** | 8 | 0 | 8 | 44 | 20 |
+| **2ème Année (`annee-2`)** | 9 | 2 (`serveurs-web-pki-tls`, `vpn-acces-distants`) | 11 | 45 | 18 |
+| **Total Global** | **17** | **2** | **19** | **89** | **38** |
+
+> Mise à jour du 2026-08-28 (audit v1-readiness) : tableau précédemment obsolète (indiquait 2 modules en 1ère année et 0 en 2ème). La production a en outre **renommé ou consolidé** plusieurs fiches de la cartographie initiale : `securite-pare-feu-filtrage` → `securite-perimetrique`, `supervision-metrologie` → `supervision-observabilite`, `cybersecurite-durcissement-audit` → `securite-systemes-durcissement`, `cloud-hybride-cicd` → `cloud-prive-virtualisation`, et `scripting-automatisation` + `automatisation-ansible` → `automatisation-devops`. Deux modules hors cartographie initiale ont été ajoutés (`administration-bases-donnees`, `veille-certification`). Seules les fiches #11 et #12 restent sans équivalent livré.
 
 ### 4.2. Planification des Phases de Production de Contenu
 
@@ -181,6 +183,8 @@ Conformément à la spécification contractuelle du Blueprint (§25.1) et à la 
   ├── haute-disponibilite-clustering (5 leçons, 2 labs)
   └── cloud-hybride-cicd (5 leçons, 2 labs)
 ```
+
+> **Statut (2026-08-28, audit v1-readiness)** : Phases 1, 2.1 et 2.2 **terminées** (8/8 modules de 1ère année). Phases 2.3 → 2.5 couvertes par les slugs renommés/consolidés listés en §4.1 (9 modules livrés). Restent à produire : `serveurs-web-pki-tls` (fiche #11) et `vpn-acces-distants` (fiche #12).
 
 > 📖 Pour le détail complet des fiches modules, blocs de compétences associés, barèmes et jeux d'essais, consulter [`docs/modules-map.md`](./modules-map.md).
 
