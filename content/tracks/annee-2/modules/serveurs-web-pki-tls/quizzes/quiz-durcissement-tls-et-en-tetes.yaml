@@ -1,0 +1,82 @@
+slug: quiz-durcissement-tls-et-en-tetes
+title: "Quiz — Durcissement TLS et En-têtes"
+passing_score: 80
+position: 6
+questions:
+  - kind: single
+    prompt: "Quelles versions de TLS sont acceptables en production selon les recommandations ANSSI actuelles ?"
+    choices:
+      - id: a
+        text: "TLS 1.2 et TLS 1.3 uniquement"
+      - id: b
+        text: "TLS 1.0, 1.1, 1.2 et 1.3 pour compatibilité maximale"
+      - id: c
+        text: "SSLv3 et TLS 1.0"
+      - id: d
+        text: "TLS n'est pas concerné par les recommandations ANSSI"
+    correct:
+      - a
+    explanation: "TLS 1.0/1.1 et SSLv3 présentent des failles documentées (POODLE, BEAST, downgrade) et sont interdits par le RGS et la PCI-DSS. TLS 1.2 (suites AEAD) et TLS 1.3 constituent le socle recommandé."
+
+  - kind: multiple
+    prompt: "Qu'apporte le perfect forward secrecy garanti par TLS 1.3 ?"
+    choices:
+      - id: a
+        text: "Des clés de session éphémères dérivées via Diffie-Hellman éphémère"
+      - id: b
+        text: "L'impossibilité de déchiffrer des captures anciennes même si la clé privée fuit"
+      - id: c
+        text: "Des certificats dont la validité est infinie"
+      - id: d
+        text: "Une suppression du besoin de certificat"
+    correct:
+      - a
+      - b
+    explanation: "TLS 1.3 n'admet que des échanges de clés éphémères : chaque session possède une clé indépendante. Le certificat reste indispensable pour l'authentification du serveur."
+
+  - kind: single
+    prompt: "Que garantit l'en-tête Strict-Transport-Security (HSTS) avec max-age=31536000 ?"
+    choices:
+      - id: a
+        text: "Le navigateur refusera toute connexion HTTP non chiffrée vers le domaine pendant un an"
+      - id: b
+        text: "Le serveur conservera la session utilisateur un an"
+      - id: c
+        text: "Le certificat sera valide un an"
+      - id: d
+        text: "Les cookies dureront un an"
+    correct:
+      - a
+    explanation: "HSTS mémorise côté navigateur l'obligation de n'utiliser que HTTPS (max-age en secondes) avec includeSubDomains pour étendre au domaine. Il s'agit d'une politique navigateur, sans lien avec certificat ou session."
+
+  - kind: single
+    prompt: "Quelle attaque l'en-tête X-Frame-Options: DENY permet-il de neutraliser ?"
+    choices:
+      - id: a
+        text: "Le clickjacking par intégration de la page dans une iframe malveillante"
+      - id: b
+        text: "L'injection SQL"
+      - id: c
+        text: "Le déni de service volumétrique"
+      - id: d
+        text: "L'usurpation d'adresse MAC"
+    correct:
+      - a
+    explanation: "DENY interdit l'encadrement de la page dans un frame/iframe, condition nécessaire aux attaques de clickjacking (superposition d'éléments invisibles pour provoquer des clics à l'insu de l'utilisateur)."
+
+  - kind: multiple
+    prompt: "Quels éléments sont attendus d'une configuration TLS notée A+ (grille SSL Labs) ?"
+    choices:
+      - id: a
+        text: "HSTS actif avec includeSubDomains"
+      - id: b
+        text: "TLS 1.0/1.1 désactivés et suites AEAD avec PFS"
+      - id: c
+        text: "Chaîne de certificats complète servie"
+      - id: d
+        text: "Autorisation des suites RC4 et 3DES en secours"
+    correct:
+      - a
+      - b
+      - c
+    explanation: "La note A+ exige HSTS, l'exclusion des protocoles faibles, des suites fortes à PFS et une chaîne valide. RC4 et 3DES sont des suites faibles historiquement cassées : leur présence dégrade la note."

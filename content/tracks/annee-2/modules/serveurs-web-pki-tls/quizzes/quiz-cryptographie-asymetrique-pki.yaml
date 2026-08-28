@@ -1,0 +1,81 @@
+slug: quiz-cryptographie-asymetrique-pki
+title: "Quiz — Cryptographie Asymétrique et PKI"
+passing_score: 80
+position: 4
+questions:
+  - kind: single
+    prompt: "Quel est le rôle de la cryptographie asymétrique dans une session TLS ?"
+    choices:
+      - id: a
+        text: "Authentifier le serveur et convenir d'une clé de session, puis chiffrer le trafic en symétrique"
+      - id: b
+        text: "Chiffrer tout le trafic pendant toute la session"
+      - id: c
+        text: "Compresser les données avant envoi"
+      - id: d
+        text: "Remplacer le pare-feu applicatif"
+    correct:
+      - a
+    explanation: "L'asymétrique est trop lente pour chiffrer le flux complet : elle sert à l'authentification (certificat) et à l'échange de clé (ECDHE). Le gros du trafic est chiffré en AES-GCM symétrique."
+
+  - kind: multiple
+    prompt: "Quels champs d'un certificat X.509 déterminent les noms pour lesquels il est valable ?"
+    choices:
+      - id: a
+        text: "Le Subject Alternative Name (SAN)"
+      - id: b
+        text: "Le Common Name (CN) à titre historique"
+      - id: c
+        text: "Le champ Organization de l'Issuer"
+      - id: d
+        text: "Le numéro de série"
+    correct:
+      - a
+      - b
+    explanation: "Les navigateurs vérifient désormais exclusivement le SAN ; le CN est conservé pour compatibilité. L'émetteur identifie la CA et le numéro de série identifie le certificat : aucun des deux ne définit la couverture."
+
+  - kind: single
+    prompt: "Un navigateur affiche 'missing intermediate certificate'. Que manque-t-il ?"
+    choices:
+      - id: a
+        text: "Le serveur ne présente pas la chaîne complète : le certificat intermédiaire doit être servi avec le certificat serveur"
+      - id: b
+        text: "Le navigateur n'a pas de connexion Internet"
+      - id: c
+        text: "Le certificat serveur a expiré"
+      - id: d
+        text: "Le SAN contient une IP au lieu d'un nom DNS"
+    correct:
+      - a
+    explanation: "Sans l'intermédiaire, la chaîne ne remonte pas à la racine ancrée dans le magasin de confiance. On corrige en servant fullchain (serveur + intermédiaires) et en vérifiant avec openssl s_client."
+
+  - kind: single
+    prompt: "Qu'est-ce que le perfect forward secrecy (PFS) apporté par ECDHE ?"
+    choices:
+      - id: a
+        text: "Une clé privée compromise ne permet pas de déchiffrer les sessions passées enregistrées"
+      - id: b
+        text: "Le certificat ne peut jamais expirer"
+      - id: c
+        text: "Le trafic est chiffré deux fois pour plus de sécurité"
+      - id: d
+        text: "Les clés sont conservées en clair pour le dépannage"
+    correct:
+      - a
+    explanation: "ECDHE génère des clés de session éphémères non dérivables de la clé privée : capturer puis déchiffrer a posteriori (passive recording) devient impossible, même si la clé du certificat fuit plus tard."
+
+  - kind: multiple
+    prompt: "Quelles extensions distinguent un certificat de CA d'un certificat d'extrémité ?"
+    choices:
+      - id: a
+        text: "basicConstraints CA:TRUE sur une autorité"
+      - id: b
+        text: "keyUsage contenant keyCertSign sur une autorité"
+      - id: c
+        text: "extendedKeyUsage serverAuth sur une autorité"
+      - id: d
+        text: "L'absence de numéro de série sur une extrémité"
+    correct:
+      - a
+      - b
+    explanation: "Une CA porte basicConstraints CA:TRUE et keyUsage keyCertSign/cRLSign ; un certificat serveur porte CA:FALSE et EKU serverAuth. Tout certificat X.509 possède un numéro de série."
