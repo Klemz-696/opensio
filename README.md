@@ -45,7 +45,7 @@ OpenSIO transforme le référentiel du BTS SIO SISR en parcours interactifs : ch
 | Backend | NestJS 11, Prisma 6, PostgreSQL 16, Redis 7 |
 | IA | Ollama (API compatible OpenAI), modèle local `llama3.1:8b` |
 | Contenu | Markdown + YAML, validé par schéma Zod (`@opensio/content-schema`) |
-| Qualité | Vitest (350+ tests), ESLint, Turborepo, GitHub Actions |
+| Qualité | Vitest (470+ tests), ESLint, Turborepo, GitHub Actions |
 | Infra | Docker Compose (dev & prod), scripts de sauvegarde, runbooks |
 
 ---
@@ -54,18 +54,20 @@ OpenSIO transforme le référentiel du BTS SIO SISR en parcours interactifs : ch
 
 Le socle est **terminé et validé par la CI** : authentification, RBAC, administration, profils, mentor IA, moteur de quiz et de labs, thème bi-mode.
 
-Contenu actuel — **track 1ère année** :
+Contenu actuel — **17 modules sur 19** (44 + 45 leçons, 457 questions, 38 labs, 117/117 tests de validateurs) :
 
-| Module | Leçons | Labs |
-|---|---|---|
-| Réseaux : fondamentaux | 7 (IPv4, OSI/TCP-IP, VLSM, IPv6, VLAN, routage, DNS/DHCP) | 4 |
-| Windows Server & Active Directory | 6 (rôles, AD DS, UO, GPO, DNS/DHCP, NTFS) | 3 |
+| Track | Modules livrés | Leçons | Labs |
+|---|---|---|---|
+| 1ère année | 8/8 — réseaux, Windows Server/AD, Linux, services réseau, virtualisation, sauvegardes, GLPI, anglais technique | 44 | 20 |
+| 2ème année | 9/11 — routage/OSPF, sécurité périmétrique, Docker, DevOps/IaC, supervision, cloud privé, durcissement, bases de données, veille & certification | 45 | 18 |
 
-Qualité : 350+ tests automatisés, lint / typecheck / build verts, règle D-13 (taille des fichiers), contrôle des classes bi-thème, protection de branche avec checks obligatoires sur `main`.
+Restent à produire en 2ème année : `serveurs-web-pki-tls` et `vpn-acces-distants` (voir [`docs/modules-map.md`](docs/modules-map.md)).
+
+Qualité : 470+ tests automatisés (API, web, schéma de contenu, validateurs de labs), lint / typecheck / build verts, règle D-13 (taille des fichiers), contrôle des classes bi-thème, protection de branche avec checks obligatoires sur `main`.
 
 ## Trajectoire
 
-1. **Contenu (en cours)** — compléter le référentiel SISR : track 2ème année, modules Linux, virtualisation, sécurité, supervision, scripting, SQL, GLPI, anglais technique
+1. **Contenu (en cours)** — finaliser le référentiel SISR 2ème année : modules `serveurs-web-pki-tls` et `vpn-acces-distants`
 2. **Homelab** — runner Proxmox VE pour exécuter les labs sur de vraies VMs au-delà de la simulation
 3. **Production** — déploiement auto-hébergé via `docker-compose.prod.yml`
 
@@ -75,7 +77,7 @@ La feuille de route détaillée et l'historique des lots sont dans [`docs/roadma
 
 ## Démarrage rapide
 
-Prérequis : Node.js 22, pnpm 10, Docker Desktop.
+Prérequis : Node.js 22, pnpm 11, Docker Desktop.
 
 ```bash
 git clone https://github.com/Klemz-696/opensio.git
@@ -102,7 +104,7 @@ pnpm dev
 - Compte administrateur : créé par le seed via `SEED_ADMIN_EMAIL` / `SEED_ADMIN_PASSWORD` (politique de mot de passe validée au seed)
 - Compte démo : uniquement si `DEMO_SEED=true`
 
-`pnpm doctor` vérifie l'ensemble des prérequis (Docker, base, Redis, Ollama).
+Le script interactif `scripts/install.sh` (ou `scripts/install.ps1` sous Windows) vérifie les prérequis et génère la configuration.
 
 ## Scripts utiles
 
@@ -113,7 +115,8 @@ pnpm dev
 | `pnpm lint` / `pnpm typecheck` | Qualité statique |
 | `pnpm check:theme` | Garde-fou classes bi-thème (clair/sombre) |
 | `node scripts/check-file-size.mjs` | Règle D-13 (400 lignes max par fichier) |
-| `bash scripts/backup-db.sh` | Sauvegarde PostgreSQL datée et compressée |
+| `bash scripts/backup.sh` | Sauvegarde PostgreSQL datée et compressée |
+| `bash scripts/restore.sh` | Restauration d'une sauvegarde |
 
 ## Documentation
 
