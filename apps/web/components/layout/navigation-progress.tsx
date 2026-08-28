@@ -1,4 +1,3 @@
-// Option complète : implémenter réellement la préférence
 'use client';
 
 import NextTopLoader from 'nextjs-toploader';
@@ -10,6 +9,7 @@ import NextTopLoader from 'nextjs-toploader';
 export function NavigationProgress() {
   const reduced =
     typeof window !== 'undefined' &&
+    typeof window.matchMedia === 'function' &&
     window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   return (
