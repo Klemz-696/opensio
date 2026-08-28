@@ -127,5 +127,6 @@ describe('Skeletons de chargement Next.js App Router (Accessibilité & Structure
     const loader = screen.getByTestId('nextjs-toploader');
     expect(loader).toBeDefined();
     expect(loader.getAttribute('data-height')).toBe('3');
+    expect(loader.getAttribute('data-color')).toBe('hsl(199 89% 48%)');
   });
 });
