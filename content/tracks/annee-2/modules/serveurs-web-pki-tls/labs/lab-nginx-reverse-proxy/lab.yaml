@@ -1,0 +1,67 @@
+slug: configuration-nginx-reverse-proxy
+title: "Reverse Proxy Nginx : Terminaison TLS et Répartition de Charge"
+level: 2_files
+max_score: 100
+estimated_minutes: 45
+context: |
+  Vous êtes administrateur systèmes et réseaux. L'application métier de l'entreprise est déployée sur deux serveurs backends internes (10.10.20.11 et 10.10.20.12, port 8080) qui ne doivent jamais être exposés directement.
+
+  Vous devez configurer le reverse proxy Nginx frontal afin de :
+  1. **`nginx-proxy.conf`** (bloc server HTTPS) :
+     - Rediriger tout le trafic HTTP (port 80) vers HTTPS en 301 permanent
+     - Relayer les requêtes vers l'upstream `opensio_backend` via `proxy_pass`
+     - Transmettre la réalité client : `Host`, `X-Real-IP`, `X-Forwarded-For` et `X-Forwarded-Proto`
+     - Activer les connexions persistantes vers le backend (`proxy_http_version 1.1` et `Connection ""`)
+  2. **`upstream-backends.conf`** :
+     - Bloc `upstream opensio_backend` avec la stratégie `least_conn`
+     - Deux serveurs backends avec détection de panne (`max_fails=3`, `fail_timeout=30s`)
+     - Un serveur de secours (`backup`) et des connexions persistantes (`keepalive`)
+
+objectives:
+  - "Configurer un reverse proxy Nginx sécurisé avec redirection HTTP vers HTTPS"
+  - "Préserver l'identité du client à travers le proxy (X-Forwarded-For / X-Forwarded-Proto)"
+  - "Mettre en œuvre une répartition de charge least_conn avec détection de panne"
+
+prerequisites:
+  - "serveur-web-nginx-configuration"
+  - "reverse-proxy-et-load-balancing"
+
+files:
+  editable:
+    - path: nginx-proxy.conf
+      description: "Configuration du Virtual Host reverse proxy (blocs server HTTPS et redirection HTTP)"
+    - path: upstream-backends.conf
+      description: "Bloc upstream de répartition de charge entre les backends"
+
+hints:
+  - cost_percent: 10
+    text: "La redirection utilise 'return 301 https://$host$request_uri;' dans le server écoutant le port 80."
+  - cost_percent: 10
+    text: "Transmettez au minimum proxy_set_header Host $host, X-Real-IP $remote_addr, X-Forwarded-For $proxy_add_x_forwarded_for et X-Forwarded-Proto $scheme."
+  - cost_percent: 10
+    text: "Dans l'upstream, ajoutez least_conn, deux server ...:8080 avec max_fails/fail_timeout, un serveur backup et keepalive 16."
+
+validation:
+  type: script
+  image: opensio/validator-nginx:latest
+  timeout_seconds: 30
+  checks:
+    - id: http_to_https_redirect
+      required: true
+      points: 25
+      description: "Redirection permanente du trafic HTTP (port 80) vers HTTPS en 301"
+    - id: upstream_load_balancing
+      required: true
+      points: 25
+      description: "Upstream avec stratégie least_conn, deux backends et détection de panne"
+    - id: proxy_headers_transmission
+      required: true
+      points: 25
+      description: "Transmission des en-têtes client (Host, X-Real-IP, X-Forwarded-For, X-Forwarded-Proto)"
+    - id: proxy_pass_persistence
+      required: true
+      points: 25
+      description: "Relais proxy_pass vers l'upstream avec connexions persistantes HTTP/1.1"
+
+scoring:
+  floor_percent: 50
