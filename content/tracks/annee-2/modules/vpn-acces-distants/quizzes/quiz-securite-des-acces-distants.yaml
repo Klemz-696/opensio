@@ -1,0 +1,82 @@
+slug: quiz-securite-des-acces-distants
+title: "Quiz — Sécurité des Accès Distants"
+passing_score: 80
+position: 5
+questions:
+  - kind: single
+    prompt: "Quelle différence entre split-tunneling et full-tunnel ?"
+    choices:
+      - id: a
+        text: "Le split-tunnel ne route via le VPN que les flux internes ; le full-tunnel route tout le trafic"
+      - id: b
+        text: "Le split-tunnel chiffre deux fois plus"
+      - id: c
+        text: "Le full-tunnel ne fonctionne qu'avec WireGuard"
+      - id: d
+        text: "Le split-tunneling chiffre le DNS uniquement"
+    correct:
+      - a
+    explanation: "Le split-tunneling préserve la bande passante Internet du nomade mais n'inspecte que les flux internes ; le full-tunnel (0.0.0.0/0 ou redirect-gateway) journalise et contrôle l'intégralité du trafic — imposé pour les postes sensibles."
+
+  - kind: single
+    prompt: "À quoi sert un 'kill switch' VPN sur le poste client ?"
+    choices:
+      - id: a
+        text: "Bloquer tout trafic réseau si le tunnel tombe, pour éviter une sortie en clair silencieuse"
+      - id: b
+        text: "Éteindre le poste à distance"
+      - id: c
+        text: "Supprimer les journaux du VPN"
+      - id: d
+        text: "Réinitialiser le mot de passe utilisateur"
+    correct:
+      - a
+    explanation: "Sans kill switch, une déconnexion du tunnel laisse le poste continuer sur Internet en clair sans que l'utilisateur ne s'en rende compte. Le kill switch coupe le réseau tant que le VPN n'est pas rétabli."
+
+  - kind: multiple
+    prompt: "Pourquoi exiger un second facteur (MFA) sur les accès VPN distants ?"
+    choices:
+      - id: a
+        text: "Un certificat volé seul devient insuffisant pour se connecter"
+      - id: b
+        text: "Cela répond aux recommandations ANSSI pour les accès à distance"
+      - id: c
+        text: "Cela remplace la nécessité de chiffrer le tunnel"
+      - id: d
+        text: "Cela supprime la gestion des certificats"
+    correct:
+      - a
+      - b
+    explanation: "La MFA combine deux facteurs indépendants : le vol d'un seul (certificat, mot de passe) ne suffit plus. Le chiffrement du tunnel reste indispensable et indépendant de l'authentification."
+
+  - kind: single
+    prompt: "Le VPN est établi : comment limiter ce qu'un nomade peut atteindre dans le SI ?"
+    choices:
+      - id: a
+        text: "Un filtrage explicite derrière le tunnel : le VPN ne peut joindre que les flux métier autorisés, le reste est rejeté"
+      - id: b
+        text: "Autoriser tout le LAN par défaut"
+      - id: c
+        text: "Ouvrir SSH à Internet en parallèle"
+      - id: d
+        text: "Désactiver les journaux"
+    correct:
+      - a
+    explanation: "Le principe du moindre privilège s'applique derrière le tunnel : ACL ciblées (ex: uniquement le serveur applicatif, pas SSH généralisé), rejet par défaut, journalisation des accès."
+
+  - kind: multiple
+    prompt: "Quels signaux doivent déclencher une investigation sur un serveur VPN ?"
+    choices:
+      - id: a
+        text: "Échecs d'authentification répétés depuis une même source"
+      - id: b
+        text: "Connexions à des horaires inhabituels pour un compte donné"
+      - id: c
+        text: "Une poignée de main WireGuard réussie en pleine journée"
+      - id: d
+        text: "Sources géographiques incohérentes avec l'historique de l'utilisateur"
+    correct:
+      - a
+      - b
+      - d
+    explanation: "Échecs répétés (tentative de force brute), horaires anormaux et incohérences géographiques sont des signaux d'alerte classiques. Une connexion réussie normale n'est pas en soi une anomalie."
