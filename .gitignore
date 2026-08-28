@@ -5,6 +5,15 @@ node_modules
 # Environment files
 .env
 .env.local
+# Environment files
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Environnement de test (local uniquement — templates .env.test.example suivis)
+.env.test
+apps/api/.env.test
 .env.*.local
 !.env.example
 
