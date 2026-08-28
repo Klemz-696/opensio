@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, use } from 'react';
+import React, { useEffect, use } from 'react';
 import Link from 'next/link';
 import { AlertCircle, RefreshCw, ArrowLeft, ListOrdered } from 'lucide-react';
 import { useAuth } from '../../../../lib/auth/use-auth';
@@ -18,6 +18,7 @@ import { LessonCompleteButton } from '../../../../components/lessons/lesson-comp
 import { LessonNavigation } from '../../../../components/lessons/lesson-navigation';
 import { LessonModuleSidebar } from '../../../../components/lessons/lesson-module-sidebar';
 import { useLessonHeartbeat } from '../../../../lib/hooks/use-lesson-heartbeat';
+import { useSidebarState } from '../../../../lib/hooks/use-sidebar-state';
 import LessonDetailLoading from './loading';
 
 interface LessonPageProps {
@@ -32,11 +33,13 @@ export default function LessonDetailPage({ params }: LessonPageProps) {
   const { moduleSlug, lessonSlug } = resolvedParams;
 
   const { accessToken } = useAuth();
-  const [lessonData, setLessonData] = useState<LessonDetail | null>(null);
-  const [moduleData, setModuleData] = useState<ModuleDetail | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [lessonData, setLessonData] = React.useState<LessonDetail | null>(null);
+  const [moduleData, setModuleData] = React.useState<ModuleDetail | null>(null);
+  const [isLoading, setIsLoading] = React.useState(true);
+  const [error, setError] = React.useState<string | null>(null);
+
+  // État du sommaire : fermé par défaut sur mobile, préférence localStorage sur desktop
+  const { isOpen: isSidebarOpen, toggle: toggleSidebar, close: closeSidebar, toggleButtonRef } = useSidebarState();
 
   // Suivi actif du temps passé
   useLessonHeartbeat(lessonSlug, accessToken);
@@ -119,11 +122,14 @@ export default function LessonDetailPage({ params }: LessonPageProps) {
 
           {/* Bouton rapide d'affichage du sommaire (visible sur tous écrans) */}
           <button
+            ref={toggleButtonRef}
             type="button"
-            onClick={() => setIsSidebarOpen((prev) => !prev)}
+            id="sidebar-toggle-btn"
+            onClick={toggleSidebar}
             aria-expanded={isSidebarOpen}
             aria-controls="module-summary-sidebar"
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-xs font-semibold text-sky-600 dark:text-sky-400 transition-colors cursor-pointer shadow-sm"
+            aria-label={isSidebarOpen ? 'Masquer le sommaire du module' : 'Afficher le sommaire du module'}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-xs font-semibold text-sky-600 dark:text-sky-400 transition-colors cursor-pointer shadow-sm focus-visible:ring-2 focus-visible:ring-sky-400"
           >
             <ListOrdered className="w-3.5 h-3.5" />
             <span>{isSidebarOpen ? 'Masquer le sommaire' : 'Afficher le sommaire'}</span>
@@ -169,8 +175,8 @@ export default function LessonDetailPage({ params }: LessonPageProps) {
         module={moduleData}
         currentLessonSlug={lessonSlug}
         isOpen={isSidebarOpen}
-        onToggle={() => setIsSidebarOpen((prev) => !prev)}
-        onClose={() => setIsSidebarOpen(false)}
+        onToggle={toggleSidebar}
+        onClose={closeSidebar}
       />
     </div>
   );
