@@ -1,0 +1,82 @@
+slug: quiz-deploiement-pki-et-certificats
+title: "Quiz — Déploiement PKI et Certificats"
+passing_score: 80
+position: 5
+questions:
+  - kind: multiple
+    prompt: "Quelles bonnes pratiques s'appliquent à une CA racine d'entreprise ?"
+    choices:
+      - id: a
+        text: "Garder la clé privée hors ligne sur un support verrouillé"
+      - id: b
+        text: "Une durée de vie longue (10 ans et plus) car elle est rarement manipulée"
+      - id: c
+        text: "Stocker la clé privée sur le serveur web en 0644"
+      - id: d
+        text: "Délivrer directement tous les certificats serveur depuis la racine"
+    correct:
+      - a
+      - b
+    explanation: "La racine reste hors ligne et longue durée ; l'émission passe par une CA intermédiaire exposée, dont la compromission se répare en la révoquant sans refondre la racine. Une clé 0644 sur serveur web serait une faute grave."
+
+  - kind: single
+    prompt: "Quel mécanisme ACME est le seul utilisable pour certifier un domaine interne comme opensio.home.lan ou un wildcard ?"
+    choices:
+      - id: a
+        text: "La validation DNS-01 via un enregistrement TXT"
+      - id: b
+        text: "La validation HTTP-01"
+      - id: c
+        text: "Un email à l'administrateur du domaine .lan"
+      - id: d
+        text: "Aucune : un TLD privé doit rester sans TLS"
+    correct:
+      - a
+    explanation: "HTTP-01 exige que Let's Encrypt joigne le domaine sur Internet, impossible pour .lan. DNS-01 publie un TXT dans la zone (DNS interne ou fournisseur) et couvre les wildcards. Pour .lan, une PKI interne ou la CA Caddy reste sinon nécessaire."
+
+  - kind: single
+    prompt: "Quelle commande vérifie la chaîne d'un certificat serveur contre une CA racine donnée ?"
+    choices:
+      - id: a
+        text: "openssl verify -CAfile ca-racine.pem serveur.crt"
+      - id: b
+        text: "openssl genrsa -out serveur.key 2048"
+      - id: c
+        text: "openssl req -new -key serveur.key"
+      - id: d
+        text: "systemctl status nginx"
+    correct:
+      - a
+    explanation: "openssl verify rejoue la validation de la chaîne localement. genrsa génère une clé, req -new crée une CSR, et systemctl status nginx ne vérifie aucun certificat."
+
+  - kind: single
+    prompt: "Que produit la commande openssl req -new -key serveur.key -out serveur.csr ?"
+    choices:
+      - id: a
+        text: "Une requête de signature (CSR) contenant la clé publique et l'identité, à transmettre à la CA"
+      - id: b
+        text: "Le certificat signé final"
+      - id: c
+        text: "La liste de révocation"
+      - id: d
+        text: "Une clé privée chiffrée"
+    correct:
+      - a
+    explanation: "La CSR (PKCS#10) embarque clé publique + sujet + attributs, signée avec la clé privée. La CA la signe pour produire le certificat. La clé privée ne quitte jamais le serveur."
+
+  - kind: multiple
+    prompt: "Quelles pratiques font partie de la gouvernance du cycle de vie des certificats ?"
+    choices:
+      - id: a
+        text: "Un registre inventaire avec échéances et responsables"
+      - id: b
+        text: "Une alerte de supervision à J-30 avant expiration"
+      - id: c
+        text: "Le renouvellement automatique via timer (certbot renew)"
+      - id: d
+        text: "Attendre l'expiration pour changer le certificat"
+    correct:
+      - a
+      - b
+      - c
+    explanation: "Inventaire, alerte anticipée et rotation automatisée évitent l'incident classique 'certificat expiré'. Attendre l'expiration est précisément l'anti-pattern que cette gouvernance élimine."
