@@ -17,9 +17,10 @@ export async function getHtml(code: string, lang: string): Promise<string> {
     });
   }
 
-  const result = highlighter.codeToHtml(code, { lang, theme: 'one-dark-pro' });
-  cache.set(key, result.html);
-  return result.html;
+    const result = highlighter.codeToHtml(code, { lang, theme: 'one-dark-pro' });
+  const html = typeof result === 'string' ? result : result.html;
+  cache.set(key, html);
+  return html;
 }
 
 // Pour invalider le cache si nécessaire (ex: hot-reload thème)
