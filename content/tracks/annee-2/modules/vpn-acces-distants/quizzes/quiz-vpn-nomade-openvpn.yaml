@@ -1,0 +1,83 @@
+slug: quiz-vpn-nomade-openvpn
+title: "Quiz — OpenVPN Nomade"
+passing_score: 80
+position: 4
+questions:
+  - kind: single
+    prompt: "Quel mode d'interface OpenVPN utilise-t-on pour un accès nomade routé en IP ?"
+    choices:
+      - id: a
+        text: "dev tun (interface virtuelle routée, niveau 3)"
+      - id: b
+        text: "dev tap (pont niveau 2)"
+      - id: c
+        text: "dev lo"
+      - id: d
+        text: "dev eth0"
+    correct:
+      - a
+    explanation: "Le mode tun route des paquets IP dans le tunnel avec un sous-réseau dédié (ex: 10.8.0.0/24). Le mode tap ponte au niveau 2 et n'est utile que pour des besoins de broadcasts spécifiques."
+
+  - kind: multiple
+    prompt: "Quelles directives sécurisent le canal de contrôle OpenVPN ?"
+    choices:
+      - id: a
+        text: "tls-version-min 1.2 pour imposer un TLS moderne"
+      - id: b
+        text: "tls-crypt (canal de contrôle chiffré)"
+      - id: c
+        text: "cipher NULL pour maximiser la compatibilité"
+      - id: d
+        text: "data-ciphers AES-256-GCM:CHACHA20-POLY1305"
+    correct:
+      - a
+      - b
+      - d
+    explanation: "TLS 1.2 minimum, tls-crypt pour masquer les poignées de main et des suites AEAD pour les données constituent la configuration de référence. Le cipher NULL est une faille grave."
+
+  - kind: single
+    prompt: "Comment le serveur OpenVPN communique-t-il la route du LAN interne aux clients ?"
+    choices:
+      - id: a
+        text: "push \"route 192.168.10.0 255.255.255.0\""
+      - id: b
+        text: "route print côté client"
+      - id: c
+        text: "via le fichier /etc/hosts du client"
+      - id: d
+        text: "En modifiant la passerelle par défaut du client manuellement"
+    correct:
+      - a
+    explanation: "La directive push transmet au client la route du LAN interne (split-tunneling). Sans elle, le client est connecté mais ne sait pas joindre les ressources internes."
+
+  - kind: multiple
+    prompt: "Quelles pratiques rendent un profil .ovpn exploitable en entreprise ?"
+    choices:
+      - id: a
+        text: "Un certificat par utilisateur, révocable individuellement"
+      - id: b
+        text: "Une phrase secrète sur la clé privée du client"
+      - id: c
+        text: "Un seul certificat partagé par tous les nomades"
+      - id: d
+        text: "Distribution par un canal authentifié"
+    correct:
+      - a
+      - b
+      - d
+    explanation: "Un certificat par identité permet une révocation fine (CRL). Un certificat partagé rend toute révocation impossible sans couper tout le monde et casse la traçabilité."
+
+  - kind: single
+    prompt: "Qu'apporte tls-crypt par rapport à tls-auth ?"
+    choices:
+      - id: a
+        text: "Il chiffre en plus le canal de contrôle, masquant les métadonnées de la poignée de main"
+      - id: b
+        text: "Il supprime le besoin de certificats"
+      - id: c
+        text: "Il double le débit"
+      - id: d
+        text: "Il désactive la vérification des CRL"
+    correct:
+      - a
+    explanation: "tls-auth signe le canal de contrôle ; tls-crypt le chiffre en plus, empêchant un observateur passif d'identifier un serveur OpenVPN ou de collecter des métadonnées."
