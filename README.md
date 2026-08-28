@@ -54,22 +54,21 @@ OpenSIO transforme le référentiel du BTS SIO SISR en parcours interactifs : ch
 
 Le socle est **terminé et validé par la CI** : authentification, RBAC, administration, profils, mentor IA, moteur de quiz et de labs, thème bi-mode.
 
-Contenu actuel — **17 modules sur 19** (44 + 45 leçons, 457 questions, 38 labs, 117/117 tests de validateurs) :
+Contenu actuel — **19 modules sur 19** (100 leçons, 512 questions, 43 labs, 132/132 tests de validateurs) :
 
 | Track | Modules livrés | Leçons | Labs |
 |---|---|---|---|
 | 1ère année | 8/8 — réseaux, Windows Server/AD, Linux, services réseau, virtualisation, sauvegardes, GLPI, anglais technique | 44 | 20 |
-| 2ème année | 9/11 — routage/OSPF, sécurité périmétrique, Docker, DevOps/IaC, supervision, cloud privé, durcissement, bases de données, veille & certification | 45 | 18 |
+| 2ème année | 11/11 — routage/OSPF, sécurité périmétrique, serveurs web & PKI/TLS, VPN & accès distants, Docker, DevOps/IaC, supervision, cloud privé, durcissement, bases de données, veille & certification | 56 | 23 |
 
-Restent à produire en 2ème année : `serveurs-web-pki-tls` et `vpn-acces-distants` (voir [`docs/modules-map.md`](docs/modules-map.md)).
+Ampleur complète : le **référentiel SISR 1ère et 2ème années est intégralement couvert** (19/19 modules, voir [`docs/modules-map.md`](docs/modules-map.md) et [`docs/roadmap.md`](docs/roadmap.md) §4).
 
-Qualité : 470+ tests automatisés (API, web, schéma de contenu, validateurs de labs), lint / typecheck / build verts, règle D-13 (taille des fichiers), contrôle des classes bi-thème, protection de branche avec checks obligatoires sur `main`.
+Qualité : 480+ tests automatisés (API, web, schéma de contenu, validateurs de labs), lint / typecheck / build verts, règle D-13 (taille des fichiers), contrôle des classes bi-thème, protection de branche avec checks obligatoires sur `main`.
 
 ## Trajectoire
 
-1. **Contenu (en cours)** — finaliser le référentiel SISR 2ème année : modules `serveurs-web-pki-tls` et `vpn-acces-distants`
-2. **Homelab** — runner Proxmox VE pour exécuter les labs sur de vraies VMs au-delà de la simulation
-3. **Production** — déploiement auto-hébergé via `docker-compose.prod.yml`
+1. **Homelab** — runner Proxmox VE pour exécuter les labs sur de vraies VMs au-delà de la simulation
+2. **Production** — déploiement auto-hébergé via `docker-compose.prod.yml`
 
 La feuille de route détaillée et l'historique des lots sont dans [`docs/roadmap.md`](docs/roadmap.md) et [`docs/journal.md`](docs/journal.md).
 
