@@ -1,0 +1,64 @@
+slug: configuration-wireguard-site-to-site
+title: "Tunnel WireGuard Site-à-Site entre Siège et Filiale"
+level: 2_files
+max_score: 100
+estimated_minutes: 45
+context: |
+  L'entreprise dispose d'un siège (LAN 192.168.10.0/24, IP publique 203.0.113.10) et d'une filiale (LAN 192.168.20.0/24, IP publique 198.51.100.20). Le réseau de tunnel est 10.99.0.0/24 (siège = .1, filiale = .2).
+
+  Vous devez écrire les deux configurations WireGuard :
+  1. **`wg0-siege.conf`** et **`wg0-filiale.conf`** :
+     - Section `[Interface]` : adresse de tunnel `10.99.0.1/24` (siège) et `10.99.0.2/24` (filiale), `ListenPort 51820`, `PrivateKey` renseignée
+     - Section `[Peer]` : `PublicKey` du pair distant, `Endpoint` (IP publique:51820) chez chaque pair, `AllowedIPs` couvrant l'adresse de tunnel du pair ET le LAN distant
+     - `PersistentKeepalive = 25` côté filiale (derrière NAT opérateur)
+  2. **Routage inter-sites** :
+     - `AllowedIPs` du siège incluant `192.168.20.0/24`, de la filiale incluant `192.168.10.0/24`
+     - Règles de transfert (`PostUp`/`PostDown` iptables FORWARD) autorisant le transit wg0 <-> LAN
+
+objectives:
+  - "Écrire une configuration WireGuard site-à-site cohérente des deux côtés"
+  - "Régler AllowedIPs pour le routage inter-sites et l'anti-usurpation"
+  - "Autoriser le transit réseau avec des règles iptables réversibles"
+
+prerequisites:
+  - "vpn-moderne-wireguard"
+
+files:
+  editable:
+    - path: wg0-siege.conf
+      description: "Configuration de l'interface wg0 du siège"
+    - path: wg0-filiale.conf
+      description: "Configuration de l'interface wg0 de la filiale (derrière NAT opérateur)"
+
+hints:
+  - cost_percent: 10
+    text: "Chaque fichier contient [Interface] (Address, ListenPort, PrivateKey) et [Peer] (PublicKey, Endpoint, AllowedIPs)."
+  - cost_percent: 10
+    text: "Les AllowedIPs croisées : le siège doit inclure 10.99.0.2/32 et 192.168.20.0/24 ; la filiale 10.99.0.1/32 et 192.168.10.0/24."
+  - cost_percent: 10
+    text: "Ajoutez PersistentKeepalive = 25 côté filiale et des PostUp/PostDown iptables -A FORWARD -i wg0 -j ACCEPT des deux côtés."
+
+validation:
+  type: script
+  image: opensio/validator-wireguard:latest
+  timeout_seconds: 30
+  checks:
+    - id: interfaces_well_formed
+      required: true
+      points: 25
+      description: "Sections [Interface] complètes (Address de tunnel, ListenPort 51820, PrivateKey)"
+    - id: peers_declared
+      required: true
+      points: 25
+      description: "Sections [Peer] croisées avec PublicKey et Endpoint déclarés"
+    - id: allowed_ips_routing
+      required: true
+      points: 25
+      description: "AllowedIPs croisées : LAN filiale chez le siège, LAN siège chez la filiale, adresses de tunnel incluses"
+    - id: forwarding_and_keepalive
+      required: true
+      points: 25
+      description: "Règles iptables FORWARD (PostUp/PostDown) et PersistentKeepalive côté filiale"
+
+scoring:
+  floor_percent: 50

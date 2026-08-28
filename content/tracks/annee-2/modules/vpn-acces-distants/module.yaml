@@ -1,0 +1,26 @@
+slug: vpn-acces-distants
+title: "VPN & Accès Distants Sécurisés"
+description: "Conception de liaisons chiffrées traversant Internet : tunnels IPsec site-à-site pour l'interconnexion de sites, VPN nomade OpenVPN/WireGuard pour le télétravail, et sécurisation des accès distants (MFA, split-tunneling, kill switch)."
+position: 11
+difficulty: 4
+estimated_minutes: 500
+competency_refs:
+  - "B2.1"
+  - "B2.2"
+  - "B3.2"
+  - "B3.3"
+lessons:
+  - concepts-vpn-et-chiffrement
+  - vpn-site-a-site-ipsec
+  - vpn-moderne-wireguard
+  - vpn-nomade-openvpn
+  - securite-des-acces-distants
+quizzes:
+  - quiz-concepts-vpn-et-chiffrement
+  - quiz-vpn-site-a-site-ipsec
+  - quiz-vpn-moderne-wireguard
+  - quiz-vpn-nomade-openvpn
+  - quiz-securite-des-acces-distants
+labs:
+  - configuration-wireguard-site-to-site
+  - deploiement-openvpn-nomade
