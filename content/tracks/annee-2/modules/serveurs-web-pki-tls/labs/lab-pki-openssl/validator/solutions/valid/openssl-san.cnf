@@ -1,0 +1,11 @@
+# Extensions OpenSSL pour le certificat serveur (solution de référence)
+
+authorityKeyIdentifier = keyid, issuer
+basicConstraints       = CA:FALSE
+keyUsage               = digitalSignature, keyEncipherment
+extendedKeyUsage       = serverAuth
+subjectAltName         = @alt_names
+
+[alt_names]
+DNS.1 = opensio.home.lan
+DNS.2 = www.home.lan

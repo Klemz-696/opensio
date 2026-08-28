@@ -1,0 +1,67 @@
+slug: durcissement-configuration-tls
+title: "Durcissement TLS d'un Serveur Web Vulnérable"
+level: 2_files
+max_score: 100
+estimated_minutes: 45
+context: |
+  Un audit de sécurité (objectif : note A+ sur la grille SSL Labs) a révélé que le serveur web frontal accepte encore les protocoles obsolètes et sert des suites de chiffrement faibles. Aucun en-tête de sécurité n'est envoyé.
+
+  Vous devez corriger la configuration :
+  1. **`nginx-tls.conf`** :
+     - Restreindre les protocoles à TLS 1.2 et TLS 1.3 (suppression de SSLv3, TLSv1, TLSv1.1)
+     - Définir des suites de chiffrement modernes : échange ECDHE + AEAD (AES-GCM ou ChaCha20-Poly1305), sans RC4, 3DES ni DES
+     - Désactiver les tickets de session (`ssl_session_tickets off`)
+     - Activer l'agrafage OCSP (`ssl_stapling on`, `ssl_stapling_verify on`)
+  2. **`security-headers.conf`** :
+     - En-tête `Strict-Transport-Security` avec `max-age=31536000` et `includeSubDomains`
+     - En-têtes `X-Content-Type-Options: nosniff` et `X-Frame-Options: DENY`
+     - Redirection permanente du port 80 vers HTTPS
+
+objectives:
+  - "Éliminer les protocoles TLS obsolètes d'une configuration réelle"
+  - "Imposer des suites de chiffrement AEAD avec perfect forward secrecy"
+  - "Déployer les en-têtes de sécurité HTTP essentiels (HSTS, nosniff, X-Frame-Options)"
+
+prerequisites:
+  - "durcissement-tls-et-en-tetes"
+  - "deploiement-pki-et-certificats"
+
+files:
+  editable:
+    - path: nginx-tls.conf
+      description: "Configuration TLS du Virtual Host, initialement vulnérable"
+    - path: security-headers.conf
+      description: "Fichier d'en-têtes de sécurité HTTP et redirection HTTPS"
+
+hints:
+  - cost_percent: 10
+    text: "Remplacez la ligne ssl_protocols par 'ssl_protocols TLSv1.2 TLSv1.3;' et retirez toute mention de TLSv1/1.1/SSLv3."
+  - cost_percent: 10
+    text: "Les suites doivent commencer par ECDHE et se terminer en GCM-SHA384/GCM-SHA256 ou CHACHA20-POLY1305."
+  - cost_percent: 10
+    text: "HSTS exige le drapeau always : add_header Strict-Transport-Security 'max-age=31536000; includeSubDomains' always;"
+
+validation:
+  type: script
+  image: opensio/validator-nginx:latest
+  timeout_seconds: 30
+  checks:
+    - id: tls_protocols_hardened
+      required: true
+      points: 25
+      description: "Protocoles restreints à TLS 1.2/1.3, aucune mention de SSLv3/TLSv1/TLSv1.1"
+    - id: cipher_suites_strong
+      required: true
+      points: 25
+      description: "Suites ECDHE + AEAD (GCM / ChaCha20), sans RC4, 3DES ni DES"
+    - id: security_headers_present
+      required: true
+      points: 25
+      description: "HSTS long avec includeSubDomains, X-Content-Type-Options nosniff et X-Frame-Options DENY"
+    - id: https_redirect_and_stapling
+      required: true
+      points: 25
+      description: "Redirection 301 vers HTTPS et OCSP stapling activé"
+
+scoring:
+  floor_percent: 50

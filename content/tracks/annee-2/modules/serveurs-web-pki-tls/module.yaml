@@ -1,0 +1,28 @@
+slug: serveurs-web-pki-tls
+title: "Serveurs Web, Reverse Proxy & PKI/TLS"
+description: "Déploiement de serveurs web de référence (Nginx), reverse proxy avec terminaison TLS et répartition de charge, cryptographie asymétrique, infrastructure à clés publiques (CA d'entreprise, certificats X.509, ACME) et durcissement TLS."
+position: 8
+difficulty: 3
+estimated_minutes: 600
+competency_refs:
+  - "B2.3"
+  - "B3.2"
+  - "B3.3"
+lessons:
+  - protocoles-web-http-https
+  - serveur-web-nginx-configuration
+  - reverse-proxy-et-load-balancing
+  - cryptographie-asymetrique-pki
+  - deploiement-pki-et-certificats
+  - durcissement-tls-et-en-tetes
+quizzes:
+  - quiz-protocoles-web-http-https
+  - quiz-serveur-web-nginx-configuration
+  - quiz-reverse-proxy-et-load-balancing
+  - quiz-cryptographie-asymetrique-pki
+  - quiz-deploiement-pki-et-certificats
+  - quiz-durcissement-tls-et-en-tetes
+labs:
+  - configuration-nginx-reverse-proxy
+  - generation-certificats-pki-openssl
+  - durcissement-configuration-tls

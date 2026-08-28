@@ -1,0 +1,66 @@
+slug: generation-certificats-pki-openssl
+title: "CA Racine d'Entreprise et Certificat SAN Multi-Domaines avec OpenSSL"
+level: 2_files
+max_score: 100
+estimated_minutes: 45
+context: |
+  L'entreprise souhaite sécuriser ses services internes (`opensio.home.lan`, `www.home.lan`) avec sa propre PKI, car les TLD privés ne peuvent pas être certifiés par une autorité publique.
+
+  Vous devez produire le script de référence de la PKI :
+  1. **`generate-pki.sh`** :
+     - Générer la clé privée de la CA racine avec chiffrement AES-256 et une taille de 4096 bits
+     - Émettre le certificat auto-signé de la CA racine (X.509, SHA-256, validité 10 ans, contrainte CA:TRUE)
+     - Générer la clé privée du serveur (2048 bits) puis sa requête de signature (CSR)
+     - Signer le certificat serveur avec la CA racine, en SHA-256, pour une validité de 825 jours maximum
+  2. **`openssl-san.cnf`** :
+     - Déclarer les extensions serveur : `basicConstraints CA:FALSE`, `keyUsage digitalSignature, keyEncipherment`, `extendedKeyUsage serverAuth`
+     - Déclarer le `subjectAltName` couvrant au minimum `opensio.home.lan` et `www.home.lan`
+
+objectives:
+  - "Créer une CA racine OpenSSL avec clé protégée et contraintes d'autorité"
+  - "Générer une CSR serveur et signer un certificat SAN multi-domaines"
+  - "Appliquer les durées de validité recommandées (racine longue, certificat court)"
+
+prerequisites:
+  - "cryptographie-asymetrique-pki"
+  - "deploiement-pki-et-certificats"
+
+files:
+  editable:
+    - path: generate-pki.sh
+      description: "Script bash de génération de la CA racine et du certificat serveur signé"
+    - path: openssl-san.cnf
+      description: "Fichier d'extensions OpenSSL (usages clés et SAN multi-domaines)"
+
+hints:
+  - cost_percent: 10
+    text: "La clé de la CA se génère avec 'openssl genrsa -aes256 -out ca-racine.key 4096' et son certificat avec 'openssl req -x509 ... -days 3650' et basicConstraints CA:TRUE."
+  - cost_percent: 10
+    text: "Le SAN doit contenir DNS.1 = opensio.home.lan et DNS.2 = www.home.lan dans la section [alt_names]."
+  - cost_percent: 10
+    text: "Le certificat serveur se signe avec 'openssl x509 -req -CA ca-racine.pem -CAkey ca-racine.key -days 825 -sha256 -extfile openssl-san.cnf'."
+
+validation:
+  type: script
+  image: opensio/validator-openssl:latest
+  timeout_seconds: 30
+  checks:
+    - id: ca_key_and_certificate
+      required: true
+      points: 25
+      description: "Clé CA chiffrée AES-256 de 4096 bits et certificat auto-signé CA:TRUE d'une validité de 10 ans"
+    - id: server_key_and_csr
+      required: true
+      points: 25
+      description: "Clé serveur 2048 bits et requête de signature (CSR) générée"
+    - id: san_multi_domain
+      required: true
+      points: 25
+      description: "Extensions serveur correctes et SAN couvrant au moins deux noms DNS"
+    - id: server_cert_signature
+      required: true
+      points: 25
+      description: "Signature du certificat serveur par la CA racine en SHA-256 avec une validité courte (825 jours max)"
+
+scoring:
+  floor_percent: 50

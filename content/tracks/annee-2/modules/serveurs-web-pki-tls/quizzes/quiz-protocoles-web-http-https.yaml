@@ -1,0 +1,83 @@
+slug: quiz-protocoles-web-http-https
+title: "Quiz — Protocoles Web HTTP/HTTPS"
+passing_score: 80
+position: 1
+questions:
+  - kind: single
+    prompt: "Quelle est la principale limitation de HTTP/1.1 pour le chargement d'une page moderne comportant de nombreuses ressources ?"
+    choices:
+      - id: a
+        text: "Une seule requête à la fois par connexion TCP, ce qui provoque un head-of-line blocking applicatif"
+      - id: b
+        text: "HTTP/1.1 ne supporte pas les images"
+      - id: c
+        text: "HTTP/1.1 exige une connexion TCP par octet transféré"
+      - id: d
+        text: "HTTP/1.1 interdit l'utilisation de HTTPS"
+    correct:
+      - a
+    explanation: "En HTTP/1.1, une connexion ne traite qu'une requête à la fois ; les navigateurs ouvrent 6+ connexions en parallèle pour compenser. HTTP/2 résout ce problème par le multiplexage des flux."
+
+  - kind: single
+    prompt: "Un utilisateur reçoit une erreur 502 Bad Gateway depuis un reverse proxy Nginx. Quelle est la cause la plus probable ?"
+    choices:
+      - id: a
+        text: "Le backend applicatif ne répond pas ou refuse la connexion, le proxy étant fonctionnel"
+      - id: b
+        text: "Le navigateur de l'utilisateur est en cache"
+      - id: c
+        text: "Le certificat TLS du proxy a expiré"
+      - id: d
+        text: "L'utilisateur a mal saisi son mot de passe"
+    correct:
+      - a
+    explanation: "Un 502 signifie que le proxy a tenté de joindre son upstream sans succès. On vérifie alors le service backend, son port et le pare-feu intermédiaire. Un certificat expiré provoquerait plutôt une erreur TLS côté navigateur."
+
+  - kind: multiple
+    prompt: "Quelles affirmations sur HTTP/3 (QUIC) sont exactes ?"
+    choices:
+      - id: a
+        text: "QUIC fonctionne sur UDP avec TLS 1.3 intégré au protocole de transport"
+      - id: b
+        text: "HTTP/3 élimine le head-of-line blocking de la couche transport"
+      - id: c
+        text: "QUIC impose l'utilisation de IPv6 obligatoirement"
+      - id: d
+        text: "Un pare-feu bloquant l'UDP 443 force un repli sur HTTP/2"
+    correct:
+      - a
+      - b
+      - d
+    explanation: "QUIC encapsule TLS 1.3 sur UDP et gère les flux indépendamment (plus de blocage global en cas de perte de paquets). IPv6 n'est nullement obligatoire, et le repli HTTP/2 reste systématique si l'UDP 443 est filtré."
+
+  - kind: multiple
+    prompt: "Quelles méthodes HTTP sont idempotentes (le rejeu produit le même état) ?"
+    choices:
+      - id: a
+        text: "GET"
+      - id: b
+        text: "PUT"
+      - id: c
+        text: "POST"
+      - id: d
+        text: "DELETE"
+    correct:
+      - a
+      - b
+      - d
+    explanation: "GET, PUT et DELETE sont idempotentes : les retransmettre ne crée pas de duplication. POST n'est pas idempotent — le rejeu crée une seconde ressource, d'où l'usage de clés d'idempotence applicatives."
+
+  - kind: single
+    prompt: "Quel en-tête de requête est indispensable au routage des Virtual Hosts par nom en HTTP/1.1 ?"
+    choices:
+      - id: a
+        text: "Host"
+      - id: b
+        text: "Referer"
+      - id: c
+        text: "User-Agent"
+      - id: d
+        text: "Accept-Encoding"
+    correct:
+      - a
+    explanation: "L'en-tête Host permet au serveur de sélectionner le bloc server correspondant au domaine demandé lorsqu'une même adresse IP héberge plusieurs sites. Il est obligatoire en HTTP/1.1."
