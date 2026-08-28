@@ -141,10 +141,10 @@ Conformément à la spécification contractuelle du Blueprint (§25.1) et à la 
 | Parcours / Track | Modules livrés | Modules à créer | Total modules | Leçons opérationnelles | Labs opérationnels |
 |---|:---:|:---:|:---:|:---:|:---:|
 | **1ère Année (`annee-1`)** | 8 | 0 | 8 | 44 | 20 |
-| **2ème Année (`annee-2`)** | 9 | 2 (`serveurs-web-pki-tls`, `vpn-acces-distants`) | 11 | 45 | 18 |
-| **Total Global** | **17** | **2** | **19** | **89** | **38** |
+| **2ème Année (`annee-2`)** | 11 | 0 | 11 | 56 | 23 |
+| **Total Global** | **19** | **0** | **19** | **100** | **43** |
 
-> Mise à jour du 2026-08-28 (audit v1-readiness) : tableau précédemment obsolète (indiquait 2 modules en 1ère année et 0 en 2ème). La production a en outre **renommé ou consolidé** plusieurs fiches de la cartographie initiale : `securite-pare-feu-filtrage` → `securite-perimetrique`, `supervision-metrologie` → `supervision-observabilite`, `cybersecurite-durcissement-audit` → `securite-systemes-durcissement`, `cloud-hybride-cicd` → `cloud-prive-virtualisation`, et `scripting-automatisation` + `automatisation-ansible` → `automatisation-devops`. Deux modules hors cartographie initiale ont été ajoutés (`administration-bases-donnees`, `veille-certification`). Seules les fiches #11 et #12 restent sans équivalent livré.
+> **2026-08-28 (clôture lot d'audit v1-readiness)** : catalogue SISR **intégralement couvert** — 19/19 modules (100 leçons, 512 questions, 43 labs, 132/132 tests validateurs). Les dernières fiches de la cartographie sans équivalent livré, `serveurs-web-pki-tls` (fiche #11) et `vpn-acces-distants` (fiche #12), ont été produites (PRs #50/#51). Rappel des renommages/consolidations en production : `securite-pare-feu-filtrage` → `securite-perimetrique`, `supervision-metrologie` → `supervision-observabilite`, `cybersecurite-durcissement-audit` → `securite-systemes-durcissement`, `cloud-hybride-cicd` → `cloud-prive-virtualisation`, et `scripting-automatisation` + `automatisation-ansible` → `automatisation-devops`. Deux modules hors cartographie initiale ont été ajoutés (`administration-bases-donnees`, `veille-certification`).
 
 ### 4.2. Planification des Phases de Production de Contenu
 
@@ -184,7 +184,7 @@ Conformément à la spécification contractuelle du Blueprint (§25.1) et à la 
   └── cloud-hybride-cicd (5 leçons, 2 labs)
 ```
 
-> **Statut (2026-08-28, audit v1-readiness)** : Phases 1, 2.1 et 2.2 **terminées** (8/8 modules de 1ère année). Phases 2.3 → 2.5 couvertes par les slugs renommés/consolidés listés en §4.1 (9 modules livrés). Restent à produire : `serveurs-web-pki-tls` (fiche #11) et `vpn-acces-distants` (fiche #12).
+> **Statut (2026-08-28, clôture)** : le catalogue est **100 % terminé** — les phases 1, 2.1 et 2.2 (1ère année, 8/8) et l'intégralité des phases 2.3 → 2.5 (2ème année, 11/11) sont couvertes par les slugs livrés (renommages détaillés en §4.1, dont `serveurs-web-pki-tls` et `vpn-acces-distants` produites en dernière étape, PRs #50/#51). Aucun module ne reste à produire.
 
 > 📖 Pour le détail complet des fiches modules, blocs de compétences associés, barèmes et jeux d'essais, consulter [`docs/modules-map.md`](./modules-map.md).
 
