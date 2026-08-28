@@ -1276,6 +1276,30 @@ Production et validation de 9 modules supplémentaires du parcours `annee-2` (5 
 
 **Branche** : `docs/audit-v1-readiness` (issue de `audit/v1-readiness`)
 
+---
+
+## 2026-08-28 — Clôture : catalogue SISR 19/19 modules & verrouillage de l'audit v1-readiness
+
+**Branche** : `cloture/content-19-modules` · **PR** : #52
+
+### Fusion du lot d'audit v1-readiness (ordre des lots respecté)
+1. **PR #49** (`docs/audit-v1-readiness`) : hygiène de sécurité (untrack `.env.test`, `.gitignore`), rapport `docs/audit/v1-readiness.md`, rattrapage roadmap/README/journal.
+2. **PR #50** (`content/d4-serveurs-web-pki-tls`) : fiche #11 — 6 leçons, 6 quiz, 3 labs (reverse proxy Nginx, PKI OpenSSL, durcissement TLS).
+3. **PR #51** (`content/d4-vpn-acces-distants`) : fiche #12 — 5 leçons, 5 quiz, 2 labs (WireGuard site-à-site, OpenVPN nomade).
+
+Les trois PR ont été fusionnées sur `main` après passage complet de la CI globale et de la validation du contenu.
+
+### Catalogue final (vérifié par `node content/validate.mjs`)
+- **19 modules** (8 en 1ère année, 11 en 2ème) · **100 leçons** · **100 quiz (512 questions)** · **43 labs** · **132/132 tests de validateurs** passants.
+- `pnpm content:validate` 18/18 · D-13 0 violation · `content:sync` idempotent.
+
+### Clôture documentaire
+- `docs/roadmap.md` §4.1 : tableau à **19/19 modules, 0 à créer** (56 leçons / 23 labs en 2ème année) ; §4.2 : statut « catalogue 100 % terminé ».
+- `README.md` : « 19 modules sur 19 », ampleur SISR complète, 480+ tests, trajectoire recentrée sur Homelab/Production.
+- Le **référentiel BTS SIO SISR (tracks 1ère + 2ème années) est intégralement couvert**, conformément à la cartographie `docs/modules-map.md`.
+
+### Décision
+- L'ouverture du jalon **v1.0 (Homelab Proxmox, noVNC, SDN)** devient la prochaine étape ; elle reste conditionnée par la revue de jalon et les points ouverts « Instructions pour Antigravity » §5. Aucune implémentation v1.0 n'est anticipée dans le code (règle blueprint §6).
 ### Réalisations
 - **Rejouage des validations contractuelles** (Instructions §4) : `pnpm lint` (0 erreur, 14 warnings), `pnpm typecheck` (4/4), `pnpm test` (API 228 + web 111 + content-schema 18 = **357 tests Vitest passants** + 117 tests validateurs), `check-file-size` (0 violation, 10 avertissements ≥ 300 lignes), `content:sync` idempotent, `check-theme-classes` (0 violation). CI GitHub : 6 derniers runs `main` verts.
 - **Sécurité** : `.env.test` (racine) et `apps/api/.env.test` contenaient un secret JWT effectif et étaient suivis par git — violation de la règle blueprint « ne jamais committer de secret, même temporaire ». **Correction** : retrait du suivi (`git rm --cached`, fichiers conservés localement) + ajout au `.gitignore` ; la CI fournit ses propres variables et `apps/api/test/setup-env.ts` gère l'absence du fichier (fallback + dérivation `opensio` → `opensio_test`). Scan des scripts/infra/workflows : aucun secret en dur (générateurs uniquement).
