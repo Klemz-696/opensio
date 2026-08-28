@@ -1,0 +1,66 @@
+slug: deploiement-openvpn-nomade
+title: "Serveur OpenVPN Nomade : Mode routé, Certificats et Profils Clients"
+level: 2_files
+max_score: 100
+estimated_minutes: 45
+context: |
+  Les collaborateurs nomades doivent rejoindre le LAN du siège (192.168.10.0/24) via OpenVPN. Le sous-réseau VPN est 10.8.0.0/24 et le serveur écoute en UDP 1194. L'authentification repose sur la PKI d'entreprise (CA racine du module serveurs-web-pki-tls).
+
+  Vous devez écrire :
+  1. **`server.conf`** :
+     - Écoute UDP 1194, interface `tun` routée, sous-réseau VPN `10.8.0.0 255.255.255.0`
+     - Références PKI : `ca`, `cert`, `key`, `dh none`, `tls-crypt`
+     - Chiffrement moderne : `tls-version-min 1.2` et `data-ciphers` AEAD (AES-GCM / CHACHA20-POLY1305)
+     - Push aux clients : route du LAN `192.168.10.0 255.255.255.0` et serveur DNS interne
+  2. **`client-nomade.ovpn`** :
+     - Profil client minimal : `client`, `dev tun`, `remote <IP publique>:1194`
+     - `data-ciphers` identiques au serveur et `auth-nocache`
+
+objectives:
+  - "Configurer un serveur OpenVPN routé sécurisé pour le télétravail"
+  - "Ancre la PKI (certificats) et le canal de contrôle chiffré (tls-crypt)"
+  - "Pousser routes et DNS aux clients via un profil .ovpn propre"
+
+prerequisites:
+  - "vpn-nomade-openvpn"
+  - "deploiement-pki-et-certificats"
+
+files:
+  editable:
+    - path: server.conf
+      description: "Configuration du serveur OpenVPN (mode routé durci)"
+    - path: client-nomade.ovpn
+      description: "Profil de connexion du collaborateur nomade"
+
+hints:
+  - cost_percent: 10
+    text: "Le socle serveur : port 1194, proto udp, dev tun, server 10.8.0.0 255.255.255.0, puis ca/cert/key, dh none et tls-crypt ta.key."
+  - cost_percent: 10
+    text: "tls-version-min 1.2 et data-ciphers AES-256-GCM:CHACHA20-POLY1305 ; interdits BF-CBC et DES."
+  - cost_percent: 10
+    text: "Poussez 'push \"route 192.168.10.0 255.255.255.0\"' et 'push \"dhcp-option DNS 192.168.10.5\"' ; le profil client déclare client, dev tun et remote <IP>:1194."
+
+validation:
+  type: script
+  image: opensio/validator-openvpn:latest
+  timeout_seconds: 30
+  checks:
+    - id: server_transport_tun
+      required: true
+      points: 25
+      description: "Écoute UDP 1194, interface tun et sous-réseau VPN 10.8.0.0/24 déclarés"
+    - id: pki_and_tls_crypt
+      required: true
+      points: 25
+      description: "Références PKI (ca/cert/key), dh none et tls-crypt pour le canal de contrôle"
+    - id: modern_crypto
+      required: true
+      points: 25
+      description: "TLS 1.2 minimum et suites AEAD (AES-GCM / CHACHA20), sans BF-CBC ni DES"
+    - id: push_and_client_profile
+      required: true
+      points: 25
+      description: "Route LAN et DNS poussés côté serveur, profil client complet (client, remote, dev tun)"
+
+scoring:
+  floor_percent: 50
