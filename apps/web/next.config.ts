@@ -4,6 +4,7 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
   output: 'standalone',
+  devIndicators: false,
   async rewrites() {
     const apiTarget = process.env.API_INTERNAL_URL || 'http://localhost:4000';
     return [

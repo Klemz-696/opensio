@@ -4,6 +4,7 @@ import './globals.css';
 import { AuthProvider } from '../lib/auth/auth-context';
 import { ThemeProvider } from '../components/theme/theme-provider';
 import { AppOverlays } from '../components/layout/app-overlays';
+import { NavigationProgress } from '../components/layout/navigation-progress';
 
 export const metadata: Metadata = {
   title: 'OpenSIO — Plateforme de formation pratique BTS SIO SISR',
@@ -25,6 +26,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+          <NavigationProgress />
           <AuthProvider>
             {children}
             <AppOverlays />
