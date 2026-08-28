@@ -2,9 +2,9 @@ import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 import './globals.css';
 import { AuthProvider } from '../lib/auth/auth-context';
-import { MentorChatDrawer } from '../components/ai/mentor-chat-drawer';
-import { ForcePasswordChangeModal } from '../components/auth/force-password-change-modal';
 import { ThemeProvider } from '../components/theme/theme-provider';
+import { AppOverlays } from '../components/layout/app-overlays';
+import { NavigationProgress } from '../components/layout/navigation-progress';
 
 export const metadata: Metadata = {
   title: 'OpenSIO — Plateforme de formation pratique BTS SIO SISR',
@@ -26,10 +26,10 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+          <NavigationProgress />
           <AuthProvider>
             {children}
-            <ForcePasswordChangeModal />
-            <MentorChatDrawer />
+            <AppOverlays />
           </AuthProvider>
         </ThemeProvider>
       </body>
