@@ -146,6 +146,8 @@ Conformément à la spécification contractuelle du Blueprint (§25.1) et à la 
 
 > **2026-08-28 (clôture lot d'audit v1-readiness)** : catalogue SISR **intégralement couvert** — 19/19 modules (100 leçons, 512 questions, 43 labs, 132/132 tests validateurs). Les dernières fiches de la cartographie sans équivalent livré, `serveurs-web-pki-tls` (fiche #11) et `vpn-acces-distants` (fiche #12), ont été produites (PRs #50/#51). Rappel des renommages/consolidations en production : `securite-pare-feu-filtrage` → `securite-perimetrique`, `supervision-metrologie` → `supervision-observabilite`, `cybersecurite-durcissement-audit` → `securite-systemes-durcissement`, `cloud-hybride-cicd` → `cloud-prive-virtualisation`, et `scripting-automatisation` + `automatisation-ansible` → `automatisation-devops`. Deux modules hors cartographie initiale ont été ajoutés (`administration-bases-donnees`, `veille-certification`).
 
+> **2026-08-29 (intégration PR #45)** : module `gestion-projets-agile` (rédigé au lot d3 phase 2.3, resté en attente) intégré après rebase — catalogue porté à **20/20 modules** (105 leçons, 537 questions, 45 labs, 138/138 tests validateurs).
+
 ### 4.2. Planification des Phases de Production de Contenu
 
 ```

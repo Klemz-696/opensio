@@ -1,0 +1,11 @@
+# kanban-board.yml - Configuration du Tableau Kanban OpenSIO
+
+board_name: "OpenSIO Core Team Kanban"
+
+columns:
+  - id: "backlog"
+    name: "Backlog"
+    # wip_limit: null
+    # exit_criteria: "..."
+
+  # TODO: Définir les colonnes analysis, in_progress, review_test, done avec wip_limit et exit_criteria

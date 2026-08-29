@@ -1525,16 +1525,7 @@ Les trois PR ont été fusionnées sur `main` après passage complet de la CI gl
 - `pnpm test --force` : 100 % vert (357 tests passants dans le monorepo).
 - `pnpm build --force` : 100 % réussi.
 
+## 2026-08-29 — Intégration du module gestion-projets-agile (20/20)
 
-
-
-
-
-
-
-
-
-
-
-
-
+- La PR #45 (module complet : 5 leçons, 5 quiz, 2 labs avec validateurs) était restée ouverte lors de la clôture du 28/08. Rebase sur main, résolution des conflits documentaires (`journal.md`, `modules-map.md`), merge.
+- Validation : 20 modules, 105 leçons, 105 quiz (537 questions), 45 labs, 138/138 tests validateurs ; 132 tests web + 200 tests API verts.
