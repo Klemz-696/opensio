@@ -24,6 +24,7 @@ export default defineConfig({
         SKIP_RATE_LIMIT: 'true',
         DATABASE_URL: 'postgresql://postgres:postgres@localhost:5432/opensio_test',
         JWT_SECRET: 'e2e-tests-only-not-a-real-secret-0123456789abcdef0123456789abcdef',
+        REGISTRATION_ENABLED: 'true',
       },
     },
     {
