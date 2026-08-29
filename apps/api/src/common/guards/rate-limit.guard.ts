@@ -29,7 +29,7 @@ export class RateLimitGuard implements CanActivate {
   }
 
   canActivate(context: ExecutionContext): boolean {
-    if (process.env.NODE_ENV === 'test') {
+    if (process.env.SKIP_RATE_LIMIT === 'true') {
       return true;
     }
 
