@@ -25,7 +25,7 @@ describe('AvatarStorageService', () => {
   });
 
   it('devrait rejeter un fichier vide ou absent', async () => {
-    await expect(service.saveAvatar('user-1', null as any)).rejects.toThrow(
+    await expect(service.saveAvatar('user-1', null as unknown as Express.Multer.File)).rejects.toThrow(
       BadRequestException,
     );
   });
@@ -39,7 +39,7 @@ describe('AvatarStorageService', () => {
       fieldname: 'avatar',
       originalname: 'huge.png',
       encoding: '7bit',
-      stream: null as any,
+      stream: null as unknown as import('stream').Readable,
       destination: '',
       filename: '',
       path: '',
@@ -59,7 +59,7 @@ describe('AvatarStorageService', () => {
       fieldname: 'avatar',
       originalname: 'script.js',
       encoding: '7bit',
-      stream: null as any,
+      stream: null as unknown as import('stream').Readable,
       destination: '',
       filename: '',
       path: '',
@@ -79,7 +79,7 @@ describe('AvatarStorageService', () => {
       fieldname: 'avatar',
       originalname: 'fake.png',
       encoding: '7bit',
-      stream: null as any,
+      stream: null as unknown as import('stream').Readable,
       destination: '',
       filename: '',
       path: '',
@@ -100,7 +100,7 @@ describe('AvatarStorageService', () => {
       fieldname: 'avatar',
       originalname: 'my-avatar.png',
       encoding: '7bit',
-      stream: null as any,
+      stream: null as unknown as import('stream').Readable,
       destination: '',
       filename: '',
       path: '',
@@ -122,7 +122,7 @@ describe('AvatarStorageService', () => {
       fieldname: 'avatar',
       originalname: 'photo.jpg',
       encoding: '7bit',
-      stream: null as any,
+      stream: null as unknown as import('stream').Readable,
       destination: '',
       filename: '',
       path: '',
@@ -143,7 +143,7 @@ describe('AvatarStorageService', () => {
       fieldname: 'avatar',
       originalname: 'avatar.png',
       encoding: '7bit',
-      stream: null as any,
+      stream: null as unknown as import('stream').Readable,
       destination: '',
       filename: '',
       path: '',
