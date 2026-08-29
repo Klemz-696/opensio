@@ -13,7 +13,8 @@
     "db:migrate": "prisma migrate dev --schema=prisma/schema",
     "db:generate": "prisma generate --schema=prisma/schema",
     "db:seed": "prisma db seed",
-    "content:sync": "tsx src/sync/cli.ts"
+    "content:sync": "tsx src/sync/cli.ts",
+    "seed": "tsx prisma/seed.ts"
   },
   "prisma": {
     "schema": "prisma/schema",
