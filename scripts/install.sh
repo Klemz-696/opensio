@@ -1,129 +1,218 @@
-#!/usr/bin/env bash
+#!/bin/bash
 # ==============================================================================
-# OpenSIO — Installeur Universel Interactif & Wizard 3 Phases
-# Usage direct : ./scripts/install.sh [--dry-run] [-y|--non-interactive]
-# Usage distant: curl -fsSL https://raw.githubusercontent.com/Klemz-696/opensio/main/scripts/install.sh | bash
+# OpenSIO - Installateur Universel Interactif (macOS / Linux)
+# Usage : bash <(curl -s https://raw.githubusercontent.com/Klemz-696/opensio/main/scripts/install.sh)
 # ==============================================================================
-set -euo pipefail
+set -e
 
-# Gestion du terminal interactif lors de l'exécution via pipe (curl | bash)
-if [ ! -t 0 ] && [ -e /dev/tty ] 2>/dev/null; then
-  if (exec < /dev/tty) 2>/dev/null; then
-    exec < /dev/tty
+# ─── Couleurs & helpers ──────────────────────────────────────────────────────
+CYAN='\033[0;36m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+RED='\033[0;31m'
+GRAY='\033[1;30m'
+NC='\033[0m' # No Color
+
+echo -e "\n${CYAN}  ██████╗ ██████╗ ███████╗███╗   ██╗███████╗██╗ ██████╗ ${NC}"
+echo -e "${CYAN} ██╔═══██╗██╔══██╗██╔════╝████╗  ██║██╔════╝██║██╔═══██╗${NC}"
+echo -e "${CYAN} ██║   ██║██████╔╝█████╗  ██╔██╗ ██║███████╗██║██║   ██║${NC}"
+echo -e "${CYAN} ██║   ██║██╔═══╝ ██╔══╝  ██║╚██╗██║╚════██║██║██║   ██║${NC}"
+echo -e "${CYAN} ╚██████╔╝██║     ███████╗██║ ╚████║███████║██║╚██████╔╝${NC}"
+echo -e "${CYAN}  ╚═════╝ ╚═╝     ╚══════╝╚═╝  ╚═══╝╚══════╝╚═╝ ╚═════╝ ${NC}\n"
+echo -e "${GRAY}  La plateforme d'entraînement BTS SIO SISR${NC}"
+echo -e "${GRAY}  Installateur automatique v1.0 (macOS / Linux)${NC}\n"
+echo -e "${GRAY}────────────────────────────────────────────────────────────${NC}\n"
+
+step() { echo -e "${CYAN}▸ $1${NC}"; }
+ok() { echo -e "  ${GREEN}✓ $1${NC}"; }
+warn() { echo -e "  ${YELLOW}! $1${NC}"; }
+err() { echo -e "  ${RED}✗ $1${NC}"; }
+info() { echo -e "    ${GRAY}$1${NC}"; }
+
+abort() {
+  echo ""
+  err "$1"
+  echo ""
+  echo -e "${GRAY}  Aide : https://github.com/Klemz-696/opensio#-démarrage-rapide${NC}\n"
+  exit 1
+}
+
+has_cmd() {
+  command -v "$1" >/dev/null 2>&1
+}
+
+get_os() {
+  if [ "$(uname)" == "Darwin" ]; then
+    echo "macOS"
+  elif has_cmd apt-get; then
+    echo "debian"
+  elif has_cmd dnf; then
+    echo "fedora"
+  elif has_cmd pacman; then
+    echo "arch"
+  else
+    echo "unknown"
+  fi
+}
+
+OS=$(get_os)
+
+# ─── 1. Prérequis : Node.js ──────────────────────────────────────────────────
+step "Vérification des prérequis"
+
+if ! has_cmd node; then
+  warn "Node.js non trouvé."
+  info "Installation de Node.js (v22 LTS)..."
+  if [ "$OS" == "macOS" ]; then
+    if ! has_cmd brew; then abort "Homebrew est requis sur macOS pour l'installation automatique. Installez-le d'abord."; fi
+    brew install node@22
+    brew link --overwrite node@22
+  elif [ "$OS" == "debian" ]; then
+    curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
+    sudo apt-get install -y nodejs
+  else
+    abort "Système d'exploitation non pris en charge pour l'installation auto de Node.js. Installez Node v22+ puis relancez."
   fi
 fi
 
-RAW_BASE_URL="https://raw.githubusercontent.com/Klemz-696/opensio/main/scripts/lib"
-TMP_LIB_DIR=""
+NODE_VER=$(node --version)
+NODE_MAJOR=$(echo "$NODE_VER" | sed 's/v//' | cut -d. -f1)
+if [ "$NODE_MAJOR" -lt 22 ]; then
+  abort "Node.js $NODE_VER détecté — version 22+ requise. Mettez à jour Node.js."
+fi
+ok "Node.js $NODE_VER"
 
-cleanup() {
-  if [ -n "$TMP_LIB_DIR" ] && [ -d "$TMP_LIB_DIR" ]; then
-    rm -rf "$TMP_LIB_DIR"
-  fi
-}
-trap cleanup EXIT INT TERM
-
-# Résolution et chargement des modules de scripts/lib/
-load_modules() {
-  local script_dir
-  script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" 2>/dev/null && pwd || echo "")"
-
-  if [ -n "$script_dir" ] && [ -d "${script_dir}/lib" ] && [ -f "${script_dir}/lib/common.sh" ]; then
-    # Exécution locale depuis le dépôt cloné
-    local lib_dir="${script_dir}/lib"
-    # shellcheck source=scripts/lib/common.sh disable=SC1091
-    . "${lib_dir}/common.sh"
-    # shellcheck source=scripts/lib/detect.sh disable=SC1091
-    . "${lib_dir}/detect.sh"
-    # shellcheck source=scripts/lib/ollama.sh disable=SC1091
-    . "${lib_dir}/ollama.sh"
-    # shellcheck source=scripts/lib/config.sh disable=SC1091
-    . "${lib_dir}/config.sh"
-    # shellcheck source=scripts/lib/runner.sh disable=SC1091
-    . "${lib_dir}/runner.sh"
+# ─── 2. Prérequis : pnpm ────────────────────────────────────────────────────
+if ! has_cmd pnpm; then
+  warn "pnpm non trouvé — installation..."
+  if has_cmd npm; then
+    sudo npm install -g pnpm || npm install -g pnpm
   else
-    # Exécution distante via curl : téléchargement éphémère des modules
-    TMP_LIB_DIR=$(mktemp -d /tmp/opensio-lib-XXXXXX)
-    local modules=("common.sh" "detect.sh" "ollama.sh" "config.sh" "runner.sh")
-    for mod in "${modules[@]}"; do
-      if ! curl -fsSL "${RAW_BASE_URL}/${mod}" -o "${TMP_LIB_DIR}/${mod}"; then
-        echo "Erreur critique : impossible de télécharger le module d'installation ${mod}." >&2
-        exit 1
-      fi
-    done
-    # shellcheck disable=SC1090,SC1091
-    . "${TMP_LIB_DIR}/common.sh"
-    # shellcheck disable=SC1090,SC1091
-    . "${TMP_LIB_DIR}/detect.sh"
-    # shellcheck disable=SC1090,SC1091
-    . "${TMP_LIB_DIR}/ollama.sh"
-    # shellcheck disable=SC1090,SC1091
-    . "${TMP_LIB_DIR}/config.sh"
-    # shellcheck disable=SC1090,SC1091
-    . "${TMP_LIB_DIR}/runner.sh"
+    curl -fsSL https://get.pnpm.io/install.sh | sh -
+    export PATH="$HOME/.local/share/pnpm:$PATH"
   fi
-}
+fi
+PNPM_VER=$(pnpm --version)
+ok "pnpm v$PNPM_VER"
 
-show_help() {
-  cat << 'EOF'
-OpenSIO — Installeur Universel Interactif
+# ─── 3. Prérequis : Git ─────────────────────────────────────────────────────
+if ! has_cmd git; then
+  warn "Git non trouvé — installation..."
+  if [ "$OS" == "macOS" ]; then
+    brew install git
+  elif [ "$OS" == "debian" ]; then
+    sudo apt-get install -y git
+  else
+    abort "Veuillez installer Git manuellement."
+  fi
+fi
+GIT_VER=$(git --version)
+ok "$GIT_VER"
 
-Usage :
-  ./scripts/install.sh [OPTIONS]
+# ─── 4. Prérequis : Docker Desktop / Engine ────────────────────────────────
+if ! has_cmd docker; then
+  warn "Docker non trouvé."
+  echo ""
+  echo -e "${YELLOW}  Docker est requis pour la base de données PostgreSQL.${NC}"
+  echo -e "${CYAN}  Téléchargement : https://docs.docker.com/get-docker/${NC}"
+  echo ""
+  abort "Installez et démarrez Docker, puis relancez ce script."
+fi
 
-Options :
-  -d, --dry-run           Mode simulation : affiche toutes les actions sans les exécuter
-  -y, --non-interactive   Mode non interactif (utilise les variables d'environnement)
-  -h, --help              Affiche cette aide et quitte
+if ! docker info >/dev/null 2>&1; then
+  warn "Docker est installé mais ne répond pas (Daemon éteint ?)."
+  echo ""
+  if [ "$OS" == "macOS" ]; then
+    info "Démarrage de Docker Desktop..."
+    open -a Docker
+    info "Attente de Docker (jusqu'à 60s)..."
+    for i in {1..12}; do
+      sleep 5
+      if docker info >/dev/null 2>&1; then break; fi
+      echo -n "."
+    done
+    echo ""
+  else
+    info "Essayez de démarrer le service : sudo systemctl start docker"
+  fi
+  
+  if ! docker info >/dev/null 2>&1; then
+    abort "Docker ne répond pas. Démarrez-le manuellement, attendez qu'il soit prêt, puis relancez."
+  fi
+fi
+DOCKER_VER=$(docker --version)
+ok "$DOCKER_VER"
 
-Variables d'environnement (Mode non interactif) :
-  OPENSIO_MODE            Mode d'installation : 'dev' ou 'prod' (défaut: prod)
-  OPENSIO_AI_MODE         Emplacement Ollama : 1 (hôte), 2 (conteneur), 3 (distant), 4 (sans IA)
-  OPENSIO_AI_URL          URL API Ollama si mode distant (ex: http://192.168.1.50:11434/v1)
-  OPENSIO_AI_MODEL        Modèle IA demandé (défaut: llama3.1:8b)
-  OPENSIO_DOMAIN          Nom de domaine ou hostname (défaut: opensio.home.lan)
-  OPENSIO_TLS_TYPE        Type de TLS : 'internal' (Caddy CA) ou 'public' (Let's Encrypt)
-  OPENSIO_HTTP_PORT       Port HTTP public (défaut: 80)
-  OPENSIO_HTTPS_PORT      Port HTTPS public (défaut: 443)
-  OPENSIO_DB_PASSWORD     Mot de passe Postgres ('auto' pour génération aléatoire)
-  OPENSIO_SEED            Jeu de données : 'complet', 'minimal' ou 'aucun' (défaut: complet)
-EOF
-}
+echo ""
 
-parse_arguments() {
-  while [ $# -gt 0 ]; do
-    case "$1" in
-      -d|--dry-run)
-        export OPENSIO_DRY_RUN="true"
-        export DRY_RUN="true"
-        shift
-        ;;
-      -y|--non-interactive)
-        export OPENSIO_NONINTERACTIVE="1"
-        export NON_INTERACTIVE="1"
-        shift
-        ;;
-      -h|--help)
-        show_help
-        exit 0
-        ;;
-      *)
-        echo "Option inconnue : $1" >&2
-        show_help
-        exit 1
-        ;;
-    esac
-  done
-}
+# ─── 5. Dossier d'installation ──────────────────────────────────────────────
+step "Dossier d'installation"
+DEFAULT_DIR="$HOME/Desktop/opensio"
+if [ ! -d "$HOME/Desktop" ]; then
+  DEFAULT_DIR="$HOME/opensio"
+fi
 
-main() {
-  parse_arguments "$@"
-  load_modules
+echo -n -e "  Dossier par défaut : ${CYAN}$DEFAULT_DIR${NC}\n"
+read -p "  Appuyez sur Entrée pour accepter, ou entrez un chemin personnalisé : " custom_dir
 
-  print_banner
-  run_phase_detect
-  run_phase_config
-  run_phase_execute
-}
+INSTALL_DIR=${custom_dir:-$DEFAULT_DIR}
+eval INSTALL_DIR="$INSTALL_DIR" # Expand ~ if used
 
-main "$@"
+# ─── 6. Clone ou mise à jour ─────────────────────────────────────────────────
+step "Téléchargement du projet"
+REPO_URL="https://github.com/Klemz-696/opensio.git"
+
+if [ -d "$INSTALL_DIR/.git" ]; then
+  info "Projet déjà présent — mise à jour..."
+  cd "$INSTALL_DIR"
+  if git pull --ff-only >/dev/null 2>&1; then
+    ok "Projet mis à jour"
+  else
+    warn "git pull impossible — utilisation de la version existante."
+  fi
+else
+  info "Clonage depuis GitHub..."
+  info "Destination : $INSTALL_DIR"
+  mkdir -p "$(dirname "$INSTALL_DIR")"
+  if git clone "$REPO_URL" "$INSTALL_DIR" >/dev/null 2>&1; then
+    ok "Projet cloné avec succès"
+  else
+    abort "Le clonage a échoué. Vérifiez votre connexion internet."
+  fi
+fi
+
+echo ""
+
+# ─── 7. Installation des dépendances ────────────────────────────────────────
+step "Installation des dépendances Node.js"
+info "Cela peut prendre 1 à 3 minutes au premier lancement..."
+cd "$INSTALL_DIR"
+if pnpm install >/dev/null 2>&1; then
+  ok "Dépendances installées"
+else
+  abort "pnpm install a échoué."
+fi
+
+echo ""
+
+# ─── 8. Résumé et lancement ─────────────────────────────────────────────────
+echo -e "${GRAY}────────────────────────────────────────────────────────────${NC}\n"
+echo -e "${GREEN}  ✅  Installation terminée !${NC}\n"
+echo -e "${GRAY}  OpenSIO est installé dans :${NC}"
+echo -e "${CYAN}  $INSTALL_DIR${NC}\n"
+echo -e "${GRAY}  Le lanceur va maintenant :${NC}"
+echo -e "${GRAY}    • Configurer la base de données PostgreSQL (Docker)${NC}"
+echo -e "${GRAY}    • Initialiser le catalogue (seed + synchronisation)${NC}"
+echo -e "${GRAY}    • Démarrer l'API et l'interface web${NC}\n"
+echo -e "${YELLOW}  La prochaine fois : tapez 'pnpm opensio' dans le dossier du projet${NC}\n"
+echo -e "${GRAY}────────────────────────────────────────────────────────────${NC}\n"
+
+read -p "  Lancer OpenSIO maintenant ? [O/n] " launch
+if [[ ! "$launch" =~ ^[nN]$ ]]; then
+  pnpm opensio
+else
+  echo ""
+  echo -e "${GRAY}  Pour lancer OpenSIO plus tard :${NC}"
+  echo -e "${CYAN}    cd \"$INSTALL_DIR\"${NC}"
+  echo -e "${CYAN}    pnpm opensio${NC}\n"
+fi
