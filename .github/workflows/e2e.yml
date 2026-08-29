@@ -27,12 +27,21 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
-      - uses: pnpm/action-setup@v3
+      - uses: pnpm/action-setup@v4
         with:
           version: 9
+          
+      - name: Use Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
       
       - name: Install dependencies
         run: pnpm install
+        
+      - name: Generate Prisma Client
+        run: pnpm --filter @opensio/api exec prisma generate
       
       - name: Install Playwright browsers
         run: pnpm exec playwright install --with-deps chromium
