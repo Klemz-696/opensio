@@ -17,9 +17,23 @@
     "check-file-size": "node scripts/check-file-size.mjs",
     "check:theme": "node scripts/check-theme-classes.mjs",
     "format": "prettier --write \"**/*.{ts,tsx,js,mjs,json,md,yml,yaml}\"",
-    "opensio": "node scripts/opensio.mjs"
+    "opensio": "node scripts/opensio.mjs",
+    "test:e2e": "node e2e/prepare.mjs && playwright test",
+    "test:e2e:quick": "playwright test --grep @smoke",
+    "lint-staged": "lint-staged"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "e2e/*.spec.ts": [
+      "pnpm test:e2e:quick"
+    ]
   },
   "devDependencies": {
+    "@playwright/test": "^1.62.1",
+    "lint-staged": "^17.4.1",
     "prettier": "^3.5.1",
     "turbo": "^2.10.12",
     "typescript": "^5.7.3"

@@ -5,8 +5,8 @@ import { isPasswordPolicyValid } from '../src/modules/auth/dto/register.dto';
 const prisma = new PrismaClient();
 
 export const ARGON2_OPTIONS = {
-  type: argon2.argon2id as 2,
-  memoryCost: 65536, // 64 MiB
+  type: argon2.argon2id,
+  memoryCost: 64 * 1024,
   timeCost: 3,
   parallelism: 4,
 };
@@ -149,6 +149,6 @@ async function main(): Promise<void> {
   }
 }
 
-if (process.env.NODE_ENV !== 'test' && !process.env.VITEST) {
+if (process.env.NODE_ENV !== 'test' && !process.env.VITEST || process.env.FORCE_SEED === 'true') {
   void main();
 }
