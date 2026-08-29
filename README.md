@@ -1,10 +1,12 @@
 <!--
+
   NOTE MAINTENANCE
   - Les listes de modules ci-dessous reflètent l'état du catalogue à la clôture
     (20 modules). La source de vérité est docs/modules-map.md : si un module
     est renommé, mettre à jour les deux tableaux.
   - Captures d'écran : déposer les images dans docs/assets/ puis remplacer les
     placeholders de la section Aperçu.
+    
 -->
 
 <p align="center">
