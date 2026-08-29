@@ -21,6 +21,7 @@
 
 <p align="center">
   <a href="https://github.com/Klemz-696/opensio/actions/workflows/ci.yml"><img src="https://github.com/Klemz-696/opensio/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI"/></a>
+  <a href="https://github.com/Klemz-696/opensio/actions/workflows/e2e.yml"><img src="https://github.com/Klemz-696/opensio/actions/workflows/e2e.yml/badge.svg?branch=main" alt="E2E"/></a>
   <img src="https://img.shields.io/badge/Next.js-15-black?logo=next.js&logoColor=white" alt="Next.js 15"/>
   <img src="https://img.shields.io/badge/NestJS-11-e0234e?logo=nestjs&logoColor=white" alt="NestJS 11"/>
   <img src="https://img.shields.io/badge/TypeScript-5-3178c6?logo=typescript&logoColor=white" alt="TypeScript"/>
@@ -231,6 +232,28 @@ opensio/
 - **Contenu** : `content/validate.mjs` exécute 100 % des validateurs de labs
 - **Sécurité** : politique D-09 — mots de passe ≥ 12 caractères, 3 classes minimum (vérifiée côté serveur et au seed)
 - **Chaîne complète** : lint → typecheck → tests → build, bloquante sur chaque PR
+
+## 🧪 Tests E2E
+
+### Exécuter localement
+
+```bash
+pnpm test:e2e
+```
+
+### Couverture actuelle
+
+- ✅ `parcours.spec.ts` : Login → catalogue → leçon → quiz
+- ✅ `inscription.spec.ts` : Inscription → première leçon
+- ✅ `auth-forgot.spec.ts` : Reset mot de passe
+- ✅ `progression.spec.ts` : Progression multi-leçons
+- ✅ `quiz-retry.spec.ts` : Quiz échec → retry
+- ✅ `labs.spec.ts` : Labs → session → validation
+
+### CI/CD
+
+Les tests sont exécutés automatiquement sur chaque push/PR via GitHub Actions.  
+[![E2E Tests](https://github.com/Klemz-696/opensio/actions/workflows/e2e.yml/badge.svg)](https://github.com/Klemz-696/opensio/actions/workflows/e2e.yml)
 
 ## 🗺️ Feuille de route
 
