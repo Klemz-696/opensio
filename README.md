@@ -135,28 +135,33 @@ flowchart LR
 
 ## 🚀 Démarrage rapide
 
-### ⚡ Installation en une commande (Windows — recommandé)
+### ⚡ Installation en une commande
 
 > **Prérequis unique** : [Docker Desktop](https://www.docker.com/products/docker-desktop/) installé et démarré.
 > Node.js, pnpm et Git sont installés automatiquement si absents.
 
-Ouvrez **PowerShell** et exécutez :
+**Sous Windows (recommandé)**, ouvrez **PowerShell** et exécutez :
 
 ```powershell
 iex (irm https://raw.githubusercontent.com/Klemz-696/opensio/main/scripts/install.ps1)
 ```
 
+**Sous macOS / Linux**, ouvrez votre terminal et exécutez :
+
+```bash
+bash <(curl -s https://raw.githubusercontent.com/Klemz-696/opensio/main/scripts/install.sh)
+```
+
 Le script installe tout, clone le projet, et lance OpenSIO. **C'est tout.**
 
-À la fin de l'installation, un raccourci **OpenSIO.bat** est créé sur votre Bureau.
-Double-cliquez dessus pour relancer le projet les prochaines fois, ou tapez `opensio`
-dans n'importe quel terminal.
+À la fin de l'installation sous Windows, un raccourci **OpenSIO.bat** est créé sur votre Bureau.
+Pour tous les systèmes, vous pourrez relancer le projet plus tard en tapant `pnpm opensio` dans le dossier du projet.
 
 ---
 
-### 🔧 Installation manuelle
+### 🔧 Installation manuelle (avancée)
 
-Si vous préférez cloner vous-même ou si vous êtes sur Linux/macOS :
+Si vous préférez cloner vous-même l'application :
 
 **Prérequis** : Node.js ≥ 22, pnpm ≥ 9, Git, Docker Desktop
 
