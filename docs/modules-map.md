@@ -65,7 +65,7 @@ Actuellement, la plateforme dispose du parcours **1ère année (`annee-1`)** com
 
 ## 🗂️ 3. Cartographie Globale des Modules
 
-La cartographie complète comporte **19 modules** (8 en 1ère année, 11 en 2ème année) couvrant l'intégralité du cursus BTS SIO SISR :
+La cartographie complète comporte **20 modules** (8 en 1ère année, 12 en 2ème année) couvrant l'intégralité du cursus BTS SIO SISR :
 
 ### 3.1. Parcours 1ère Année (`annee-1`) — Fondations & Administration de Base
 
@@ -94,9 +94,9 @@ La cartographie complète comporte **19 modules** (8 en 1ère année, 11 en 2èm
 | 15 | `securite-systemes-durcissement` | Sécurité des Systèmes, Durcissement & Vulnérabilités | **Complet** | 5 | 2 | B2.1, B2.2, B3.1 |
 | 16 | `gestion-projets-agile` | Gestion de Projets IT, Méthodes Agiles (Scrum, Kanban) | **Complet** | 5 | 2 | B1.1, B1.2, B3.4 |
 | 17 | `veille-certification` | Veille Technologique, Certifications Professionnelles & Insertion SISR | **Complet** | 5 | 2 | B1.1, B3.4 |
-| 18 | `serveurs-web-pki-tls` | Services Web, Reverse Proxy & Infrastructure PKI / TLS | **À créer** | 6 | 3 | B2.3, B3.2, B3.3 |
-| 19 | `vpn-acces-distants` | Réseaux privés virtuels (VPN) & Accès distants sécurisés | **À créer** | 5 | 2 | B2.1, B2.2, B3.2, B3.3 |
-| 20 | `scripting-automatisation` | Scripting système & Automatisation (Bash & PowerShell) | **À créer** | 6 | 2 | B1.1, B2.3 |
+| 18 | `administration-bases-donnees` | Administration des Bases de Données (PostgreSQL & MySQL) | **Livré** | 5 | 2 | B2.1, B2.2, B2.3 |
+| 19 | `serveurs-web-pki-tls` | Services Web, Reverse Proxy & Infrastructure PKI / TLS | **Livré** | 6 | 3 | B2.3, B3.2, B3.3 |
+| 20 | `vpn-acces-distants` | Réseaux privés virtuels (VPN) & Accès distants sécurisés | **Livré** | 5 | 2 | B2.1, B2.2, B3.2, B3.3 |
 
 ---
 
