@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Inscription', () => {
-  test.skip('inscription → première leçon', async ({ page }) => {
+  test('inscription → première leçon', async ({ page }) => {
     await page.goto('/register');
     
     // Remplir formulaire

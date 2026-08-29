@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Mot de passe oublié', () => {
-  test.skip('demande de réinitialisation de mot de passe', async ({ page }) => {
+  test('demande de réinitialisation de mot de passe', async ({ page }) => {
     await page.goto('/login');
     
     // Cliquer sur le lien "Mot de passe oublié ?" ou équivalent
