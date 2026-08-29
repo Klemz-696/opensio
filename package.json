@@ -16,7 +16,8 @@
     "content:validate": "pnpm --filter @opensio/content-schema test",
     "check-file-size": "node scripts/check-file-size.mjs",
     "check:theme": "node scripts/check-theme-classes.mjs",
-    "format": "prettier --write \"**/*.{ts,tsx,js,mjs,json,md,yml,yaml}\""
+    "format": "prettier --write \"**/*.{ts,tsx,js,mjs,json,md,yml,yaml}\"",
+	"opensio": "node scripts/opensio.mjs"
   },
   "devDependencies": {
     "prettier": "^3.5.1",
@@ -26,5 +27,8 @@
   "packageManager": "pnpm@11.23.0",
   "engines": {
     "node": ">=22.0.0"
+  },
+  "bin": {
+	"opensio": "./scripts/opensio.mjs"
   }
 }
