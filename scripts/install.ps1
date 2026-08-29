@@ -1,276 +1,272 @@
-# ==============================================================================
-# OpenSIO - Installeur Universel Interactif (Windows PowerShell Dev-First)
-# Usage : irm <raw-url>/install.ps1 | iex
-# ==============================================================================
 #Requires -Version 5.1
-$ErrorActionPreference = "Continue"
+<#
+.SYNOPSIS
+  Installateur one-shot OpenSIO — La plateforme BTS SIO SISR
+.DESCRIPTION
+  Ce script installe et lance OpenSIO en une seule commande :
+    iex (irm https://raw.githubusercontent.com/Klemz-696/opensio/main/scripts/install.ps1)
+  
+  Il effectue dans l'ordre :
+    1. Vérification des prérequis (Node.js, pnpm, Git, Docker Desktop)
+    2. Clonage du dépôt (ou mise à jour si déjà présent)
+    3. Installation des dépendances (pnpm install)
+    4. Lancement de pnpm opensio (qui gère le reste automatiquement)
+#>
 
-function Write-Banner {
-    Write-Host @"
-   ___                   ____ ___ ___  
-  / _ \ _ __   ___ _ __ / ___|_ _/ _ \ 
- | | | | '_ \ / _ \ '_ \\___ \| | | | |
- | |_| | |_) |  __/ | | |___) | | |_| |
-  \___/| .__/ \___|_| |_|____/___\___/ 
-       |_|                             
-"@ -ForegroundColor Cyan
-    Write-Host "  Plateforme de Formation Pratique - BTS SIO option SISR" -ForegroundColor White
-    Write-Host "  Environnement de Developpement Windows (Dev-First)" -ForegroundColor Gray
-    Write-Host "  ---------------------------------------------------------`n" -ForegroundColor Gray
+Set-StrictMode -Version Latest
+$ErrorActionPreference = 'Stop'
+
+# ─── Couleurs & helpers ──────────────────────────────────────────────────────
+function Write-Header {
+    Write-Host ""
+    Write-Host "  ██████╗ ██████╗ ███████╗███╗   ██╗███████╗██╗ ██████╗ " -ForegroundColor Cyan
+    Write-Host " ██╔═══██╗██╔══██╗██╔════╝████╗  ██║██╔════╝██║██╔═══██╗" -ForegroundColor Cyan
+    Write-Host " ██║   ██║██████╔╝█████╗  ██╔██╗ ██║███████╗██║██║   ██║" -ForegroundColor Cyan
+    Write-Host " ██║   ██║██╔═══╝ ██╔══╝  ██║╚██╗██║╚════██║██║██║   ██║" -ForegroundColor Cyan
+    Write-Host " ╚██████╔╝██║     ███████╗██║ ╚████║███████║██║╚██████╔╝" -ForegroundColor Cyan
+    Write-Host "  ╚═════╝ ╚═╝     ╚══════╝╚═╝  ╚═══╝╚══════╝╚═╝ ╚═════╝" -ForegroundColor Cyan
+    Write-Host ""
+    Write-Host "  La plateforme d'entraînement BTS SIO SISR" -ForegroundColor Gray
+    Write-Host "  Installateur automatique v1.0" -ForegroundColor DarkGray
+    Write-Host ""
+    Write-Host ("─" * 60) -ForegroundColor DarkGray
+    Write-Host ""
 }
 
-function Write-Info($msg)    { Write-Host " [i] $msg" -ForegroundColor Blue }
-function Write-Success($msg) { Write-Host " [v] $msg" -ForegroundColor Green }
-function Write-Warn($msg)    { Write-Host " [!] $msg" -ForegroundColor Yellow }
-function Write-Err($msg)     { Write-Host " [x] $msg" -ForegroundColor Red }
+function Write-Step   { param($msg) Write-Host "▸ $msg" -ForegroundColor Cyan }
+function Write-Ok     { param($msg) Write-Host "  ✓ $msg" -ForegroundColor Green }
+function Write-Warn   { param($msg) Write-Host "  ! $msg" -ForegroundColor Yellow }
+function Write-Err    { param($msg) Write-Host "  ✗ $msg" -ForegroundColor Red }
+function Write-Info   { param($msg) Write-Host "    $msg" -ForegroundColor DarkGray }
 
-function Ask-Confirm($prompt, $default = "Y") {
-    $suffix = if ($default -eq "Y") { "[O/n]" } else { "[o/N]" }
-    Write-Host -NoNewline "$prompt $suffix : "
-    $response = Read-Host
-    if ([string]::IsNullOrWhiteSpace($response)) { $response = $default }
-    return ($response -match "^[oOyY]")
+function Abort {
+    param($msg)
+    Write-Host ""
+    Write-Err $msg
+    Write-Host ""
+    Write-Host "  Aide : https://github.com/Klemz-696/opensio#-démarrage-rapide" -ForegroundColor DarkGray
+    Write-Host ""
+    exit 1
 }
 
-function Ask-Input($prompt, $default) {
-    Write-Host -NoNewline "$prompt [$default] : "
-    $response = Read-Host
-    if ([string]::IsNullOrWhiteSpace($response)) { return $default }
-    return $response
-}
+function Test-Command { param($cmd) return [bool](Get-Command $cmd -ErrorAction SilentlyContinue) }
 
-function Get-SafeCommandOutput {
-    param([string]$Command, [string]$Arguments = "")
+function Get-CommandVersion {
+    param($cmd, [string[]]$args)
     try {
-        $pinfo = New-Object System.Diagnostics.ProcessStartInfo -Property @{
-            FileName               = "cmd.exe"
-            Arguments              = ("/c " + $Command + " " + $Arguments).Trim()
-            RedirectStandardOutput = $true
-            RedirectStandardError  = $true
-            UseShellExecute        = $false
-            CreateNoWindow         = $true
-        }
-        $p = [System.Diagnostics.Process]::Start($pinfo)
-        $stdout = $p.StandardOutput.ReadToEnd()
-        $stderr = $p.StandardError.ReadToEnd()
-        $p.WaitForExit(15000)
-        return [PSCustomObject]@{ Success = ($p.ExitCode -eq 0); Output = $stdout.Trim(); Error = $stderr.Trim(); ExitCode = $p.ExitCode }
+        $out = & $cmd @args 2>&1
+        return ($out -join ' ').Trim()
+    } catch { return $null }
+}
+
+# ─── En-tête ─────────────────────────────────────────────────────────────────
+Write-Header
+
+# ─── 1. Prérequis : Node.js ──────────────────────────────────────────────────
+Write-Step "Vérification des prérequis"
+
+if (-not (Test-Command 'node')) {
+    Write-Warn "Node.js non trouvé."
+    Write-Info "Téléchargement de Node.js LTS v22..."
+    $nodeUrl = 'https://nodejs.org/dist/v22.16.0/node-v22.16.0-x64.msi'
+    $nodeMsi = Join-Path $env:TEMP 'node-lts.msi'
+    try {
+        Invoke-WebRequest -Uri $nodeUrl -OutFile $nodeMsi -UseBasicParsing
+        Write-Info "Installation de Node.js en cours..."
+        Start-Process msiexec.exe -ArgumentList "/i `"$nodeMsi`" /qn /norestart" -Wait
+        $env:Path = [System.Environment]::GetEnvironmentVariable('Path','Machine') + ';' + [System.Environment]::GetEnvironmentVariable('Path','User')
+        Remove-Item $nodeMsi -Force -ErrorAction SilentlyContinue
     } catch {
-        return [PSCustomObject]@{ Success = $false; Output = ""; Error = $_.Exception.Message; ExitCode = 1 }
+        Abort "Impossible d'installer Node.js automatiquement. Installez-le depuis https://nodejs.org (v22 LTS) puis relancez ce script."
     }
 }
 
-function Test-DockerDaemon {
-    $res = Get-SafeCommandOutput -Command "docker" -Arguments "info --format {{.ServerVersion}}"
-    return ($res.Success -and [string]::IsNullOrWhiteSpace($res.Output) -eq $false)
+$nodeVer = Get-CommandVersion 'node' @('--version')
+$nodeMajor = [int]($nodeVer -replace 'v(\d+)\..*', '$1')
+if ($nodeMajor -lt 22) {
+    Abort "Node.js $nodeVer détecté — version 22+ requise. Installez la dernière LTS depuis https://nodejs.org"
 }
+Write-Ok "Node.js $nodeVer"
 
-function Wait-ForDockerDaemon($timeoutSeconds = 90) {
-    Write-Warn "Docker est installe mais le demon n'est pas joignable."
-    Write-Host "   -> Sous Windows : Lancez Docker Desktop et patientez.`n" -ForegroundColor Cyan
-    while ($true) {
-        if (-not (Ask-Confirm "Souhaitez-vous attendre que Docker demarre ?" "Y")) {
-            Write-Err "Le demon Docker est requis. Arret de l'installeur."; exit 1
-        }
-        Write-Info "Attente du moteur Docker (delai max : ${timeoutSeconds}s)..."
-        $elapsed = 0
-        while ($elapsed -lt $timeoutSeconds) {
-            Start-Sleep -Seconds 3; $elapsed += 3
-            Write-Host -NoNewline "." -ForegroundColor Yellow
-            if (Test-DockerDaemon) {
-                Write-Host ""; Write-Success "Demon Docker operationnel !"; return $true
+# ─── 2. Prérequis : pnpm ────────────────────────────────────────────────────
+if (-not (Test-Command 'pnpm')) {
+    Write-Warn "pnpm non trouvé — installation via npm..."
+    try {
+        & npm install -g pnpm 2>&1 | Out-Null
+        $env:Path = [System.Environment]::GetEnvironmentVariable('Path','Machine') + ';' + [System.Environment]::GetEnvironmentVariable('Path','User')
+    } catch {
+        Abort "Impossible d'installer pnpm. Lancez manuellement : npm install -g pnpm"
+    }
+}
+$pnpmVer = Get-CommandVersion 'pnpm' @('--version')
+Write-Ok "pnpm $pnpmVer"
+
+# ─── 3. Prérequis : Git ─────────────────────────────────────────────────────
+if (-not (Test-Command 'git')) {
+    Write-Warn "Git non trouvé."
+    Write-Info "Téléchargement de Git pour Windows..."
+    $gitUrl = 'https://github.com/git-for-windows/git/releases/download/v2.47.1.windows.1/Git-2.47.1-64-bit.exe'
+    $gitExe = Join-Path $env:TEMP 'git-installer.exe'
+    try {
+        Invoke-WebRequest -Uri $gitUrl -OutFile $gitExe -UseBasicParsing
+        Start-Process $gitExe -ArgumentList '/VERYSILENT /NORESTART /NOCANCEL /SP-' -Wait
+        $env:Path = [System.Environment]::GetEnvironmentVariable('Path','Machine') + ';' + [System.Environment]::GetEnvironmentVariable('Path','User')
+        Remove-Item $gitExe -Force -ErrorAction SilentlyContinue
+    } catch {
+        Abort "Impossible d'installer Git automatiquement. Installez-le depuis https://git-scm.com puis relancez ce script."
+    }
+}
+$gitVer = Get-CommandVersion 'git' @('--version')
+Write-Ok "$gitVer"
+
+# ─── 4. Prérequis : Docker Desktop ─────────────────────────────────────────
+$dockerOk = $false
+try {
+    & docker info 2>&1 | Out-Null
+    $dockerOk = ($LASTEXITCODE -eq 0)
+} catch {}
+
+if (-not $dockerOk) {
+    Write-Warn "Docker Desktop non trouvé ou non démarré."
+    Write-Host ""
+    Write-Host "  Docker Desktop est requis pour la base de données PostgreSQL." -ForegroundColor Yellow
+    Write-Host "  Téléchargement : https://www.docker.com/products/docker-desktop/" -ForegroundColor Cyan
+    Write-Host ""
+    $choice = Read-Host "  Docker Desktop est-il installé mais pas encore démarré ? [o/N]"
+    if ($choice -eq 'o' -or $choice -eq 'O') {
+        Write-Info "Démarrage de Docker Desktop..."
+        $desktopExe = 'C:\Program Files\Docker\Docker\Docker Desktop.exe'
+        if (Test-Path $desktopExe) {
+            Start-Process $desktopExe
+            Write-Info "Attente de Docker Desktop (jusqu'à 2 minutes)..."
+            $waited = 0
+            while ($waited -lt 120) {
+                Start-Sleep -Seconds 5
+                $waited += 5
+                try {
+                    & docker info 2>&1 | Out-Null
+                    if ($LASTEXITCODE -eq 0) { $dockerOk = $true; break }
+                } catch {}
+                Write-Host "." -NoNewline -ForegroundColor DarkGray
             }
+            Write-Host ""
         }
-        Write-Host ""; Write-Warn "Le demon Docker n'a pas repondu (${timeoutSeconds}s)."
-    }
-}
-
-function Check-Prerequisites {
-    Write-Info "Verification des prerequis systeme (Outils & Versions)..."
-    # 1. Git (>= 2.30)
-    if (Get-Command git -ErrorAction SilentlyContinue) {
-        $gitRes = Get-SafeCommandOutput "git" "--version"
-        Write-Success "Git detecte : $($gitRes.Output)"
-    } else {
-        Write-Warn "Git n'est pas installe."
-        if (Ask-Confirm "Installer Git via winget ?" "Y") {
-            winget install --id Git.Git -e --source winget
-            $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
-        } else { Write-Err "Git est requis. Arret."; exit 1 }
-    }
-    # 2. Node.js (>= 20)
-    if (Get-Command node -ErrorAction SilentlyContinue) {
-        $nodeRes = Get-SafeCommandOutput "node" "-v"
-        $nodeVer = [int]($nodeRes.Output.TrimStart('v').Split('.')[0])
-        if ($nodeVer -ge 20) { Write-Success "Node.js detecte : $($nodeRes.Output)" }
-        else {
-            Write-Warn "Node.js $($nodeRes.Output) insuffisant (>= 20 requis)."
-            if (Ask-Confirm "Mettre a jour Node.js via winget ?" "Y") { winget install OpenJS.NodeJS.LTS -e }
-            else { Write-Err "Node.js >= 20 est requis. Arret."; exit 1 }
+        if (-not $dockerOk) {
+            Abort "Docker Desktop ne répond pas. Démarrez-le manuellement, attendez qu'il soit prêt, puis relancez ce script."
         }
+        Write-Ok "Docker Desktop opérationnel"
     } else {
-        Write-Warn "Node.js n'est pas installe."
-        if (Ask-Confirm "Installer Node.js via winget ?" "Y") { winget install OpenJS.NodeJS.LTS -e }
-        else { Write-Err "Node.js >= 20 est requis. Arret."; exit 1 }
+        Write-Host ""
+        Write-Warn "Docker Desktop est requis. Installez-le depuis https://www.docker.com/products/docker-desktop/"
+        Write-Info "Une fois installé et démarré, relancez ce script."
+        Write-Host ""
+        exit 0
     }
-    # 3. pnpm (>= 9)
-    if (Get-Command pnpm -ErrorAction SilentlyContinue) {
-        $pnpmRes = Get-SafeCommandOutput "pnpm" "-v"
-        if ($pnpmRes.Success -and -not [string]::IsNullOrWhiteSpace($pnpmRes.Output)) {
-            $pnpmVerStr = $pnpmRes.Output.TrimStart('v')
-            $pnpmMajor = [int]($pnpmVerStr.Split('.')[0])
-            if ($pnpmMajor -ge 9) {
-                Write-Success "pnpm detecte : v$pnpmVerStr"
-            } else {
-                Write-Warn "pnpm v$pnpmVerStr est insuffisant (version >= 9.0.0 requise)."
-                if (Ask-Confirm "Mettre a jour pnpm vers 11.23.0 ?" "Y") {
-                    npm install -g pnpm@11.23.0; Write-Success "pnpm mis a jour."
-                } else { Write-Err "pnpm >= 9 est requis. Arret."; exit 1 }
-            }
-        } else { Write-Success "pnpm detecte." }
-    } else {
-        Write-Warn "pnpm n'est pas installe."
-        if (Ask-Confirm "Installer pnpm ?" "Y") {
-            npm install -g pnpm@11.23.0; Write-Success "pnpm installe."
-        } else { Write-Err "pnpm est requis. Arret."; exit 1 }
-    }
-    # 4. Docker (>= 24.0)
-    if (Get-Command docker -ErrorAction SilentlyContinue) {
-        if (Test-DockerDaemon) { Write-Success "Docker & Demon joignables." }
-        else { Wait-ForDockerDaemon 90 }
-    } else {
-        Write-Err "Docker non installe. Veuillez installer Docker Desktop (https://www.docker.com/products/docker-desktop/)."; exit 1
-    }
+} else {
+    $dockerVer = Get-CommandVersion 'docker' @('--version')
+    Write-Ok "$dockerVer"
 }
 
-function Detect-Ollama-Options {
-    Write-Info "Configuration de l'assistant IA (Ollama)..."
-    $script:AiEnabled = "false"
-    $script:AiUrl = "http://127.0.0.1:11434/v1"
-    $script:AiModel = "llama3.1:8b"
+Write-Host ""
 
-    $hasLocalOllama = $false
-    if (Get-Command ollama -ErrorAction SilentlyContinue) { $hasLocalOllama = $true }
+# ─── 5. Dossier d'installation ──────────────────────────────────────────────
+Write-Step "Dossier d'installation"
 
-    Write-Host "`nChoisissez l'emplacement de l'assistant IA :" -ForegroundColor White
-    Write-Host "  [1] Ollama local sur l'hote $(if ($hasLocalOllama) { '(Detecte)' } else { '(Non detecte)' })" -ForegroundColor Cyan
-    Write-Host "  [2] Machine / Serveur distant dedie" -ForegroundColor Cyan
-    Write-Host "  [3] Sans IA (Desactive - degradation gracieuse)" -ForegroundColor Cyan
+$defaultDir = Join-Path $env:USERPROFILE 'Desktop\opensio'
 
-    $aiChoice = Ask-Input "Votre choix [1/2/3]" $(if ($hasLocalOllama) { "1" } else { "3" })
-    switch ($aiChoice) {
-        "1" {
-            $script:AiEnabled = "true"
-            $script:AiUrl = "http://127.0.0.1:11434/v1"
-            if ($hasLocalOllama) {
-                $modelsRes = Get-SafeCommandOutput "ollama" "list"
-                if ($modelsRes.Success -and $modelsRes.Output -match "llama3.1:8b") {
-                    Write-Success "Modele 'llama3.1:8b' pret en local."
-                } else {
-                    Write-Warn "Modele 'llama3.1:8b' absent."
-                    if (Ask-Confirm "Telecharger 'llama3.1:8b' (~4.9 Go) ?" "Y") {
-                        Write-Info "Telechargement en cours (ollama pull llama3.1:8b)..."
-                        ollama pull llama3.1:8b
-                    }
-                }
-            }
+Write-Host "  Dossier par défaut : " -NoNewline
+Write-Host $defaultDir -ForegroundColor Cyan
+$customDir = Read-Host "  Appuyez sur Entrée pour accepter, ou entrez un chemin personnalisé"
+if ($customDir.Trim() -ne '') {
+    $installDir = $customDir.Trim()
+} else {
+    $installDir = $defaultDir
+}
+
+# ─── 6. Clone ou mise à jour ─────────────────────────────────────────────────
+Write-Step "Téléchargement du projet"
+
+$repoUrl = 'https://github.com/Klemz-696/opensio.git'
+
+if (Test-Path (Join-Path $installDir '.git')) {
+    Write-Info "Projet déjà présent — mise à jour..."
+    Push-Location $installDir
+    try {
+        & git pull --ff-only 2>&1 | Out-Null
+        if ($LASTEXITCODE -ne 0) {
+            Write-Warn "git pull impossible — utilisation de la version existante."
+        } else {
+            Write-Ok "Projet mis à jour"
         }
-        "2" {
-            $script:AiEnabled = "true"
-            $script:AiUrl = Ask-Input "URL de l'API Ollama distante" "http://192.168.1.50:11434/v1"
-            Write-Success "IA distante configuree : $script:AiUrl"
-        }
-        default {
-            $script:AiEnabled = "false"
-            Write-Info "Assistant IA desactive (AI_ENABLED=false)."
-        }
+    } finally {
+        Pop-Location
     }
+} else {
+    Write-Info "Clonage depuis GitHub..."
+    Write-Info "Destination : $installDir"
+
+    $parentDir = Split-Path $installDir -Parent
+    if (-not (Test-Path $parentDir)) {
+        New-Item -ItemType Directory -Path $parentDir -Force | Out-Null
+    }
+
+    & git clone $repoUrl $installDir 2>&1
+    if ($LASTEXITCODE -ne 0) {
+        Abort "Le clonage a échoué. Vérifiez votre connexion internet et votre accès au dépôt."
+    }
+    Write-Ok "Projet cloné avec succès"
 }
 
-function Generate-SecureSecret($bytes = 32) {
-    $rng = [System.Security.Cryptography.RandomNumberGenerator]::Create()
-    $buf = New-Object byte[] $bytes
-    $rng.GetBytes($buf)
-    return [System.BitConverter]::ToString($buf).Replace("-", "").ToLower()
+Write-Host ""
+
+# ─── 7. Installation des dépendances ────────────────────────────────────────
+Write-Step "Installation des dépendances Node.js"
+Write-Info "Cela peut prendre 1 à 3 minutes au premier lancement..."
+Push-Location $installDir
+try {
+    & pnpm install
+    if ($LASTEXITCODE -ne 0) {
+        Abort "pnpm install a échoué. Consultez les erreurs ci-dessus."
+    }
+    Write-Ok "Dépendances installées"
+} finally {
+    Pop-Location
 }
 
-function Prepare-Repository {
-    if ((Test-Path "package.json") -and (Get-Content "package.json" -Raw) -match '"name":\s*"opensio"') {
-        Write-Info "Repertoire OpenSIO existant detecte."
-        if (Ask-Confirm "Mettre a jour le code source (git pull) ?" "Y") { git pull }
-    } else {
-        if (Test-Path "opensio") { Set-Location "opensio" }
-        else { Write-Info "Clonage du depot OpenSIO..."; git clone "https://github.com/Klemz-696/opensio.git" "opensio"; Set-Location "opensio" }
+Write-Host ""
+
+# ─── 8. Résumé et lancement ─────────────────────────────────────────────────
+Write-Host ("─" * 60) -ForegroundColor DarkGray
+Write-Host ""
+Write-Host "  ✅  Installation terminée !" -ForegroundColor Green
+Write-Host ""
+Write-Host "  OpenSIO est installé dans :" -ForegroundColor Gray
+Write-Host "  $installDir" -ForegroundColor Cyan
+Write-Host ""
+Write-Host "  Le lanceur va maintenant :" -ForegroundColor Gray
+Write-Host "    • Configurer la base de données PostgreSQL (Docker)" -ForegroundColor DarkGray
+Write-Host "    • Initialiser le catalogue (seed + synchronisation du contenu)" -ForegroundColor DarkGray
+Write-Host "    • Créer un raccourci Bureau OpenSIO.bat" -ForegroundColor DarkGray
+Write-Host "    • Démarrer l'API et l'interface web" -ForegroundColor DarkGray
+Write-Host ""
+Write-Host "  La prochaine fois : double-cliquez sur le raccourci Bureau" -ForegroundColor Yellow
+Write-Host "                     ou tapez 'opensio' dans n'importe quel terminal" -ForegroundColor Yellow
+Write-Host ""
+Write-Host ("─" * 60) -ForegroundColor DarkGray
+Write-Host ""
+
+$launch = Read-Host "  Lancer OpenSIO maintenant ? [O/n]"
+if ($launch -ne 'n' -and $launch -ne 'N') {
+    Push-Location $installDir
+    try {
+        & pnpm opensio
+    } finally {
+        Pop-Location
     }
+} else {
+    Write-Host ""
+    Write-Host "  Pour lancer OpenSIO plus tard :" -ForegroundColor Gray
+    Write-Host "    cd `"$installDir`"" -ForegroundColor Cyan
+    Write-Host "    pnpm opensio" -ForegroundColor Cyan
+    Write-Host ""
 }
-
-function Setup-Development($seedChoice) {
-    Write-Info "Configuration de l'environnement de developpement..."
-    if (-not (Test-Path ".env")) {
-        Copy-Item ".env.example" ".env"
-        $jwt = (Generate-SecureSecret 32) + (Generate-SecureSecret 32)
-        (Get-Content ".env") -replace 'JWT_SECRET=.*', "JWT_SECRET=$jwt" | Set-Content ".env"
-        Write-Info "Fichier .env initialise depuis le modele."
-    } else {
-        Write-Info "Fichier .env existant detecte : les secrets existants sont preserves."
-    }
-
-    (Get-Content ".env") -replace 'AI_ENABLED=.*', "AI_ENABLED=$script:AiEnabled" |
-        ForEach-Object { $_ -replace 'AI_BASE_URL=.*', "AI_BASE_URL=$script:AiUrl" } |
-        ForEach-Object { $_ -replace 'OLLAMA_BASE_URL=.*', "OLLAMA_BASE_URL=$script:AiUrl" } |
-        Set-Content ".env"
-
-    if (Test-Path "apps/api/.env") {
-        Copy-Item ".env" "apps/api/.env" -Force
-    }
-
-    Write-Info "Demarrage de PostgreSQL 18 via Docker Compose..."
-    docker compose -f infra/docker/docker-compose.dev.yml up -d
-    Write-Info "Installation des dependances pnpm..."
-    pnpm install
-    Write-Info "Application des migrations Prisma..."
-    pnpm --filter @opensio/api exec prisma migrate deploy
-
-    if ($seedChoice -ne "aucun") {
-        Write-Info "Amorcage des donnees (Seed: $seedChoice)..."
-        $env:SEED_MODE = $seedChoice
-        pnpm seed
-    }
-
-    Write-Info "Synchronisation du contenu pedagogique..."
-    pnpm content:sync
-
-    Write-Host "`n================================================================" -ForegroundColor Green
-    Write-Host "  [v] OpenSIO est pret en Mode Developpement (Windows) !" -ForegroundColor Green
-    Write-Host "================================================================`n" -ForegroundColor Green
-    Write-Host "  Frontend Web : http://localhost:3000" -ForegroundColor Cyan
-    Write-Host "  API Backend  : http://localhost:4000/api/v1" -ForegroundColor Cyan
-    $aiDesc = if ($script:AiEnabled -eq "true") { "Active ($script:AiUrl)" } else { "Desactive" }
-    Write-Host "  Mentor IA    : $aiDesc`n" -ForegroundColor $(if ($script:AiEnabled -eq "true") { "Green" } else { "Yellow" })
-    if ($seedChoice -eq "complet") {
-        Write-Host "  Comptes de test :" -ForegroundColor White
-        Write-Host "   - Admin   : admin@opensio.local (AdminOpenSIO2026!)" -ForegroundColor Cyan
-        Write-Host "   - Etudiant: student@opensio.local (StudentOpenSIO2026!)`n" -ForegroundColor Cyan
-    }
-    Write-Host "  Lancer la plateforme : pnpm dev`n" -ForegroundColor Cyan
-}
-
-function Main {
-    Write-Banner
-    Check-Prerequisites
-    Detect-Ollama-Options
-    Prepare-Repository
-
-    Write-Host "`nJeu de donnees initial (Seed) :" -ForegroundColor White
-    Write-Host "  [1] Complet (Admin + Etudiant Demo) [Defaut]" -ForegroundColor Cyan
-    Write-Host "  [2] Minimal (Admin seul)" -ForegroundColor Cyan
-    Write-Host "  [3] Aucun" -ForegroundColor Cyan
-    $seedInput = Ask-Input "Votre choix [1/2/3]" "1"
-    $seedChoice = "complet"
-    if ($seedInput -eq "2") { $seedChoice = "minimal" }
-    elseif ($seedInput -eq "3") { $seedChoice = "aucun" }
-
-    Setup-Development $seedChoice
-}
-
-if ($MyInvocation.InvocationName -ne '.') { Main }
