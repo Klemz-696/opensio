@@ -9,7 +9,7 @@ export const ARGON2_OPTIONS = {
   memoryCost: 64 * 1024,
   timeCost: 3,
   parallelism: 4,
-};
+} as const;
 
 export interface SeedOptions {
   env?: Record<string, string | undefined>;
