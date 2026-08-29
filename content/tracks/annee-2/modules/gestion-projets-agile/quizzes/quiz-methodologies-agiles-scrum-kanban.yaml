@@ -1,0 +1,79 @@
+slug: quiz-methodologies-agiles-scrum-kanban
+title: "Quiz — Méthodologies Agiles Scrum et Kanban"
+passing_score: 80
+position: 2
+questions:
+  - kind: single
+    prompt: "Dans le cadre Scrum officiel, quelle est la responsabilité principale du Product Owner (PO) ?"
+    choices:
+      - id: a
+        text: "Maximiser la valeur du produit résultant du travail de l'équipe, porter la vision produit, et rédiger/prioriser les éléments du Product Backlog"
+      - id: b
+        text: "Assigner quotidiennement les tâches techniques à chaque développeur individuellement"
+      - id: c
+        text: "Remplacer le chef de projet traditionnel en imposant des heures supplémentaires"
+      - id: d
+        text: "Gérer l'infrastructure matérielle et le réseau physique"
+    correct:
+      - a
+    explanation: "Le Product Owner est le garant de la valeur métier et de la priorisation du Backlog pour répondre au mieux aux attentes des utilisateurs et du marché."
+
+  - kind: single
+    prompt: "Quel est le rôle du Scrum Master au sein d'une équipe Scrum ?"
+    choices:
+      - id: a
+        text: "Agir comme un leader-serviteur et coach méthodologique, garant du respect du cadre Scrum, et aider l'équipe en éliminant les obstacles (impediments) qui freinent sa progression"
+      - id: b
+        text: "Contrôler les horaires d'arrivée et de départ des salariés"
+      - id: c
+        text: "Écrire l'intégralité du code informatique à la place des développeurs"
+      - id: d
+        text: "Négocier les contrats de vente avec les clients"
+    correct:
+      - a
+    explanation: "Le Scrum Master n'est pas un supérieur hiérarchique : il facilite le travail de l'équipe, optimise les processus et protège l'équipe des perturbations externes."
+
+  - kind: single
+    prompt: "Dans la méthode Kanban, pourquoi impose-t-on une 'Limite de travail en cours' (WIP Limit - Work In Progress) sur chaque colonne du tableau ?"
+    choices:
+      - id: a
+        text: "Pour éviter l'engorgement, limiter le multitâche destructeur, accélérer le flux de livraison globale et forcer l'équipe à terminer les tâches en cours avant d'en entamer de nouvelles"
+      - id: b
+        text: "Pour obliger les développeurs à partir en pause toutes les heures"
+      - id: c
+        text: "Pour masquer le travail aux yeux des managers"
+      - id: d
+        text: "Parce que les tableaux blancs ne peuvent contenir que 3 post-its"
+    correct:
+      - a
+    explanation: "La limitation du WIP applique le principe fondamental 'Arrêter de commencer, commencer à finir', fluidifiant l'écoulement des tâches et réduisant le temps de cycle."
+
+  - kind: single
+    prompt: "Combien de temps doit durer au maximum le rituel quotidien du 'Daily Scrum' (Daily Standup) selon le Guide Scrum ?"
+    choices:
+      - id: a
+        text: "15 minutes strictement timées (Timeboxed)"
+      - id: b
+        text: "1 heure complète"
+      - id: c
+        text: "La demi-journée"
+      - id: d
+        text: "Le temps de manger un repas complet"
+    correct:
+      - a
+    explanation: "Le Daily Scrum est une réunion de synchronisation courte et dynamique de 15 minutes debout, évitant les débats techniques approfondis qui sont reportés après la séance."
+
+  - kind: single
+    prompt: "Quelle est la différence fondamentale d'organisation du travail entre le cadre Scrum et la méthode Kanban ?"
+    choices:
+      - id: a
+        text: "Scrum organise le travail par itérations temporelles fixes (Sprints de 1 à 4 semaines), tandis que Kanban gère un flux de travail continu tiré sans Sprints obligatoires"
+      - id: b
+        text: "Scrum est réservé aux femmes et Kanban aux hommes"
+      - id: c
+        text: "Kanban interdit l'utilisation d'ordinateurs"
+      - id: d
+        text: "Scrum n'utilise jamais de tableaux visuels"
+    correct:
+      - a
+    explanation: "Scrum cadence la livraison par blocs de temps rythmés (Sprints), tandis que Kanban privilégie un flux continu au fil de l'eau basé sur la capacité instantanée."

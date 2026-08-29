@@ -1,0 +1,5 @@
+user_stories:
+  - id: "US-01"
+    title: "Tâche 1 sans formalisme"
+    # Manque as_a, i_want, so_that, criteria
+    story_points: 50 # Hors Fibonacci

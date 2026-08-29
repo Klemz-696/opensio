@@ -1,0 +1,79 @@
+slug: quiz-planification-backlog-user-stories-estimation
+title: "Quiz — Planification Agile et User Stories"
+passing_score: 80
+position: 3
+questions:
+  - kind: single
+    prompt: "Quel est le formalisme standard et recommandé pour la formulation du titre et de la description d'une User Story ?"
+    choices:
+      - id: a
+        text: "En tant que [Persona/Utilisateur], je veux [Action/Fonctionnalité], afin de [Bénéfice/Valeur métier apportée]"
+      - id: b
+        text: "La fonction X doit être écrite en langage C++ avant le 15 du mois"
+      - id: c
+        text: "Créer une base de données avec 5 tables"
+      - id: d
+        text: "Installer Windows 11 sur tous les postes de travail"
+    correct:
+      - a
+    explanation: "Ce gabarit standard explicite clairement qui est l'utilisateur cible, son besoin opérationnel et la valeur business générée."
+
+  - kind: single
+    prompt: "Quelle est la différence fondamentale entre la Définition de Prêt (DoR) et la Définition de Terminé (DoD) ?"
+    choices:
+      - id: a
+        text: "La DoR est la checklist d'entrée garantissant qu'une User Story est suffisamment claire et estimée pour être intégrée au Sprint, tandis que la DoD est la checklist de sortie garantissant qu'un incrément respecte tous les critères de qualité technique pour être potentiellement livré"
+      - id: b
+        text: "La DoR concerne le matériel et la DoD le logiciel"
+      - id: c
+        text: "La DoD est facultative et ne sert qu'en cas d'audit externe"
+      - id: d
+        text: "Il n'y a aucune différence, ce sont deux termes interchangeables"
+    correct:
+      - a
+    explanation: "La DoR prévient l'entrée de travail mal spécifié dans le Sprint, tandis que la DoD garantit qu'aucune dette technique invisible n'est accumulée."
+
+  - kind: single
+    prompt: "Pourquoi utilise-t-on des 'Story Points' (suite de Fibonacci modifiée : 1, 2, 3, 5, 8, 13...) plutôt que des estimations en heures ou jours-homme lors du Planning Poker ?"
+    choices:
+      - id: a
+        text: "Parce que l'estimation relative de complexité/effort est beaucoup plus fiable et rapide que l'estimation temporelle absolue qui dépend du niveau d'expertise individuel de chaque développeur"
+      - id: b
+        text: "Parce que les mathématiques anciennes imposent l'usage de la suite de Fibonacci dans les contrats légaux"
+      - id: c
+        text: "Pour cacher la durée réelle des projets à la direction générale"
+      - id: d
+        text: "Parce que les développeurs ne savent pas compter en heures"
+    correct:
+      - a
+    explanation: "Les Story Points découplent la complexité intrinsèque de la tâche de la vitesse individuelle, permettant d'obtenir une mesure collective objective."
+
+  - kind: single
+    prompt: "Comment calcule-t-on la 'Vélocité' d'une équipe Scrum à l'issue d'un Sprint ?"
+    choices:
+      - id: a
+        text: "En additionnant le nombre total de Story Points des User Stories 100 % terminées (conformes à la DoD) livrées au cours du Sprint"
+      - id: b
+        text: "En comptant le nombre total d'heures supplémentaires effectuées le week-end"
+      - id: c
+        text: "En divisant le budget total par le nombre de lignes de code écrites"
+      - id: d
+        text: "En mesurant le nombre de tasses de café bues par jour"
+    correct:
+      - a
+    explanation: "Seules les stories totalement achevées et validées selon la DoD comptent dans le calcul de la vélocité, servant de base empirique pour planifier les Sprints futurs."
+
+  - kind: single
+    prompt: "Que signifie la lettre 'V' dans l'acronyme mnémotechnique INVEST qui caractérise une User Story bien rédigée ?"
+    choices:
+      - id: a
+        text: "Valuable (Apporte une valeur métier démontrable pour l'utilisateur ou le client)"
+      - id: b
+        text: "Variable (Le prix peut changer chaque semaine)"
+      - id: c
+        text: "Virtual (N'existe que sous forme numérique)"
+      - id: d
+        text: "Validated (Approuvée par un notaire)"
+    correct:
+      - a
+    explanation: "Chaque User Story doit délivrer une valeur concrète (Valuable) pour le produit ou ses utilisateurs finaux."

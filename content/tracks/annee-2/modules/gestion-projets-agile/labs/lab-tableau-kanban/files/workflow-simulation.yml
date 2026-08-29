@@ -1,0 +1,12 @@
+# workflow-simulation.yml - Simulation du Flux Kanban et Métriques
+
+tasks:
+  - id: "TASK-101"
+    title: "Correction bug affichage dashboard"
+    created_date: "2026-08-01"
+    in_progress_date: "2026-08-03"
+    done_date: "2026-08-05"
+    lead_time_days: 4
+    cycle_time_days: 2
+
+  # TODO: Déclarer au moins 3 autres tâches complètes avec métriques sans violer le WIP

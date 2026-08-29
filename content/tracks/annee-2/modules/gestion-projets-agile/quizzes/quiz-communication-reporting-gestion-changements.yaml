@@ -1,0 +1,79 @@
+slug: quiz-communication-reporting-gestion-changements
+title: "Quiz — Gouvernance, Communication et Gestion des Changements"
+passing_score: 80
+position: 5
+questions:
+  - kind: single
+    prompt: "Quel est le rôle prépondérant d'un Comité de Pilotage (COPIL) dans la gouvernance d'un projet informatique ?"
+    choices:
+      - id: a
+        text: "Prendre les décisions stratégiques et financières, arbitrer sur les changements majeurs de périmètre ou de calendrier, et valider formellement le franchissement des jalons clés"
+      - id: b
+        text: "Corriger les lignes de code buguées avec les développeurs"
+      - id: c
+        text: "Remplacer l'équipe support pour répondre aux tickets des utilisateurs"
+      - id: d
+        text: "Installer les câbles réseau dans la salle des serveurs"
+    correct:
+      - a
+    explanation: "Le COPIL réunit la direction, les sponsors et la MOA pour piloter le projet au niveau stratégique et allouer les budgets nécessaires."
+
+  - kind: single
+    prompt: "Qu'est-ce qu'un 'ADR' (Architecture Decision Record) et pourquoi est-il privilégié dans les démarches d'ingénierie modernes ?"
+    choices:
+      - id: a
+        text: "Un document court et structuré en Markdown versionné dans le dépôt de code, expliquant le contexte, la décision technique adoptée et ses conséquences pour conserver la mémoire des choix d'architecture"
+      - id: b
+        text: "Un contrat de travail à durée indéterminée pour les architectes"
+      - id: c
+        text: "Un formulaire de demande de congés payés"
+      - id: d
+        text: "Un certificat de conformité électrique"
+    correct:
+      - a
+    explanation: "Les ADR capturent la justification des choix techniques au fil de l'eau, évitant de répéter les mêmes débats passés et facilitant l'onboarding des nouveaux membres."
+
+  - kind: single
+    prompt: "Que désigne l'indicateur de 'Météo Projet' (Vert, Orange, Rouge) dans un rapport d'avancement synthétique (Flash Report) ?"
+    choices:
+      - id: a
+        text: "Une évaluation visuelle instantanée du niveau de confiance global dans le respect des objectifs du projet (Vert = dans les clous, Orange = vigilance requise, Rouge = dérive majeure exigeant un arbitrage)"
+      - id: b
+        text: "La prévision des conditions climatiques au-dessus du centre de données"
+      - id: c
+        text: "L'état de santé physique des membres de l'équipe"
+      - id: d
+        text: "Le niveau d'humidité dans la salle de réunion"
+    correct:
+      - a
+    explanation: "La météo projet permet aux décideurs d'identifier en un coup d'œil les projets sous contrôle et ceux nécessitant une décision urgente."
+
+  - kind: single
+    prompt: "Quelle est la signification de la signature d'un Procès-Verbal (PV) de Recette 'avec réserves' lors de la livraison d'une solution logicielle ?"
+    choices:
+      - id: a
+        text: "Le client valide la mise en service globale mais exige la correction formelle sous un délai convenu des anomalies mineures répertoriées dans l'annexe du PV"
+      - id: b
+        text: "Le client refuse catégoriquement de payer et annule le projet"
+      - id: c
+        text: "Le logiciel est parfait et ne contient aucun bug"
+      - id: d
+        text: "Le projet doit recommencer depuis la phase de cadrage"
+    correct:
+      - a
+    explanation: "Un PV avec réserves permet d'avancer vers la production tout en engageant contractuellement la MOE à corriger les anomalies résiduelles."
+
+  - kind: single
+    prompt: "Lorsqu'une demande de changement (Change Request) est soumise en cours de projet par un utilisateur, quelle démarche rigoureuse doit être appliquée avant acceptation ?"
+    choices:
+      - id: a
+        text: "Réaliser une analyse d'impact sur le triangle Coût/Délai/Périmètre, estimer l'effort requis et soumettre l'arbitrage formel au Product Owner ou au COPIL"
+      - id: b
+        text: "Implémenter immédiatement la demande en secret sans en parler à personne"
+      - id: c
+        text: "Supprimer la demande de changement pour ne pas perturber le plan initial"
+      - id: d
+        text: "Démissionner du projet"
+    correct:
+      - a
+    explanation: "Toute évolution doit faire l'objet d'une évaluation d'impact sur les délais et le budget avant d'être arbitrée et intégrée dans la planification."

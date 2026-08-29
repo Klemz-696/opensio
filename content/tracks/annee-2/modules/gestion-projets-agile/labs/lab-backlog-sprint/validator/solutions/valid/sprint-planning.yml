@@ -1,0 +1,8 @@
+sprint_number: 1
+sprint_goal: "Fournir aux étudiants le parcours complet d'authentification, de consultation des cours et d'évaluation par quiz."
+team_capacity_sp: 20
+
+selected_stories:
+  - "US-01"
+  - "US-02"
+  - "US-03"

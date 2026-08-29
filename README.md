@@ -1,10 +1,12 @@
 <!--
+
   NOTE MAINTENANCE
   - Les listes de modules ci-dessous reflètent l'état du catalogue à la clôture
-    (19 modules). La source de vérité est docs/modules-map.md : si un module
+    (20 modules). La source de vérité est docs/modules-map.md : si un module
     est renommé, mettre à jour les deux tableaux.
   - Captures d'écran : déposer les images dans docs/assets/ puis remplacer les
     placeholders de la section Aperçu.
+    
 -->
 
 <p align="center">
@@ -48,7 +50,7 @@ environnement où chaque notion est immédiatement mise en application.
 
 | Fonctionnalité | Description |
 | --- | --- |
-| 📚 Catalogue structuré | 2 parcours (1ʳᵉ et 2ᵉ année), 19 modules, leçons numérotées avec prérequis explicites |
+| 📚 Catalogue structuré | 2 parcours (1ʳᵉ et 2ᵉ année), 20 modules, leçons numérotées avec prérequis explicites |
 | ❓ Quiz corrigés | Choix simples et multiples, explication pédagogique pour chaque réponse, seuil de réussite à 80 % |
 | 🧪 Labs auto-validés | Ateliers pratiques avec validateurs autonomes, solutions de référence, indices à pénalités |
 | 📊 Suivi de progression | Dashboard personnel, avancement par module et par parcours |
@@ -232,7 +234,7 @@ opensio/
 
 ## 🗺️ Feuille de route
 
-Le catalogue SISR (19/19 modules, 100 leçons, 43 labs) est **terminé**. La route vers la v1.0 —
+Le catalogue SISR (20/20 modules, 105 leçons, 45 labs) est **terminé**. La route vers la v1.0 —
 durcissement, accessibilité, tests E2E, déploiement — est détaillée dans
 [docs/roadmap.md](docs/roadmap.md), et chaque étape est tracée dans le
 [journal de bord](docs/journal.md).
@@ -241,7 +243,7 @@ durcissement, accessibilité, tests E2E, déploiement — est détaillée dans
 
 | Document | Contenu |
 | --- | --- |
-| [docs/modules-map.md](docs/modules-map.md) | Cartographie complète des 19 modules, fiches détaillées, matrice de compétences |
+| [docs/modules-map.md](docs/modules-map.md) | Cartographie complète des 20 modules, fiches détaillées, matrice de compétences |
 | [docs/content-guide.md](docs/content-guide.md) | Guide d'écriture du contenu pédagogique (leçons, quiz, labs) |
 | [docs/installation.md](docs/installation.md) | Installation pas à pas (Linux, macOS, Windows) |
 | [docs/deployment.md](docs/deployment.md) | Mise en production (`docker-compose.prod.yml`) |
