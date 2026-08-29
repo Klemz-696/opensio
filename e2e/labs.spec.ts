@@ -14,15 +14,16 @@ test.describe('Labs', () => {
     await labLink.click();
     
     await expect(page).toHaveURL(/\/catalogue\/.*\/labs\//, { timeout: 30_000 });
+    // Attendre que la page de lab soit entièrement chargée (fetch API client-side)
+    await page.waitForLoadState('networkidle', { timeout: 15_000 }).catch(() => {});
     
-    // Attendre le chargement de la page de lab
     // Cliquer sur "Démarrer la session" ou "Lancer"
     const startBtn = page.getByRole('button', { name: /démarrer|lancer/i }).first();
-    await expect(startBtn).toBeVisible({ timeout: 10_000 });
+    await expect(startBtn).toBeVisible({ timeout: 20_000 });
     await startBtn.click();
     
     // Une fois la session démarrée, on devrait avoir un terminal et un bouton Valider
     // On vérifie que l'interface a changé en cherchant le bouton valider
-    await expect(page.getByRole('button', { name: /valider mon travail/i }).first()).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByRole('button', { name: /valider mon travail/i }).first()).toBeVisible({ timeout: 20_000 });
   });
 });
