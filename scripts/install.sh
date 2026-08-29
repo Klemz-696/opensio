@@ -126,7 +126,7 @@ if ! docker info >/dev/null 2>&1; then
     info "Démarrage de Docker Desktop..."
     open -a Docker
     info "Attente de Docker (jusqu'à 60s)..."
-    for i in {1..12}; do
+    for _ in {1..12}; do
       sleep 5
       if docker info >/dev/null 2>&1; then break; fi
       echo -n "."
@@ -153,7 +153,7 @@ if [ ! -d "$HOME/Desktop" ]; then
 fi
 
 echo -n -e "  Dossier par défaut : ${CYAN}$DEFAULT_DIR${NC}\n"
-read -p "  Appuyez sur Entrée pour accepter, ou entrez un chemin personnalisé : " custom_dir
+read -r -p "  Appuyez sur Entrée pour accepter, ou entrez un chemin personnalisé : " custom_dir
 
 INSTALL_DIR=${custom_dir:-$DEFAULT_DIR}
 eval INSTALL_DIR="$INSTALL_DIR" # Expand ~ if used
@@ -207,7 +207,7 @@ echo -e "${GRAY}    • Démarrer l'API et l'interface web${NC}\n"
 echo -e "${YELLOW}  La prochaine fois : tapez 'pnpm opensio' dans le dossier du projet${NC}\n"
 echo -e "${GRAY}────────────────────────────────────────────────────────────${NC}\n"
 
-read -p "  Lancer OpenSIO maintenant ? [O/n] " launch
+read -r -p "  Lancer OpenSIO maintenant ? [O/n] " launch
 if [[ ! "$launch" =~ ^[nN]$ ]]; then
   pnpm opensio
 else
