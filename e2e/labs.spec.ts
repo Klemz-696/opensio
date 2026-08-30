@@ -55,11 +55,14 @@ test.describe('Labs avancés - WireGuard Site-à-Site', () => {
     // Si une session est déjà en cours depuis un test précédent, on pourrait devoir l'abandonner.
     // L'idéal est de cliquer sur démarrer s'il est là.
     const startBtn = page.getByRole('button', { name: /démarrer (la|une nouvelle) session/i });
+    const validateBtn = page.getByRole('button', { name: /valider mon travail/i });
+
+    await expect(startBtn.or(validateBtn)).toBeVisible({ timeout: 15_000 });
+
     if (await startBtn.isVisible()) {
       await startBtn.click();
     }
 
-    const validateBtn = page.getByRole('button', { name: /valider mon travail/i });
     await expect(validateBtn).toBeVisible({ timeout: 10_000 });
 
     // Remplir une configuration invalide pour le siège
@@ -91,10 +94,15 @@ test.describe('Labs avancés - WireGuard Site-à-Site', () => {
 
     // Démarrer la session
     const startBtn = page.getByRole('button', { name: /démarrer (la|une nouvelle) session/i });
+    const validateBtn = page.getByRole('button', { name: /valider mon travail/i });
+
+    await expect(startBtn.or(validateBtn)).toBeVisible({ timeout: 15_000 });
+
     if (await startBtn.isVisible()) {
       await startBtn.click();
     }
-    await expect(page.getByRole('button', { name: /valider mon travail/i })).toBeVisible({ timeout: 10_000 });
+    
+    await expect(validateBtn).toBeVisible({ timeout: 10_000 });
 
     // Demander un indice
     const hintBtn = page.getByRole('button', { name: /débloquer un indice/i });
