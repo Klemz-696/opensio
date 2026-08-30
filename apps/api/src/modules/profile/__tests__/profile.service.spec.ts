@@ -5,9 +5,13 @@ import { UserStatus, Role } from '@prisma/client';
 
 describe('ProfileService', () => {
   let service: ProfileService;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let mockPrisma: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let mockAvatarStorage: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let mockAudit: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let mockRefreshTokenService: any;
 
   const mockUser = {

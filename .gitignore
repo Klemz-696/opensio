@@ -53,3 +53,5 @@ Thumbs.db
 next-env.d.ts
 
 .opensio/
+test-results/
+playwright-report/

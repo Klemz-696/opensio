@@ -108,6 +108,7 @@ export function ModuleCard({ module }: ModuleCardProps) {
 
         <Link
           href={`/catalogue/${module.slug}`}
+          aria-label={`Accéder au module ${module.title}`}
           className="inline-flex items-center gap-1.5 text-xs font-semibold text-sky-600 dark:text-sky-400 group-hover:text-sky-700 dark:group-hover:text-sky-300 transition-colors cursor-pointer"
         >
           <span>Accéder au module</span>
