@@ -4,6 +4,7 @@ import { seedDatabase } from '../../../../prisma/seed';
 import type { PrismaClient } from '@prisma/client';
 
 describe('Seed Password Policy Validation (D-09)', () => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let mockPrisma: any;
 
   beforeEach(() => {
