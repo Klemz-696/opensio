@@ -1,0 +1,14 @@
+node_modules
+.next
+dist
+e2e
+test-results
+playwright-report
+playwright/.cache
+.git
+.env
+.env.*.local
+.DS_Store
+npm-debug.log
+yarn-error.log
+pnpm-debug.log
