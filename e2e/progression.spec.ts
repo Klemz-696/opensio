@@ -26,7 +26,7 @@ test.describe('Progression multi-leçons', () => {
     
     if (await btn.isVisible()) {
       await btn.click();
-      await expect(page.getByText(/terminée|complétée/i).first()).toBeVisible({ timeout: 10_000 });
+      await expect(page.getByText(/validée/i).first()).toBeVisible({ timeout: 10_000 });
     }
     
     // Naviguer vers le dashboard
