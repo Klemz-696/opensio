@@ -1,122 +1,106 @@
-# Guide de Déploiement Homelab & Proxmox VE — OpenSIO
+# Déploiement d'OpenSIO en Production (Lot B11)
 
-Ce document décrit le déploiement de production d'OpenSIO sur une infrastructure personnelle (Homelab, Proxmox VE, Debian 12).
+Ce document décrit pas à pas comment déployer OpenSIO sur un homelab Proxmox VE (Debian 12).
+L'architecture Docker Compose intègre l'API, le Web, PostgreSQL, Caddy (HTTPS) et Ollama.
 
----
+## Prérequis communs
+- Un hôte Proxmox VE disposant des ressources suffisantes.
+- Le nom de domaine choisi configuré (si vous n'utilisez pas `localhost`).
+- Une connexion SSH à l'hôte cible.
 
-## 1. Dimensionnement Recommandé (Hôte 16 Go RAM / 500 Go)
+## Option A — Machine Virtuelle Debian 12 (Recommandée)
 
-Conformément à la décision **H1** du Blueprint OpenSIO, les ressources allouées à la VM/LXC de la plateforme sont optimisées :
+C'est la solution la plus robuste pour isoler l'environnement Docker.
 
-| Ressource | Minimum | Recommandé |
-|-----------|---------|------------|
-| **Type** | Conteneur LXC Debian 12 ou VM KVM | Conteneur LXC Debian 12 (non-privilégié avec nesting) |
-| **vCPU** | 2 cœurs | 2–4 cœurs |
-| **RAM** | 4 Go | 4 Go |
-| **Stockage** | 30 Go | 40–50 Go (SSD / NVMe) |
-| **Réseau** | Bridge local `vmbr0` (LAN) | IP statique ou bail DHCP réservé |
+**Ressources minimales :**
+- 2 vCPU
+- 4 Go RAM (ajoutez 8 Go si vous hébergez Ollama localement)
+- 40 Go disque
 
----
-
-## 2. Préparation de la Machine Debian 12
-
-### Étape 2.1 — Création du conteneur LXC sous Proxmox VE
-1. Dans l'interface Proxmox VE, cliquez sur **Create CT**.
-2. Modèle : `debian-12-standard`.
-3. Cochez **Nesting** dans `Options > Features` (indispensable pour exécuter Docker dans un conteneur LXC).
-4. Allouez 2 vCPU, 4 Go de RAM et 40 Go de disque.
-
-### Étape 2.2 — Installation de Docker & Utilitaires de base
-Connectez-vous en SSH ou via la console Proxmox :
-
+### 1. Installation de Docker
 ```bash
 # Mise à jour système
-sudo apt-get update && sudo apt-get upgrade -y
-sudo apt-get install -y curl git ca-certificates gnupg
+sudo apt update && sudo apt upgrade -y
 
-# Installation du dépôt officiel Docker
-sudo install -m 0755 -d /etc/apt/keyrings
-curl -fsSL https://download.docker.com/linux/debian/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-sudo chmod a+r /etc/apt/keyrings/docker.gpg
-
-echo \
-  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian \
-  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
-  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-
-sudo apt-get update
-sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+# Installation de Docker (script officiel)
+curl -fsSL https://get.docker.com -o get-docker.sh
+sudo sh get-docker.sh
+sudo usermod -aG docker $USER
 ```
+*(Déconnectez-vous puis reconnectez-vous pour appliquer le groupe docker).*
 
----
-
-## 3. Déploiement via l'Installeur Une-Commande
-
-Exécutez l'installeur interactif :
-
+### 2. Déploiement de l'application
 ```bash
-curl -fsSL https://raw.githubusercontent.com/Klemz-696/opensio/main/scripts/install.sh | bash
+# Clonez le dépôt (remplacez par votre URL)
+git clone https://github.com/Klemz-696/opensio.git
+cd opensio
+
+# Générez la configuration de production
+node scripts/generate-secrets.mjs
+
+# (Optionnel) Modifiez .env.production si vous avez un vrai domaine
+# nano .env.production
+
+# Démarrez la stack
+docker compose -f infra/docker/docker-compose.prod.yml up -d
 ```
 
-1. Sélectionnez l'option `[2] Mode Production`.
-2. Choisissez si vous souhaitez inclure les comptes de démo (`admin@opensio.local` et `lucas.moreau@bts-sio.local`).
-3. Indiquez votre nom de domaine local (par défaut : `opensio.home.lan`).
+### 3. Vérification
+```bash
+docker compose -f infra/docker/docker-compose.prod.yml ps
+```
+Vérifiez que tous les conteneurs sont "Up" et "healthy". Accédez à votre domaine ou IP : le HTTPS est géré automatiquement.
 
 ---
 
-## 4. Configuration Réseau & Nom de Domaine (`opensio.home.lan`)
+## Option B — Conteneur LXC (Alternative légère)
 
-### Étape 4.1 — Résolution DNS locale
-Pour accéder à `https://opensio.home.lan` depuis les postes de votre réseau local, configurez un enregistrement DNS `A` :
-- **Sur votre routeur / box / Pi-hole / AdGuard Home** : créez une entrée DNS pointant `opensio.home.lan` vers l'adresse IP de votre serveur Debian.
-- **À défaut (test sur un poste client unique)** : ajoutez la ligne suivante dans le fichier hosts de votre machine :
-  - Windows : `C:\Windows\System32\drivers\etc\hosts`
-  - Linux / macOS : `/etc/hosts`
-  ```text
-  192.168.1.50   opensio.home.lan
-  ```
+Le déploiement en LXC est possible mais nécessite une configuration spécifique de Proxmox.
 
-### Étape 4.2 — Approbation du Certificat TLS Interne Caddy (D-17)
-Caddy génère automatiquement un certificat TLS sécurisé émis par son autorité racine interne.
+**Limites :**
+- L'assignation de GPU (passthrough) pour Ollama est plus complexe qu'en VM.
 
-Pour éviter les avertissements de sécurité du navigateur :
-1. Récupérez le certificat racine Caddy depuis le volume Docker :
-   ```bash
-   docker compose -f docker-compose.prod.yml cp caddy:/data/caddy/pki/authorities/local/root.crt ./caddy-root.crt
-   ```
-2. Installez ce certificat dans le magasin de confiance de vos postes clients :
-   - **Windows** : Double-cliquez sur `caddy-root.crt` > *Installer un certificat* > *Ordinateur local* > *Placer dans le magasin : Autorités de certification racines de confiance*.
-   - **Linux** : Copiez dans `/usr/local/share/ca-certificates/caddy-root.crt` et exécutez `sudo update-ca-certificates`.
-   - **Navigateurs (Firefox)** : Importez dans `Paramètres > Confidentialité et sécurité > Certificats > Afficher les certificats > Autorités > Importer`.
+### 1. Création du LXC sur Proxmox
+- Téléchargez le template `debian-12-standard`.
+- Créez le LXC (décochez "Unprivileged" si vous rencontrez des problèmes de permissions de volumes, mais il est recommandé d'essayer en unprivileged d'abord).
+- **CRITIQUE :** Dans "Features" (Options du LXC), cochez **Nesting** et **keyctl**. Ces options sont obligatoires pour faire tourner Docker dans un LXC.
+
+### 2. Installation et déploiement
+Connectez-vous au LXC et suivez **exactement les mêmes étapes** 1, 2 et 3 que pour l'Option A.
 
 ---
 
-## 5. Exploitation & Maintenance
+## Ollama : Configuration du Chatbot
+
+OpenSIO intègre 3 modes pour Ollama, paramétrables dans `.env.production` :
+
+| Mode | Configuration | Cas d'usage |
+|------|---------------|-------------|
+| **Désactivé** | `AI_ENABLED=false` | Pas de mentorat IA (l'interface s'adapte). |
+| **Local** | `OLLAMA_BASE_URL=http://ollama:11434`<br/>Lancer avec : `docker compose -f ... --profile ollama-local up -d` | Ollama tourne sur la même machine. RAM requise : +8 Go minimum. |
+| **Distant** | `OLLAMA_BASE_URL=http://<IP-SERVEUR>:11434` | Ollama tourne sur un autre serveur GPU (recommandé pour les performances). |
+
+---
+
+## Opérations courantes
 
 ### Mises à jour
-Pour mettre à jour la plateforme sans interruption de service :
-
 ```bash
-cd /opt/opensio   # ou votre dossier de déploiement
-git pull
-docker compose -f docker-compose.prod.yml up -d --build
-docker compose -f docker-compose.prod.yml exec api pnpm exec prisma migrate deploy
-docker compose -f docker-compose.prod.yml exec api node dist/sync/cli.js
+cd opensio
+git pull origin main
+# Rebuild des images
+docker compose -f infra/docker/docker-compose.prod.yml build
+# Redémarrage
+docker compose -f infra/docker/docker-compose.prod.yml up -d
 ```
 
-### Consultation des journaux (Logs)
+### Sauvegardes
+Intégrez le script de sauvegarde existant au cron de la machine hôte :
 ```bash
-# Logs de l'ensemble des services
-docker compose -f docker-compose.prod.yml logs -f
-
-# Logs de l'API seule
-docker compose -f docker-compose.prod.yml logs -f api
+# Exemple : sauvegarde tous les jours à 3h du matin
+0 3 * * * cd /chemin/vers/opensio && ./scripts/backup.sh
 ```
 
-### Sauvegardes & Restauration
-- Les sauvegardes chiffrées sont exécutées automatiquement chaque nuit à 2h00 dans le volume `backups_data`.
-- Pour déclencher une sauvegarde manuelle :
-  ```bash
-  docker compose -f docker-compose.prod.yml exec backup /scripts/backup.sh
-  ```
-- Pour la procédure de restauration, consultez le runbook [`docs/runbooks/restore.md`](./runbooks/restore.md).
+### Dépannage
+- **Caddy ne génère pas de certificat HTTPS :** Assurez-vous que les ports 80 et 443 sont bien redirigés vers la VM/LXC (NAT) et que le domaine pointe bien vers votre IP publique.
+- **Le terminal affiche "Erreur réseau" :** Vérifiez les logs avec `docker compose -f infra/docker/docker-compose.prod.yml logs api`.
