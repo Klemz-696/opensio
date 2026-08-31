@@ -6,6 +6,7 @@ RUN corepack enable
 FROM base AS builder
 WORKDIR /app
 COPY . .
+RUN mkdir -p /app/apps/web/public
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 
 # Les variables NEXT_PUBLIC_* doivent être fournies au build
