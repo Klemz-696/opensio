@@ -42,3 +42,5 @@ Thumbs.db
 
 *.tsbuildinfo
 next-env.d.ts
+# Secrets production - jamais commites
+.env.production
