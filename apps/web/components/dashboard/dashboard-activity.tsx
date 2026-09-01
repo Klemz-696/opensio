@@ -14,7 +14,7 @@ export function DashboardActivity({ events }: DashboardActivityProps) {
           <History className="w-5 h-5 text-sky-600 dark:text-sky-400" />
           <h2 className="text-lg font-bold text-slate-900 dark:text-white">Activité récente</h2>
         </div>
-        <p className="text-xs text-slate-500 italic py-4">
+        <p className="text-xs text-slate-500 dark:text-slate-400 italic py-4">
           Aucun événement d'activité pour le moment.
         </p>
       </div>

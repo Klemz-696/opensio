@@ -26,6 +26,12 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+          <a
+            href="#main-content"
+            className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 z-50 bg-sky-500 text-white px-4 py-2 rounded-md font-semibold focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:outline-none dark:focus-visible:ring-sky-400"
+          >
+            Aller au contenu principal
+          </a>
           <NavigationProgress />
           <AuthProvider>
             {children}
