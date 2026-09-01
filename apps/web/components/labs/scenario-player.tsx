@@ -79,6 +79,7 @@ export function ScenarioPlayer({
             type="button"
             onClick={() => setCurrentStep(i)}
             title={`Étape ${i + 1}`}
+            aria-label={`Aller à l'étape ${i + 1}`}
             className={[
               'h-2 flex-1 rounded-full transition-colors cursor-pointer',
               i === currentStep

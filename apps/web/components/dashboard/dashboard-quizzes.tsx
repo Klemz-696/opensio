@@ -10,12 +10,14 @@ interface DashboardQuizzesProps {
 export function DashboardQuizzes({ quizzes }: DashboardQuizzesProps) {
   if (!quizzes || quizzes.length === 0) {
     return (
-      <div className="glass-panel rounded-2xl p-6 border border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/60 shadow-sm mb-8">
-        <div className="flex items-center gap-2 mb-4 pb-3 border-b border-slate-200 dark:border-slate-800">
+      <div className="p-6 mb-8 glass-panel rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/60 shadow-sm">
+        <div className="flex items-center gap-3 mb-6">
           <Award className="w-5 h-5 text-amber-500 dark:text-amber-400" />
-          <h2 className="text-lg font-bold text-slate-900 dark:text-white">Derniers résultats de Quiz</h2>
+          <h2 className="text-lg font-bold text-slate-900 dark:text-white">
+            Derniers résultats de Quiz
+          </h2>
         </div>
-        <p className="text-xs text-slate-500 italic py-4">
+        <p className="text-xs text-slate-500 dark:text-slate-400 italic py-4">
           Vous n'avez pas encore passé de quiz. Testez vos connaissances après avoir lu vos cours !
         </p>
       </div>
