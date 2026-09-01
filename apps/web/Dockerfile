@@ -1,66 +1,50 @@
-# ==============================================================================
-# OpenSIO Web — Dockerfile Multi-stage de Production (Next.js 15 App Router)
-# ==============================================================================
-
-# 1. Image de base
 FROM node:22-alpine AS base
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
-RUN corepack enable && corepack prepare pnpm@11.23.0 --activate
-RUN apk add --no-cache libc6-compat wget bash dumb-init
+RUN corepack enable
 
-# 2. Installation des dépendances du monorepo
-FROM base AS deps
-WORKDIR /app
-COPY pnpm-lock.yaml pnpm-workspace.yaml package.json turbo.json ./
-COPY packages/config/package.json ./packages/config/
-COPY packages/content-schema/package.json ./packages/content-schema/
-COPY apps/web/package.json ./apps/web/
-RUN pnpm install --frozen-lockfile
-
-# 3. Compilation Next.js
 FROM base AS builder
 WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
-COPY --from=deps /app/packages ./packages
-COPY --from=deps /app/apps/web/node_modules ./apps/web/node_modules
-COPY pnpm-lock.yaml pnpm-workspace.yaml package.json turbo.json ./
-COPY packages ./packages
-COPY apps/web ./apps/web
+COPY . .
+RUN mkdir -p /app/apps/web/public
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 
-ENV NEXT_TELEMETRY_DISABLED=1
-ENV NODE_ENV=production
+# Les variables NEXT_PUBLIC_* doivent être fournies au build
+# car Next.js les fige (inlining) dans le code client généré.
+ARG NEXT_PUBLIC_API_URL
+ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
 
-RUN pnpm --filter @opensio/content-schema build
-
-WORKDIR /app/apps/web
-RUN pnpm build
-
-# 4. Image finale d'exécution (durcie, non-root)
-FROM node:22-alpine AS runner
 WORKDIR /app
+RUN pnpm exec turbo run build --filter @opensio/web
 
+FROM base AS runner
+WORKDIR /app
 ENV NODE_ENV=production
-ENV PORT=3000
-ENV HOSTNAME="0.0.0.0"
+# Désactive la télémétrie Next.js
 ENV NEXT_TELEMETRY_DISABLED=1
 
-RUN apk add --no-cache libc6-compat wget bash dumb-init
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
 
-USER node
+# Set correct permissions for nextjs user
+RUN mkdir .next && chown nextjs:nodejs .next
 
-COPY --chown=node:node --from=builder /app/node_modules ./node_modules
-COPY --chown=node:node --from=builder /app/packages ./packages
-COPY --chown=node:node --from=builder /app/apps/web/node_modules ./apps/web/node_modules
-COPY --chown=node:node --from=builder /app/apps/web/.next ./apps/web/.next
-COPY --chown=node:node --from=builder /app/apps/web/package.json ./apps/web/package.json
-COPY --chown=node:node --from=builder /app/package.json ./package.json
+# Copie automatique des fichiers standalone générés par Next.js
+# Le chemin correspond à la racine du monorepo
+COPY --from=builder --chown=nextjs:nodejs /app/apps/web/.next/standalone ./
+# Les dossiers static et public doivent être copiés manuellement
+COPY --from=builder --chown=nextjs:nodejs /app/apps/web/.next/static ./apps/web/.next/static
+COPY --from=builder --chown=nextjs:nodejs /app/apps/web/public ./apps/web/public
 
-WORKDIR /app/apps/web
+USER nextjs
 
 EXPOSE 3000
 
-HEALTHCHECK --interval=10s --timeout=5s --start-period=10s --retries=3 \
-  CMD wget --no-verbose --tries=1 --spider http://127.0.0.1:3000/api/health || exit 1
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
 
-CMD ["dumb-init", "--", "node_modules/.bin/next", "start", "--port", "3000", "--hostname", "0.0.0.0"]
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=5 \
+  CMD wget --no-verbose --tries=1 --spider http://127.0.0.1:3000 || exit 1
+
+# Démarrage du serveur Node.js généré par le mode standalone
+CMD ["node", "apps/web/server.js"]

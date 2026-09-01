@@ -1,67 +1,47 @@
-# ==============================================================================
-# OpenSIO API — Dockerfile Multi-stage de Production
-# ==============================================================================
-
-# 1. Image de base commune
 FROM node:22-alpine AS base
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
-RUN corepack enable && corepack prepare pnpm@11.23.0 --activate
-RUN apk add --no-cache openssl libc6-compat wget bash dumb-init
+RUN corepack enable
 
-# 2. Installation des dépendances du monorepo
-FROM base AS deps
+FROM base AS build
 WORKDIR /app
-COPY pnpm-lock.yaml pnpm-workspace.yaml package.json turbo.json ./
-COPY packages/config/package.json ./packages/config/
-COPY packages/content-schema/package.json ./packages/content-schema/
-COPY apps/api/package.json ./apps/api/
-RUN pnpm install --frozen-lockfile
+COPY . .
+# Installation globale pour la phase de build
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 
-# 3. Compilation de l'API et génération Prisma
-FROM base AS builder
+# Génération Prisma et Build NestJS via Turbo (pour inclure les dépendances workspace)
 WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
-COPY --from=deps /app/packages ./packages
-COPY --from=deps /app/apps/api/node_modules ./apps/api/node_modules
-COPY pnpm-lock.yaml pnpm-workspace.yaml package.json turbo.json ./
-COPY packages ./packages
-COPY apps/api ./apps/api
+RUN pnpm --filter @opensio/api db:generate
+RUN pnpm exec turbo run build --filter @opensio/api
 
-RUN pnpm --filter @opensio/content-schema build
-
-WORKDIR /app/apps/api
-RUN pnpm exec prisma generate --schema=prisma/schema
-RUN pnpm build
-
-# 4. Image finale d'exécution (durcie, non-root)
-FROM node:22-alpine AS runner
+# Déploiement isolé de l'app API avec uniquement ses dépendances de production
 WORKDIR /app
+RUN pnpm --filter @opensio/api deploy --prod --legacy /app/out
 
+# Génération Prisma dans le dossier de déploiement (requis car le client est généré dans node_modules)
+WORKDIR /app/out
+# On copie le schéma Prisma pour la génération
+COPY apps/api/prisma ./prisma
+ENV CI=true
+RUN npx -y prisma@6.19.3 generate --schema=./prisma/schema
+
+FROM base AS runtime
+WORKDIR /app
 ENV NODE_ENV=production
-ENV PORT=4000
-ENV API_PORT=4000
 
-RUN apk add --no-cache openssl libc6-compat wget bash dumb-init
+# Copie depuis le dossier de déploiement
+COPY --from=build /app/out .
 
-USER node
-
-COPY --chown=node:node --from=builder /app/node_modules ./node_modules
-COPY --chown=node:node --from=builder /app/apps/api/node_modules ./apps/api/node_modules
-COPY --chown=node:node --from=builder /app/apps/api/dist ./apps/api/dist
-COPY --chown=node:node --from=builder /app/apps/api/prisma ./apps/api/prisma
-COPY --chown=node:node --from=builder /app/apps/api/package.json ./apps/api/package.json
-COPY --chown=node:node --from=builder /app/packages ./packages
-COPY --chown=node:node --from=builder /app/package.json ./package.json
-
-WORKDIR /app/apps/api
-
-COPY --chown=node:node apps/api/docker-entrypoint.sh ./docker-entrypoint.sh
-RUN chmod +x ./docker-entrypoint.sh
+# Configuration utilisateur non-root
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+RUN chown -R appuser:appgroup /app
+USER appuser
 
 EXPOSE 4000
 
-HEALTHCHECK --interval=10s --timeout=5s --start-period=15s --retries=3 \
-  CMD wget --no-verbose --tries=1 --spider http://127.0.0.1:4000/api/v1/health || exit 1
+# Healthcheck
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:4000/api/v1/health || exit 1
 
-ENTRYPOINT ["dumb-init", "--", "./docker-entrypoint.sh"]
+# Commande de démarrage avec exécution des migrations
+CMD ["sh", "-c", "./node_modules/.bin/prisma migrate deploy --schema=./prisma/schema && node dist/main.js"]

@@ -1,51 +1,15 @@
-# ==============================================================================
-# OpenSIO — Configuration Caddy Reverse Proxy & TLS Interne (D-06, D-17)
-# ==============================================================================
-
-{
-    # Configuration globale
-    admin off
-    auto_https disable_redirects
-}
-
-{$DOMAIN:opensio.home.lan} {
-    {$TLS_DIRECTIVE:tls internal}
-
-    # En-têtes de sécurité applicative (D-10, §30)
+{$DOMAIN:localhost} {
+    # Redirection de l'API vers le backend NestJS
+    reverse_proxy /api/* api:4000
+    
+    # Redirection du reste vers le frontend Next.js
+    reverse_proxy /* web:3000
+    
+    # Sécurité basique
     header {
         Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
         X-Content-Type-Options "nosniff"
         X-Frame-Options "DENY"
-        Referrer-Policy "strict-origin-when-cross-origin"
         X-XSS-Protection "1; mode=block"
-        -Server
-    }
-
-    # Compression dynamique
-    encode zstd gzip
-
-    # Routage WebSocket pour le terminal interactif des labs (D-14)
-    @websockets {
-        header Connection *Upgrade*
-        header Upgrade websocket
-    }
-    handle @websockets {
-        reverse_proxy api:4000
-    }
-
-    # API Backend NestJS
-    handle /api/* {
-        reverse_proxy api:4000
-    }
-
-    # Frontend Next.js
-    handle {
-        reverse_proxy web:3000
-    }
-
-    # Logs d'accès Caddy
-    log {
-        output stdout
-        format json
     }
 }
