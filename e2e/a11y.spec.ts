@@ -4,6 +4,9 @@ import AxeBuilder from '@axe-core/playwright';
 
 const ROUTES = [
   { name: 'Login', path: '/login', requiresAuth: false },
+  { name: 'Register', path: '/register', requiresAuth: false },
+  { name: 'Mentions Légales', path: '/mentions-legales', requiresAuth: false },
+  { name: 'Confidentialité', path: '/confidentialite', requiresAuth: false },
   { name: 'Catalogue', path: '/catalogue', requiresAuth: true },
   { name: 'Leçon', path: '/catalogue/reseaux-fondamentaux/lecon-1', requiresAuth: true },
   { name: 'Quiz', path: '/catalogue/reseaux-fondamentaux/quiz', requiresAuth: true }, // Might need dynamic path if it changes
