@@ -61,13 +61,6 @@ environnement où chaque notion est immédiatement mise en application.
 | 🤖 Assistant IA | Chat intégré (Ollama local, optionnel) pour aide contextuelle aux exercices |
 | 🚀 Lanceur intelligent | `pnpm opensio` orchestre tout : Docker, DB, ports, seed, raccourcis, démarrage |
 
-## 📸 Aperçu
-
-![Page de connexion](docs/screenshots/login.png)
-![Catalogue des cours](docs/screenshots/catalogue.png)
-![Lecteur de cours](docs/screenshots/lecteur.png)
-![Mentor IA](docs/screenshots/mentor.png)
-![Dashboard Admin](docs/screenshots/admin.png)
 
 ## 📚 Le catalogue SISR
 
