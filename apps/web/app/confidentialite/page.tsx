@@ -34,7 +34,7 @@ export default function ConfidentialitePage() {
             <div className="prose dark:prose-invert max-w-none text-slate-600 dark:text-slate-300">
               <p>
                 Le responsable du traitement des données à caractère personnel collectées sur OpenSIO est <strong>Klemz</strong>.
-                Pour toute question relative à vos données, vous pouvez le contacter à : <strong>klemz.contact@gmail.com</strong>.
+                Pour toute question relative à vos données, vous pouvez le contacter à : <strong><a href="mailto:klemz.support@gmail.com" className="text-emerald-600 dark:text-emerald-400 hover:underline">klemz.support@gmail.com</a></strong>.
               </p>
             </div>
           </section>
