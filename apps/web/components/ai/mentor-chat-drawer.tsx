@@ -45,10 +45,6 @@ export function MentorChatDrawer({ currentContext }: MentorChatDrawerProps) {
     handleSendMessage,
   } = useMentorChat(currentContext);
 
-  if (!user) return null;
-
-  const currentConv = conversations.find((c) => c.id === activeConvId);
-
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && isOpen) {
@@ -58,6 +54,10 @@ export function MentorChatDrawer({ currentContext }: MentorChatDrawerProps) {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, setIsOpen]);
+
+  if (!user) return null;
+
+  const currentConv = conversations.find((c) => c.id === activeConvId);
 
   return (
     <>
