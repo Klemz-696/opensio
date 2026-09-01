@@ -212,6 +212,13 @@ export function RegisterForm() {
             </>
           )}
         </button>
+
+        <p className="text-xs text-center text-slate-500 dark:text-slate-400 mt-4">
+          En créant un compte, vous acceptez la{' '}
+          <Link href="/confidentialite" className="underline hover:text-slate-700 dark:hover:text-slate-300">
+            politique de confidentialité
+          </Link>.
+        </p>
       </form>
 
       <div className="mt-6 pt-6 border-t border-slate-200 dark:border-slate-800 text-center">
