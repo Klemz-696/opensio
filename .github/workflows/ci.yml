@@ -5,6 +5,10 @@ on:
   push:
     branches: [main]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   validate:
     name: Validation globale (Lint, Types, Taille D-13, Tests, Build)
@@ -43,6 +47,7 @@ jobs:
         with:
           node-version: 24
           cache: "pnpm"
+          cache-dependency-path: pnpm-lock.yaml
 
       - name: Installation des dépendances
         run: pnpm install --frozen-lockfile
