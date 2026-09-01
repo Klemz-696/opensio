@@ -43,7 +43,7 @@ const mockDashboardData: DashboardData = {
       trackSlug: 'annee-1',
       difficulty: 2,
       estimatedMinutes: 45,
-      status: 'completed',
+      status: 'started',
       timeSpentSeconds: 1800,
       updatedAt: '2026-08-24T12:00:00Z',
     },
@@ -95,9 +95,41 @@ describe('Composants du Tableau de bord (Dashboard)', () => {
   it('DashboardHeader rend le nom de l\'utilisateur et les badges de synthèse', () => {
     render(<DashboardHeader displayName="Lucas SISR" overview={mockDashboardData.overview} />);
     expect(screen.getByText('Lucas SISR')).toBeDefined();
-    expect(screen.getByText(/4\/10 leçons terminées/)).toBeDefined();
-    expect(screen.getByText(/1\/2 quiz réussis/)).toBeDefined();
+    expect(screen.getByText(/4\/10/)).toBeDefined();
+    expect(screen.getByText(/leçons terminées/)).toBeDefined();
+    expect(screen.getByText(/1\/2/)).toBeDefined();
+    expect(screen.getByText(/quiz réussis/)).toBeDefined();
+    expect(screen.getByText("1 h d'apprentissage")).toBeDefined();
   });
+
+  it('DashboardHeader affiche "Temps d\'apprentissage : --" lorsque le temps total est de 0 ou non renseigné', () => {
+    const zeroTimeOverview = {
+      ...mockDashboardData.overview,
+      totalTimeSpentSeconds: 0,
+    };
+    render(<DashboardHeader displayName="Nouveau SISR" overview={zeroTimeOverview} />);
+    expect(screen.getByText("Temps d'apprentissage : --")).toBeDefined();
+    expect(screen.queryByText("Non spécifié d'apprentissage")).toBeNull();
+  });
+
+  it('DashboardHeader formate correctement le temps d\'apprentissage quand il est supérieur à zéro', () => {
+    const customTimeOverview = {
+      ...mockDashboardData.overview,
+      totalTimeSpentSeconds: 1500, // 25 min
+    };
+    render(<DashboardHeader displayName="Lucas SISR" overview={customTimeOverview} />);
+    expect(screen.getByText("25 min d'apprentissage")).toBeDefined();
+  });
+
+  it('DashboardHeader affiche "< 1 min d\'apprentissage" pour les durées très courtes (< 30s)', () => {
+    const shortTimeOverview = {
+      ...mockDashboardData.overview,
+      totalTimeSpentSeconds: 15,
+    };
+    render(<DashboardHeader displayName="Lucas SISR" overview={shortTimeOverview} />);
+    expect(screen.getByText("< 1 min d'apprentissage")).toBeDefined();
+  });
+
 
   it('DashboardStats affiche les 4 KPI principaux', () => {
     render(<DashboardStats overview={mockDashboardData.overview} />);
@@ -108,11 +140,12 @@ describe('Composants du Tableau de bord (Dashboard)', () => {
     expect(screen.getByText('Modules validés (RM-03)')).toBeDefined();
   });
 
-  it('DashboardResume affiche les leçons à reprendre', () => {
+  it('DashboardResume affiche la section "Reprendre où tu t\'es arrêté" avec la leçon en cours', () => {
     render(<DashboardResume items={mockDashboardData.resume} />);
-    expect(screen.getByText('Reprendre où j\'en étais')).toBeDefined();
+    expect(screen.getByText(/Reprendre où tu t'es arrêté/i)).toBeDefined();
     expect(screen.getByText('Adressage IPv4')).toBeDefined();
     expect(screen.getByText('Réseaux fondamentaux')).toBeDefined();
+    expect(screen.getByText('Reprendre la leçon')).toBeDefined();
   });
 
   it('DashboardRecommendations affiche les recommandations avec liens d\'action', () => {

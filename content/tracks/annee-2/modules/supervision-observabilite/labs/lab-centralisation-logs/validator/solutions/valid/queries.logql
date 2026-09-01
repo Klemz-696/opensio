@@ -1,0 +1,5 @@
+# Requête 1 : Filtrage des logs Nginx contenant des erreurs 5xx
+{job="nginx", env="production"} |= "status=" |~ "50[0-9]"
+
+# Requête 2 : Débit moyen d'erreurs 5xx par seconde par hôte
+sum by (host) (rate({job="nginx", env="production"} |= "500"[5m]))

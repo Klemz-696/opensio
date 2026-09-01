@@ -1,0 +1,79 @@
+slug: quiz-strategie-sauvegarde-3-2-1
+title: "Quiz — Stratégie de Sauvegarde 3-2-1"
+passing_score: 80
+position: 2
+questions:
+  - kind: single
+    prompt: "Que préconise précisément la règle de sauvegarde fondamentale 3-2-1 ?"
+    choices:
+      - id: a
+        text: "3 copies des données, sur au moins 2 supports distincts, avec au moins 1 copie externalisée hors-site"
+      - id: b
+        text: "3 disques durs identiques, 2 serveurs Proxmox, 1 seul mot de passe administrateur"
+      - id: c
+        text: "3 sauvegardes par jour, sur 2 disques USB, pendant 1 semaine"
+      - id: d
+        text: "3 machines virtuelles, 2 cartes réseaux, 1 commutateur de secours"
+    correct:
+      - a
+    explanation: "La règle 3-2-1 garantit une protection contre les pannes matérielles locales, les sinistres physiques d'un bâtiment et les pertes accidentelles."
+
+  - kind: single
+    prompt: "Dans l'extension moderne 3-2-1-1-0, à quoi correspondent les deux derniers chiffres '1-0' ?"
+    choices:
+      - id: a
+        text: "1 copie immuable (WORM/Air-Gap) contre les ransomwares et 0 erreur lors des tests périodiques de restauration"
+      - id: b
+        text: "1 seul administrateur habilité et 0 mot de passe"
+      - id: c
+        text: "1 copie locale et 0 accès Internet"
+      - id: d
+        text: "1 heure de pause et 0 coupure réseau"
+    correct:
+      - a
+    explanation: "Le '1-0' ajoute l'immuabilité (stockage verrouillé contre toute suppression/chiffrement malveillant) et la validation impérative de 0 erreur de restauration par des tests réguliers."
+
+  - kind: single
+    prompt: "Quelle est la différence majeure entre une sauvegarde différentielle et une sauvegarde incrémentale ?"
+    choices:
+      - id: a
+        text: "La différentielle sauvegarde les changements depuis la dernière complète, tandis que l'incrémentale sauvegarde les changements depuis la toute dernière sauvegarde (complète ou incrémentale)"
+      - id: b
+        text: "La sauvegarde incrémentale copie toujours 100 % des fichiers"
+      - id: c
+        text: "La sauvegarde différentielle ne fonctionne qu'avec des fichiers texte"
+      - id: d
+        text: "La sauvegarde incrémentale est impossible à restaurer sous Linux"
+    correct:
+      - a
+    explanation: "La différentielle augmente de volume chaque jour jusqu'à la prochaine complète, alors que l'incrémentale reste très légère car elle ne capture que les deltas de la veille."
+
+  - kind: single
+    prompt: "Qu'est-ce que le principe de déduplication au niveau bloc (Block-Level Deduplication) ?"
+    choices:
+      - id: a
+        text: "Un procédé qui calcule l'empreinte de chaque bloc et n'enregistre qu'une seule fois les blocs identiques sur le stockage de sauvegarde"
+      - id: b
+        text: "La suppression automatique des fichiers de plus de 10 Go"
+      - id: c
+        text: "Le chiffrement de chaque fichier avec un mot de passe différent"
+      - id: d
+        text: "L'obligation d'avoir des disques durs de marques différentes"
+    correct:
+      - a
+    explanation: "La déduplication évite de stocker des milliers de fois les mêmes blocs de systèmes d'exploitation (fichiers Windows/Linux identiques), divisant l'espace consommé par un facteur de 5 à 20."
+
+  - kind: single
+    prompt: "Dans une politique de rétention GFS (Grand-Père / Père / Fils), à quelle périodicité correspond généralement le niveau 'Père' (Father) ?"
+    choices:
+      - id: a
+        text: "Les sauvegardes hebdomadaires (conservées généralement 4 à 5 semaines)"
+      - id: b
+        text: "Les sauvegardes quotidiennes (conservées 7 jours)"
+      - id: c
+        text: "Les sauvegardes annuelles fiscales (conservées 10 ans)"
+      - id: d
+        text: "Les instantanés exécutés toutes les 5 minutes"
+    correct:
+      - a
+    explanation: "Fils = quotidien (jours), Père = hebdomadaire (semaines), Grand-père = mensuel / annuel (mois et années)."

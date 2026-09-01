@@ -1,0 +1,68 @@
+slug: construction-parcours-certification-it
+title: "Construction d'un Parcours de Certifications IT et Plan d'Étude"
+level: 2_files
+max_score: 100
+estimated_minutes: 45
+context: |
+  Vous devez concevoir votre feuille de route pluriannuelle de certifications professionnelles et votre plan d'étude associé pour sécuriser votre trajectoire de carrière post-BTS SIO.
+
+  Vous devez configurer :
+  1. **`certification-roadmap.yml`** :
+     - Déclarer le métier ou profil cible (`target_role`)
+     - Sélectionner au moins 2 certifications officielles sous `certifications:`, avec pour chacune : `code` d'examen, `title`, `vendor`, `level`, `estimated_cost_eur` et `target_quarter` (ex: "2026-Q4")
+     - Calculer le budget total prévisionnel (`total_budget_eur`) correspondant à la somme exacte des coûts des certifications sélectionnées
+  2. **`study-plan.yml`** :
+     - Définir le rythme d'étude hebdomadaire (`weekly_study_hours`, entre 5 et 15 h)
+     - Définir la durée de préparation par certification (`prep_weeks_per_cert`, entre 8 et 16 semaines)
+     - Déclarer au moins 3 types de ressources d'apprentissage (`resources`)
+     - Décrire l'environnement de pratique en laboratoire (`lab_environment`)
+
+objectives:
+  - "Bâtir un plan de certification réaliste et progressif adapté à un objectif métier"
+  - "Estimer le budget et planifier les échéances d'examens (Roadmap trimestrielle)"
+  - "Organiser un calendrier de révision hebdomadaire conciliant études/travail et préparation"
+  - "Sélectionner des ressources d'étude équilibrées (Théorie, Home Lab, Examens blancs)"
+
+prerequisites:
+  - "panorama-certifications-it-systemes-reseaux"
+  - "preparation-examens-certification-methodologie"
+
+files:
+  editable:
+    - path: certification-roadmap.yml
+      description: "Feuille de route des certifications cibles, niveaux et budget"
+    - path: study-plan.yml
+      description: "Plan d'étude hebdomadaire, durée de révision et environnement de lab"
+
+hints:
+  - cost_percent: 10
+    text: "Dans certification-roadmap.yml, renseignez au moins 2 certifications avec leur code d'examen officiel."
+  - cost_percent: 10
+    text: "Vérifiez que total_budget_eur correspond exactement à la somme des estimated_cost_eur."
+  - cost_percent: 10
+    text: "Dans study-plan.yml, indiquez un nombre d'heures hebdomadaires réaliste (entre 5 et 15 h)."
+
+validation:
+  type: script
+  image: opensio/validator-certification:latest
+  timeout_seconds: 30
+  checks:
+    - id: career_target_and_certifications_list
+      required: true
+      points: 25
+      description: "Profil et Certifications : définition du profil cible et sélection d'au moins 2 certifications avec codes officiels"
+    - id: budget_and_timeline_coherence
+      required: true
+      points: 25
+      description: "Budget et Échéancier : calcul exact de total_budget_eur et planification trimestrielle (target_quarter)"
+    - id: study_plan_schedule_and_intensity
+      required: true
+      points: 25
+      description: "Rythme d'Étude : heures hebdomadaires (5-15 h) et durée de préparation (8-16 semaines) calibrées"
+    - id: learning_resources_and_lab_environment
+      required: true
+      points: 25
+      description: "Ressources et Laboratoire : sélection de ressources variées et description de l'environnement de pratique"
+
+scoring:
+  floor_percent: 50

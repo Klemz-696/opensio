@@ -1,0 +1,5 @@
+Service,Criticite,RPO_Cible,RTO_Cible,Strategie_Sauvegarde,Frequence_Test_Restauration
+Active Directory DS,Critique,1h,30min,System State + Snapshot VM immuable,Hebdomadaire
+ERP PostgreSQL,Critique,15min,1h,Dump complet quotidien + WAL continu,Hebdomadaire
+Serveur de Fichiers,Moyenne,24h,4h,Incrémentale rsync/Borg avec rétention GFS,Mensuel
+Serveur de Logs & Archivage,Faible,7j,48h,Complète hebdomadaire compressée stockage froid,Trimestriel

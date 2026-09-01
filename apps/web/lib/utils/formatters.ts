@@ -50,3 +50,32 @@ export function formatLabLevel(level: string): { label: string; badge: string } 
       return { label: 'Lab pratique', badge: 'Pratique' };
   }
 }
+
+/**
+ * Extrait les initiales d'un nom d'affichage (ex: "Alexandre Dupont" -> "AD", "Admin" -> "AD").
+ */
+export function getInitials(name?: string | null): string {
+  if (!name || name.trim().length === 0) return 'U';
+  const parts = name.trim().split(/\s+/);
+  if (parts.length === 1) {
+    return parts[0].slice(0, 2).toUpperCase();
+  }
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
+
+/**
+ * Formate le rôle utilisateur pour l'affichage avec libellé en français.
+ */
+export function formatRole(role?: string): string {
+  switch (role?.toUpperCase()) {
+    case 'ADMIN':
+      return 'Administrateur';
+    case 'TEACHER':
+      return 'Formateur';
+    case 'APPRENANT':
+    case 'STUDENT':
+    default:
+      return 'Apprenant';
+  }
+}
+

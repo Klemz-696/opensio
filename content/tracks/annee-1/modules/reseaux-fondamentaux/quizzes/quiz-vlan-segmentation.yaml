@@ -1,0 +1,97 @@
+slug: quiz-vlan-segmentation
+title: "Quiz — VLAN et Segmentation"
+passing_score: 80
+position: 5
+questions:
+  - kind: single
+    prompt: "Quelle est la taille totale en octets du tag inséré dans une trame Ethernet par le standard IEEE 802.1Q ?"
+    choices:
+      - id: a
+        text: "2 octets"
+      - id: b
+        text: "4 octets"
+      - id: c
+        text: "8 octets"
+      - id: d
+        text: "12 octets"
+    correct:
+      - b
+    explanation: "Le tag IEEE 802.1Q mesure exactement 4 octets (32 bits), composés du champ TPID (2 octets, valeur 0x8100) et du champ TCI (2 octets, comprenant la priorité CoS, le bit DEI et le VLAN ID sur 12 bits)."
+
+  - kind: single
+    prompt: "Combien de VLANs distincts peuvent être codés au maximum dans le champ VID (VLAN Identifier) de 12 bits d'un tag 802.1Q ?"
+    choices:
+      - id: a
+        text: "256"
+      - id: b
+        text: "1024"
+      - id: c
+        text: "4094 (valeurs 1 à 4094)"
+      - id: d
+        text: "65535"
+    correct:
+      - c
+    explanation: "Sur 12 bits, il existe 2^12 = 4096 combinaisons possibles (0 à 4095). Les valeurs 0 et 4095 étant réservées, les identifiants de VLAN valides s'étendent de 1 à 4094."
+
+  - kind: single
+    prompt: "Sur une liaison Trunk 802.1Q, comment est traité le trafic appartenant au VLAN natif (Native VLAN) ?"
+    choices:
+      - id: a
+        text: "Il est chiffré avec TLS"
+      - id: b
+        text: "Il est transmis sans aucun tag 802.1Q (non tagué)"
+      - id: c
+        text: "Il est systématiquement bloqué par le commutateur"
+      - id: d
+        text: "Il est encapsulé avec une priorité de 7 (maximale)"
+    correct:
+      - b
+    explanation: "Par définition dans la norme 802.1Q, le trafic associé au VLAN natif transite en clair sans aucun tag d'en-tête additionnel sur la liaison trunk."
+
+  - kind: multiple
+    prompt: "Quelles commandes Cisco IOS sont requises pour configurer une interface en port d'accès appartenant au VLAN 10 ?"
+    choices:
+      - id: a
+        text: "switchport mode access"
+      - id: b
+        text: "switchport access vlan 10"
+      - id: c
+        text: "switchport mode trunk"
+      - id: d
+        text: "encapsulation dot1q 10"
+    correct:
+      - a
+      - b
+    explanation: "Sur un port d'accès, on définit d'abord le mode avec 'switchport mode access' puis on assigne le VLAN avec 'switchport access vlan 10'. 'encapsulation dot1q' est utilisée sur les sous-interfaces de routeurs ou les trunks de certains switchs L3."
+
+  - kind: multiple
+    prompt: "Parmi les mesures suivantes, lesquelles relèvent des bonnes pratiques de sécurité (durcissement) pour les VLANs ?"
+    choices:
+      - id: a
+        text: "Désactiver DTP via 'switchport nonegotiate' sur les ports d'accès"
+      - id: b
+        text: "Modifier le VLAN natif par défaut pour ne pas utiliser le VLAN 1"
+      - id: c
+        text: "Restreindre la liste des VLANs autorisés sur les trunks via 'switchport trunk allowed vlan'"
+      - id: d
+        text: "Laisser tous les ports non utilisés sur le VLAN 1 en négociation automatique"
+    correct:
+      - a
+      - b
+      - c
+    explanation: "Le durcissement implique de désactiver la négociation DTP, de modifier le VLAN natif par défaut et de filtrer les VLANs sur les trunks. Les ports non utilisés doivent être isolés et éteints (shutdown), jamais laissés actifs sur le VLAN 1."
+
+  - kind: single
+    prompt: "Quelle commande Cisco IOS en mode privilégié permet d'afficher la liste concise de tous les VLANs configurés avec leurs ports associés ?"
+    choices:
+      - id: a
+        text: "show ip route"
+      - id: b
+        text: "show vlan brief"
+      - id: c
+        text: "show interfaces trunk"
+      - id: d
+        text: "show running-config"
+    correct:
+      - b
+    explanation: "'show vlan brief' affiche un tableau synthétique contenant les numéros de VLAN, leurs noms et les interfaces d'accès affectées à chacun."

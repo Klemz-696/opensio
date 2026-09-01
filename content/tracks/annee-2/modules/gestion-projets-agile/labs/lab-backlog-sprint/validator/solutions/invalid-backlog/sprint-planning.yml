@@ -1,0 +1,5 @@
+sprint_number: 1
+sprint_goal: "Objectif de test pour backlog invalide"
+team_capacity_sp: 20
+selected_stories:
+  - "US-01"

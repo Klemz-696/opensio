@@ -1,0 +1,79 @@
+slug: quiz-habilitations-et-cycle-de-vie
+title: "Quiz — Habilitations et Cycle de Vie des Actifs"
+passing_score: 80
+position: 5
+questions:
+  - kind: single
+    prompt: "Quelle étape de sécurité et de conformité RGPD est obligatoire avant de réformer ou donner un ordinateur hors service ?"
+    choices:
+      - id: a
+        text: "L'effacement sécurisé et certifié de toutes les données du disque de stockage (norme NIST 800-88 ou destruction physique)"
+      - id: b
+        text: "Changer simplement le fond d'écran du bureau Windows"
+      - id: c
+        text: "Mettre le disque dur dans la corbeille de recyclage Windows"
+      - id: d
+        text: "Éteindre l'écran avant de débrancher l'ordinateur"
+    correct:
+      - a
+    explanation: "Le RGPD et les normes de sécurité imposent un effacement cryptographique ou magnétique irréversible pour empêcher toute fuite de données confidentielles."
+
+  - kind: single
+    prompt: "Quelle est la particularité d'une licence logicielle de type OEM ?"
+    choices:
+      - id: a
+        text: "Elle est attachée définitivement et légalement à la carte mère de l'ordinateur sur lequel elle a été initialement installée et n'est pas transférable"
+      - id: b
+        text: "Elle est gratuite et libre d'utilisation sur un nombre illimité de postes"
+      - id: c
+        text: "Elle nécessite un abonnement mensuel par carte bancaire"
+      - id: d
+        text: "Elle ne fonctionne que les week-ends"
+    correct:
+      - a
+    explanation: "Une licence OEM est vendue avec le matériel et meurt avec lui : elle ne peut pas être réutilisée sur une nouvelle machine de remplacement."
+
+  - kind: single
+    prompt: "Quel est l'intérêt principal de synchroniser GLPI avec l'annuaire Active Directory (LDAP/LDAPS) de l'entreprise ?"
+    choices:
+      - id: a
+        text: "Gérer de manière centralisée les identités, permettre l'authentification unique (SSO) et mapper automatiquement les groupes AD vers les profils et entités GLPI"
+      - id: b
+        text: "Sauvegarder les e-mails personnels des employés"
+      - id: c
+        text: "Remplacer le routeur pare-feu d'entreprise"
+      - id: d
+        text: "Calculer automatiquement les congés payés"
+    correct:
+      - a
+    explanation: "La synchronisation LDAP évite les doubles saisies, garantit l'alignement des comptes en temps réel et applique immédiatement les départs/arrivées d'employés."
+
+  - kind: single
+    prompt: "Dans GLPI, quel statut attribue-t-on à un ordinateur neuf qui vient d'être réceptionné, étiqueté et configuré, en attente d'être remis à un nouveau collaborateur ?"
+    choices:
+      - id: a
+        text: "En stock (ou En réserve)"
+      - id: b
+        text: "En service"
+      - id: c
+        text: "Réformé"
+      - id: d
+        text: "En réparation"
+    correct:
+      - a
+    explanation: "Le statut 'En stock' indique que le matériel est prêt à l'emploi dans la réserve mais n'est pas encore affecté à un utilisateur ni rattaché à un bureau."
+
+  - kind: single
+    prompt: "Dans le cadre de l'éco-responsabilité et de la conformité environnementale (RSE), vers quelle filière agréée les équipements informatiques en fin de vie doivent-ils être orientés ?"
+    choices:
+      - id: a
+        text: "La filière D3E (Déchets d'Équipements Électriques et Électroniques) avec bordereau de traçabilité BSDD"
+      - id: b
+        text: "La poubelle municipale pour ordures ménagères"
+      - id: c
+        text: "L'incinération sauvage dans la cour de l'entreprise"
+      - id: d
+        text: "L'enfouissement dans un terrain vague"
+    correct:
+      - a
+    explanation: "La législation européenne impose le recyclage des métaux lourds et composants électroniques via des filières certifiées D3E avec émission d'un bordereau BSDD."

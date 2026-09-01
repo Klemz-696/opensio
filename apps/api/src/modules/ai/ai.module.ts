@@ -4,6 +4,7 @@ import { AuditModule } from '../audit/audit.module';
 import { AuthModule } from '../auth/auth.module';
 import { AiController } from './ai.controller';
 import { ChatService } from './services/chat.service';
+import { ChatConversationService } from './services/chat-conversation.service';
 import { AiContextSanitizerService } from './services/ai-context-sanitizer.service';
 import { AiSolutionFilterService } from './services/ai-solution-filter.service';
 import { AiRateLimiterService } from './services/ai-rate-limiter.service';
@@ -34,6 +35,7 @@ import { AI_PROVIDER_TOKEN } from './interfaces/ai-provider.interface';
       },
       inject: [OpenAiCompatibleProvider, NullProvider],
     },
+    ChatConversationService,
     AiContextSanitizerService,
     AiSolutionFilterService,
     AiRateLimiterService,
@@ -41,6 +43,7 @@ import { AI_PROVIDER_TOKEN } from './interfaces/ai-provider.interface';
   ],
   exports: [
     ChatService,
+    ChatConversationService,
     AiContextSanitizerService,
     AiSolutionFilterService,
     AiRateLimiterService,

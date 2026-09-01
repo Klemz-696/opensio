@@ -1,0 +1,79 @@
+slug: quiz-analyse-logs-et-messages-erreur
+title: "Quiz — Analyse de Logs et Messages d'Erreur"
+passing_score: 80
+position: 4
+questions:
+  - kind: single
+    prompt: "According to Syslog standard severity levels (RFC 5424), which level represents a condition where the system is completely unusable (such as a kernel panic)?"
+    choices:
+      - id: a
+        text: "Emergency (Severity 0)"
+      - id: b
+        text: "Informational (Severity 6)"
+      - id: c
+        text: "Debug (Severity 7)"
+      - id: d
+        text: "Notice (Severity 5)"
+    correct:
+      - a
+    explanation: "Le niveau 'Emergency' (niveau 0) est la criticité maximale, indiquant que le système est totalement instable ou inutilisable."
+
+  - kind: single
+    prompt: "When a Linux log file shows the error 'Connection refused' upon attempting to reach an SSH server, what is the most likely root cause?"
+    choices:
+      - id: a
+        text: "The target SSH daemon (sshd) is stopped or is not listening on the specified port"
+      - id: b
+        text: "The Ethernet cable is physically severed in the wall"
+      - id: c
+        text: "The client computer hard drive is 100% full"
+      - id: d
+        text: "The user forgot their first name"
+    correct:
+      - a
+    explanation: "'Connection refused' signifie que le serveur distant est joignable au niveau IP mais qu'aucun processus n'écoute sur le port TCP demandé (service arrêté ou port incorrect)."
+
+  - kind: single
+    prompt: "What does the error message 'No space left on device' signify when writing files under Linux?"
+    choices:
+      - id: a
+        text: "The target storage partition has run out of available disk blocks or all inode numbers have been exhausted"
+      - id: b
+        text: "The server room has run out of physical space for new desks"
+      - id: c
+        text: "The computer monitor screen resolution is too low"
+      - id: d
+        text: "The Wi-Fi antenna has been disconnected"
+    correct:
+      - a
+    explanation: "Cette erreur survient lorsque la partition de stockage est saturée (100% des blocs utilisés) ou lorsque tous les inodes du système de fichiers sont consommés."
+
+  - kind: single
+    prompt: "In HTTP / Web server error logs, what does a '502 Bad Gateway' status code indicate?"
+    choices:
+      - id: a
+        text: "The reverse proxy (e.g., Nginx) received an invalid response or connection failure from the upstream backend application server"
+      - id: b
+        text: "The requested HTML web page was successfully found and displayed"
+      - id: c
+        text: "The user entered an incorrect Wi-Fi password"
+      - id: d
+        text: "The client browser does not support CSS styling"
+    correct:
+      - a
+    explanation: "Le code HTTP 502 (Bad Gateway) est renvoyé par un reverse proxy lorsqu'il n'arrive pas à communiquer avec le serveur applicatif d'arrière-plan (backend en panne)."
+
+  - kind: single
+    prompt: "In systems operations, what is a 'Standard Operating Procedure (SOP)'?"
+    choices:
+      - id: a
+        text: "A documented, step-by-step set of instructions created to help administrators perform routine operational tasks consistently and without errors"
+      - id: b
+        text: "An employment contract signed with a recruitment agency"
+      - id: c
+        text: "A software license agreement for mobile phones"
+      - id: d
+        text: "A power cable standard for server racks"
+    correct:
+      - a
+    explanation: "Une SOP est une fiche de procédure standardisée guidant pas-à-pas les interventions techniques pour assurer la qualité et la sécurité des opérations."

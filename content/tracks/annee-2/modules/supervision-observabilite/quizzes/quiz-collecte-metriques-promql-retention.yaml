@@ -1,0 +1,79 @@
+slug: quiz-collecte-metriques-promql-retention
+title: "Quiz — Collecte de Métriques et PromQL"
+passing_score: 80
+position: 2
+questions:
+  - kind: single
+    prompt: "Parmi les 4 types de métriques Prometheus, quel type doit être utilisé pour représenter un nombre total cumulatif de requêtes HTTP traitées ?"
+    choices:
+      - id: a
+        text: "Counter (Compteur)"
+      - id: b
+        text: "Gauge (Jauge)"
+      - id: c
+        text: "Histogram (Histogramme)"
+      - id: d
+        text: "Summary (Résumé)"
+    correct:
+      - a
+    explanation: "Un Counter est un compteur monotone croissant, idéal pour compter des événements continus comme le nombre de requêtes HTTP ou de paquets réseau."
+
+  - kind: single
+    prompt: "Pourquoi est-il fortement déconseillé d'injecter des données à forte cardinalité (comme un identifiant utilisateur 'user_id' ou une adresse IP client) dans les labels d'une métrique Prometheus ?"
+    choices:
+      - id: a
+        text: "Parce que chaque combinaison unique de labels génère une nouvelle série temporelle dans la base TSDB, ce qui risque de saturer la mémoire RAM et d'entraîner le crash du serveur Prometheus"
+      - id: b
+        text: "Parce que Prometheus ne supporte pas les nombres entiers"
+      - id: c
+        text: "Parce que les adresses IP sont interdites par le protocole HTTP"
+      - id: d
+        text: "Parce que cela efface automatiquement les graphiques Grafana"
+    correct:
+      - a
+    explanation: "L'explosion de cardinalité est le risque numéro 1 sous Prometheus : multiplier les séries uniques surcharge la TSDB et consomme des gigaoctets de mémoire vive."
+
+  - kind: single
+    prompt: "Quelle fonction PromQL permet de calculer le 95ème centile (p95) du temps de réponse à partir d'une métrique de type Histogramme ?"
+    choices:
+      - id: a
+        text: "histogram_quantile(0.95, sum by (le) (rate(http_request_duration_seconds_bucket[5m])))"
+      - id: b
+        text: "avg(http_request_duration_seconds) * 0.95"
+      - id: c
+        text: "percentile(95, http_requests_total)"
+      - id: d
+        text: "rate(http_request_duration_seconds[95m])"
+    correct:
+      - a
+    explanation: "`histogram_quantile()` est la fonction dédiée au calcul de centiles sur les compartiments cumulatifs (`le`) générés par les métriques Histogram."
+
+  - kind: single
+    prompt: "Comment fonctionne le modèle de collecte de métriques par 'tirage' (Pull Scraping) de Prometheus ?"
+    choices:
+      - id: a
+        text: "Prometheus interroge périodiquement les exportateurs et agents distants en exécutant des requêtes HTTP GET sur leur endpoint /metrics"
+      - id: b
+        text: "Chaque serveur surveillé envoie des emails contenant ses métriques au serveur central"
+      - id: c
+        text: "Les serveurs écrivent leurs métriques sur une clé USB partagée"
+      - id: d
+        text: "Prometheus écoute des flux radio UHF émis par les processeurs"
+    correct:
+      - a
+    explanation: "Le modèle Pull permet à Prometheus de contrôler précisément la fréquence et le volume d'ingestion et de détecter immédiatement l'indisponibilité d'une cible défaillante."
+
+  - kind: single
+    prompt: "Dans une requête PromQL sur un compteur, pourquoi applique-t-on la fonction 'rate()' plutôt que d'afficher directement la valeur brute de la métrique ?"
+    choices:
+      - id: a
+        text: "Parce que la valeur brute d'un compteur ne fait qu'augmenter continuellement, tandis que rate() calcule l'augmentation moyenne par seconde (le débit instantané)"
+      - id: b
+        text: "Parce que la fonction rate() est obligatoire pour allumer l'écran de l'ordinateur"
+      - id: c
+        text: "Parce que la valeur brute est toujours négative"
+      - id: d
+        text: "Pour chiffrer la métrique en SHA-256"
+    correct:
+      - a
+    explanation: "`rate()` convertit la courbe cumulative ascendante d'un compteur en un débit réel par seconde, pertinent pour observer l'évolution de la charge."

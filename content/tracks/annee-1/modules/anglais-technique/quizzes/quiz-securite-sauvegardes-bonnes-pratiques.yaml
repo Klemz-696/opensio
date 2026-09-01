@@ -1,0 +1,79 @@
+slug: quiz-securite-sauvegardes-bonnes-pratiques
+title: "Quiz — Sécurité et Bonnes Pratiques"
+passing_score: 80
+position: 5
+questions:
+  - kind: single
+    prompt: "What does the fundamental security principle of 'Least Privilege' require in systems administration?"
+    choices:
+      - id: a
+        text: "Every user, application, and process must be given only the bare minimum permissions necessary to perform their legitimate tasks, and nothing more"
+      - id: b
+        text: "All employees must share the same root administrator password"
+      - id: c
+        text: "The cheapest computer hardware must always be selected"
+      - id: d
+        text: "No passwords are required on internal networks"
+    correct:
+      - a
+    explanation: "Le principe de moindre privilège impose de restreindre strictement les droits d'accès au strict nécessaire opérationnel afin de limiter la portée d'une compromission."
+
+  - kind: single
+    prompt: "In cybersecurity, what does the term 'System Hardening' mean?"
+    choices:
+      - id: a
+        text: "The process of securing a server by reducing its attack surface (disabling unneeded ports, removing default accounts, turning off unnecessary services)"
+      - id: b
+        text: "Installing a heavier metal casing around the server chassis"
+      - id: c
+        text: "Increasing the CPU clock frequency to make it run faster"
+      - id: d
+        text: "Deleting all user files permanently"
+    correct:
+      - a
+    explanation: "Le durcissement (Hardening) consiste à fermer tous les vecteurs d'attaque potentiels (désactivation des services superflus, durcissement SSH/pare-feu, etc.)."
+
+  - kind: single
+    prompt: "What is an 'Air-Gap' in backup and disaster recovery architectures?"
+    choices:
+      - id: a
+        text: "A security measure where backup data is physically isolated and disconnected from all networks, preventing ransomware from reaching or altering it"
+      - id: b
+        text: "A cooling vent above the server rack"
+      - id: c
+        text: "A wireless Wi-Fi bridge between two buildings"
+      - id: d
+        text: "A hollow space inside an Ethernet cable"
+    correct:
+      - a
+    explanation: "L'Air-Gap est une déconnexion physique totale (ex: bandes magnétiques LTO déconnectées et stockées en coffre-fort) rendant la sauvegarde inaccessible aux attaques réseau."
+
+  - kind: single
+    prompt: "When reviewing a security bulletin, what does a CVSS Base Score of 9.8 indicate?"
+    choices:
+      - id: a
+        text: "A Critical severity vulnerability with severe impact and high exploitability, requiring immediate patching"
+      - id: b
+        text: "A minor cosmetic typo in software documentation"
+      - id: c
+        text: "A low battery alert on a workstation laptop"
+      - id: d
+        text: "A 9.8% discount on software licensing"
+    correct:
+      - a
+    explanation: "Sur l'échelle CVSS (0.0 à 10.0), un score de 9.0 à 10.0 est classé 'Critical' et exige l'application d'un correctif immédiat en urgence."
+
+  - kind: single
+    prompt: "What is the core philosophy of a 'Zero Trust' network architecture?"
+    choices:
+      - id: a
+        text: "'Never trust, always verify' — every request for access must be authenticated and authorized regardless of where it originates"
+      - id: b
+        text: "Never hire any new employees"
+      - id: c
+        text: "Refuse to connect the company to the Internet forever"
+      - id: d
+        text: "Trust all computers connected to the internal LAN automatically"
+    correct:
+      - a
+    explanation: "Le modèle Zero Trust postule qu'aucun équipement ni utilisateur ne bénéficie d'une confiance implicite, même situé à l'intérieur du réseau local d'entreprise."

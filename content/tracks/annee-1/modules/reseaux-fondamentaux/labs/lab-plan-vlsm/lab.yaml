@@ -1,0 +1,59 @@
+slug: plan-vlsm-complet
+title: "Plan d'adressage VLSM complet d'une entreprise multi-sites"
+level: 2_files
+max_score: 100
+estimated_minutes: 50
+context: |
+  Une entreprise multi-sites dispose du bloc d'adresses privées 172.16.0.0/20.
+  Elle doit interconnecter son siège social, deux agences régionales, une DMZ publique et deux liaisons WAN point-à-point :
+  - Siège social : 500 postes clients
+  - Agence Nord : 120 postes clients
+  - Agence Sud : 60 postes clients
+  - DMZ Serveurs : 25 serveurs
+  - Liaison WAN 1 (Siège <-> Agence Nord) : 2 adresses utiles
+  - Liaison WAN 2 (Siège <-> Agence Sud) : 2 adresses utiles
+
+  Vous devez concevoir le plan d'adressage VLSM optimisé et renseigner le fichier plan.csv.
+
+objectives:
+  - "Classer les besoins par ordre décroissant et calculer les préfixes CIDR optimaux"
+  - "Découper le bloc 172.16.0.0/20 sans gaspillage d'adresses"
+  - "Documenter pour chaque sous-réseau : réseau, préfixe, passerelle, première et dernière adresse utile, broadcast"
+  - "Garantir l'absence totale de chevauchement entre sous-réseaux"
+
+prerequisites:
+  - subnetting-vlsm
+
+topology: null
+
+files:
+  editable:
+    - path: plan.csv
+      description: "service,network,prefix,gateway,first_host,last_host,broadcast"
+
+hints:
+  - cost_percent: 10
+    text: "Ordonnez vos calculs du plus grand au plus petit : Siège (500 -> /23), Agence Nord (120 -> /25), Agence Sud (60 -> /26), DMZ (25 -> /27), WAN1 (/30), WAN2 (/30)."
+  - cost_percent: 10
+    text: "Un préfixe /23 consomme 512 adresses (de 172.16.0.0 à 172.16.1.255). Le sous-réseau suivant commence donc en 172.16.2.0."
+
+validation:
+  type: script
+  image: opensio/validator-csv:latest
+  timeout_seconds: 30
+  checks:
+    - id: subnets_valid
+      required: true
+      points: 50
+      description: "Découpage VLSM et masques adaptés à chaque service et liaison"
+    - id: no_overlap
+      required: true
+      points: 30
+      description: "Aucun chevauchement d'adresses entre les sous-réseaux"
+    - id: doc_complete
+      required: false
+      points: 20
+      description: "Toutes les adresses (passerelle, 1ère, dernière, broadcast) sont cohérentes"
+
+scoring:
+  floor_percent: 50

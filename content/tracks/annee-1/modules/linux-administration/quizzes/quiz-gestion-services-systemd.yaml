@@ -1,0 +1,80 @@
+slug: quiz-gestion-services-systemd
+title: "Quiz — Gestion des Services Systemd"
+passing_score: 80
+position: 4
+questions:
+  - kind: single
+    prompt: "Quelle commande permet d'activer le démarrage automatique d'un service au boot ET de le démarrer immédiatement en une seule instruction ?"
+    choices:
+      - id: a
+        text: "systemctl enable --now nom_service"
+      - id: b
+        text: "systemctl start --boot nom_service"
+      - id: c
+        text: "systemctl autostart nom_service"
+      - id: d
+        text: "systemctl setup nom_service"
+    correct:
+      - a
+    explanation: "L'option '--now' associée à 'systemctl enable' active le service (création du lien symbolique dans /etc/systemd/system/) et lance immédiatement le démon sans commande supplémentaire."
+
+  - kind: single
+    prompt: "Quelle action 'systemctl mask nom_service' effectue-t-elle ?"
+    choices:
+      - id: a
+        text: "Elle crypte le binaire du service"
+      - id: b
+        text: "Elle lie l'unité vers /dev/null, rendant impossible tout démarrage (manuel ou déclenché par une dépendance)"
+      - id: c
+        text: "Elle masque les logs du service dans journalctl"
+      - id: d
+        text: "Elle force l'exécution en arrière-plan sans terminal"
+    correct:
+      - b
+    explanation: "Le masquage d'un service (mask) crée un lien symbolique vers /dev/null, interdisant formellement son exécution accidentelle par un autre service ou un utilisateur."
+
+  - kind: single
+    prompt: "Que devez-vous OBLIGATOIREMENT exécuter après avoir créé ou modifié un fichier .service dans /etc/systemd/system/ ?"
+    choices:
+      - id: a
+        text: "reboot"
+      - id: b
+        text: "systemctl daemon-reload"
+      - id: c
+        text: "systemd-compile"
+      - id: d
+        text: "systemctl update"
+    correct:
+      - b
+    explanation: "'systemctl daemon-reload' ordonne à systemd (PID 1) de relire l'ensemble des fichiers d'unités sur disque et de reconstruire son arbre de dépendances."
+
+  - kind: multiple
+    prompt: "Dans un fichier d'unité systemd, quelles directives permettent d'ordonner et de lier le démarrage d'un service à une base de données PostgreSQL ?"
+    choices:
+      - id: a
+        text: "After=postgresql.service (définit l'ordre séquentiel de lancement)"
+      - id: b
+        text: "Requires=postgresql.service (impose la présence et la réussite du démarrage de PostgreSQL)"
+      - id: c
+        text: "Delay=postgresql.service"
+      - id: d
+        text: "Priority=database"
+    correct:
+      - a
+      - b
+    explanation: "After= régit l'ordre temporel (démarrer après PostgreSQL), et Requires= crée une dépendance forte (si PostgreSQL échoue, le service ne démarrera pas)."
+
+  - kind: single
+    prompt: "Quelle commande permet de recharger à chaud la configuration d'un serveur Web Nginx sans couper les connexions TCP actives des clients ?"
+    choices:
+      - id: a
+        text: "systemctl reload nginx"
+      - id: b
+        text: "systemctl restart nginx"
+      - id: c
+        text: "systemctl refresh nginx"
+      - id: d
+        text: "systemctl soft-boot nginx"
+    correct:
+      - a
+    explanation: "'reload' envoie un signal SIGHUP au processus maître Nginx, lui demandant d'ouvrir de nouveaux processus workers avec la nouvelle configuration tout en laissant les anciens terminer les requêtes en cours sans rupture."

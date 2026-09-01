@@ -13,7 +13,8 @@
     "db:migrate": "prisma migrate dev --schema=prisma/schema",
     "db:generate": "prisma generate --schema=prisma/schema",
     "db:seed": "prisma db seed",
-    "content:sync": "tsx src/sync/cli.ts"
+    "content:sync": "tsx src/sync/cli.ts",
+    "seed": "tsx prisma/seed.ts"
   },
   "prisma": {
     "schema": "prisma/schema",
@@ -45,6 +46,7 @@
     "@types/cookie-parser": "^1.4.10",
     "@types/express": "^5.0.0",
     "@types/jsonwebtoken": "^9.0.10",
+    "@types/multer": "^2.2.0",
     "@types/node": "^22.13.4",
     "@types/ws": "^8.18.1",
     "eslint": "^9.20.1",

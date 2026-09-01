@@ -1,0 +1,73 @@
+slug: definition-pipeline-cicd-github-actions
+title: "Conception d'un Pipeline CI/CD Complet (GitHub Actions)"
+level: 2_files
+max_score: 100
+estimated_minutes: 45
+context: |
+  Vous êtes ingénieur DevOps et devez concevoir le workflow d'automatisation CI/CD de l'organisation dans le fichier `.github/workflows/deploy.yml` (nommé `deploy.yml`).
+
+  Le pipeline doit automatiser l'intégration continue sur toutes les Pull Requests vers `main`, ainsi que le build et le déploiement sécurisé en production lors des fusions.
+
+  Spécifications attendues dans `deploy.yml` :
+  1. **Déclencheurs (`on:`)** :
+     - Événement `push` sur la branche `main`
+     - Événement `pull_request` sur la branche `main`
+  2. **Job 1 : `test` (Validation et Tests)** :
+     - Exécuteur : `runs-on: ubuntu-latest`
+     - Étapes : checkout (`actions/checkout@v4`), configuration Node.js avec mise en cache (`actions/setup-node@v4`), installation (`npm ci`), linter (`npm run lint`) et exécution des tests (`npm test`)
+  3. **Job 2 : `deploy` (Build et Déploiement)** :
+     - Exécuteur : `runs-on: ubuntu-latest`
+     - Dépendance séquentielle : `needs: test` (attend impérativement le succès des tests)
+     - Condition : exécution uniquement lors d'un `push` sur la branche `main` (`if: github.ref == 'refs/heads/main' && github.event_name == 'push'`)
+     - Étapes : checkout, setup-node, installation et compilation (`npm run build`)
+     - Archivage des artefacts : `actions/upload-artifact@v4` ciblant le dossier compilé (`path: dist/` ou `path: build/`)
+     - Étape de déploiement sécurisée utilisant un secret de dépôt (`${{ secrets.PROD_DEPLOY_KEY }}`)
+
+objectives:
+  - "Structurer un pipeline déclaratif multi-jobs sous GitHub Actions"
+  - "Ordonnancer l'exécution des jobs à l'aide de dépendances séquentielles (needs)"
+  - "Mettre en place la mise en cache des dépendances pour optimiser le temps d'exécution"
+  - "Isoler et protéger les identifiants d'authentification avec les GitHub Secrets"
+  - "Générer et archiver des artefacts de compilation immuables"
+
+prerequisites:
+  - "principes-devops-et-culture-cicd"
+  - "pipelines-cicd-github-actions-gitlab-ci"
+
+files:
+  editable:
+    - path: deploy.yml
+      description: "Fichier de configuration du workflow GitHub Actions"
+
+hints:
+  - cost_percent: 10
+    text: "Pensez à déclarer à la fois 'push:' et 'pull_request:' sous la clé 'on:' pour la branche 'main'."
+  - cost_percent: 10
+    text: "Dans le job 'deploy', ajoutez 'needs: test' pour différer le déploiement après la validation des tests."
+  - cost_percent: 10
+    text: "Pour téléverser les fichiers compilés, utilisez 'uses: actions/upload-artifact@v4' avec 'path: dist/'."
+
+validation:
+  type: script
+  image: opensio/validator-github-actions:latest
+  timeout_seconds: 30
+  checks:
+    - id: triggers_and_jobs_structure
+      required: true
+      points: 25
+      description: "Déclencheurs push/pull_request sur main et déclaration des jobs test et deploy sur ubuntu-latest"
+    - id: test_job_steps_and_cache
+      required: true
+      points: 25
+      description: "Job test : checkout, setup-node avec cache, npm ci, npm run lint et npm test"
+    - id: deploy_job_needs_and_condition
+      required: true
+      points: 25
+      description: "Job deploy : dépendance needs: test et condition d'exécution sur branche main"
+    - id: artifacts_and_secrets_security
+      required: true
+      points: 25
+      description: "Artefacts et Sécurité : upload-artifact@v4 et utilisation sécurisée des secrets (${{ secrets. ... }})"
+
+scoring:
+  floor_percent: 50

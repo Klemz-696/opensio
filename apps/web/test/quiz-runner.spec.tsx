@@ -1,10 +1,14 @@
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import React from 'react';
 import { QuizRunner } from '../components/quiz/quiz-runner';
 import type { QuizDetail } from '../lib/api/quiz-api';
 
 describe('QuizRunner', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
   const mockQuiz: QuizDetail = {
     id: 'quiz-1',
     slug: 'quiz-adressage',
@@ -45,46 +49,66 @@ describe('QuizRunner', () => {
     ],
   };
 
-  it('affiche le titre du quiz, le seuil de réussite et toutes les questions', () => {
+  it('affiche le titre du quiz, le seuil de réussite et la première question', () => {
     render(<QuizRunner quiz={mockQuiz} onSubmit={vi.fn()} isSubmitting={false} />);
 
     expect(screen.getByText('Quiz — Adressage IPv4')).toBeDefined();
     expect(screen.getByText(/Seuil de validation : 80%/)).toBeDefined();
-    expect(screen.getByText('Question 1')).toBeDefined();
-    expect(screen.getByText('Question 2')).toBeDefined();
+    expect(screen.getByText('Question 1 sur 2 (0% complété)')).toBeDefined();
+    expect(screen.getByText('Quelle est l\'adresse réseau de 192.168.1.77/26 ?')).toBeDefined();
   });
 
-  it('gère la sélection unique (radio) et multiple (checkbox)', () => {
+  it('navigue pas-à-pas entre les questions avec Suivante et Précédente', () => {
     render(<QuizRunner quiz={mockQuiz} onSubmit={vi.fn()} isSubmitting={false} />);
 
-    // Question 1 : Choix unique
-    const optionQ1A = screen.getByText('192.168.1.0');
-    const optionQ1B = screen.getByText('192.168.1.64');
+    // Répondre à Q1
+    fireEvent.click(screen.getByText('192.168.1.64'));
 
-    fireEvent.click(optionQ1A);
-    fireEvent.click(optionQ1B); // Remplace le choix A
+    // Clic sur Suivante -> Question 2
+    const nextBtn = screen.getByRole('button', { name: /Suivante/i });
+    fireEvent.click(nextBtn);
 
-    // Question 2 : Choix multiples
-    const optionQ2A = screen.getByText('10.0.0.1');
-    const optionQ2B = screen.getByText('172.20.1.1');
+    expect(screen.getByText('Question 2 sur 2 (50% complété)')).toBeDefined();
+    expect(screen.getByText('Quelles adresses sont privées selon la RFC 1918 ?')).toBeDefined();
 
-    fireEvent.click(optionQ2A);
-    fireEvent.click(optionQ2B); // Ajoute le choix B
+    // Clic sur Précédente -> Retour Question 1
+    const prevBtn = screen.getByRole('button', { name: /Précédente/i });
+    fireEvent.click(prevBtn);
 
-    expect(screen.getByText(/Progression/)).toBeDefined();
-    expect(screen.getByText('100%')).toBeDefined();
+    expect(screen.getByText('Question 1 sur 2 (50% complété)')).toBeDefined();
   });
 
-  it('soumet les réponses sélectionnées au clic sur le bouton Valider', () => {
+  it('permet de naviguer directement via le stepper', () => {
+    render(<QuizRunner quiz={mockQuiz} onSubmit={vi.fn()} isSubmitting={false} />);
+
+    // Clic sur pastille 2 du stepper
+    const step2Btn = screen.getByRole('button', { name: /Question 2/i });
+    fireEvent.click(step2Btn);
+
+    expect(screen.getByText('Question 2 sur 2 (0% complété)')).toBeDefined();
+    expect(screen.getByText('Quelles adresses sont privées selon la RFC 1918 ?')).toBeDefined();
+  });
+
+  it('affiche le récapitulatif des réponses et permet de soumettre', () => {
     const handleSubmit = vi.fn().mockResolvedValue(undefined);
     render(<QuizRunner quiz={mockQuiz} onSubmit={handleSubmit} isSubmitting={false} />);
 
-    // Sélectionner les réponses
+    // Répondre à Q1
     fireEvent.click(screen.getByText('192.168.1.64'));
+
+    // Passer à Q2 et répondre
+    fireEvent.click(screen.getByRole('button', { name: /Suivante/i }));
     fireEvent.click(screen.getByText('10.0.0.1'));
     fireEvent.click(screen.getByText('172.20.1.1'));
 
-    const submitBtn = screen.getByRole('button', { name: /Valider mes réponses/i });
+    // Aller à l'écran de révision
+    fireEvent.click(screen.getByRole('button', { name: /Vérifier & Soumettre/i }));
+
+    expect(screen.getByText('Récapitulatif de vos réponses')).toBeDefined();
+    expect(screen.getByText(/Toutes les questions sont renseignées/)).toBeDefined();
+
+    // Clic sur Confirmer et soumettre
+    const submitBtn = screen.getByRole('button', { name: /Confirmer et soumettre le quiz/i });
     fireEvent.click(submitBtn);
 
     expect(handleSubmit).toHaveBeenCalledTimes(1);
@@ -94,11 +118,27 @@ describe('QuizRunner', () => {
     });
   });
 
-  it('désactive le bouton et affiche le spinner pendant la soumission', () => {
+  it('permet de modifier une réponse depuis l\'écran de révision', () => {
+    render(<QuizRunner quiz={mockQuiz} onSubmit={vi.fn()} isSubmitting={false} />);
+
+    // Aller directement à la revue
+    fireEvent.click(screen.getByRole('button', { name: /Revoir mes réponses/i }));
+    expect(screen.getByText('Récapitulatif de vos réponses')).toBeDefined();
+
+    // Modifier la question 1
+    const editBtns = screen.getAllByRole('button', { name: /Modifier/i });
+    fireEvent.click(editBtns[0]);
+
+    expect(screen.getByText('Question 1 sur 2 (0% complété)')).toBeDefined();
+  });
+
+  it('désactive les boutons de navigation pendant la soumission', () => {
     render(<QuizRunner quiz={mockQuiz} onSubmit={vi.fn()} isSubmitting={true} />);
 
-    const submitBtn = screen.getByRole('button', { name: /Correction en cours/i });
-    expect(submitBtn).toBeDefined();
-    expect(submitBtn.hasAttribute('disabled')).toBe(true);
+    const nextBtn = screen.getByRole('button', { name: /Suivante/i });
+    expect(nextBtn.hasAttribute('disabled')).toBe(true);
+
+    const reviewBtn = screen.getByRole('button', { name: /Revoir mes réponses/i });
+    expect(reviewBtn.hasAttribute('disabled')).toBe(true);
   });
 });

@@ -1,6 +1,6 @@
 slug: reseaux-fondamentaux
 title: "Réseaux : fondamentaux"
-description: "Adressage IPv4, calcul de masques et sous-réseaux, modèle OSI/TCP-IP et premiers diagnostics."
+description: "Adressage IPv4 et IPv6, calcul VLSM avancé, modèles OSI et TCP/IP, segmentation VLAN, routage statique et services DNS/DHCP."
 position: 1
 difficulty: 2
 estimated_minutes: 600
@@ -9,7 +9,22 @@ competency_refs:
   - "B2.2"
 lessons:
   - adressage-ipv4
+  - modeles-osi-tcpip
+  - subnetting-vlsm
+  - ipv6-essentiels
+  - vlan-segmentation
+  - routage-statique
+  - dns-et-dhcp
 quizzes:
   - quiz-adressage
+  - quiz-modeles-osi-tcpip
+  - quiz-subnetting-vlsm
+  - quiz-ipv6-essentiels
+  - quiz-vlan-segmentation
+  - quiz-routage-statique
+  - quiz-dns-et-dhcp
 labs:
   - plan-adressage-pme
+  - plan-vlsm-complet
+  - config-vlan-switch
+  - maquette-dns-dhcp

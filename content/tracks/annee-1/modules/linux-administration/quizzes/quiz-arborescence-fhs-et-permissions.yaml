@@ -1,0 +1,80 @@
+slug: quiz-arborescence-fhs-et-permissions
+title: "Quiz — Arborescence FHS, Permissions et ACLs"
+passing_score: 80
+position: 1
+questions:
+  - kind: single
+    prompt: "Quelle valeur octale correspond aux permissions symboliques -rwxr-x--- ?"
+    choices:
+      - id: a
+        text: "754"
+      - id: b
+        text: "750"
+      - id: c
+        text: "740"
+      - id: d
+        text: "650"
+    correct:
+      - b
+    explanation: "rwx = 4+2+1 = 7 (propriétaire), r-x = 4+0+1 = 5 (groupe), --- = 0 (autres), ce qui donne exactement 750."
+
+  - kind: single
+    prompt: "Quel est l'effet principal du bit SGID appliqué sur un répertoire sous Linux ?"
+    choices:
+      - id: a
+        text: "Interdire la suppression des fichiers par les membres du groupe"
+      - id: b
+        text: "Faire hériter automatiquement le groupe propriétaire du dossier parent à tout nouveau fichier ou sous-dossier créé"
+      - id: c
+        text: "Donner les privilèges du compte root à tous les scripts exécutés dans ce dossier"
+      - id: d
+        text: "Rendre le répertoire accessible uniquement en lecture seule"
+    correct:
+      - b
+    explanation: "Sur un répertoire, le bit SGID (chmod g+s ou 2xxx) force l'héritage automatique du groupe propriétaire sur tous les fichiers et sous-répertoires créés ultérieurement."
+
+  - kind: multiple
+    prompt: "Quels répertoires font partie de la norme FHS standard pour les données de configuration et de journaux ?"
+    choices:
+      - id: a
+        text: "/etc (fichiers de configuration statiques du système et des services)"
+      - id: b
+        text: "/var/log (journaux et traces d'événements du système)"
+      - id: c
+        text: "/proc/log (journaux d'exécution du processeur)"
+      - id: d
+        text: "/sbin/conf (scripts de démarrage des daemons)"
+    correct:
+      - a
+      - b
+    explanation: "/etc héberge les configurations statiques et /var/log les journaux. /proc est un système de fichiers virtuel mémoire (sans dossier log) et /sbin contient des binaires d'administration système."
+
+  - kind: single
+    prompt: "Quelle commande permet d'attribuer une ACL accordant des droits de lecture/écriture au groupe 'compta' sur le dossier /data sans modifier les autres ?"
+    choices:
+      - id: a
+        text: "chmod -R g+rw /data"
+      - id: b
+        text: "chown :compta /data"
+      - id: c
+        text: "setfacl -m g:compta:rwx /data"
+      - id: d
+        text: "getfacl -u compta:rw /data"
+    correct:
+      - c
+    explanation: "setfacl avec l'option -m (modify) et la règle g:compta:rwx permet d'ajouter une entrée de contrôle d'accès spécifique sans écraser le groupe propriétaire standard."
+
+  - kind: single
+    prompt: "Sur le répertoire /tmp avec permissions drwxrwxrwt, qu'empêche le Sticky Bit (t final) ?"
+    choices:
+      - id: a
+        text: "Il empêche tout utilisateur d'écrire de nouveaux fichiers temporaires"
+      - id: b
+        text: "Il empêche un utilisateur de supprimer ou renommer un fichier appartenant à un autre utilisateur"
+      - id: c
+        text: "Il empêche l'exécution de scripts dans /tmp"
+      - id: d
+        text: "Il masque le contenu du dossier aux utilisateurs non-root"
+    correct:
+      - b
+    explanation: "Le Sticky Bit (chmod +t ou 1777) garantit que dans un espace partagé en écriture par tous, seul le propriétaire d'un fichier (ou root) a le droit de le supprimer ou de le renommer."

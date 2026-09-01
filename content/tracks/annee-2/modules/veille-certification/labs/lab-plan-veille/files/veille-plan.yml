@@ -1,0 +1,16 @@
+# veille-plan.yml - Plan de Veille Technologique
+
+theme: "Sécurité des Infrastructures Cloud et Conteneurs"
+frequency: "20 minutes quotidiennes"
+
+tools:
+  - "FreshRSS"
+  - "Obsidian"
+
+sources:
+  - name: "CERT-FR"
+    type: "institutionnel/securite"
+    url: "https://www.cert.ssi.gouv.fr/feed/"
+    channel: "rss"
+
+  # TODO: Déclarer au moins 3 autres sources variées

@@ -1,0 +1,82 @@
+slug: quiz-concepts-vpn-et-chiffrement
+title: "Quiz — Concepts VPN et Chiffrement"
+passing_score: 80
+position: 1
+questions:
+  - kind: single
+    prompt: "Que signifie l'encapsulation 'tunnel mode' dans un VPN ?"
+    choices:
+      - id: a
+        text: "Le paquet IP complet (en-têtes inclus) est chiffré puis enveloppé dans un nouveau paquet acheminé entre les extrémités"
+      - id: b
+        text: "Seule la charge utile est chiffrée entre deux hôtes"
+      - id: c
+        text: "Les paquets transitent en clair mais via un port dédié"
+      - id: d
+        text: "Le routage est remplacé par de la commutation MAC"
+    correct:
+      - a
+    explanation: "En mode tunnel, l'intégralité du paquet original est chiffrée et ré-émettée entre passerelles : les sous-réseaux internes se joignent comme sur un même réseau. Le transport mode ne protège que la charge utile entre deux hôtes."
+
+  - kind: single
+    prompt: "Quel service cryptographique garantit qu'un paquet VPN n'a pas été modifié en transit ?"
+    choices:
+      - id: a
+        text: "L'intégrité, via HMAC ou un tag AEAD"
+      - id: b
+        text: "La compression"
+      - id: c
+        text: "Le routage asymétrique"
+      - id: d
+        text: "La négociation NAT-T"
+    correct:
+      - a
+    explanation: "L'intégrité (HMAC-SHA, tag GCM/Poly1305) détecte toute altération. AES-GCM et ChaCha20-Poly1305 combinent chiffrement et intégrité en une seule opération AEAD."
+
+  - kind: multiple
+    prompt: "Quelles caractéristiques décrivent fidèlement WireGuard ?"
+    choices:
+      - id: a
+        text: "Une base de code minimaliste (environ 4 000 lignes) intégrée au noyau Linux"
+      - id: b
+        text: "Une cryptographie fixe et moderne imposée (Curve25519, ChaCha20-Poly1305)"
+      - id: c
+        text: "Une négociation libre des suites de chiffrement"
+      - id: d
+        text: "L'absence de certificats X.509 : la table des pairs constitue la confiance"
+    correct:
+      - a
+      - b
+      - d
+    explanation: "WireGuard n'impose pas de négociation : les algorithmes sont fixés et modernes, ce qui élimine les configurations faibles. La confiance repose sur les clés publiques des pairs, pas sur une CA."
+
+  - kind: single
+    prompt: "Quel protocole permet à un tunnel IPsec de traverser un NAT ?"
+    choices:
+      - id: a
+        text: "NAT-T, qui encapsule ESP dans l'UDP 4500"
+      - id: b
+        text: "AH en mode transport"
+      - id: c
+        text: "L'ICMP de contrôle"
+      - id: d
+        text: "Le protocole 50 natif"
+    correct:
+      - a
+    explanation: "ESP (IP 50) ne porte pas de port : les NAT qui ne connaissent pas l'ESP le laissent mal passer. NAT-T encapsule ESP dans l'UDP 4500, compris par tous les NAT modernes."
+
+  - kind: multiple
+    prompt: "Quelles affirmations distinguent correctement VPN site-à-site et VPN nomade ?"
+    choices:
+      - id: a
+        text: "Le site-à-site relie des passerelles en permanence, sans logiciel sur les postes"
+      - id: b
+        text: "Le VPN nomade authentifie un utilisateur avec son propre profil et souvent un MFA"
+      - id: c
+        text: "Le site-à-site exige d'installer un client VPN sur chaque poste du LAN"
+      - id: d
+        text: "Le VPN nomade exige que le serveur soit derrière le même NAT que le client"
+    correct:
+      - a
+      - b
+    explanation: "En site-à-site, les passerelles gèrent le tunnel de façon transparente pour les postes ; en nomade, c'est le terminal (et son utilisateur, MFA à l'appui) qui s'authentifie. Aucun client n'est requis sur le LAN en site-à-site."

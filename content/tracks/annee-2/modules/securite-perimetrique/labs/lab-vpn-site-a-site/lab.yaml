@@ -1,0 +1,75 @@
+slug: configuration-tunnel-vpn-wireguard
+title: "Déploiement d'un Tunnel VPN Site-à-Site WireGuard"
+level: 2_files
+max_score: 100
+estimated_minutes: 45
+context: |
+  Vous êtes ingénieur réseaux et sécurité.
+  Vous devez déployer une liaison chiffrée permanente inter-sites entre la passerelle du Siège Social (`GW-HQ`) et l'Agence Distante (`GW-BRANCH`) à l'aide de WireGuard.
+
+  Topologie d'interconnexion :
+  - **Réseau Local Siège (Local)** : `192.168.10.0/24`
+  - **Réseau Local Agence (Distant)** : `192.168.20.0/24`
+  - **Point-à-point VPN** : `10.100.0.0/30` (`.1` pour le Siège, `.2` pour l'Agence)
+
+  Vous devez compléter le fichier de configuration `/etc/wireguard/wg0.conf` (nommé `wg0.conf`) sur la passerelle du Siège `GW-HQ`.
+
+  Spécifications attendues :
+  1. Section `[Interface]` (Passerelle Locale `GW-HQ`) :
+     - `Address = 10.100.0.1/30`
+     - `ListenPort = 51820`
+     - `PrivateKey = aHR0cHM6Ly9vcGVuc2lvLmxvY2FsL3ZwbmludGVybmV0aHE=`
+  2. Section `[Peer]` (Agence Distante `GW-BRANCH`) :
+     - `PublicKey = c2VjdXJlX3B1YmxpY19rZXlfYnJhbmNoX3NpcnIyMDI2=`
+     - `Endpoint = 198.51.100.20:51820`
+     - `AllowedIPs = 10.100.0.2/32, 192.168.20.0/24` (Point d'extrémité VPN distant et sous-réseau LAN de l'agence)
+     - `PersistentKeepalive = 25` (Maintien d'ouverture de session NAT)
+
+objectives:
+  - "Configurer une interface VPN WireGuard avec adressage IP et port d'écoute dédié"
+  - "Associer les paires de clés cryptographiques asymétriques"
+  - "Définir la table de routage cryptographique avec la directive AllowedIPs"
+  - "Assurer la traversée transparente des pare-feu d'état via PersistentKeepalive"
+
+prerequisites:
+  - "reseaux-fondamentaux"
+  - "routage-interconnexion"
+  - "vpn-site-a-site-et-acces-distants"
+
+files:
+  editable:
+    - path: wg0.conf
+      description: "Fichier de configuration de l'interface et du pair WireGuard"
+
+hints:
+  - cost_percent: 10
+    text: "La section [Interface] doit déclarer 'Address = 10.100.0.1/30' et 'ListenPort = 51820'."
+  - cost_percent: 10
+    text: "Dans [Peer], 'AllowedIPs' doit inclure à la fois l'IP tunnel '10.100.0.2/32' et le LAN distant '192.168.20.0/24'."
+  - cost_percent: 10
+    text: "Ajoutez 'PersistentKeepalive = 25' sous [Peer] pour préserver le tunnel à travers les passerelles NAT."
+
+validation:
+  type: script
+  image: opensio/validator-wireguard:latest
+  timeout_seconds: 30
+  checks:
+    - id: interface_address_and_listenport
+      required: true
+      points: 25
+      description: "Configuration [Interface] : Address (10.100.0.1/30), ListenPort (51820) et PrivateKey"
+    - id: peer_publickey_and_endpoint
+      required: true
+      points: 25
+      description: "Configuration [Peer] : PublicKey valide et Endpoint (198.51.100.20:51820)"
+    - id: allowed_ips_remote_networks
+      required: true
+      points: 25
+      description: "Cryptokey Routing : AllowedIPs incluant 10.100.0.2/32 et le réseau LAN distant 192.168.20.0/24"
+    - id: persistent_keepalive_nat
+      required: true
+      points: 25
+      description: "Maintien de session NAT (PersistentKeepalive = 25)"
+
+scoring:
+  floor_percent: 50

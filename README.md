@@ -1,262 +1,288 @@
-<div align="center">
+<!--
 
-# 🎓 OpenSIO
+  NOTE MAINTENANCE
+  - Les listes de modules ci-dessous reflètent l'état du catalogue à la clôture
+    (20 modules). La source de vérité est docs/modules-map.md : si un module
+    est renommé, mettre à jour les deux tableaux.
+  - Captures d'écran : déposer les images dans docs/assets/ puis remplacer les
+    placeholders de la section Aperçu.
+    
+-->
 
-![Page d'accueil OpenSIO](docs/assets/accueil.png)
+<p align="center">
+  <img src="https://capsule-render.vercel.app/api?type=waving&color=0:0ea5e9,100:6366f1&height=220&section=header&text=OpenSIO&fontSize=76&fontAlignY=36&desc=La%20plateforme%20d'entra%C3%AEnement%20BTS%20SIO%20SISR&descAlignY=58&descSize=20&animation=fadeIn&fontColor=ffffff" alt="OpenSIO" width="100%"/>
+</p>
 
-**La plateforme d'entraînement et d'auto-évaluation pour le BTS SIO option SISR**
+<p align="center">
+  <a href="https://git.io/typing-svg">
+    <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=20&pause=1200&color=38BDF8&center=true&vCenter=true&width=750&lines=19+modules+align%C3%A9s+sur+le+r%C3%A9f%C3%A9rentiel+SISR;Le%C3%A7ons+%C2%B7+Quiz+corrig%C3%A9s+%C2%B7+Labs+auto-valid%C3%A9s;Next.js+15+%2B+NestJS+11+%2B+Prisma+%2B+PostgreSQL;Th%C3%A8me+clair%2Fsombre+%C2%B7+Suivi+de+progression;Un+seul+iex+pour+tout+installer" alt="Typing SVG" />
+  </a>
+</p>
 
-[![Version](https://img.shields.io/badge/version-v0.2.0--distribution-blue.svg)](package.json)
-[![CI](https://github.com/Klemz-696/opensio/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Klemz-696/opensio/actions/workflows/ci.yml)
-[![Licence MIT](https://img.shields.io/badge/Licence-MIT-green.svg)](LICENSE)
-[![Next.js](https://img.shields.io/badge/Next.js-15-black?logo=next.js)](https://nextjs.org)
-[![NestJS](https://img.shields.io/badge/NestJS-11-E0234E?logo=nestjs)](https://nestjs.com)
-[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-18-4169E1?logo=postgresql&logoColor=white)](https://www.postgresql.org)
-[![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?logo=docker&logoColor=white)](docker-compose.prod.yml)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
-
-</div>
+<p align="center">
+  <a href="https://github.com/Klemz-696/opensio/actions/workflows/ci.yml"><img src="https://github.com/Klemz-696/opensio/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI"/></a>
+  <a href="https://github.com/Klemz-696/opensio/actions/workflows/e2e.yml"><img src="https://github.com/Klemz-696/opensio/actions/workflows/e2e.yml/badge.svg?branch=main" alt="E2E"/></a>
+  <img src="https://img.shields.io/badge/Next.js-15-black?logo=next.js&logoColor=white" alt="Next.js 15"/>
+  <img src="https://img.shields.io/badge/NestJS-11-e0234e?logo=nestjs&logoColor=white" alt="NestJS 11"/>
+  <img src="https://img.shields.io/badge/TypeScript-5-3178c6?logo=typescript&logoColor=white" alt="TypeScript"/>
+  <img src="https://img.shields.io/badge/Prisma-6-2d3748?logo=prisma&logoColor=white" alt="Prisma 6"/>
+  <img src="https://img.shields.io/badge/PostgreSQL-16-4169e1?logo=postgresql&logoColor=white" alt="PostgreSQL"/>
+  <img src="https://img.shields.io/badge/Docker-Compose-2496ed?logo=docker&logoColor=white" alt="Docker"/>
+  <img src="https://img.shields.io/badge/pnpm-workspaces-f69220?logo=pnpm&logoColor=white" alt="pnpm"/>
+  <img src="https://img.shields.io/badge/Turborepo-monorepo-ef4444?logo=turborepo&logoColor=white" alt="Turborepo"/>
+  <a href="./LICENSE"><img src="https://img.shields.io/badge/Licence-MIT-green" alt="MIT"/></a>
+</p>
 
 ---
 
-## ⚡ Installation en une commande
+## 🎯 Présentation
 
-N'importe qui peut installer et démarrer OpenSIO — sur un PC de développement ou sur un serveur de production — via **une seule commande interactive** qui vérifie tous les prérequis :
+**OpenSIO** est une plateforme web d'apprentissage conçue pour les étudiants de
+**BTS SIO option SISR** (Solutions d'Infrastructure, Systèmes et Réseaux).
+Elle transforme le référentiel officiel en un parcours interactif complet :
+cours structurés, quiz auto-corrigés et ateliers pratiques validés
+automatiquement par des validateurs autonomes.
 
-### 🪟 Windows (PowerShell)
-```powershell
-irm https://raw.githubusercontent.com/Klemz-696/opensio/main/scripts/install.ps1 | iex
+Le projet est né d'un constat simple : réviser l'administration systèmes et
+réseaux exige de la pratique, pas seulement des PDF. OpenSIO fournit un
+environnement où chaque notion est immédiatement mise en application.
+
+## ✨ Fonctionnalités
+
+| Fonctionnalité | Description |
+| --- | --- |
+| 📚 Catalogue structuré | 2 parcours (1ʳᵉ et 2ᵉ année), 20 modules, leçons numérotées avec prérequis explicites |
+| ❓ Quiz corrigés | Choix simples et multiples, explication pédagogique pour chaque réponse, seuil de réussite à 80 % |
+| 🧪 Labs auto-validés | Ateliers pratiques avec validateurs autonomes, solutions de référence, indices à pénalités |
+| 📊 Suivi de progression | Dashboard personnel, avancement par module et par parcours |
+| 🌗 Bi-thème natif | Thème clair et sombre vérifiés automatiquement en CI |
+| 🔐 Authentification | Comptes par rôle (apprenant / administrateur), hashage Argon2id, JWT, refresh tokens |
+| 🛠️ Back-office | Interface d'administration des utilisateurs et du contenu |
+| 🤖 Assistant IA | Chat intégré (Ollama local, optionnel) pour aide contextuelle aux exercices |
+| 🚀 Lanceur intelligent | `pnpm opensio` orchestre tout : Docker, DB, ports, seed, raccourcis, démarrage |
+
+## 📚 Le catalogue SISR
+
+Le catalogue complet — objectifs, fiches et statut de chaque module — est
+détaillé dans [docs/modules-map.md](docs/modules-map.md).
+
+### 1ʳᵉ année — Fondamentaux
+
+| # | Module | Thèmes | Leçons | Labs |
+| --- | --- | --- | :---: | :---: |
+| 1 | Réseaux — Fondamentaux | Adressage IP, VLAN, OSI/TCP-IP, DNS, DHCP | 7 | 4 |
+| 2 | Windows Server & Active Directory | AD DS, GPO, domaine, NTFS | 6 | 3 |
+| 3 | Linux — Administration système | Permissions, systemd, APT, LVM, journaux | 6 | 3 |
+| 4 | Services réseau Linux | DNS Bind9, DHCP ISC/Kea, NTP/Chrony | 5 | 2 |
+| 5 | Virtualisation & Hyperviseurs | Proxmox VE, KVM, cloud-init, bridges | 5 | 2 |
+| 6 | Sauvegardes & Stockage | RAID, stratégie 3-2-1, RTO/RPO, rsync | 5 | 2 |
+| 7 | Support & Parc — GLPI | ITIL, tickets, SLA, inventaire SNMP | 5 | 2 |
+| 8 | Anglais technique | Vocabulaire, RFCs, logs, tickets en anglais | 5 | 2 |
+
+### 2ᵉ année — Spécialisation SISR
+
+| # | Module | Thèmes | Leçons | Labs |
+| --- | --- | --- | :---: | :---: |
+| 9 | Routage & Interconnexion | OSPF, VRRP/HSRP, inter-VLAN | 5 | 2 |
+| 10 | Sécurité périmétrique & Pare-feu | nftables, NAT/PAT, DMZ, pfSense | 6 | 3 |
+| 11 | Serveurs web, PKI & TLS | Nginx, reverse proxy, certificats X.509, Let's Encrypt | 6 | 3 |
+| 12 | VPN & Accès distants | WireGuard, OpenVPN, IPsec, MFA | 5 | 2 |
+| 13 | Conteneurisation Docker | Images, Compose, volumes, durcissement | 6 | 3 |
+| 14 | Scripting & Automatisation | Bash avancé, PowerShell, cron, AD | 6 | 2 |
+| 15 | Supervision & Observabilité | SNMP, Prometheus, Grafana, alerting | 5 | 2 |
+| 16 | Cybersécurité & Durcissement | ANSSI/CIS, Fail2ban, RGPD, audit | 6 | 3 |
+| 17 | Automatisation Ansible | Inventaires, playbooks, Vault, rôles | 5 | 2 |
+| 18 | Haute Disponibilité & Clustering | Keepalived, HAProxy, réplication SGBD | 5 | 2 |
+| 19 | Cloud hybride & CI/CD | IaaS/PaaS, GitHub Actions, GitOps | 5 | 2 |
+
+> **Total catalogue** : 100 leçons · 100 quiz · 512 questions · 43 labs pratiques
+
+## 🧱 Architecture
+
+```mermaid
+flowchart LR
+    subgraph Contenu["content/"]
+        A[Leçons Markdown] --> V[Validateurs Zod]
+        B[Quiz YAML] --> V
+        C[Labs + validateurs] --> V
+    end
+    V -->|content:sync| DB[(PostgreSQL 16\nDocker)]
+    subgraph API["apps/api — NestJS 11"]
+        P[Prisma 6] --> DB
+        EP[REST + WebSocket] --> P
+    end
+    subgraph Web["apps/web — Next.js 15"]
+        UI[App Router · React 19] --> EP
+    end
+    subgraph Launcher["scripts/"]
+        L[opensio.mjs] --> Docker
+        L --> DB
+        L --> API
+        L --> Web
+    end
+    Docker[Docker Compose] --> DB
 ```
-
-### 🐧 Linux & 🍎 macOS (Bash / Zsh)
-```bash
-curl -fsSL https://raw.githubusercontent.com/Klemz-696/opensio/main/scripts/install.sh | bash
-```
-
-> 📖 Consultez le **[Guide d'installation complet](docs/installation.md)** et le **[Guide de déploiement Homelab / Proxmox](docs/deployment.md)** pour les détails d'exploitation.
-
----
-
-## 📖 À propos
-
-**OpenSIO** est une plateforme web pédagogique moderne, sécurisée et auto-hébergeable conçue pour les étudiants de **BTS SIO option SISR** (_Solutions d'Infrastructure, Systèmes et Réseaux_).
-
-Elle regroupe l'ensemble du cycle d'apprentissage pratique dans une application unifiée :
-
-- 📚 **Cours théoriques structurés** en Markdown avec coloration syntaxique et métadonnées pédagogiques
-- ✅ **Quiz d'auto-évaluation interactifs** avec correction serveur stricte et explications pédagogiques
-- 🧪 **Ateliers pratiques (Labs)** avec éditeur multi-fichiers, terminal virtuel sécurisé et validation automatique
-- 🤖 **Assistant Mentor IA** local (Ollama) ou distant (OpenAI) agissant comme un tuteur méthodologique socratique
-- 📊 **Tableau de bord apprenant** avec suivi de progression fin, reprise rapide et recommandations
-
-> Le projet a été développé dans le respect strict d'un cahier des charges contractuel (_blueprint_), avec une gouvernance exemplaire (règle D-13 ≤ 400 lignes/fichier, 235 tests automatisés, zéro fuite de données d'évaluation).
-
----
-
-## 🚀 Fonctionnalités livrées (v0.1.0 MVP)
-
-| Domaine                       | Fonctionnalité              | Description & Garanties                                                                                                                                                                                                                                                                           |
-| ----------------------------- | --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Socle & Données**           | Monorepo & Schéma Prisma    | Monorepo Turborepo + pnpm workspaces, 15 tables PostgreSQL réparties en schémas modulaires, migrations versionnées et seed initial Argon2id.                                                                                                                                                      |
-| **Contenu & Synchronisation** | Git as Source of Truth      | Schémas Zod stricts pour parcours, modules, leçons, quiz et labs. Moteur `content:sync` transactionnel, atomique et 100 % idempotent.                                                                                                                                                             |
-| **Authentification**          | Sécurité D-09 & RBAC        | JWT 15 min en mémoire vive (jamais en `localStorage`), refresh tokens opaques rotatifs (cookie `HttpOnly; SameSite=Lax`) avec détection de réutilisation, hachage Argon2id (64 Mio).                                                                                                              |
-| **Catalogue & Cours**         | Navigation & Rendu Markdown | Organisation par cursus et modules (difficulté, durée, référentiel BTS). Rendu Markdown sécurisé (`rehype-sanitize`), coloration syntaxique Shiki et protection anti-traversée de chemin.                                                                                                         |
-| **Quiz interactifs**          | Évaluation Zéro-Fuite       | QCM à choix unique et multiple. Les bonnes réponses et explications ne quittent jamais le serveur. Seuil de validation à 80 % (RM-01), historique et déduplication d'idempotence.                                                                                                                 |
-| **Progression**               | Suivi & Tableau de bord     | Heartbeat de lecture (30s), complétion de module selon la règle RM-03, reprise rapide (« Reprendre où j'en étais »), timeline d'activité et recommandations intelligentes.                                                                                                                        |
-| **Ateliers pratiques (Labs)** | Runner & Cycle de vie       | Machine à états de session (`RUNNING` → `PASSED`/`FAILED`/`EXPIRED`), éditeur multi-fichiers, indices pénalisés (RM-05), validation par runner découplé et sweeper automatique des bacs à sable expirés.                                                                                          |
-| **Terminal & Mentor IA**      | Terminal sécurisé & Tuteur  | Terminal virtuel interactif avec liste blanche stricte de 15 commandes système (zéro injection), passerelle WebSocket JWT. Assistant IA double mode (Ollama local / OpenAI), consignes Socratiques zéro-spoil (RM-11), détection de contournement, mode libre hors évaluation et quotas horaires. |
-
----
-
-## 🖼️ Aperçu de l'interface
-
-<div align="center">
-
-|      Tableau de bord apprenant      |        Détail d'un module & labs        |
-| :---------------------------------: | :-------------------------------------: |
-| ![Accueil](docs/assets/accueil.png) | ![Catalogue](docs/assets/catalogue.png) |
-
-|       Leçon avec coloration Shiki       |         Quiz interactif corrigé          |
-| :-------------------------------------: | :--------------------------------------: |
-| ![Leçon OpenSIO](docs/assets/lecon.gif) | ![Résultat](docs/assets/quiz-result.png) |
-
-</div>
-
----
 
 ## 🛠️ Stack technique
 
-| Couche               | Technologies & Librairies                                                                         |
-| -------------------- | ------------------------------------------------------------------------------------------------- |
-| **Frontend**         | Next.js 15 (App Router, React 19, Turbopack), Tailwind CSS, Shiki, Lucide Icons                   |
-| **Backend**          | NestJS 11 (monolithe modulaire), WebSocket Gateway (`@nestjs/platform-ws`), Prisma 6              |
-| **Base de données**  | PostgreSQL 18 Alpine (Docker)                                                                     |
-| **Contenu**          | Markdown + Frontmatter YAML, Schémas Zod, Gray-Matter                                             |
-| **IA (Optionnelle)** | Ollama en local (`llama3.1:8b`) ou provider OpenAI-compatible                                     |
-| **Qualité & CI**     | Vitest (235 tests automatisés), ESLint 9 (Flat config), TypeScript 5.7, Turborepo, GitHub Actions |
-| **Sécurité**         | Argon2id, JWT HS256, HTTP cookies HttpOnly, rehype-sanitize, rate-limiting, audit logs            |
+| Couche | Technologie |
+| --- | --- |
+| Frontend | Next.js 15 (App Router), React 19, Tailwind CSS v4 |
+| Backend | NestJS 11, Prisma 6, WebSocket (labs terminal) |
+| Base de données | PostgreSQL 16 (Docker en développement) |
+| Contenu | Markdown / YAML / JSON validés par Zod (`@opensio/content-schema`) |
+| Tests | Vitest, Testing Library, validateurs de contenu |
+| Tooling | pnpm workspaces, Turborepo, ESLint 9, TypeScript 5 strict |
+| CI | GitHub Actions — lint, types, D-13, bi-thème, tests, build |
+| Sécurité | Argon2id, JWT + refresh tokens, rate-limiting, RBAC |
 
----
+## 🚀 Démarrage rapide
 
-## 🏗️ Architecture du dépôt
+### ⚡ Installation en une commande
 
-```
-opensio/
-├── apps/
-│   ├── api/                # Backend REST & WebSocket NestJS (port 4000)
-│   └── web/                # Frontend Next.js 15 App Router (port 3000)
-├── packages/
-│   ├── config/             # Configurations partagées (TS, ESLint, Tailwind)
-│   └── content-schema/     # Schémas Zod et validateurs du contenu pédagogique
-├── content/                # Contenu source du référentiel BTS SIO SISR (Markdown/YAML)
-│   └── tracks/annee-1/     # Parcours 1ère année, modules, cours, quiz et ateliers
-├── infra/docker/           # Définition Docker Compose PostgreSQL pour le dev
-├── scripts/                # Contrôle de gouvernance et conformité D-13
-└── docs/                   # Documentation technique, roadmap et guide de contenu
+> **Prérequis unique** : [Docker Desktop](https://www.docker.com/products/docker-desktop/) installé et démarré.
+> Node.js, pnpm et Git sont installés automatiquement si absents.
+
+**Sous Windows (recommandé)**, ouvrez **PowerShell** et exécutez :
+
+```powershell
+iex (irm https://raw.githubusercontent.com/Klemz-696/opensio/main/scripts/install.ps1)
 ```
 
----
-
-## 🚀 Démarrage rapide (Quickstart)
-
-### 1. Prérequis
-
-- **Node.js** : version 22 LTS ou 24
-- **pnpm** : version ≥ 10.0 (`corepack enable && corepack prepare pnpm@latest --activate`)
-- **Docker Desktop** ou **Docker Engine** avec Docker Compose
-
----
-
-### 2. Installation & Configuration
+**Sous macOS / Linux**, ouvrez votre terminal et exécutez :
 
 ```bash
-# 1. Cloner le dépôt et entrer dans le dossier
+bash <(curl -s https://raw.githubusercontent.com/Klemz-696/opensio/main/scripts/install.sh)
+```
+
+Le script installe tout, clone le projet, et lance OpenSIO. **C'est tout.**
+
+À la fin de l'installation sous Windows, un raccourci **OpenSIO.bat** est créé sur votre Bureau.
+Pour tous les systèmes, vous pourrez relancer le projet plus tard en tapant `pnpm opensio` dans le dossier du projet.
+
+---
+
+### 🔧 Installation manuelle (avancée)
+
+Si vous préférez cloner vous-même l'application :
+
+**Prérequis** : Node.js ≥ 22, pnpm ≥ 9, Git, Docker Desktop
+
+```bash
+# 1. Cloner le dépôt
 git clone https://github.com/Klemz-696/opensio.git
 cd opensio
 
-# 2. Installer l'ensemble des dépendances du monorepo
+# 2. Installer les dépendances
 pnpm install
 
-# 3. Créer le fichier de configuration d'environnement local
-# Sous Linux / macOS :
-cp .env.example .env
-# Sous Windows (PowerShell) :
-copy .env.example .env
+# 3. Lancer (gère tout automatiquement)
+pnpm opensio
 ```
 
----
+Le lanceur interactif (`pnpm opensio`) s'occupe automatiquement de :
+- ✅ Vérifier les versions Node.js/pnpm
+- ✅ Démarrer Docker Desktop si nécessaire
+- ✅ Lancer le conteneur PostgreSQL
+- ✅ Déployer le schéma Prisma
+- ✅ Injecter les comptes admin & démo (seed)
+- ✅ Synchroniser le catalogue Markdown → base de données
+- ✅ Créer un raccourci Bureau (Windows)
+- ✅ Détecter les ports libres si 3000/4000 sont occupés
+- ✅ Démarrer l'API (NestJS) et le frontend (Next.js)
 
-### 3. Démarrage de la base de données & Initialisation
+**Frontend** : http://localhost:3000 · **API** : http://localhost:4000/api/v1
+
+### 🔄 Commandes du lanceur
 
 ```bash
-# 4. Lancer le conteneur PostgreSQL 18
-docker compose -f infra/docker/docker-compose.dev.yml up -d
-
-# 5. Appliquer les migrations de schéma Prisma
-pnpm db:migrate
-
-# 6. Peupler la base avec les comptes initiaux de test
-pnpm seed
-
-# 7. Synchroniser le contenu pédagogique du dossier content/ en base
-pnpm content:sync
+pnpm opensio                   # Vérifications + lancement dev (par défaut)
+pnpm opensio --prod            # Build de production puis démarrage
+pnpm opensio --reconfigure     # Rejouer l'assistant de premier démarrage
+pnpm opensio --no-update-check # Ignorer la vérification Git ce coup-ci
+pnpm opensio --help            # Afficher l'aide
 ```
 
----
+## 📂 Structure du monorepo
 
-### 4. Lancement de l'application
+```text
+opensio/
+├── apps/
+│   ├── api/              # NestJS 11 · Prisma · REST · WebSocket · sync contenu
+│   └── web/              # Next.js 15 · App Router · Tailwind · auth JWT
+├── content/              # tracks/ → modules/ → leçons.md, quiz.yaml, labs/
+├── packages/
+│   ├── config/           # Config partagée TypeScript, ESLint, Tailwind
+│   └── content-schema/   # Validateurs Zod du contenu pédagogique
+├── scripts/
+│   ├── install.ps1       # Installateur one-shot Windows (iex)
+│   ├── opensio.mjs       # Lanceur principal (pnpm opensio)
+│   ├── lib/              # Modules du lanceur (git, docker, env, ports…)
+│   ├── check-file-size.mjs   # Règle D-13 : aucun fichier > 400 lignes
+│   └── check-theme-classes.mjs  # Vérification couverture bi-thème
+├── docs/                 # modules-map, content-guide, journal, roadmap
+├── docker-compose.yml    # PostgreSQL dev (port 5432)
+└── turbo.json            # Pipelines Turborepo
+```
+
+## ✅ Qualité & gouvernance de code
+
+- **Règle D-13** : aucun fichier source de plus de 400 lignes (vérifié en CI par `scripts/check-file-size.mjs`)
+- **Bi-thème** : `scripts/check-theme-classes.mjs` garantit la couverture clair/sombre sur chaque composant
+- **Contenu** : `content/validate.mjs` exécute 100 % des validateurs de labs
+- **Sécurité** : politique D-09 — mots de passe ≥ 12 caractères, 3 classes minimum (vérifiée côté serveur et au seed)
+- **Chaîne complète** : lint → typecheck → tests → build, bloquante sur chaque PR
+
+## 🧪 Tests E2E
+
+### Exécuter localement
 
 ```bash
-# 8. Démarrer l'API et le Frontend en parallèle avec Turborepo
-pnpm dev
+pnpm test:e2e
 ```
 
-Les services sont immédiatement disponibles sur :
+### Couverture actuelle
 
-- 🌐 **Frontend Web** : [http://localhost:3000](http://localhost:3000)
-- 🔌 **API Backend** : [http://localhost:4000/api/v1](http://localhost:4000/api/v1)
-- 🩺 **Sonde de santé** : [http://localhost:4000/api/v1/health](http://localhost:4000/api/v1/health)
+- ✅ `parcours.spec.ts` : Login → catalogue → leçon → quiz
+- ✅ `inscription.spec.ts` : Inscription → première leçon
+- ✅ `auth-forgot.spec.ts` : Reset mot de passe
+- ✅ `progression.spec.ts` : Progression multi-leçons
+- ✅ `quiz-retry.spec.ts` : Quiz échec → retry
+- ✅ `labs.spec.ts` : Labs → session → validation
 
----
+### CI/CD
 
-### 5. Comptes de démonstration (Développement local)
+Les tests sont exécutés automatiquement sur chaque push/PR via GitHub Actions.  
+[![E2E Tests](https://github.com/Klemz-696/opensio/actions/workflows/e2e.yml/badge.svg)](https://github.com/Klemz-696/opensio/actions/workflows/e2e.yml)
 
-| Rôle                  | Adresse email           | Mot de passe          |
-| --------------------- | ----------------------- | --------------------- |
-| 🎓 **Étudiant**       | `student@opensio.local` | `StudentOpenSIO2026!` |
-| 🛡️ **Administrateur** | `admin@opensio.local`   | `AdminOpenSIO2026!`   |
+## 🗺️ Feuille de route
 
----
+Le catalogue SISR (20/20 modules, 105 leçons, 45 labs) est **terminé**. La route vers la v1.0 —
+durcissement, accessibilité, tests E2E, déploiement — est détaillée dans
+[docs/roadmap.md](docs/roadmap.md), et chaque étape est tracée dans le
+[journal de bord](docs/journal.md).
 
-### 6. Activation de l'Assistant Mentor IA (Optionnel)
+## 📖 Documentation
 
-L'assistant Mentor IA fonctionne nativement avec **Ollama** en local (confidentialité totale, 0 donnée sortante) :
+| Document | Contenu |
+| --- | --- |
+| [docs/modules-map.md](docs/modules-map.md) | Cartographie complète des 20 modules, fiches détaillées, matrice de compétences |
+| [docs/content-guide.md](docs/content-guide.md) | Guide d'écriture du contenu pédagogique (leçons, quiz, labs) |
+| [docs/installation.md](docs/installation.md) | Installation pas à pas (Linux, macOS, Windows) |
+| [docs/deployment.md](docs/deployment.md) | Mise en production (`docker-compose.prod.yml`) |
+| [docs/journal.md](docs/journal.md) | Journal de bord décision par décision |
+| [docs/roadmap.md](docs/roadmap.md) | Feuille de route vers la v1.0 |
 
-1. **Installer et lancer Ollama** : [https://ollama.ai](https://ollama.ai)
-2. **Télécharger le modèle recommandé** :
-   ```bash
-   ollama pull llama3.1:8b
-   ```
-3. **Activer l'IA dans votre fichier `.env`** :
-   ```env
-   AI_ENABLED=true
-   AI_PROVIDER=openai-compatible
-   AI_BASE_URL=http://127.0.0.1:11434/v1
-   AI_MODEL=llama3.1:8b
-   AI_TIMEOUT_MS=120000
-   ```
-   > 💡 **Note Windows** : Utilisez impérativement `http://127.0.0.1:11434/v1` plutôt que `localhost` pour éviter les lenteurs de résolution IPv6 (`::1`).
+## 🤝 Contribuer
 
----
-
-## 🧪 Démos & Preuves Rejouables
-
-Le projet inclut une suite complète de scripts de démonstration autonome dans `apps/api/test/`. Ces scripts démarrent une instance NestJS complète, effectuent de réels appels HTTP / WebSocket contre PostgreSQL et valident l'ensemble des scénarios de test.
-
-Pour exécuter une démonstration, assurez-vous que PostgreSQL est démarré (`docker compose ... up -d`) et lancez :
-
-```bash
-# Démo Lot 3 — Authentification complète (Register, Login, Rotation Refresh, Détection réutilisation)
-pnpm --filter @opensio/api exec tsx test/demo-auth.ts
-
-# Démo Lot 4 — Catalogue, consultation des cours et protection anti-traversée
-pnpm --filter @opensio/api exec tsx test/demo-lot4.ts
-
-# Démo Lot 5 — Passation des quiz, calcul de score, zéro-fuite et idempotence
-pnpm --filter @opensio/api exec tsx test/demo-lot5.ts
-
-# Démo Lot 6 — Heartbeat, suivi de lecture, règle RM-03 et tableau de bord apprenant
-pnpm --filter @opensio/api exec tsx test/demo-lot6.ts
-
-# Démo Lot 7 — Ateliers pratiques (Labs), éditeur, indices pénalisés et runner de validation
-pnpm --filter @opensio/api exec tsx test/demo-lot7.ts
-
-# Démo Lot 8 — Terminal virtuel whitelisté, Mentor IA Socratique, mode libre et isolation
-pnpm --filter @opensio/api exec tsx test/demo-lot8.ts
-```
-
----
-
-## 🔐 Sécurité & Qualité de code
-
-- **Mots de passe** : Hachage Argon2id sécurisé ($m=64\text{ Mio}, t=3, p=4$).
-- **Gestion des sessions (D-09)** : Access Token JWT stocké en mémoire vive uniquement. Refresh token opaque 256 bits en cookie `HttpOnly; SameSite=Lax` avec rotation et détection de vol de jeton (révocation immédiate de la chaîne).
-- **Zéro fuite de correction** : Les réponses correctes de quiz et scripts de validation de labs ne sont jamais exposés au client.
-- **Terminal sécurisé** : Interpréteur avec liste blanche stricte de commandes (`ls`, `cat`, `ip`, `ping`, etc.) ; aucune exécution arbitraire de commande (`eval`/`exec`/`spawn`).
-- **Garde-fous IA (RM-11)** : Filtre post-traitement interdisant le spoil de solutions évaluées et détection de contournement côté serveur.
-- **Règle D-13 / RM-13** : Aucun fichier source ne dépasse 400 lignes dans l'ensemble du monorepo (vérifié à chaque commit et en CI).
-- **Couverture de tests** : 235 tests automatisés (unitaires, intégration, E2E et frontend).
-
----
-
-## 📚 En savoir plus
-
-- 🗺️ **[Feuille de route & Jalons futurs](docs/roadmap.md)** : Bilan du MVP v0.1.0, prévisions v0.2 (Homelab, BYOK IA, runner Docker) et v1.0 (Proxmox VE, noVNC).
-- ✍️ **[Guide de rédaction de contenu SISR](docs/content-guide.md)** : Guide exhaustif pour créer de nouveaux cours, quiz et ateliers pratiques conformes aux schémas Zod.
-- 📓 **[Journal de bord du projet](docs/journal.md)** : Historique chronologique détaillé de chaque lot et arbitrages techniques.
-
----
+Une contribution = une branche = une Pull Request. Le contenu pédagogique suit
+[docs/content-guide.md](docs/content-guide.md) ; le code respecte la règle D-13
+et la CI doit rester verte. Jamais de push direct sur `main`.
 
 ## 📄 Licence
 
-Distribué sous licence **MIT** — voir le fichier [LICENSE](LICENSE) pour plus de détails.
+Code distribué sous licence [MIT](LICENSE).
+
+<p align="center">
+  <img src="https://capsule-render.vercel.app/api?type=waving&color=0:6366f1,100:0ea5e9&height=120&section=footer" width="100%" alt="footer"/>
+</p>

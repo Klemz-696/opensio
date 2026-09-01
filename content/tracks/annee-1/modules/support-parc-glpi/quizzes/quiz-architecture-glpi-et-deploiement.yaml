@@ -1,0 +1,79 @@
+slug: quiz-architecture-glpi-et-deploiement
+title: "Quiz — Architecture GLPI et Déploiement"
+passing_score: 80
+position: 2
+questions:
+  - kind: single
+    prompt: "Sur quelle pile logicielle standard (pile Web) repose principalement l'application GLPI ?"
+    choices:
+      - id: a
+        text: "La pile LAMP (Linux, Apache/Nginx, MariaDB/MySQL, PHP)"
+      - id: b
+        text: "La pile MEAN (MongoDB, Express, Angular, Node.js)"
+      - id: c
+        text: "Un exécutable compilé en C++ sous Windows Server uniquement"
+      - id: d
+        text: "Une application Java EE tournant sur serveur IBM WebSphere"
+    correct:
+      - a
+    explanation: "GLPI est une application Web développée en PHP reposant sur une base de données relationnelle MySQL/MariaDB et un serveur Web Apache/Nginx."
+
+  - kind: single
+    prompt: "Dans GLPI, quel est le rôle d'une Entité ?"
+    choices:
+      - id: a
+        text: "Définir un périmètre organisationnel, géographique ou juridique étanche pour isoler les matériels, tickets et utilisateurs"
+      - id: b
+        text: "Remplacer le système d'exploitation du serveur"
+      - id: c
+        text: "Chiffrer les disques durs en AES-256"
+      - id: d
+        text: "Calculer automatiquement la vitesse du ventilateur processeur"
+    correct:
+      - a
+    explanation: "Les entités permettent de gérer des structures multi-sociétés ou multi-sites avec des règles d'isolation et d'héritage strictes."
+
+  - kind: single
+    prompt: "Si un technicien possède des droits avec l'option 'Récursif = Oui' sur l'entité parente 'France', que se passe-t-il ?"
+    choices:
+      - id: a
+        text: "Il a automatiquement accès aux tickets et matériels de toutes les sous-entités enfants (ex: Lyon, Marseille)"
+      - id: b
+        text: "Ses droits sont révoqués tous les 30 jours"
+      - id: c
+        text: "Il ne peut voir que l'entité racine"
+      - id: d
+        text: "Il reçoit tous les tickets en double par email"
+    correct:
+      - a
+    explanation: "La récursivité propage les habilitations du niveau parent vers l'ensemble de l'arborescence descendante."
+
+  - kind: single
+    prompt: "Quel profil utilisateur par défaut dans GLPI offre l'interface simplifiée 'Post-only' permettant uniquement de créer et suivre ses tickets ?"
+    choices:
+      - id: a
+        text: "Self-Service"
+      - id: b
+        text: "Technician"
+      - id: c
+        text: "Super-Admin"
+      - id: d
+        text: "Admin"
+    correct:
+      - a
+    explanation: "Le profil Self-Service est destiné aux utilisateurs finaux de l'entreprise qui ont besoin d'une interface épurée pour déclarer leurs incidents et consulter la FAQ."
+
+  - kind: single
+    prompt: "Pourquoi est-il impératif de configurer la directive DocumentRoot d'Apache sur le sous-dossier '/var/www/glpi/public' ?"
+    choices:
+      - id: a
+        text: "Pour isoler les fichiers sources sensibles et de configuration hors de la portée des requêtes Web directes (sécurisation OWASP)"
+      - id: b
+        text: "Parce que Linux refuse d'exécuter PHP dans d'autres répertoires"
+      - id: c
+        text: "Pour désactiver le protocole HTTPS"
+      - id: d
+        text: "Pour accélérer la vitesse de connexion Wi-Fi"
+    correct:
+      - a
+    explanation: "Pointer sur `/public` empêche l'accès Web direct aux répertoires internes de GLPI (`config/`, `files/`, `src/`), renforçant drastiquement la sécurité."

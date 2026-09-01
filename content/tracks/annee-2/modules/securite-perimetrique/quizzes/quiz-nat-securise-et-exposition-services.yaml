@@ -1,0 +1,79 @@
+slug: quiz-nat-securise-et-exposition-services
+title: "Quiz — NAT Sécurisé et Exposition de Services"
+passing_score: 80
+position: 3
+questions:
+  - kind: single
+    prompt: "Dans une architecture de sécurité moderne, quel équipement intermédiaire doit être placé en DMZ pour relayer les requêtes Web externes sans exposer directement le serveur de base de données ?"
+    choices:
+      - id: a
+        text: "Un Reverse Proxy durci (ex: Nginx avec terminaison TLS et WAF optionnel)"
+      - id: b
+        text: "Une imprimante réseau partagée"
+      - id: c
+        text: "Un contrôleur de domaine Active Directory en lecture/écriture"
+      - id: d
+        text: "Le poste de travail de l'administrateur système"
+    correct:
+      - a
+    explanation: "Le Reverse Proxy en DMZ termine les sessions TLS publiques et effectue les requêtes applicatives vers le backend en filtrant les requêtes suspectes."
+
+  - kind: single
+    prompt: "Sur un pare-feu Linux nftables, pourquoi une règle de DNAT (Port Forwarding) dans la chaîne 'prerouting' ne suffit-elle pas à elle seule pour autoriser un flux externe ?"
+    choices:
+      - id: a
+        text: "Parce que le DNAT modifie l'adresse de destination mais le paquet doit obligatoirement être accepté dans la chaîne 'forward' de la table filter"
+      - id: b
+        text: "Parce qu'il faut redémarrer le serveur à chaque paquet reçu"
+      - id: c
+        text: "Parce que le DNAT ne fonctionne qu'avec les câbles en fibre optique"
+      - id: d
+        text: "Parce que le port 443 est réservé aux serveurs Microsoft"
+    correct:
+      - a
+    explanation: "La chaîne `prerouting` réalise la translation d'adresse. Le paquet est ensuite soumis à la politique de la chaîne `forward`, qui doit explicitement autoriser le flux vers l'IP interne."
+
+  - kind: single
+    prompt: "Quelle est la recommandation fondamentale concernant l'exposition des ports d'administration (SSH/22, RDP/3389) sur Internet ?"
+    choices:
+      - id: a
+        text: "Ne jamais exposer ces ports directement sur Internet, mais conditionner l'accès admin à l'établissement préalable d'un tunnel VPN sécurisé avec MFA"
+      - id: b
+        text: "Changer le port par défaut en port 2222 et autoriser tout le monde"
+      - id: c
+        text: "Désactiver les mots de passe pour simplifier l'accès nomade"
+      - id: d
+        text: "Ouvrir le port 3389 pour tous les employés sans restriction"
+    correct:
+      - a
+    explanation: "L'exposition directe de services d'administration sur Internet est un vecteur d'attaque critique (force brute, failles RDP/SSH). L'accès doit obligatoirement passer par un VPN durci."
+
+  - kind: single
+    prompt: "Quelle technique de protection permet de limiter le nombre de tentatives de connexion par seconde sur un service exposé afin d'endiguer les attaques par force brute ?"
+    choices:
+      - id: a
+        text: "La limitation de débit (Rate Limiting / Metering)"
+      - id: b
+        text: "La suppression du fichier /etc/passwd"
+      - id: c
+        text: "L'augmentation de la taille des disques durs"
+      - id: d
+        text: "Le doublement de la mémoire vive"
+    correct:
+      - a
+    explanation: "Le mécanisme de Rate Limiting permet de restreindre le nombre de nouvelles connexions par minute depuis une adresse IP source donnée."
+
+  - kind: single
+    prompt: "Sur une passerelle de sortie Internet nftables, quelle directive sous la chaîne 'postrouting' permet de masquer les adresses IP privées lors de la sortie sur l'interface WAN ?"
+    choices:
+      - id: a
+        text: "oif \"eth1\" masquerade (ou snat to <ip_publique>)"
+      - id: b
+        text: "iif \"eth0\" drop"
+      - id: c
+        text: "ip route add default 0.0.0.0"
+      - id: d
+        text: "tcp dport 80 reject"
+    correct:
+      - a
+    explanation: "La directive `masquerade` (ou `snat`) réécrit l'adresse IP source par l'adresse IP publique de l'interface de sortie."

@@ -1,0 +1,81 @@
+slug: quiz-adressage
+title: "Quiz — Adressage IPv4"
+passing_score: 80
+position: 1
+questions:
+  - kind: single
+    prompt: "Sur combien de bits est codée une adresse IPv4 ?"
+    choices:
+      - id: a
+        text: "16 bits"
+      - id: b
+        text: "32 bits"
+      - id: c
+        text: "64 bits"
+      - id: d
+        text: "128 bits"
+    correct:
+      - b
+    explanation: "Une adresse IPv4 est composée de 4 octets de 8 bits, soit 32 bits au total."
+
+  - kind: single
+    prompt: "Quel est le masque de sous-réseau correspondant à la notation CIDR /24 ?"
+    choices:
+      - id: a
+        text: "255.0.0.0"
+      - id: b
+        text: "255.255.0.0"
+      - id: c
+        text: "255.255.255.0"
+      - id: d
+        text: "255.255.255.128"
+    correct:
+      - c
+    explanation: "Un masque /24 comporte 24 bits à 1 consécutifs, soit 255.255.255.0."
+
+  - kind: single
+    prompt: "Combien d'adresses d'hôtes utilisables contient un sous-réseau /26 ?"
+    choices:
+      - id: a
+        text: "30"
+      - id: b
+        text: "62"
+      - id: c
+        text: "64"
+      - id: d
+        text: "126"
+    correct:
+      - b
+    explanation: "Un /26 laisse 6 bits pour les hôtes (2^6 - 2 = 62 hôtes utilisables)."
+
+  - kind: multiple
+    prompt: "Quelles sont les plages d'adresses privées selon la RFC 1918 ?"
+    choices:
+      - id: a
+        text: "10.0.0.0/8"
+      - id: b
+        text: "172.16.0.0/12"
+      - id: c
+        text: "192.168.0.0/16"
+      - id: d
+        text: "169.254.0.0/16"
+    correct:
+      - a
+      - b
+      - c
+    explanation: "Les plages RFC 1918 sont 10.0.0.0/8, 172.16.0.0/12 et 192.168.0.0/16."
+
+  - kind: single
+    prompt: "Quelle commande Linux moderne permet d'afficher les adresses IP configurées ?"
+    choices:
+      - id: a
+        text: "ip addr show"
+      - id: b
+        text: "netstat -r"
+      - id: c
+        text: "ping -c 4"
+      - id: d
+        text: "traceroute"
+    correct:
+      - a
+    explanation: "La commande ip addr show (ou ip a) est l'outil standard sous Linux."

@@ -1,0 +1,79 @@
+slug: quiz-virtualisation-avancee-kvm-libvirt-clusters
+title: "Quiz — Virtualisation Avancée KVM et Clusters"
+passing_score: 80
+position: 2
+questions:
+  - kind: single
+    prompt: "Quel est le rôle exact du module noyau KVM (Kernel-based Virtual Machine) sous Linux ?"
+    choices:
+      - id: a
+        text: "Il transforme le noyau Linux en hyperviseur de Type 1 en exploitant directement les extensions de virtualisation matérielle du processeur (Intel VT-x / AMD-V)"
+      - id: b
+        text: "Il sert de lecteur multimédia pour les vidéos en streaming"
+      - id: c
+        text: "Il remplace le protocole TCP/IP par un protocole propriétaire"
+      - id: d
+        text: "Il permet d'imprimer des documents en réseau sans pilote"
+    correct:
+      - a
+    explanation: "KVM transforme Linux en un hyperviseur natif haute performance où chaque machine virtuelle est gérée comme un thread standard par l'ordonnanceur du noyau."
+
+  - kind: single
+    prompt: "Pourquoi l'utilisation des pilotes paravirtualisés VirtIO (VirtIO-Net, VirtIO-SCSI) est-elle recommandée pour les machines virtuelles KVM ?"
+    choices:
+      - id: a
+        text: "Parce qu'ils éliminent la surcharge d'émulation matérielle en permettant une communication directe par mémoire partagée entre l'invité et l'hôte, maximisant les débits"
+      - id: b
+        text: "Parce qu'ils réduisent la taille de l'écran de l'utilisateur"
+      - id: c
+        text: "Parce qu'ils suppriment le besoin d'installer un système d'exploitation"
+      - id: d
+        text: "Parce qu'ils empêchent les connexions SSH"
+    correct:
+      - a
+    explanation: "La paravirtualisation VirtIO évite l'émulation lourde de cartes réseau ou contrôleurs disque physiques, offrant des performances proches du bare-metal."
+
+  - kind: single
+    prompt: "Comment se déroule techniquement une migration à chaud ('Live Migration') d'une machine virtuelle entre deux hyperviseurs physiques d'un cluster ?"
+    choices:
+      - id: a
+        text: "La mémoire vive (RAM) et l'état des registres CPU sont transférés de manière itérative via le réseau sans éteindre la VM, le disque restant accessible sur un stockage partagé"
+      - id: b
+        text: "La machine virtuelle est éteinte pendant 2 heures pour copier le disque dur sur une clé USB"
+      - id: c
+        text: "Le serveur physique source est débranché et transporté dans la nouvelle baie"
+      - id: d
+        text: "L'adresse IP de la machine est supprimée définitivement"
+    correct:
+      - a
+    explanation: "La Live Migration transfère la mémoire en tâche de fond sans interruption perceptible pour les utilisateurs connectés grâce à l'accès concurrent au stockage partagé."
+
+  - kind: single
+    prompt: "Dans un cluster de virtualisation, quel problème critique le mécanisme de 'Fencing' (STONITH) empêche-t-il ?"
+    choices:
+      - id: a
+        text: "Le Split-Brain (situation où deux nœuds isolés pensent être maîtres simultanément et écrivent en même temps sur le stockage partagé, corrompant les données)"
+      - id: b
+        text: "La surchauffe du ventilateur du clavier"
+      - id: c
+        text: "L'augmentation du trafic Wi-Fi dans les bureaux"
+      - id: d
+        text: "La suppression automatique des adresses MAC"
+    correct:
+      - a
+    explanation: "Le Fencing force l'extinction matérielle immédiate d'un nœud défaillant ou non joignable afin de protéger l'intégrité du stockage partagé contre le Split-Brain."
+
+  - kind: single
+    prompt: "Quelle commande de l'outil CLI 'virsh' permet de créer un snapshot à chaud d'une machine virtuelle gérée par libvirt ?"
+    choices:
+      - id: a
+        text: "virsh snapshot-create-as --domain [nom_vm] --name [nom_snapshot]"
+      - id: b
+        text: "virsh copy --all"
+      - id: c
+        text: "virsh backup --force"
+      - id: d
+        text: "virsh freeze-disk"
+    correct:
+      - a
+    explanation: "`virsh snapshot-create-as` permet d'immortaliser l'état disque et mémoire d'une machine virtuelle à un instant précis pour faciliter un rollback."

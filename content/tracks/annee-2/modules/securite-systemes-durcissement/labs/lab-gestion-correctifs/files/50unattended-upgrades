@@ -1,0 +1,12 @@
+// 50unattended-upgrades - Configuration des Mises à Jour Automatiques
+
+Unattended-Upgrade::Allowed-Origins {
+    // TODO: Autoriser uniquement la suite -security
+};
+
+// TODO: Définir la liste noire des paquets exclus (mysql-server, nginx)
+// Unattended-Upgrade::Package-Blacklist { ... };
+
+// TODO: Activer le nettoyage automatique des dépendances orphelines
+
+// TODO: Configurer le redémarrage automatique nocturne (03:30)

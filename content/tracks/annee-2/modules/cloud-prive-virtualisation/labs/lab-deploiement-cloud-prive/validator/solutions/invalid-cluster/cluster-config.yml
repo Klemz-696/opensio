@@ -1,0 +1,10 @@
+cluster_name: "opensio-cloud-prive"
+
+nodes:
+  - name: pve-node-01
+    ip: 10.10.98.11
+  # Seulement 1 nœud et pas de HA
+
+resource_pools:
+  - name: project-data
+    max_vcpus: 16

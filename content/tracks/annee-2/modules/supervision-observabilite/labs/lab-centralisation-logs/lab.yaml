@@ -1,0 +1,69 @@
+slug: centralisation-logs-promtail-loki
+title: "Centralisation et Analyse des Journaux avec Promtail, Loki et LogQL"
+level: 2_files
+max_score: 100
+estimated_minutes: 45
+context: |
+  Vous êtes ingénieur DevOps et devez configurer l'agent de collecte Promtail pour expédier et parser les journaux d'accès Nginx vers Grafana Loki, puis rédiger des requêtes LogQL d'exploitation.
+
+  Vous devez configurer :
+  1. **`promtail-config.yml`** :
+     - Section `server` avec `http_listen_port: 9080`
+     - Section `positions` avec `filename: /tmp/positions.yaml`
+     - Section `clients` avec `url: http://loki:3100/loki/api/v1/push`
+     - Section `scrape_configs` pour le job `nginx-access` lisant `/var/log/nginx/*.log`, avec labels `job: nginx` et `env: production`
+     - Section `pipeline_stages` pour parser les logs au format JSON et mapper `status` en label dynamique
+  2. **`queries.logql`** :
+     - Rédiger une requête LogQL de filtrage extrayant les logs d'erreurs HTTP 5xx
+     - Rédiger une requête LogQL métrique calculant le débit d'erreurs 5xx par seconde sur 5 minutes avec `rate()`
+
+objectives:
+  - "Configurer un agent de collecte de journaux Promtail pour des environnements conteneurisés et bare-metal"
+  - "Structurer des pipelines de transformation et de parsing JSON pour extraire des champs de logs"
+  - "Écrire des requêtes de filtrage de flux de logs avec le langage LogQL"
+  - "Dériver des métriques temporelles à partir de flux de logs textuels pour la supervision en temps réel"
+
+prerequisites:
+  - "linux-administration"
+  - "conteneurisation-docker"
+  - "gestion-centralisation-logs-loki"
+
+files:
+  editable:
+    - path: promtail-config.yml
+      description: "Fichier de configuration de l'agent de collecte Promtail"
+    - path: queries.logql
+      description: "Fichier contenant les requêtes d'analyse et de métriques LogQL"
+
+hints:
+  - cost_percent: 10
+    text: "Dans promtail-config.yml, vérifiez que l'URL du client pointe vers 'http://loki:3100/loki/api/v1/push'."
+  - cost_percent: 10
+    text: "Pour le pipeline_stages, utilisez l'étage 'json:' pour extraire les clés puis l'étage 'labels:' pour indexer le statut."
+  - cost_percent: 10
+    text: "Pour la métrique d'erreurs LogQL, utilisez la syntaxe 'sum(rate({job=\"nginx\"} |= \"500\"[5m]))'."
+
+validation:
+  type: script
+  image: opensio/validator-loki:latest
+  timeout_seconds: 30
+  checks:
+    - id: promtail_server_and_client_config
+      required: true
+      points: 25
+      description: "Configuration Promtail : écoute serveur, positions file et URL d'envoi vers l'API push de Loki"
+    - id: promtail_scrape_and_pipeline
+      required: true
+      points: 25
+      description: "Scrape et Pipeline : scraping des logs Nginx avec labels statiques et pipeline_stages JSON"
+    - id: logql_filter_query
+      required: true
+      points: 25
+      description: "Requête de filtrage LogQL : sélection du flux Nginx et filtrage des erreurs HTTP 5xx"
+    - id: logql_metric_query
+      required: true
+      points: 25
+      description: "Requête métrique LogQL : calcul du taux de logs d'erreurs par seconde avec rate() sur fenêtre glissante"
+
+scoring:
+  floor_percent: 50

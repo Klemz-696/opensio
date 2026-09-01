@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { UserRole } from '@prisma/client';
+import { Role } from '@prisma/client';
 import { JwtService } from './jwt.service';
 
 describe('JwtService (HS256 D-09)', () => {
@@ -28,7 +28,7 @@ describe('JwtService (HS256 D-09)', () => {
       id: '11111111-1111-1111-1111-111111111111',
       email: 'etudiant@opensio.local',
       displayName: 'Élève Test',
-      role: UserRole.STUDENT,
+      role: Role.APPRENANT,
     };
 
     const token = service.generateAccessToken(user);
@@ -39,7 +39,7 @@ describe('JwtService (HS256 D-09)', () => {
     expect(decoded.sub).toBe(user.id);
     expect(decoded.email).toBe(user.email);
     expect(decoded.displayName).toBe(user.displayName);
-    expect(decoded.role).toBe(UserRole.STUDENT);
+    expect(decoded.role).toBe(Role.APPRENANT);
     expect(decoded.exp).toBeDefined();
     expect(decoded.iat).toBeDefined();
   });
@@ -50,7 +50,7 @@ describe('JwtService (HS256 D-09)', () => {
       id: '11111111-1111-1111-1111-111111111111',
       email: 'etudiant@opensio.local',
       displayName: 'Élève Test',
-      role: UserRole.STUDENT,
+      role: Role.APPRENANT,
     };
 
     const token = service.generateAccessToken(user);

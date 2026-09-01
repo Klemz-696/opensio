@@ -1,0 +1,79 @@
+slug: regles-routage-tickets-sla
+title: "Règles de Routage de Tickets et SLA dans GLPI"
+level: 2_files
+max_score: 100
+estimated_minutes: 45
+context: |
+  Vous êtes administrateur ITSM au sein de la DSI d'une organisation multisite.
+  Pour fluidifier le traitement du centre de services et respecter les engagements contractuels (SLA), vous devez configurer le moteur de règles d'affectation automatique de GLPI dans le fichier déclaratif `rules.json`.
+
+  Spécifications des 3 règles métier attendues dans `rules.json` :
+  1. Règle 1 : `incidents-vip` (Routage Incidents VIP & Direction)
+     - Conditions : `demandeur_groupe` = `Direction Generale` OU `titre_contient` = `[URGENT VIP]`.
+     - Actions :
+       - `urgence` : `tres_haute` (ou `5`)
+       - `groupe_technicien` : `Support N2 VIP`
+       - `sla_tto_minutes` : `<= 15`
+       - `sla_ttr_minutes` : `<= 120` (2 heures)
+  2. Règle 2 : `panne-reseau` (Routage Panne Réseau & Commutateur)
+     - Conditions : `categorie` = `Reseau` OU `mots_cles` = `panne commutateur`, `coupure vlan`, `switch`.
+     - Actions :
+       - `impact` : `haut` (ou `4`)
+       - `groupe_technicien` : `Equipe Reseau & Securite`
+       - `sla_tto_minutes` : `<= 30`
+       - `sla_ttr_minutes` : `<= 240` (4 heures)
+  3. Règle 3 : `demandes-bureautique` (Routage Demandes Standards Bureautique)
+     - Conditions : `type` = `Demande` (ou `categorie` = `Bureautique / Postes`).
+     - Actions :
+       - `urgence` : `moyenne` (ou `3`)
+       - `groupe_technicien` : `Centre de Services N1`
+       - `sla_tto_minutes` : `<= 120` (2 heures)
+       - `sla_ttr_minutes` : `<= 1440` (24 heures)
+
+objectives:
+  - "Concevoir des règles de qualification et d'affectation automatique pour le helpdesk GLPI"
+  - "Associer des groupes de compétences spécialisés selon la nature de l'incident"
+  - "Définir des engagements de prise en charge (TTO) et de résolution (TTR) conformes à ITIL"
+  - "Structurer une configuration JSON respectant les contraintes déclaratives"
+
+prerequisites:
+  - "gestion-tickets-et-sla"
+  - "principes-itil-et-support"
+
+files:
+  editable:
+    - path: rules.json
+      description: "Fichier de configuration JSON des règles métier d'affectation et de SLA GLPI"
+
+hints:
+  - cost_percent: 10
+    text: "Le fichier 'rules.json' doit contenir un tableau 'rules' contenant au minimum les 3 règles spécifiées."
+  - cost_percent: 10
+    text: "Pour la règle VIP, l'action doit comporter 'sla_ttr_minutes' <= 120 (2 heures) et 'sla_tto_minutes' <= 15."
+  - cost_percent: 10
+    text: "Vérifiez que chaque règle définit clairement ses critères (conditions) et ses actions (groupe_technicien, SLA)."
+
+validation:
+  type: script
+  image: opensio/validator-glpi-rules:latest
+  timeout_seconds: 30
+  checks:
+    - id: json_structure_and_rules_count
+      required: true
+      points: 25
+      description: "Structure JSON valide contenant les 3 règles métier obligatoires"
+    - id: vip_rule_configuration
+      required: true
+      points: 25
+      description: "Règle VIP : condition Direction/VIP, groupe Support N2 VIP et SLA TTR <= 2h"
+    - id: network_rule_configuration
+      required: true
+      points: 25
+      description: "Règle Réseau : condition Réseau/Switch, groupe Réseau et SLA TTR <= 4h"
+    - id: office_rule_configuration
+      required: true
+      points: 25
+      description: "Règle Bureautique : condition Demande/Bureautique, groupe N1 et SLA TTR <= 24h"
+
+scoring:
+  floor_percent: 50

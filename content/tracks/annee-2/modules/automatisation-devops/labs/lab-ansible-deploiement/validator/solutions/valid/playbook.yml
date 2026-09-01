@@ -1,0 +1,49 @@
+---
+- name: "Déploiement et configuration idempotente de Nginx"
+  hosts: webservers
+  become: true
+
+  vars:
+    domain_name: "app.opensio.local"
+    nginx_port: 80
+
+  tasks:
+    - name: "Installer le serveur Web Nginx"
+      ansible.builtin.apt:
+        name: nginx
+        state: present
+        update_cache: yes
+
+    - name: "Déployer la configuration du VirtualHost"
+      ansible.builtin.template:
+        src: templates/vhost.conf.j2
+        dest: /etc/nginx/sites-available/app.conf
+        owner: root
+        group: root
+        mode: "0644"
+      notify: "Recharger le service Nginx"
+
+    - name: "Activer le VirtualHost via un lien symbolique"
+      ansible.builtin.file:
+        src: /etc/nginx/sites-available/app.conf
+        dest: /etc/nginx/sites-enabled/app.conf
+        state: link
+      notify: "Recharger le service Nginx"
+
+    - name: "Supprimer la configuration du site par défaut"
+      ansible.builtin.file:
+        path: /etc/nginx/sites-enabled/default
+        state: absent
+      notify: "Recharger le service Nginx"
+
+    - name: "Démarrer et activer le service Nginx"
+      ansible.builtin.systemd:
+        name: nginx
+        state: started
+        enabled: yes
+
+  handlers:
+    - name: "Recharger le service Nginx"
+      ansible.builtin.systemd:
+        name: nginx
+        state: reloaded

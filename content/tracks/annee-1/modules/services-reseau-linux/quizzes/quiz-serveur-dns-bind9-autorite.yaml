@@ -1,0 +1,80 @@
+slug: quiz-serveur-dns-bind9-autorite
+title: "Quiz — Serveur DNS Bind9 Faisant Autorité"
+passing_score: 80
+position: 2
+questions:
+  - kind: single
+    prompt: "Dans un fichier de zone DNS Bind9, quelle est la conséquence d'oublier le point final '.' à la fin d'un FQDN (ex: srv1.entreprise.lan) ?"
+    choices:
+      - id: a
+        text: "Bind9 concatène automatiquement le nom de la zone courante, produisant srv1.entreprise.lan.entreprise.lan."
+      - id: b
+        text: "Le serveur Bind9 refuse de démarrer avec une erreur fatale"
+      - id: c
+        text: "Le nom est résolu en adresse IP publique 0.0.0.0"
+      - id: d
+        text: "Le point est automatiquement inséré sans altération"
+    correct:
+      - a
+    explanation: "En syntaxe de zone DNS, l'absence de point terminal indique un nom relatif ; Bind9 lui ajoute donc le suffixe du domaine de la zone ($ORIGIN), provoquant un dédoublement de domaine."
+
+  - kind: single
+    prompt: "Quelle commande permet de vérifier la syntaxe et la cohérence logique d'un fichier de zone direct '/etc/bind/db.entreprise.lan' ?"
+    choices:
+      - id: a
+        text: "named-checkzone entreprise.lan /etc/bind/db.entreprise.lan"
+      - id: b
+        text: "bind-verify /etc/bind/db.entreprise.lan"
+      - id: c
+        text: "dnscheck /etc/bind/db.entreprise.lan"
+      - id: d
+        text: "named-validate -z entreprise.lan"
+    correct:
+      - a
+    explanation: "named-checkzone vérifie le format du fichier de zone, le numéro de série SOA, la validité des enregistrements NS et la présence des glue records nécessaires."
+
+  - kind: single
+    prompt: "Quel type d'enregistrement DNS est utilisé exclusivement dans les zones inverses pour associer une adresse IP à un nom d'hôte FQDN ?"
+    choices:
+      - id: a
+        text: "PTR (Pointer Record)"
+      - id: b
+        text: "A (Address Record)"
+      - id: c
+        text: "CNAME (Canonical Name Record)"
+      - id: d
+        text: "REV (Reverse Record)"
+    correct:
+      - a
+    explanation: "L'enregistrement PTR (Pointer) associe une adresse IP (dans l'arbre in-addr.arpa ou ip6.arpa) à son nom d'hôte canonique FQDN."
+
+  - kind: multiple
+    prompt: "Quels enregistrements de ressources sont obligatoires dans toute zone DNS faisant autorité valide ?"
+    choices:
+      - id: a
+        text: "SOA (Start of Authority : paramètres d'autorité, numéro de série et timers de rafraîchissement)"
+      - id: b
+        text: "NS (Name Server : désignation des serveurs faisant autorité pour la zone)"
+      - id: c
+        text: "DHCP (Dynamic Host Control Record)"
+      - id: d
+        text: "WINS (Windows Internet Name Service)"
+    correct:
+      - a
+      - b
+    explanation: "Une zone DNS valide doit impérativement comporter un enregistrement SOA en tête de fichier et au moins un enregistrement NS désignant un serveur de noms."
+
+  - kind: single
+    prompt: "Quelle action devez-vous impérativement réaliser dans le SOA à chaque modification d'un enregistrement dans une zone pour que les serveurs secondaires synchronisent la mise à jour ?"
+    choices:
+      - id: a
+        text: "Incrémenter le numéro de série (Serial Number)"
+      - id: b
+        text: "Changer l'adresse email de l'administrateur"
+      - id: c
+        text: "Réduire le TTL à zéro"
+      - id: d
+        text: "Redémarrer le commutateur réseau"
+    correct:
+      - a
+    explanation: "Les serveurs DNS secondaires comparent le numéro de série du SOA. Ils ne déclenchent un transfert de zone que si le numéro de série du maître est supérieur au leur."

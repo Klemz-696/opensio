@@ -1,0 +1,79 @@
+slug: quiz-reseau-docker-et-communication-inter-conteneurs
+title: "Quiz — Réseau Docker et Communication"
+passing_score: 80
+position: 3
+questions:
+  - kind: single
+    prompt: "Sur un réseau personnalisé créé avec 'docker network create my-net', comment un conteneur A peut-il joindre un conteneur B situé sur le même réseau ?"
+    choices:
+      - id: a
+        text: "En utilisant directement le nom du conteneur B comme nom d'hôte (ex: http://db:5432) grâce au serveur DNS intégré de Docker (127.0.0.11)"
+      - id: b
+        text: "En recherchant manuellement l'adresse MAC du conteneur B"
+      - id: c
+        text: "En modifiant le fichier hosts de Windows"
+      - id: d
+        text: "En redémarrant le routeur physique de l'entreprise"
+    correct:
+      - a
+    explanation: "Les réseaux personnalisés (User-Defined Bridges) activent le serveur DNS interne de Docker qui résout automatiquement les noms de conteneurs en adresses IP dynamiques."
+
+  - kind: single
+    prompt: "Quelle est la particularité du pilote de réseau Docker 'host' ?"
+    choices:
+      - id: a
+        text: "Le conteneur partage directement la pile réseau de l'hôte sans aucune isolation réseau ni besoin de mappage de port avec -p"
+      - id: b
+        text: "Le conteneur ne peut communiquer qu'avec un seul autre conteneur"
+      - id: c
+        text: "Le conteneur n'a accès à aucune interface réseau"
+      - id: d
+        text: "Le conteneur devient le routeur BGP de l'entreprise"
+    correct:
+      - a
+    explanation: "Avec `--network host`, l'isolation réseau est désactivée ; le conteneur écoute directement sur les interfaces physiques et ports de la machine hôte."
+
+  - kind: single
+    prompt: "Quelle commande permet d'exposer le port 80 d'un conteneur Nginx sur le port 8080 de la machine hôte uniquement sur l'interface locale (localhost) pour des raisons de sécurité ?"
+    choices:
+      - id: a
+        text: "docker run -d -p 127.0.0.1:8080:80 nginx"
+      - id: b
+        text: "docker run -d -p 80:8080 nginx"
+      - id: c
+        text: "docker run -d --net=none nginx"
+      - id: d
+        text: "docker run -d -P nginx"
+    correct:
+      - a
+    explanation: "La syntaxe `-p IP_HÔTE:PORT_HÔTE:PORT_CONTENEUR` restreint l'écoute à l'adresse IP spécifiée (ici `127.0.0.1`), empêchant l'accès depuis le réseau externe."
+
+  - kind: single
+    prompt: "Que se passe-t-il si deux conteneurs sont attachés au réseau bridge par défaut ('bridge') sans option spécifique ?"
+    choices:
+      - id: a
+        text: "Ils peuvent communiquer entre eux par leurs adresses IP, mais la résolution automatique de nom par nom de conteneur n'est pas disponible"
+      - id: b
+        text: "Ils fusionnent en un seul conteneur"
+      - id: c
+        text: "Le serveur hôte plante immédiatement"
+      - id: d
+        text: "Tous les paquets sont chiffrés en SSL automatiquement"
+    correct:
+      - a
+    explanation: "Le réseau bridge par défaut historique ne bénéficie pas de la découverte DNS automatique. C'est pourquoi la création d'un réseau personnalisé est systématiquement préconisée."
+
+  - kind: single
+    prompt: "Quel pilote réseau est utilisé par défaut lorsque l'on lance un conteneur sans spécifier d'option --network ?"
+    choices:
+      - id: a
+        text: "Le pilote bridge"
+      - id: b
+        text: "Le pilote overlay"
+      - id: c
+        text: "Le pilote none"
+      - id: d
+        text: "Le pilote macvlan"
+    correct:
+      - a
+    explanation: "Le pilote `bridge` est le réseau virtuel par défaut créé automatiquement par Docker à son installation."

@@ -1,0 +1,79 @@
+slug: quiz-fondamentaux-gestion-projet-triangle-dor
+title: "Quiz — Fondamentaux de la Gestion de Projet IT"
+passing_score: 80
+position: 1
+questions:
+  - kind: single
+    prompt: "Quelle est la distinction fondamentale entre la Maîtrise d'Ouvrage (MOA) et la Maîtrise d'Œuvre (MOE) dans un projet informatique ?"
+    choices:
+      - id: a
+        text: "La MOA représente le client métier, exprime les besoins fonctionnels, finance le projet et valide la recette, tandis que la MOE conçoit et réalise la solution technique dans le respect des coûts et délais"
+      - id: b
+        text: "La MOA écrit le code source et la MOE achète les ordinateurs"
+      - id: c
+        text: "La MOE est le fournisseur d'électricité du bâtiment"
+      - id: d
+        text: "Il n'y a aucune différence, ce sont deux synonymes stricts"
+    correct:
+      - a
+    explanation: "La MOA définit le 'quoi et pourquoi' (le besoin métier et les validations), tandis que la MOE assure le 'comment' (la conception et réalisation technique)."
+
+  - kind: single
+    prompt: "Selon la règle du 'Triangle d'Or' (Triple Contrainte : Coût, Délai, Périmètre/Qualité), quelle est la conséquence inévitable si la direction exige d'avancer la date de livraison (réduction du délai) sans augmenter le budget ?"
+    choices:
+      - id: a
+        text: "Il faut obligatoirement réduire le périmètre fonctionnel livré ou accepter une dégradation sévère de la qualité et de la fiabilité du produit"
+      - id: b
+        text: "Les développeurs travailleront 4 fois plus vite sans aucune conséquence"
+      - id: c
+        text: "Le projet deviendra automatiquement gratuit"
+      - id: d
+        text: "Le serveur consommera deux fois moins d'électricité"
+    correct:
+      - a
+    explanation: "Le Triangle d'Or est un équilibre mathématique et managérial : toute compression de temps sans ressource supplémentaire exige de couper des fonctionnalités."
+
+  - kind: single
+    prompt: "Comment calcule-t-on la criticité d'un risque dans une grille d'analyse de risques de projet ?"
+    choices:
+      - id: a
+        text: "Criticité = Probabilité d'occurrence × Gravité de l'impact"
+      - id: b
+        text: "Criticité = Nombre de développeurs + Budget total"
+      - id: c
+        text: "Criticité = Vitesse de la connexion Internet"
+      - id: d
+        text: "Criticité = Âge du chef de projet"
+    correct:
+      - a
+    explanation: "La criticité pondère la fréquence probable d'apparition par l'ampleur des dégâts potentiels causés aux objectifs du projet."
+
+  - kind: single
+    prompt: "À quoi sert un 'Jalon' (Milestone) dans le calendrier d'un projet informatique ?"
+    choices:
+      - id: a
+        text: "À marquer un événement ou un point de contrôle majeur (sans durée propre) permettant de valider l'atteinte d'une étape clé et d'autoriser le passage à la phase suivante"
+      - id: b
+        text: "À calculer le salaire hebdomadaire des consultants"
+      - id: c
+        text: "À allumer automatiquement les lumières du bureau"
+      - id: d
+        text: "À commander du café pour l'équipe"
+    correct:
+      - a
+    explanation: "Un jalon est une date clé d'évaluation marquant la fin d'une phase (ex: validation du cahier des charges, livraison de la VABF)."
+
+  - kind: single
+    prompt: "Quelle stratégie de traitement des risques consiste à souscrire un contrat d'assurance ou à confier l'hébergement hautement critique à un infogéreur spécialisé ?"
+    choices:
+      - id: a
+        text: "Le transfert du risque (Transfer)"
+      - id: b
+        text: "L'acceptation passive du risque"
+      - id: c
+        text: "L'ignorance totale du risque"
+      - id: d
+        text: "La suppression du système d'information"
+    correct:
+      - a
+    explanation: "Le transfert reporte la charge financière ou technique du risque sur un tiers qualifié par le biais d'un contrat formel ou d'une garantie SLA."

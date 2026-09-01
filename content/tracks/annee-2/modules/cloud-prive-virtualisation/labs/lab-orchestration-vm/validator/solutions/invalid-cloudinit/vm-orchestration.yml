@@ -1,0 +1,8 @@
+template_id: 9000
+clone_mode: linked
+cores: 2
+memory_mb: 4096
+disk_size_gb: 20
+network:
+  bridge: vnet-frontend
+snapshot_before_deploy: true

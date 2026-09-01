@@ -1,0 +1,80 @@
+slug: quiz-dimensionnement-ressources-quotas
+title: "Quiz — Dimensionnement des Ressources et Quotas"
+passing_score: 80
+position: 5
+questions:
+  - kind: single
+    prompt: "Qu'appelle-t-on la sur-allocation (Overcommitment) de ressources CPU ou RAM dans un hyperviseur ?"
+    choices:
+      - id: a
+        text: "Le fait d'allouer aux VMs une quantité cumulée de ressources supérieure aux capacités physiques réelles du serveur"
+      - id: b
+        text: "L'obligation d'affecter 1 cœur physique dédié à 1 seule VM sans partage possible"
+      - id: c
+        text: "Le doublement de la consommation électrique lors des sauvegardes"
+      - id: d
+        text: "Une erreur de configuration provoquant l'arrêt immédiat de l'hyperviseur"
+    correct:
+      - a
+    explanation: "L'overcommitment permet d'optimiser la rentabilité des serveurs en mutualisant les ressources entre machines qui ne consomment pas leur pic maximal en même temps."
+
+  - kind: single
+    prompt: "Quel est le rôle du pilote VirtIO Memory Ballooning (virtio_balloon) ?"
+    choices:
+      - id: a
+        text: "Permettre à l'hyperviseur de récupérer dynamiquement de la mémoire RAM inutilisée auprès d'une VM pour la réaffecter à une autre VM"
+      - id: b
+        text: "Augmenter automatiquement la taille du disque dur virtuel"
+      - id: c
+        text: "Compresser les paquets réseau traversant le pont virtuel"
+      - id: d
+        text: "Empêcher tout accès administrateur à la console Proxmox"
+    correct:
+      - a
+    explanation: "Le ballon de mémoire (Memory Ballooning) permet d'ajuster dynamiquement l'allocation RAM de l'hôte sans redémarrage de la machine invitée."
+
+  - kind: single
+    prompt: "Dans le dimensionnement des vCPUs pour une base de données critique de production, quel ratio de sur-allocation est conseillé ?"
+    choices:
+      - id: a
+        text: "Ratio proche de 1:1 (ou 1.5:1 maximum) pour éviter toute contention et latence processeur"
+      - id: b
+        text: "Ratio de 10:1 pour réduire les coûts"
+      - id: c
+        text: "Ratio de 20:1"
+      - id: d
+        text: "Aucune importance car les bases de données n'utilisent pas de processeur"
+    correct:
+      - a
+    explanation: "Les serveurs de bases de données transactionnelles (PostgreSQL, SQL Server) nécessitent des temps de réponse ultra-rapides et ne tolèrent pas de temps d'attente d'ordonnancement CPU (CPU Wait / Steal)."
+
+  - kind: multiple
+    prompt: "Quel paramètre permet d'empêcher une VM d'engorger le système de stockage (problème du 'voisin bruyant') ?"
+    choices:
+      - id: a
+        text: "Limitation des débits Mo/s (mbps_rd, mbps_wr)"
+      - id: b
+        text: "Plafonnement du nombre d'opérations par seconde (iops_rd, iops_wr)"
+      - id: c
+        text: "Désactivation du protocole IPv6"
+      - id: d
+        text: "Suppression du fichier /etc/fstab"
+    correct:
+      - a
+      - b
+    explanation: "Les limites de débit (mbps) et d'opérations d'E/S par seconde (iops) garantissent qu'une machine virtuelle ne pénalise pas les autres disques virtuels hébergés sur le même stockage partagé."
+
+  - kind: single
+    prompt: "Quel est l'intérêt principal de créer un Pool de Ressources sous Proxmox VE ?"
+    choices:
+      - id: a
+        text: "Regrouper logiquement des VMs, conteneurs et stockages pour simplifier la gestion des permissions et des quotas par équipe"
+      - id: b
+        text: "Obliger toutes les machines virtuelles à partager la même adresse MAC"
+      - id: c
+        text: "Supprimer la nécessité d'avoir des commutateurs réseau"
+      - id: d
+        text: "Accélérer la vitesse de l'horloge physique du processeur"
+    correct:
+      - a
+    explanation: "Les pools de ressources permettent d'organiser le parc de VMs/LXC par département ou projet et de déléguer des rôles d'administration ciblés (ex: autoriser les formateurs à gérer uniquement les VMs de leur promotion)."

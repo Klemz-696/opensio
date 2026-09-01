@@ -1,0 +1,81 @@
+slug: quiz-inventaire-automatise-agents
+title: "Quiz — Inventaire Automatisé et Agents"
+passing_score: 80
+position: 3
+questions:
+  - kind: single
+    prompt: "Comment GLPI Agent transmet-il ses données d'inventaire au serveur GLPI central ?"
+    choices:
+      - id: a
+        text: "En effectuant une requête HTTP/HTTPS POST avec un payload JSON vers l'URL d'inventaire (/front/inventory.php)"
+      - id: b
+        text: "En envoyant un SMS sur le numéro du serveur"
+      - id: c
+        text: "Par transfert de disquette virtuelle"
+      - id: d
+        text: "En copiant un fichier par FTP anonyme toutes les nuits"
+    correct:
+      - a
+    explanation: "GLPI Agent communique de manière sécurisée en HTTPS avec le point d'entrée d'inventaire standardisé de GLPI."
+
+  - kind: multiple
+    prompt: "Quelles informations matérielles et logicielles sont automatiquement collectées par GLPI Agent sur un poste client ?"
+    choices:
+      - id: a
+        text: "Le modèle de processeur, la quantité de RAM et les disques de stockage"
+      - id: b
+        text: "Les adresses MAC et configurations IP des cartes réseaux"
+      - id: c
+        text: "La liste exhaustive des logiciels et applications installés avec leurs numéros de version"
+      - id: d
+        text: "Le mot de passe de la carte bancaire de l'utilisateur"
+    correct:
+      - a
+      - b
+      - c
+    explanation: "GLPI Agent extrait les métadonnées matérielles DMI/WMI, la configuration réseau et le registre des logiciels installés."
+
+  - kind: single
+    prompt: "Quel protocole réseau standard est utilisé par GLPI pour inventorier les commutateurs, routeurs et copieurs d'entreprise sans y installer d'agent ?"
+    choices:
+      - id: a
+        text: "SNMP (Simple Network Management Protocol - UDP 161)"
+      - id: b
+        text: "BGP (Border Gateway Protocol)"
+      - id: c
+        text: "SMTP (Port 25)"
+      - id: d
+        text: "BitTorrent"
+    correct:
+      - a
+    explanation: "SNMP permet d'interroger la MIB des équipements réseau pour obtenir le nom d'hôte, l'état des interfaces Ethernet, la table ARP et les compteurs."
+
+  - kind: single
+    prompt: "Quel mécanisme réseau permet à GLPI de déterminer automatiquement sur quel port d'un commutateur est physiquement connecté un ordinateur ?"
+    choices:
+      - id: a
+        text: "Le croisement des adresses MAC de la table ARP/FDB du switch (via SNMP) avec l'adresse MAC remontée par l'agent du PC"
+      - id: b
+        text: "Une recherche sur le moteur Google"
+      - id: c
+        text: "La géolocalisation GPS du câble Ethernet"
+      - id: d
+        text: "Le redémarrage forcé de la prise électrique"
+    correct:
+      - a
+    explanation: "En associant la table des adresses MAC apprises sur chaque port du commutateur (MIB SNMP) et les MACs réelles des agents, GLPI trace précisément le câblage physique."
+
+  - kind: single
+    prompt: "Sous Windows, quelle méthode standard en entreprise permet de déployer l'agent GLPI sur 500 postes sans intervention manuelle ?"
+    choices:
+      - id: a
+        text: "Une stratégie de groupe Active Directory (GPO) déployant le paquet MSI en mode silencieux"
+      - id: b
+        text: "Passer avec une clé USB sur chaque bureau le soir"
+      - id: c
+        text: "Demander aux utilisateurs de compiler le code source en C"
+      - id: d
+        text: "Envoyer un e-mail avec un lien non sécurisé"
+    correct:
+      - a
+    explanation: "Le déploiement par GPO ou MDM (Intune) est la méthode industrielle pour installer et configurer automatiquement l'agent à grande échelle."

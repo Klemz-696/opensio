@@ -1,0 +1,32 @@
+tasks:
+  - id: "TASK-101"
+    title: "Correction bug affichage dashboard"
+    created_date: "2026-08-01"
+    in_progress_date: "2026-08-03"
+    done_date: "2026-08-05"
+    lead_time_days: 4
+    cycle_time_days: 2
+
+  - id: "TASK-102"
+    title: "Mise en place authentification MFA"
+    created_date: "2026-08-02"
+    in_progress_date: "2026-08-04"
+    done_date: "2026-08-08"
+    lead_time_days: 6
+    cycle_time_days: 4
+
+  - id: "TASK-103"
+    title: "Optimisation requêtes SQL catalogue"
+    created_date: "2026-08-03"
+    in_progress_date: "2026-08-05"
+    done_date: "2026-08-07"
+    lead_time_days: 4
+    cycle_time_days: 2
+
+  - id: "TASK-104"
+    title: "Génération automatique d'attestations PDF"
+    created_date: "2026-08-04"
+    in_progress_date: "2026-08-07"
+    done_date: "2026-08-10"
+    lead_time_days: 6
+    cycle_time_days: 3

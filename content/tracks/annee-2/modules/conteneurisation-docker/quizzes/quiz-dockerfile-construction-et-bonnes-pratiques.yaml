@@ -1,0 +1,79 @@
+slug: quiz-dockerfile-construction-et-bonnes-pratiques
+title: "Quiz — Dockerfile et Bonnes Pratiques"
+passing_score: 80
+position: 2
+questions:
+  - kind: single
+    prompt: "Quel est l'avantage architectural majeur d'un Dockerfile multi-étapes (Multi-Stage Build) pour une application en production ?"
+    choices:
+      - id: a
+        text: "Séparer l'étape de compilation de l'étape finale d'exécution afin de ne conserver que les artefacts strictement nécessaires, réduisant drastiquement la taille de l'image et la surface d'attaque"
+      - id: b
+        text: "Permettre d'exécuter plusieurs systèmes Windows et Linux dans le même conteneur"
+      - id: c
+        text: "Multiplier par deux le nombre de processeurs de la machine hôte"
+      - id: d
+        text: "Désactiver automatiquement tous les logs système"
+    correct:
+      - a
+    explanation: "Le Multi-Stage Build permet d'utiliser une image riche avec SDKs pour compiler, puis de copier uniquement le résultat compilé dans une image ultra-légère (Alpine/Distroless)."
+
+  - kind: single
+    prompt: "Pourquoi est-il fortement recommandé de placer l'instruction 'COPY package*.json ./' et 'RUN npm ci' AVANT 'COPY . .' dans un Dockerfile Node.js ?"
+    choices:
+      - id: a
+        text: "Pour maximiser la réutilisation du cache des couches Docker lorsque seul le code source applicatif est modifié, évitant ainsi de réinstaller toutes les dépendances à chaque build"
+      - id: b
+        text: "Parce que Node.js refuse de démarrer dans le cas contraire"
+      - id: c
+        text: "Pour crypter le fichier package.json"
+      - id: d
+        text: "Pour supprimer automatiquement les fichiers temporaires"
+    correct:
+      - a
+    explanation: "Docker met en cache chaque couche. Si `package.json` n'a pas changé, Docker réutilise le calque issu du `RUN npm ci` en cache, accélérant considérablement le temps de build."
+
+  - kind: single
+    prompt: "Pour des raisons de sécurité en production, pourquoi doit-on utiliser l'instruction 'USER <non-root>' dans un Dockerfile ?"
+    choices:
+      - id: a
+        text: "Pour empêcher le processus de l'application de s'exécuter avec les privilèges root dans le conteneur, réduisant ainsi les risques d'impact sur l'hôte en cas de vulnérabilité applicative"
+      - id: b
+        text: "Pour forcer l'utilisateur à taper son mot de passe à chaque requête HTTP"
+      - id: c
+        text: "Pour créer un compte administrateur sur le réseau Active Directory"
+      - id: d
+        text: "Pour supprimer l'utilisateur root du système d'exploitation hôte"
+    correct:
+      - a
+    explanation: "L'exécution sous compte non-root (ex: `USER node` ou `USER 1001`) empêche un attaquant exploitant une faille de l'application d'obtenir les privilèges root dans le conteneur."
+
+  - kind: single
+    prompt: "À quoi sert le fichier '.dockerignore' placé à la racine du projet lors de l'exécution de 'docker build' ?"
+    choices:
+      - id: a
+        text: "À exclure les dossiers lourds, temporaires ou sensibles (node_modules, .git, .env) du contexte de build transmis au démon Docker"
+      - id: b
+        text: "À ignorer toutes les erreurs de syntaxe dans le code source"
+      - id: c
+        text: "À masquer le conteneur sur le réseau local"
+      - id: d
+        text: "À empêcher les autres utilisateurs d'accéder au serveur"
+    correct:
+      - a
+    explanation: "Le fichier `.dockerignore` évite d'envoyer inutilement des gigaoctets (ex: `.git`, `node_modules` locaux) au démon Docker et préserve les secrets de configuration."
+
+  - kind: single
+    prompt: "Quelle est la différence essentielle entre les formes exec et shell pour l'instruction 'CMD' dans un Dockerfile ?"
+    choices:
+      - id: a
+        text: "La forme exec (ex: CMD [\"node\", \"app.js\"]) exécute le binaire directement en PID 1 sans sous-shell sh, recevant directement les signaux Unix (SIGTERM), contrairement à la forme shell"
+      - id: b
+        text: "La forme exec est uniquement réservée aux conteneurs sous Windows"
+      - id: c
+        text: "La forme shell est 100 fois plus rapide"
+      - id: d
+        text: "Il n'y a aucune différence technique"
+    correct:
+      - a
+    explanation: "La syntaxe sous forme de tableau JSON (forme exec `CMD [\"executable\", \"param\"]`) garantit que le processus démarre en PID 1 et reçoit correctement le signal `SIGTERM` lors de l'arrêt."

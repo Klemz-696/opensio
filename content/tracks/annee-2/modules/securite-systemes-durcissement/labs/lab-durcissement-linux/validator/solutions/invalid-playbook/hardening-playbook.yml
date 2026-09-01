@@ -1,0 +1,8 @@
+---
+- name: Playbook incomplet sans SSH durci
+  hosts: servers
+  tasks:
+    - name: Installation nginx
+      ansible.builtin.apt:
+        name: nginx
+        state: present

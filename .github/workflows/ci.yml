@@ -14,9 +14,9 @@ jobs:
       postgres:
         image: postgres:18-alpine
         env:
-          POSTGRES_DB: opensio
+          POSTGRES_DB: opensio_test
           POSTGRES_USER: opensio
-          POSTGRES_PASSWORD: ci
+          POSTGRES_PASSWORD: opensio-super-secure-dev-db-pass-2026!
         ports:
           - 5432:5432
         options: >-
@@ -26,7 +26,8 @@ jobs:
           --health-retries 5
 
     env:
-      DATABASE_URL: postgresql://opensio:ci@localhost:5432/opensio
+      DATABASE_URL: postgresql://opensio:opensio-super-secure-dev-db-pass-2026!@localhost:5432/opensio_test
+      DB_PASSWORD: opensio-super-secure-dev-db-pass-2026!
       JWT_SECRET: ci-dummy-secret-pour-tests-uniquement-pas-un-vrai-secret-64chars
       REGISTRATION_ENABLED: "true"
 
@@ -36,8 +37,6 @@ jobs:
 
       - name: Installation de pnpm
         uses: pnpm/action-setup@v4
-        with:
-          version: 11.23.0
 
       - name: Configuration de Node.js
         uses: actions/setup-node@v4
@@ -51,11 +50,14 @@ jobs:
       - name: Génération du client Prisma
         run: pnpm --filter @opensio/api exec prisma generate
 
-      - name: Application des migrations PostgreSQL
+      - name: Application des migrations PostgreSQL (Base de test)
         run: pnpm --filter @opensio/api exec prisma migrate deploy
 
       - name: Contrôle de la taille des fichiers (Règle D-13 / RM-13)
         run: node scripts/check-file-size.mjs
+
+      - name: Contrôle des classes bi-thème (Thème Clair / Sombre)
+        run: node scripts/check-theme-classes.mjs
 
       - name: Linting
         run: pnpm lint

@@ -1,0 +1,77 @@
+slug: deploiement-automatise-ansible
+title: "Déploiement et Configuration Idempotente d'un Serveur Web avec Ansible"
+level: 2_files
+max_score: 100
+estimated_minutes: 45
+context: |
+  Vous êtes administrateur DevOps et devez automatiser le déploiement et la configuration sécurisée d'un serveur Web Nginx sur un parc de serveurs Linux à l'aide d'Ansible.
+
+  Vous devez compléter le playbook Ansible `playbook.yml` pour provisionner le groupe de machines `webservers`.
+
+  Spécifications attendues dans `playbook.yml` :
+  1. **Entête du Play** :
+     - Cibles : `hosts: webservers`
+     - Élévation de privilèges administrative : `become: true`
+  2. **Tâche 1 : Installation de Nginx** :
+     - Utiliser le module `ansible.builtin.apt` avec `name: nginx`, `state: present` et `update_cache: yes`
+  3. **Tâche 2 : Déploiement du VirtualHost** :
+     - Utiliser le module `ansible.builtin.template` avec `src: templates/vhost.conf.j2`, `dest: /etc/nginx/sites-available/app.conf`, permissions `mode: "0644"`
+     - Déclencher la notification du handler de rechargement Nginx
+  4. **Tâche 3 : Activation du site** :
+     - Créer le lien symbolique `/etc/nginx/sites-enabled/app.conf` pointant vers `/etc/nginx/sites-available/app.conf` (`state: link`)
+     - Déclencher la notification du handler
+  5. **Tâche 4 : Suppression de la configuration par défaut** :
+     - Supprimer `/etc/nginx/sites-enabled/default` avec le module `ansible.builtin.file` (`state: absent`)
+  6. **Tâche 5 : Activation et Démarrage du service** :
+     - Utiliser `ansible.builtin.systemd` avec `name: nginx`, `state: started` et `enabled: yes`
+  7. **Section Handlers** :
+     - Déclarer le handler pour recharger le service Nginx (`state: reloaded`)
+
+objectives:
+  - "Écrire un playbook Ansible modulaire respectant les conventions YAML et les bonnes pratiques FQCN"
+  - "Garantir l'idempotence des opérations de gestion de paquets, de fichiers et de services"
+  - "Déployer des fichiers de configuration dynamiques à l'aide de templates Jinja2"
+  - "Utiliser les Handlers pour optimiser les redémarrages de services"
+
+prerequisites:
+  - "linux-administration"
+  - "principes-devops-et-culture-cicd"
+  - "gestion-configuration-ansible"
+
+files:
+  editable:
+    - path: playbook.yml
+      description: "Fichier playbook Ansible principal d'automatisation"
+
+hints:
+  - cost_percent: 10
+    text: "Pensez à déclarer 'hosts: webservers' et 'become: true' en tête de votre play."
+  - cost_percent: 10
+    text: "Pour l'activation du site, utilisez 'ansible.builtin.file' avec 'state: link', 'src:' et 'dest:'."
+  - cost_percent: 10
+    text: "Déclarez le handler sous la clé racine 'handlers:' avec 'state: reloaded' et notifiez-le depuis les tâches de configuration."
+
+validation:
+  type: script
+  image: opensio/validator-ansible:latest
+  timeout_seconds: 30
+  checks:
+    - id: play_header_and_privileges
+      required: true
+      points: 25
+      description: "Entête du play : hosts: webservers et élévation de privilèges become: true"
+    - id: package_installation_and_service
+      required: true
+      points: 25
+      description: "Gestion des paquets et service : installation de nginx avec apt et activation systemd (started, enabled)"
+    - id: template_vhost_and_symlink
+      required: true
+      points: 25
+      description: "Configuration Nginx : template sites-available/app.conf et lien symbolique dans sites-enabled"
+    - id: handlers_and_cleanup_default
+      required: true
+      points: 25
+      description: "Nettoyage et Handlers : suppression de sites-enabled/default et handler de rechargement (state: reloaded)"
+
+scoring:
+  floor_percent: 50

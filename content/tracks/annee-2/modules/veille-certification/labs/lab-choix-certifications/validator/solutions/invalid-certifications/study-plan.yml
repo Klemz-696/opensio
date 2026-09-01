@@ -1,0 +1,7 @@
+weekly_study_hours: 8
+prep_weeks_per_cert: 10
+resources:
+  - "Livre"
+  - "Vidéos"
+  - "Labs"
+lab_environment: "Home lab complet"

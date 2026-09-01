@@ -1,0 +1,17 @@
+# Fichier /etc/network/interfaces sans bridge-vlan-aware ni bridge-ports eno1
+
+auto lo
+iface lo inet loopback
+
+iface eno1 inet manual
+
+auto vmbr0
+iface vmbr0 inet static
+    address 192.168.10.250/24
+    gateway 192.168.10.254
+    bridge-stp off
+
+auto vmbr1
+iface vmbr1 inet static
+    address 10.0.0.254/24
+    bridge-ports none

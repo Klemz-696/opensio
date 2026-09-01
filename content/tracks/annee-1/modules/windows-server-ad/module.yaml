@@ -1,0 +1,29 @@
+slug: windows-server-ad
+title: "Windows Server & Active Directory"
+description: "Administration Windows Server, services de domaine Active Directory (AD DS), gestion des identités et des UO, stratégies de groupe (GPO), services réseau intégrés et sécurisation des partages de fichiers NTFS / SMB selon la méthode AGDLP."
+position: 2
+difficulty: 3
+estimated_minutes: 720
+competency_refs:
+  - "B1.1"
+  - "B1.2"
+  - "B2.1"
+  - "B2.3"
+lessons:
+  - windows-installation-roles
+  - ad-ds-et-domaine
+  - utilisateurs-groupes-uo
+  - strategies-de-groupe-gpo
+  - dns-dhcp-windows
+  - partages-et-droits-ntfs
+quizzes:
+  - quiz-windows-installation-roles
+  - quiz-ad-ds-et-domaine
+  - quiz-utilisateurs-groupes-uo
+  - quiz-strategies-de-groupe-gpo
+  - quiz-dns-dhcp-windows
+  - quiz-partages-et-droits-ntfs
+labs:
+  - promotion-controleur-domaine
+  - organisation-uo-et-gpo
+  - partage-et-droits-ntfs

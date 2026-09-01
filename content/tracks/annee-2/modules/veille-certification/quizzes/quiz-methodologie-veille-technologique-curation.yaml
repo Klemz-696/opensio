@@ -1,0 +1,79 @@
+slug: quiz-methodologie-veille-technologique-curation
+title: "Quiz — Méthodologie de Veille Technologique"
+passing_score: 80
+position: 1
+questions:
+  - kind: single
+    prompt: "Quelle est la différence fondamentale entre une veille technologique en mode 'Push' et en mode 'Pull' ?"
+    choices:
+      - id: a
+        text: "En mode Push, l'information qualifiée arrive automatiquement au professionnel via des flux RSS, newsletters ou alertes, tandis qu'en mode Pull, le professionnel doit se rendre manuellement sur chaque site web pour rechercher des nouveautés"
+      - id: b
+        text: "Le mode Push s'exécute uniquement sur Linux et le mode Pull sur Windows"
+      - id: c
+        text: "Le mode Push coûte 500 euros par mois et le mode Pull est gratuit"
+      - id: d
+        text: "Il n'y a aucune différence, ce sont deux termes anglais synonymes"
+    correct:
+      - a
+    explanation: "Le mode Push automatise la réception de l'information (ex: flux RSS via Feedly ou FreshRSS), éliminant les pertes de temps associées à la recherche manuelle en mode Pull."
+
+  - kind: single
+    prompt: "Quel organisme officiel français publie les avis et alertes de sécurité critiques de référence concernant les vulnérabilités informatiques ?"
+    choices:
+      - id: a
+        text: "Le CERT-FR (rattaché à l'ANSSI)"
+      - id: b
+        text: "La Poste"
+      - id: c
+        text: "L'Institut National de l'Audiovisuel (INA)"
+      - id: d
+        text: "La Chambre des Métiers de l'Artisanat"
+    correct:
+      - a
+    explanation: "Le CERT-FR est le centre gouvernemental d'alerte et de réponse aux attaques informatiques, source incontournable pour la veille en cybersécurité."
+
+  - kind: single
+    prompt: "Dans le cadre d'une veille technologique professionnelle, quelle est la finalité indispensable d'une 'Fiche de Synthèse d'Actualité' ?"
+    choices:
+      - id: a
+        text: "Résumer techniquement la nouveauté, évaluer son impact concret sur le système d'information de l'organisation et formuler des préconisations d'actions opérationnelles"
+      - id: b
+        text: "Recopier l'article original mot pour mot sans rien changer"
+      - id: c
+        text: "Remplir les disques durs du serveur pour tester l'espace de stockage"
+      - id: d
+        text: "Imprimer 100 pages de texte pour décorer les bureaux"
+    correct:
+      - a
+    explanation: "Une veille n'a de valeur que si elle est analysée et contextualisée avec des recommandations d'action pour le SI de l'entreprise."
+
+  - kind: single
+    prompt: "Quelle bonne pratique organisationnelle permet de lutter efficacement contre le phénomène d'infobésité (surcharge informationnelle) lors de la veille ?"
+    choices:
+      - id: a
+        text: "Définir un créneau quotidien court et régulier (ex: 20 minutes), filtrer les sources à forte valeur ajoutée et enregistrer uniquement les articles à fort impact dans une base de connaissances"
+      - id: b
+        text: "S'abonner à 500 comptes Twitter aléatoires et les lire toute la nuit"
+      - id: c
+        text: "Désactiver totalement la connexion Internet de l'entreprise"
+      - id: d
+        text: "Ne lire que les titres sans jamais vérifier les sources officielles"
+    correct:
+      - a
+    explanation: "La discipline temporelle et la sélectivité stricte des sources permettent de maintenir une veille efficace sans être submergé par le bruit ambiant."
+
+  - kind: single
+    prompt: "Quel protocole et format standardisé permet de s'abonner aux mises à jour d'un blog technique ou d'un site de veille sans dépendre d'un réseau social fermé ?"
+    choices:
+      - id: a
+        text: "Les flux RSS / Atom (au format XML)"
+      - id: b
+        text: "Le protocole Bluetooth"
+      - id: c
+        text: "Les câbles coaxiaux BNC"
+      - id: d
+        text: "Le format de fichier MP3"
+    correct:
+      - a
+    explanation: "Les flux RSS/Atom restent le standard ouvert et universel pour l'agrégation de contenus d'information technique."

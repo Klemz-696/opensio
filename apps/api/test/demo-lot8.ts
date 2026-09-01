@@ -8,23 +8,23 @@ import { PrismaService } from '../src/prisma/prisma.service';
 import { PasswordService } from '../src/modules/auth/services/password.service';
 import { executeContentSync } from '../src/sync/sync.service';
 import { CatalogCacheService } from '../src/modules/catalog/catalog-cache.service';
-import { UserRole } from '@prisma/client';
+import { Role } from '@prisma/client';
 
 process.env.NODE_ENV = 'test';
 process.env.DATABASE_URL =
   process.env.DATABASE_URL || 'postgresql://opensio:change-me@localhost:5432/opensio';
-process.env.API_PORT = '4011';
-process.env.JWT_SECRET = 'd'.repeat(64);
+process.env.API_PORT = '4009';
+process.env.JWT_SECRET = 'e'.repeat(64);
 process.env.REGISTRATION_ENABLED = 'true';
-process.env.LAB_RUNNER = 'simulation';
+process.env.TERMINAL_ENABLED = 'true';
 process.env.AI_ENABLED = 'true';
-process.env.AI_RATE_LIMIT_HOURLY = '20';
-process.env.AI_TIMEOUT_MS = '3000';
+process.env.AI_PROVIDER = 'openai-compatible';
+process.env.AI_BASE_URL = 'http://127.0.0.1:11434/v1';
 
 async function runDemonstration() {
   console.log('='.repeat(70));
-  console.log('🚀 DÉMONSTRATION RÉSEAU RÉELLE (HTTP) — LOT 8 & ÉVOLUTIONS (OpenSIO)');
-  console.log('   Terminal Virtuel Sécurisé, Assistant Mentor IA & Préférences');
+  console.log('🚀 DÉMONSTRATION RÉSEAU RÉELLE (HTTP & WS) — LOT 8 (OpenSIO)');
+  console.log('   Terminal Virtuel WebSocket & Assistant Mentor IA');
   console.log('='.repeat(70) + '\n');
 
   const contentDir = path.resolve(__dirname, '../../../content');
@@ -35,9 +35,9 @@ async function runDemonstration() {
   app.useGlobalFilters(new HttpExceptionFilter());
   app.useWebSocketAdapter(new WsAdapter(app));
   app.setGlobalPrefix('api/v1');
-  await app.listen(4011);
+  await app.listen(4009);
 
-  const baseUrl = 'http://localhost:4011/api/v1';
+  const baseUrl = 'http://localhost:4009/api/v1';
   const prisma = app.get(PrismaService);
   const cacheService = app.get(CatalogCacheService);
   const passwordService = app.get(PasswordService);
@@ -71,7 +71,7 @@ async function runDemonstration() {
         email: lucasEmail,
         displayName: 'Lucas SISR',
         passwordHash,
-        role: UserRole.STUDENT,
+        role: Role.APPRENANT,
       },
     });
 
@@ -80,7 +80,7 @@ async function runDemonstration() {
         email: emmaEmail,
         displayName: 'Emma SISR',
         passwordHash,
-        role: UserRole.STUDENT,
+        role: Role.APPRENANT,
       },
     });
 

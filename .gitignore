@@ -8,6 +8,10 @@ node_modules
 .env.*.local
 !.env.example
 
+# Environnement de test (local uniquement — templates .env.test.example suivis)
+.env.test
+apps/api/.env.test
+
 # Build outputs
 dist
 build
@@ -42,5 +46,10 @@ Thumbs.db
 
 *.tsbuildinfo
 next-env.d.ts
+
 # Secrets production - jamais commites
 .env.production
+
+.opensio/
+test-results/
+playwright-report/

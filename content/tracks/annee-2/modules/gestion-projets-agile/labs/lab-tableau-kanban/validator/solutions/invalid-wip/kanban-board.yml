@@ -1,0 +1,22 @@
+board_name: "OpenSIO Core Team Kanban"
+
+columns:
+  - id: "backlog"
+    name: "Backlog Produit"
+    exit_criteria: "Spécifiée"
+
+  - id: "analysis"
+    name: "Analyse"
+    exit_criteria: "Cadrée"
+
+  - id: "in_progress"
+    name: "Développement en Cours"
+    exit_criteria: "Développée"
+
+  - id: "review_test"
+    name: "Revue & Tests"
+    exit_criteria: "Testée"
+
+  - id: "done"
+    name: "Terminé"
+    exit_criteria: "Livrée"

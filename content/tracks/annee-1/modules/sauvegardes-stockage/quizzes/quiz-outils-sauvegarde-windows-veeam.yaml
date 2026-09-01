@@ -1,0 +1,81 @@
+slug: quiz-outils-sauvegarde-windows-veeam
+title: "Quiz — Sauvegardes Windows Server et Veeam"
+passing_score: 80
+position: 4
+questions:
+  - kind: single
+    prompt: "Quel est le rôle du service Windows VSS (Volume Shadow Copy Service) lors d'une sauvegarde ?"
+    choices:
+      - id: a
+        text: "Créer un cliché instantané cohérent d'un volume en demandant aux applications (Active Directory, SQL) de figer temporairement leurs écritures"
+      - id: b
+        text: "Compresser les fichiers au format ZIP pour les envoyer par e-mail"
+      - id: c
+        text: "Remplacer l'antivirus Windows Defender"
+      - id: d
+        text: "Formater les disques durs externes avant chaque sauvegarde"
+    correct:
+      - a
+    explanation: "VSS permet de capturer un instantané figé et intègre de bases de données et fichiers ouverts sans interrompre l'activité des utilisateurs."
+
+  - kind: multiple
+    prompt: "Quels éléments essentiels sont inclus dans une sauvegarde de l'état du système (System State) sous Windows Server ?"
+    choices:
+      - id: a
+        text: "La base de données Active Directory (NTDS.dit) et les logs SYSVOL"
+      - id: b
+        text: "Le registre Windows (SAM, SYSTEM, SECURITY, SOFTWARE)"
+      - id: c
+        text: "La base de certificats de l'Autorité de Certification (AD CS)"
+      - id: d
+        text: "L'historique des vidéos YouTube consultées par les utilisateurs"
+    correct:
+      - a
+      - b
+      - c
+    explanation: "Le System State regroupe tous les composants fondamentaux de l'identité et de la sécurité du système (AD DS, SYSVOL, Registre, Certificats)."
+
+  - kind: single
+    prompt: "Dans Veeam Backup & Replication, quel est l'intérêt de la fonctionnalité Changed Block Tracking (CBT) ?"
+    choices:
+      - id: a
+        text: "Identifier directement auprès de l'hyperviseur uniquement les blocs modifiés depuis la dernière sauvegarde pour accélérer drastiquement les sauvegardes incrémentales"
+      - id: b
+        text: "Bloquer l'accès aux disques durs en cas d'attaque virale"
+      - id: c
+        text: "Convertir automatiquement les machines virtuelles en conteneurs Docker"
+      - id: d
+        text: "Changer l'adresse MAC de toutes les machines virtuelles sauvegardées"
+    correct:
+      - a
+    explanation: "Le CBT évite de relire des centaines de gigaoctets de disque pour ne transférer que les quelques mégaoctets réellement altérés."
+
+  - kind: single
+    prompt: "Qu'est-ce que la technologie Instant VM Recovery proposée par Veeam ?"
+    choices:
+      - id: a
+        text: "Démarrer une machine virtuelle en quelques minutes directement depuis le fichier de sauvegarde compressé via un datastore NFS temporaire"
+      - id: b
+        text: "Une commande pour supprimer instantanément une VM défectueuse"
+      - id: c
+        text: "Un système de redémarrage automatique en cas de surchauffe processeur"
+      - id: d
+        text: "Une réinitialisation d'usine de Windows Server"
+    correct:
+      - a
+    explanation: "Instant VM Recovery réduit le RTO à moins de 2 minutes en publiant le fichier de sauvegarde comme datastore à l'hyperviseur sans attendre la fin d'une copie intégrale."
+
+  - kind: single
+    prompt: "Quel est le bénéfice d'un dépôt de sauvegarde durci (Hardened Repository Linux) sous Veeam ?"
+    choices:
+      - id: a
+        text: "Il applique l'immuabilité native sur les fichiers de sauvegarde pour empêcher tout chiffrement ou suppression par un ransomware, même avec des identifiants compromis"
+      - id: b
+        text: "Il permet d'installer des jeux vidéo sur le serveur de sauvegarde"
+      - id: c
+        text: "Il supprime l'obligation d'avoir une alimentation électrique"
+      - id: d
+        text: "Il réduit la vitesse de transfert pour économiser l'électricité"
+    correct:
+      - a
+    explanation: "Un Hardened Repository utilise les attributs immuables Linux (XFS) sans accès SSH distant pour créer un coffre-fort numérique inviolable face aux attaques cyber."

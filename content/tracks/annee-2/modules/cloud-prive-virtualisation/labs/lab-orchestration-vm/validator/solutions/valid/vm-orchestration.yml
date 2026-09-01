@@ -1,0 +1,19 @@
+template_id: 9000
+clone_mode: linked
+
+vmid: 101
+name: srv-web-prod
+cores: 2
+memory_mb: 4096
+disk_size_gb: 20
+
+network:
+  bridge: vnet-frontend
+  ip: dhcp
+
+cloudinit:
+  enabled: true
+  user_data_path: /snippets/user-data
+
+snapshot_before_deploy: true
+snapshot_name: pre_deploy

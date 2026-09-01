@@ -1,0 +1,96 @@
+slug: quiz-dns-et-dhcp
+title: "Quiz — DNS et DHCP"
+passing_score: 80
+position: 7
+questions:
+  - kind: single
+    prompt: "Quel type d'enregistrement DNS est utilisé pour associer un nom canonique d'hôte à une adresse IPv4 numérique ?"
+    choices:
+      - id: a
+        text: "Enregistrement A"
+      - id: b
+        text: "Enregistrement AAAA"
+      - id: c
+        text: "Enregistrement CNAME"
+      - id: d
+        text: "Enregistrement PTR"
+    correct:
+      - a
+    explanation: "L'enregistrement 'A' (Address) fait correspondre un nom de domaine à une adresse IPv4 (32 bits). 'AAAA' est utilisé pour IPv6, 'CNAME' pour les alias et 'PTR' pour la résolution inverse."
+
+  - kind: single
+    prompt: "Dans quel ordre chronologique exact se déroule le processus standard d'obtention d'un bail d'adresse IP (processus DORA) ?"
+    choices:
+      - id: a
+        text: "Discover -> Offer -> Request -> Acknowledge"
+      - id: b
+        text: "Offer -> Discover -> Acknowledge -> Request"
+      - id: c
+        text: "Request -> Offer -> Discover -> Acknowledge"
+      - id: d
+        text: "Discover -> Request -> Offer -> Acknowledge"
+    correct:
+      - a
+    explanation: "Le processus DORA se compose successivement de : DHCP Discover (diffusion du client), DHCP Offer (proposition du serveur), DHCP Request (acceptation par le client) et DHCP ACK (confirmation par le serveur)."
+
+  - kind: single
+    prompt: "Quelle option DHCP standard permet de distribuer l'adresse IP de la passerelle par défaut (routeur) aux postes clients ?"
+    choices:
+      - id: a
+        text: "Option 3 (Router)"
+      - id: b
+        text: "Option 6 (Domain Name Server)"
+      - id: c
+        text: "Option 15 (Domain Name)"
+      - id: d
+        text: "Option 42 (NTP Servers)"
+    correct:
+      - a
+    explanation: "L'option DHCP 3 (Router) définit l'adresse IP de la passerelle par défaut. L'option 6 distribue les serveurs DNS et l'option 15 le suffixe DNS."
+
+  - kind: single
+    prompt: "Sur une passerelle réseau Cisco, quelle commande configurée sur une interface de sous-réseau permet de relayer les diffusions DHCP Discover vers un serveur centralisé ?"
+    choices:
+      - id: a
+        text: "ip dhcp relay enable"
+      - id: b
+        text: "ip helper-address <ip-serveur>"
+      - id: c
+        text: "dhcp-relay forward <ip-serveur>"
+      - id: d
+        text: "ip route dhcp <ip-serveur>"
+    correct:
+      - b
+    explanation: "La directive Cisco IOS 'ip helper-address <adresse-serveur-dhcp>' transforme les trames de broadcast DHCP reçues sur l'interface locale en paquets unicast routés vers le serveur DHCP désigné."
+
+  - kind: multiple
+    prompt: "Quels ports et protocoles de transport standard sont exploités par les services DNS et DHCP ?"
+    choices:
+      - id: a
+        text: "DNS : port 53 en UDP pour les requêtes courantes et TCP pour les transferts de zone"
+      - id: b
+        text: "DHCP Serveur : port 67 en UDP"
+      - id: c
+        text: "DHCP Client : port 68 en UDP"
+      - id: d
+        text: "DNS : port 80 en TCP uniquement"
+    correct:
+      - a
+      - b
+      - c
+    explanation: "DNS opère sur le port 53 (UDP par défaut, TCP pour les gros transferts ou requêtes volumineuses). Le serveur DHCP écoute sur le port UDP 67 et le client DHCP sur le port UDP 68."
+
+  - kind: single
+    prompt: "À quel moment du cycle de vie du bail DHCP le client tente-t-il son premier renouvellement automatique en Unicast (timer T1) ?"
+    choices:
+      - id: a
+        text: "À 25 % de la durée totale du bail"
+      - id: b
+        text: "À 50 % de la durée totale du bail"
+      - id: c
+        text: "À 87.5 % de la durée totale du bail (timer T2)"
+      - id: d
+        text: "Uniquement après expiration complète à 100 %"
+    correct:
+      - b
+    explanation: "Le client initie son premier renouvellement (T1) exactement à 50 % du temps accordé par le bail. S'il n'obtient pas de réponse, il tente un second renouvellement en broadcast à 87.5 % (T2)."

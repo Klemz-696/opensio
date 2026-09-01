@@ -1,0 +1,98 @@
+slug: quiz-windows-installation-roles
+title: "Quiz — Windows Server : Installation et Rôles"
+passing_score: 80
+position: 1
+questions:
+  - kind: single
+    prompt: "Combien d'environnements de système d'exploitation virtuels (VMs) sous licence complète une édition Windows Server Standard autorise-t-elle par défaut sur un hôte physique sous licence ?"
+    choices:
+      - id: a
+        text: "1 seule machine virtuelle"
+      - id: b
+        text: "2 machines virtuelles"
+      - id: c
+        text: "4 machines virtuelles"
+      - id: d
+        text: "Un nombre illimité de machines virtuelles"
+    correct:
+      - b
+    explanation: "Windows Server Standard accorde le droit d'exécuter jusqu'à 2 machines virtuelles (ou environnements OSE) sur le matériel physique sous licence. L'édition Datacenter permet une virtualisation illimitée."
+
+  - kind: multiple
+    prompt: "Quels sont les principaux avantages d'un déploiement Windows Server en mode 'Server Core' en environnement de production ?"
+    choices:
+      - id: a
+        text: "Une surface d'attaque de sécurité considérablement réduite"
+      - id: b
+        text: "Une consommation de ressources mémoire (RAM) et disque inférieure"
+      - id: c
+        text: "Une réduction du nombre de redémarrages liés aux mises à jour de sécurité"
+      - id: d
+        text: "L'obligation d'installer un navigateur web pour l'administration"
+    correct:
+      - a
+      - b
+      - c
+    explanation: "Server Core réduit la surface d'attaque en supprimant l'interface graphique et les composants non essentiels, diminue l'empreinte matérielle et limite les correctifs nécessitant un redémarrage."
+
+  - kind: single
+    prompt: "Quelle applet de commande (cmdlet) PowerShell permet d'installer un rôle serveur avec l'ensemble de ses consoles d'administration associées ?"
+    choices:
+      - id: a
+        text: "Add-WindowsPackage"
+      - id: b
+        text: "Install-WindowsFeature -Name <Nom> -IncludeManagementTools"
+      - id: c
+        text: "Enable-WindowsOptionalFeature"
+      - id: d
+        text: "Set-ServerRole -IncludeGUI"
+    correct:
+      - b
+    explanation: "Sous Windows Server, 'Install-WindowsFeature' (du module ServerManager) avec le paramètre '-IncludeManagementTools' permet d'installer le rôle ainsi que les consoles MMC et modules PowerShell de gestion associés."
+
+  - kind: single
+    prompt: "Quel port réseau TCP par défaut est exploité par le protocole PowerShell Remoting (WinRM) pour les communications non chiffrées en HTTP ?"
+    choices:
+      - id: a
+        text: "Port 22"
+      - id: b
+        text: "Port 3389"
+      - id: c
+        text: "Port 5985"
+      - id: d
+        text: "Port 8080"
+    correct:
+      - c
+    explanation: "PowerShell Remoting (WinRM) utilise par défaut le port TCP 5985 pour HTTP et le port TCP 5986 pour HTTPS (chiffré avec certificat TLS). Le port 3389 correspond à RDP et le port 22 à SSH."
+
+  - kind: multiple
+    prompt: "Parmi les éléments suivants, lesquels constituent des prérequis de configuration indispensables avant la promotion d'un serveur en contrôleur de domaine ?"
+    choices:
+      - id: a
+        text: "Attribuer une adresse IPv4 statique à la carte réseau"
+      - id: b
+        text: "Renommer la machine avec un nom d'hôte normalisé et redémarrer"
+      - id: c
+        text: "Configurer et synchroniser l'horloge système (NTP)"
+      - id: d
+        text: "Laisser la carte réseau configurée en adressage automatique DHCP"
+    correct:
+      - a
+      - b
+      - c
+    explanation: "Un contrôleur de domaine doit impérativement disposer d'un nom d'hôte définitif, d'une adresse IP statique et d'une heure synchronisée (critique pour l'authentification Kerberos). L'adressage dynamique par DHCP est formellement proscrit."
+
+  - kind: single
+    prompt: "Quelle suite d'outils Microsoft permet à un administrateur système de gérer à distance des serveurs Windows depuis son poste client Windows 10/11 ?"
+    choices:
+      - id: a
+        text: "RSAT (Remote Server Administration Tools)"
+      - id: b
+        text: "WSUS (Windows Server Update Services)"
+      - id: c
+        text: "WDS (Windows Deployment Services)"
+      - id: d
+        text: "MBSA (Microsoft Baseline Security Analyzer)"
+    correct:
+      - a
+    explanation: "Les outils RSAT regroupent les consoles de gestion MMC (Utilisateurs et ordinateurs Active Directory, Gestionnaire DNS, Console de gestion des stratégies de groupe GPMC) exécutables depuis un poste d'administration client."

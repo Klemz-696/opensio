@@ -1,0 +1,25 @@
+slug: cloud-prive-virtualisation
+title: "Cloud Privé, Virtualisation d'Entreprise & Orchestration d'Infrastructure"
+description: "Modèles de Cloud Computing IaaS/PaaS, virtualisation avancée KVM/QEMU, architecture de Cloud Privé Proxmox VE et OpenStack, orchestration de VMs et conteneurs avec Cloud-Init, et exploitation sécurisée d'un cluster."
+position: 6
+difficulty: 3
+estimated_minutes: 550
+competency_refs:
+  - "B2.1"
+  - "B2.2"
+  - "B2.3"
+lessons:
+  - concepts-cloud-computing-modeles-hybrides
+  - virtualisation-avancee-kvm-libvirt-clusters
+  - plateforme-cloud-prive-proxmox-openstack
+  - orchestration-hybridation-vm-conteneurs
+  - exploitation-supervision-securite-cloud-prive
+quizzes:
+  - quiz-concepts-cloud-computing-modeles-hybrides
+  - quiz-virtualisation-avancee-kvm-libvirt-clusters
+  - quiz-plateforme-cloud-prive-proxmox-openstack
+  - quiz-orchestration-hybridation-vm-conteneurs
+  - quiz-exploitation-supervision-securite-cloud-prive
+labs:
+  - configuration-cluster-cloud-prive
+  - orchestration-vm-templates-cloudinit

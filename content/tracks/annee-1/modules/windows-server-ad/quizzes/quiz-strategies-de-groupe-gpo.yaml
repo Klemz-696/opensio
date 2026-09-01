@@ -1,0 +1,96 @@
+slug: quiz-strategies-de-groupe-gpo
+title: "Quiz — Stratégies de Groupe (GPO)"
+passing_score: 80
+position: 4
+questions:
+  - kind: single
+    prompt: "Quel est l'ordre chronologique d'évaluation des Stratégies de Groupe (règle LSDOU) lors de l'ouverture de session ?"
+    choices:
+      - id: a
+        text: "Domaine -> Site -> Local -> Unité d'Organisation"
+      - id: b
+        text: "Local -> Site -> Domaine -> Unités d'Organisation (parentes puis enfants)"
+      - id: c
+        text: "Unité d'Organisation -> Domaine -> Site -> Local"
+      - id: d
+        text: "Site -> Domaine -> Local -> Unité d'Organisation"
+    correct:
+      - b
+    explanation: "L'ordre LSDOU commence par la stratégie Locale de la machine, puis le Site AD, puis le Domaine, et enfin les Unités d'Organisation de la racine vers les UO feuilles. Le dernier paramètre appliqué prévaut."
+
+  - kind: single
+    prompt: "Où sont physiquement stockés les fichiers de modèles administratifs et scripts (composant GPT) d'un objet GPO répliqué ?"
+    choices:
+      - id: a
+        text: "Dans le registre Windows HKEY_LOCAL_MACHINE"
+      - id: b
+        text: "Dans le répertoire partagé SYSVOL (C:\\Windows\\SYSVOL\\sysvol\\<domaine>\\Policies)"
+      - id: c
+        text: "Dans le fichier ntds.dit uniquement"
+      - id: d
+        text: "Dans le dossier Program Files du serveur"
+    correct:
+      - b
+    explanation: "Le composant GPT (Group Policy Template) est stocké dans le partage SYSVOL répliqué entre tous les contrôleurs de domaine, sous un sous-dossier nommé d'après le GUID de la GPO."
+
+  - kind: single
+    prompt: "Si une GPO liée à la racine du Domaine est marquée comme 'Appliquée' (Enforced), que se passe-t-il sur une Unité d'Organisation fille qui a activé le 'Blocage de l'héritage' ?"
+    choices:
+      - id: a
+        text: "La GPO Enforced ne s'applique pas car le blocage est prioritaire"
+      - id: b
+        text: "La GPO Enforced outrepasse le blocage et s'applique obligatoirement"
+      - id: c
+        text: "L'UO fille est automatiquement supprimée"
+      - id: d
+        text: "Le contrôleur de domaine déclenche une erreur de réplication"
+    correct:
+      - b
+    explanation: "L'option 'Enforced' (Appliquée / Forcée) confère la priorité absolue à un lien de GPO : elle traverse tout blocage d'héritage et l'emporte sur tous les paramètres contradictoires des UO subordonnées."
+
+  - kind: multiple
+    prompt: "Quelles commandes permettent d'actualiser ou d'analyser les Stratégies de Groupe appliquées sur un poste client Windows ?"
+    choices:
+      - id: a
+        text: "gpupdate /force"
+      - id: b
+        text: "gpresult /r"
+      - id: c
+        text: "gpresult /h rapport.html"
+      - id: d
+        text: "ipconfig /flushdns"
+    correct:
+      - a
+      - b
+      - c
+    explanation: "'gpupdate /force' force l'application immédiate des stratégies. 'gpresult /r' affiche le résumé textuel dans la console et 'gpresult /h' génère un rapport HTML complet du jeu de stratégie résultant."
+
+  - kind: single
+    prompt: "À quel moment les paramètres situés dans la section 'Configuration Ordinateur' d'une GPO sont-ils appliqués par le système ?"
+    choices:
+      - id: a
+        text: "Uniquement lors de la fermeture de session de l'utilisateur"
+      - id: b
+        text: "Au démarrage du système d'exploitation de la machine (avant la mire de connexion)"
+      - id: c
+        text: "Uniquement lorsque l'administrateur ouvre sa session"
+      - id: d
+        text: "Chaque fois que l'écran de veille s'active"
+    correct:
+      - b
+    explanation: "La branche Configuration Ordinateur est traitée dès le démarrage de la machine au niveau du système, indépendamment de tout utilisateur connecté."
+
+  - kind: single
+    prompt: "Quelle fonctionnalité exclusive des Préférences de stratégie de groupe (GPP) permet de conditionner l'exécution d'un paramètre (ex : mapper un lecteur réseau) selon des critères précis (nom de machine, groupe, type d'OS) ?"
+    choices:
+      - id: a
+        text: "Le filtrage WMI uniquement"
+      - id: b
+        text: "Le ciblage au niveau de l'élément (Item-level targeting)"
+      - id: c
+        text: "La délégation de contrôle"
+      - id: d
+        text: "Le tatouage de stratégie"
+    correct:
+      - b
+    explanation: "Le ciblage au niveau de l'élément (Item-level targeting) dans les préférences GPP permet d'appliquer un paramètre individuel selon des règles logiques fines (appartenance à un groupe, plage IP, ordinateur portable, etc.)."

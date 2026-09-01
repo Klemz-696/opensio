@@ -1,0 +1,96 @@
+slug: quiz-ad-ds-et-domaine
+title: "Quiz — AD DS et Domaine"
+passing_score: 80
+position: 2
+questions:
+  - kind: single
+    prompt: "Quel composant constitue le périmètre de sécurité ultime (Security Boundary) dans l'architecture logique d'Active Directory ?"
+    choices:
+      - id: a
+        text: "Le Domaine"
+      - id: b
+        text: "La Forêt"
+      - id: c
+        text: "L'Unité d'Organisation (UO)"
+      - id: d
+        text: "L'Arbre de domaines"
+    correct:
+      - b
+    explanation: "La Forêt représente la limite de sécurité absolue d'Active Directory. Tous les domaines d'une même forêt partagent un schéma commun et leurs administrateurs ont une relation de confiance mutuelle implicite."
+
+  - kind: single
+    prompt: "Quel est le nom du fichier de base de données relationnelle ESE stockant l'ensemble des objets et attributs d'un contrôleur de domaine Active Directory ?"
+    choices:
+      - id: a
+        text: "SAM"
+      - id: b
+        text: "ntds.dit"
+      - id: c
+        text: "sysvol.dat"
+      - id: d
+        text: "ad_database.mdf"
+    correct:
+      - b
+    explanation: "La base de données Active Directory est contenue dans le fichier 'ntds.dit' (Directory Information Tree), situé par défaut dans le répertoire C:\\Windows\\NTDS."
+
+  - kind: single
+    prompt: "Quel rôle de maître d'opérations (FSMO) est responsable de distribuer des blocs d'identifiants uniques aux contrôleurs de domaine pour la création d'objets ?"
+    choices:
+      - id: a
+        text: "Le Maître de schéma"
+      - id: b
+        text: "L'Émulateur PDC"
+      - id: c
+        text: "Le Maître RID (Relative ID)"
+      - id: d
+        text: "Le Maître d'infrastructure"
+    correct:
+      - c
+    explanation: "Le maître RID (RID Master) alloue des plages d'identifiants relatifs (RID pools) à chaque contrôleur de domaine afin d'assurer l'unicité stricte du SID (Security Identifier) de chaque utilisateur, groupe ou machine créé."
+
+  - kind: multiple
+    prompt: "Quels types d'enregistrements DNS sont indispensables pour permettre aux clients d'un réseau local de localiser les services Active Directory (Kerberos, LDAP) ?"
+    choices:
+      - id: a
+        text: "Enregistrements de service SRV (ex : _ldap._tcp et _kerberos._tcp)"
+      - id: b
+        text: "Enregistrements d'hôtes A / AAAA pointant vers les contrôleurs de domaine"
+      - id: c
+        text: "Enregistrements MX de messagerie uniquement"
+      - id: d
+        text: "La zone spéciale _msdcs.<domaine>"
+    correct:
+      - a
+      - b
+      - d
+    explanation: "Active Directory s'appuie sur la zone _msdcs et les enregistrements SRV (Service Location) pour publier les ports et adresses des services LDAP, Kerberos et Catalogue Global, ainsi que sur les enregistrements A/AAAA des contrôleurs de domaine."
+
+  - kind: single
+    prompt: "Quelle applet de commande PowerShell permet de promouvoir un serveur Windows en contrôleur de domaine créant une toute nouvelle forêt ?"
+    choices:
+      - id: a
+        text: "Add-DomainController"
+      - id: b
+        text: "dcpromo /wizard"
+      - id: c
+        text: "Install-ADDSForest"
+      - id: d
+        text: "New-ADDomainForest"
+    correct:
+      - c
+    explanation: "La cmdlet 'Install-ADDSForest' du module ADDSDeployment automatise la création d'une nouvelle forêt Active Directory. 'dcpromo' est l'ancien utilitaire graphique déprécié depuis Windows Server 2012."
+
+  - kind: single
+    prompt: "Quelle fonction du Catalogue Global (GC) est essentielle lors de l'authentification d'un utilisateur dans un environnement multi-domaines ?"
+    choices:
+      - id: a
+        text: "Chiffrer le mot de passe de l'utilisateur avec BitLocker"
+      - id: b
+        text: "Résoudre l'appartenance de l'utilisateur aux Groupes Universels de toute la forêt"
+      - id: c
+        text: "Générer les clés de chiffrement Wi-Fi"
+      - id: d
+        text: "Sauvegarder les fichiers personnels sur OneDrive"
+    correct:
+      - b
+    explanation: "Le Catalogue Global détient une réplique partielle de tous les objets de la forêt, ce qui permet au contrôleur de domaine d'identifier l'ensemble des Groupes Universels auxquels appartient l'utilisateur pour générer son jeton de sécurité (Kerberos PAC)."
