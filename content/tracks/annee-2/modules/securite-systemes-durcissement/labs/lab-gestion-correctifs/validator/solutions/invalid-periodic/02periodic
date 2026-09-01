@@ -1,0 +1,3 @@
+// Périodicité désactivée
+APT::Periodic::Update-Package-Lists "0";
+APT::Periodic::Unattended-Upgrade "0";

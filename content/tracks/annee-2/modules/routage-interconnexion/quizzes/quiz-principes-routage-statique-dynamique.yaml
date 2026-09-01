@@ -1,0 +1,79 @@
+slug: quiz-principes-routage-statique-dynamique
+title: "Quiz — Principes du Routage Statique et Dynamique"
+passing_score: 80
+position: 1
+questions:
+  - kind: single
+    prompt: "Sur un routeur recevant un paquet IPv4 dont le champ TTL (Time to Live) vaut 1, que se passe-t-il lors du traitement de couche 3 ?"
+    choices:
+      - id: a
+        text: "Le routeur décrémente le TTL à 0, détruit le paquet et émet un message ICMP 'Time Exceeded' (Type 11) à la source"
+      - id: b
+        text: "Le routeur réinitialise le TTL à 64 et transmet le paquet sur l'interface de sortie"
+      - id: c
+        text: "Le paquet est dupliqué sur tous les ports du commutateur"
+      - id: d
+        text: "Le routeur convertit automatiquement le paquet IPv4 en IPv6"
+    correct:
+      - a
+    explanation: "Chaque routeur décrémente le TTL de 1. Lorsque le TTL atteint 0, le datagramme est éliminé pour prévenir les boucles infinies et un message ICMP Time Exceeded est généré."
+
+  - kind: single
+    prompt: "Parmi les sources de routage suivantes, laquelle possède la Distance Administrative (AD) par défaut la plus faible (donc la plus prioritaire) ?"
+    choices:
+      - id: a
+        text: "Interface directement connectée (AD = 0)"
+      - id: b
+        text: "Route statique standard (AD = 1)"
+      - id: c
+        text: "Protocole OSPF (AD = 110)"
+      - id: d
+        text: "Protocole RIP (AD = 120)"
+    correct:
+      - a
+    explanation: "Une interface directement connectée et active bénéficie de la distance administrative la plus faible absolue (AD = 0)."
+
+  - kind: single
+    prompt: "Qu'est-ce qu'une 'Route Statique Flottante' (Floating Static Route) dans une architecture réseau d'entreprise ?"
+    choices:
+      - id: a
+        text: "Une route statique configurée avec une distance administrative supérieure à celle du protocole dynamique pour servir de lien de secours automatique"
+      - id: b
+        text: "Une route sans adresse IP de passerelle qui change d'adresse MAC chaque minute"
+      - id: c
+        text: "Une route réservée aux liaisons maritimes par satellite"
+      - id: d
+        text: "Une route supprimée automatiquement lors du redémarrage du routeur"
+    correct:
+      - a
+    explanation: "En attribuant une AD plus élevée (ex: 120 vs 110 pour OSPF), la route statique reste inactive tant que la route dynamique est présente dans la table et prend le relais en cas de coupure."
+
+  - kind: single
+    prompt: "Quelle est la principale caractéristique des protocoles de routage à 'État de liens' (Link-State tels qu'OSPF ou IS-IS) ?"
+    choices:
+      - id: a
+        text: "Chaque routeur inonde la zone avec l'état de ses liens et calcule l'arbre des plus courts chemins via l'algorithme de Dijkstra"
+      - id: b
+        text: "Les routeurs envoient leur table de routage complète uniquement à leurs voisins directs toutes les 30 secondes"
+      - id: c
+        text: "Ils utilisent uniquement le nombre de sauts comme métrique sans tenir compte de la bande passante"
+      - id: d
+        text: "Ils ne supportent pas les masques de sous-réseau à longueur variable (VLSM)"
+    correct:
+      - a
+    explanation: "Les protocoles à état de liens maintiennent une vue topologique complète (LSDB) et exécutent l'algorithme SPF de Dijkstra pour déterminer le meilleur chemin."
+
+  - kind: single
+    prompt: "Lorsqu'un routeur doit choisir entre plusieurs routes menant à la même adresse IP destination, quelle est la règle prioritaire absolue appliquée ?"
+    choices:
+      - id: a
+        text: "La règle du masque le plus long (Longest Prefix Match, ex: /28 l'emporte sur /24)"
+      - id: b
+        text: "La route ayant le numéro d'interface le plus grand"
+      - id: c
+        text: "La route créée la plus récemment dans la configuration"
+      - id: d
+        text: "La route avec l'adresse IP de passerelle la plus petite"
+    correct:
+      - a
+    explanation: "Le mécanisme fondamental de commutation de paquets applique toujours le préfixe le plus spécifique / masque le plus long (Longest Prefix Match)."

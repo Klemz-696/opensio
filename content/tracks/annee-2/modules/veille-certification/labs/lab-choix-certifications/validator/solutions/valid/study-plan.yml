@@ -1,0 +1,9 @@
+weekly_study_hours: 8
+prep_weeks_per_cert: 10
+
+resources:
+  - "Guides officiels d'étude (Cisco Press OCG, Microsoft Learn)"
+  - "Plateformes d'examens blancs chronométrés (Boson NetSim, Whizlabs)"
+  - "Documentation technique et RFC officielles"
+
+lab_environment: "Home Lab physique sous Proxmox VE avec VMs Debian/RHEL, simulateur Cisco Packet Tracer et souscription Azure for Students."

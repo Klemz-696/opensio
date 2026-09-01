@@ -1,0 +1,79 @@
+slug: quiz-durcissement-perimetrique-et-protection
+title: "Quiz — Durcissement Périmétrique et Protection"
+passing_score: 80
+position: 5
+questions:
+  - kind: single
+    prompt: "Sur un routeur d'interconnexion, comment fonctionne la protection anti-usurpation d'adresse IP 'uRPF' (Unicast Reverse Path Forwarding) ?"
+    choices:
+      - id: a
+        text: "Le routeur vérifie si l'adresse IP source du paquet reçu est joignable via l'interface réseau par laquelle le paquet vient d'arriver (sinon le paquet est détruit)"
+      - id: b
+        text: "Le routeur envoie un email de vérification à l'expéditeur"
+      - id: c
+        text: "Le routeur demande la saisie d'un code PIN à l'utilisateur"
+      - id: d
+        text: "Le routeur force le passage du paquet en broadcast sur tous les ports"
+    correct:
+      - a
+    explanation: "Le mécanisme uRPF utilise la table de routage pour vérifier la cohérence du chemin de retour vers l'adresse IP source, éliminant les paquets avec IP forgée/usurpée."
+
+  - kind: single
+    prompt: "Sur un commutateur de réseau local (Switch L2/L3), quelle fonctionnalité bloque l'apparition de serveurs DHCP pirates (Rogue DHCP) qui détourneraient la passerelle par défaut des postes ?"
+    choices:
+      - id: a
+        text: "Le DHCP Snooping (avec déclaration des ports Trusted et Untrusted)"
+      - id: b
+        text: "Le protocole Spanning Tree"
+      - id: c
+        text: "Le routage statique"
+      - id: d
+        text: "Le protocole NTP"
+    correct:
+      - a
+    explanation: "Le DHCP Snooping n'autorise les réponses DHCP (Offer/Ack) que sur les ports déclarés fiables (Trusted), bloquant toute offre DHCP illégitime sur les ports d'accès utilisateurs."
+
+  - kind: single
+    prompt: "Quelle protection de couche 2 s'appuie sur la base de données du DHCP Snooping pour bloquer les attaques par empoisonnement de table ARP (ARP Spoofing / Man-in-the-Middle) ?"
+    choices:
+      - id: a
+        text: "Dynamic ARP Inspection (DAI)"
+      - id: b
+        text: "VLAN Trunking Protocol (VTP)"
+      - id: c
+        text: "Cisco Discovery Protocol (CDP)"
+      - id: d
+        text: "Link Aggregation Control Protocol (LACP)"
+    correct:
+      - a
+    explanation: "DAI (Dynamic ARP Inspection) valide la conformité des paquets ARP en les comparant aux baux légitimes de la table DHCP Snooping."
+
+  - kind: single
+    prompt: "Dans une architecture de sécurité AAA (Authentication, Authorization, Accounting) d'entreprise, quel est le rôle du composant 'Accounting' ?"
+    choices:
+      - id: a
+        text: "Enregistrer et consigner dans un journal d'audit toutes les actions et commandes exécutées par chaque administrateur connecté sur les équipements"
+      - id: b
+        text: "Calculer la facture d'électricité du centre de données"
+      - id: c
+        text: "Vérifier le mot de passe initial de l'utilisateur"
+      - id: d
+        text: "Attribuer les droits de lecture et d'écriture"
+    correct:
+      - a
+    explanation: "Le composant Accounting de protocoles comme RADIUS ou TACACS+ assure la traçabilité intégrale et l'imputabilité des actions administratives."
+
+  - kind: single
+    prompt: "Comment le mécanisme noyau 'SYN Cookies' protège-t-il un serveur ou pare-feu contre les attaques par saturation de demi-connexions (TCP SYN Flood) ?"
+    choices:
+      - id: a
+        text: "En encodant l'état de la connexion dans le numéro de séquence initial sans allouer de bloc mémoire tant que le client n'a pas renvoyé le paquet final ACK"
+      - id: b
+        text: "En bloquant tous les utilisateurs d'Internet pendant 2 heures"
+      - id: c
+        text: "En envoyant des biscuits numériques aux attaquants"
+      - id: d
+        text: "En désactivant le protocole TCP pour passer en UDP"
+    correct:
+      - a
+    explanation: "Les SYN Cookies évitent l'épuisement de la mémoire du serveur en différant l'allocation de la structure de session jusqu'à la réception de la confirmation finale ACK."

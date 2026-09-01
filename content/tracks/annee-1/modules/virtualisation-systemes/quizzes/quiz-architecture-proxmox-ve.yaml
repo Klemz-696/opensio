@@ -1,0 +1,83 @@
+slug: quiz-architecture-proxmox-ve
+title: "Quiz — Architecture Proxmox VE"
+passing_score: 80
+position: 2
+questions:
+  - kind: single
+    prompt: "Sur quelle distribution Linux est nativement construit Proxmox Virtual Environment (PVE) ?"
+    choices:
+      - id: a
+        text: "Debian GNU/Linux"
+      - id: b
+        text: "Alpine Linux"
+      - id: c
+        text: "Red Hat Enterprise Linux"
+      - id: d
+        text: "Arch Linux"
+    correct:
+      - a
+    explanation: "Proxmox VE est bâti directement sur une base Debian GNU/Linux avec un noyau personnalisé optimisé pour KVM, ZFS et LXC."
+
+  - kind: multiple
+    prompt: "Pourquoi préférer un conteneur système LXC à une machine virtuelle KVM pour un serveur web Nginx sous Debian ?"
+    choices:
+      - id: a
+        text: "Démarrage quasi instantané (< 2 secondes)"
+      - id: b
+        text: "Empreinte mémoire RAM minimale et absence de surcharge d'émulation matérielle"
+      - id: c
+        text: "Capacité d'exécuter un noyau Windows Server à l'intérieur de LXC"
+      - id: d
+        text: "Densité de conteneurs beaucoup plus élevée sur un même serveur hôte"
+    correct:
+      - a
+      - b
+      - d
+    explanation: "LXC partage le noyau de l'hôte, ce qui offre une légèreté exceptionnelle et un démarrage ultra-rapide. En revanche, LXC ne peut exécuter que des environnements Linux (pas de Windows)."
+
+  - kind: single
+    prompt: "Quel est le rôle du répertoire /etc/pve (pmxcfs) sous Proxmox VE ?"
+    choices:
+      - id: a
+        text: "C'est un système de fichiers en mémoire répliqué en temps réel par Corosync entre tous les nœuds d'un cluster"
+      - id: b
+        text: "C'est le dossier où sont stockées les images ISO téléchargées depuis Internet"
+      - id: c
+        text: "C'est un dossier temporaire vidé à chaque redémarrage contenant les fichiers de log"
+      - id: d
+        text: "C'est le point de montage exclusif des sauvegardes distantes NFS"
+    correct:
+      - a
+    explanation: "pmxcfs (/etc/pve) utilise une base de données en mémoire et le protocole de consensus Corosync pour assurer la synchronisation immédiate des configurations sur tout le cluster."
+
+  - kind: single
+    prompt: "Quelles commandes CLI permettent respectivement d'administrer une VM KVM et un conteneur LXC sous Proxmox ?"
+    choices:
+      - id: a
+        text: "qm pour KVM et pct pour LXC"
+      - id: b
+        text: "docker pour KVM et podman pour LXC"
+      - id: c
+        text: "virsh pour KVM et vagrant pour LXC"
+      - id: d
+        text: "pvesm pour KVM et ifreload pour LXC"
+    correct:
+      - a
+    explanation: "qm (Qemu/KVM Manager) gère les machines virtuelles tandis que pct (Proxmox Container Toolkit) gère les conteneurs LXC."
+
+  - kind: multiple
+    prompt: "Quel type de stockage sous Proxmox permet nativement le Thin Provisioning et la prise de snapshots instantanés ?"
+    choices:
+      - id: a
+        text: "LVM-Thin"
+      - id: b
+        text: "ZFS"
+      - id: c
+        text: "LVM classique (non-thin)"
+      - id: d
+        text: "Ceph RBD"
+    correct:
+      - a
+      - b
+      - d
+    explanation: "LVM-Thin, ZFS et Ceph supportent le sur-provisionnement et les instantanés (snapshots). LVM classique ne permet pas les snapshots de VM sans figer l'espace au format raw complet."

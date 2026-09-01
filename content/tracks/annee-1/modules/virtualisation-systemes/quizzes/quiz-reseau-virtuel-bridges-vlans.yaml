@@ -1,0 +1,79 @@
+slug: quiz-reseau-virtuel-bridges-vlans
+title: "Quiz — Réseau Virtuel Bridges et VLANs"
+passing_score: 80
+position: 3
+questions:
+  - kind: single
+    prompt: "À quel équipement réseau physique correspond conceptuellement un Linux Bridge (vmbr0) dans Proxmox VE ?"
+    choices:
+      - id: a
+        text: "Un commutateur réseau virtuel de niveau 2 (Switch L2)"
+      - id: b
+        text: "Un routeur BGP de niveau 3"
+      - id: c
+        text: "Un modem câble de niveau 1"
+      - id: d
+        text: "Un serveur proxy applicatif HTTP de niveau 7"
+    correct:
+      - a
+    explanation: "Un pont logiciel (Linux Bridge) fonctionne comme un switch réseau virtuel de couche 2, commutant les trames Ethernet entre les interfaces virtuelles des VMs et la carte physique de l'hôte."
+
+  - kind: single
+    prompt: "Dans le fichier /etc/network/interfaces, comment configure-t-on un pont virtuel totalement privé et isolé de l'extérieur ?"
+    choices:
+      - id: a
+        text: "En définissant la directive 'bridge-ports none'"
+      - id: b
+        text: "En supprimant l'adresse IP de la carte lo"
+      - id: c
+        text: "En désactivant le pare-feu Proxmox"
+      - id: d
+        text: "En associant le pont à 'bridge-ports eno1'"
+    correct:
+      - a
+    explanation: "La directive bridge-ports none crée un commutateur virtuel purement interne sans liaison avec une carte physique, parfait pour une DMZ ou un réseau d'interconnexion isolé."
+
+  - kind: single
+    prompt: "Quelle directive active le transport natif des trames taguées 802.1Q sur un Linux Bridge Proxmox ?"
+    choices:
+      - id: a
+        text: "bridge-vlan-aware yes"
+      - id: b
+        text: "vlan-mode transparent"
+      - id: c
+        text: "enable-8021q true"
+      - id: d
+        text: "bridge-trunk-all"
+    correct:
+      - a
+    explanation: "bridge-vlan-aware yes transforme le bridge en un commutateur virtuel capable de filtrer et router les tags VLANs spécifiés par chaque VM."
+
+  - kind: single
+    prompt: "Quelle commande permet de recharger à chaud la configuration de /etc/network/interfaces sous Proxmox VE sans couper les VMs ?"
+    choices:
+      - id: a
+        text: "ifreload -a"
+      - id: b
+        text: "reboot --force"
+      - id: c
+        text: "systemctl stop networking"
+      - id: d
+        text: "qm restart --all"
+    correct:
+      - a
+    explanation: "La commande ifreload -a (fournie par ifupdown2) recalcule les différences et applique les modifications d'interfaces à chaud sans redémarrer le système d'exploitation."
+
+  - kind: single
+    prompt: "Quel protocole d'agrégation de liens (Bonding) standardisé permet d'associer deux cartes physiques pour de la haute disponibilité et de la répartition de charge ?"
+    choices:
+      - id: a
+        text: "LACP (IEEE 802.3ad - Mode 4)"
+      - id: b
+        text: "STP (IEEE 802.1D)"
+      - id: c
+        text: "RIPv2 (RFC 2453)"
+      - id: d
+        text: "SNMPv3"
+    correct:
+      - a
+    explanation: "Le mode 802.3ad (LACP) négocie dynamiquement avec le commutateur physique l'agrégation de plusieurs liens pour doubler la bande passante et tolérer la rupture d'un câble."

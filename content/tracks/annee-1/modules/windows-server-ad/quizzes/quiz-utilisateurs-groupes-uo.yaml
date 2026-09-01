@@ -1,0 +1,96 @@
+slug: quiz-utilisateurs-groupes-uo
+title: "Quiz — Utilisateurs, Groupes et Unités d'Organisation"
+passing_score: 80
+position: 3
+questions:
+  - kind: single
+    prompt: "Dans la stratégie d'ingénierie AGDLP, que représente la lettre 'G' ?"
+    choices:
+      - id: a
+        text: "Gestionnaire de domaine"
+      - id: b
+        text: "Groupe Global (regroupant des utilisateurs par fonction métier)"
+      - id: c
+        text: "Groupe de Distribution"
+      - id: d
+        text: "GPO (Stratégie de groupe)"
+    correct:
+      - b
+    explanation: "Dans AGDLP (Account -> Global Group -> Domain Local Group -> Permissions), 'G' désigne le Groupe Global qui rassemble des comptes utilisateurs selon leur rôle ou service métier."
+
+  - kind: single
+    prompt: "Quelle étendue de groupe Active Directory doit être utilisée pour porter directement les permissions de sécurité (NTFS / Partage) sur une ressource locale du domaine ?"
+    choices:
+      - id: a
+        text: "Groupe Global"
+      - id: b
+        text: "Groupe de Domaine Local (Domain Local)"
+      - id: c
+        text: "Groupe Universel"
+      - id: d
+        text: "Groupe de Distribution"
+    correct:
+      - b
+    explanation: "Le Groupe de Domaine Local (GDL / 'DL' dans AGDLP) est l'objet auquel on applique les droits d'accès sur les ressources du domaine. Il a l'avantage de pouvoir contenir des groupes provenant de n'importe quel domaine de la forêt."
+
+  - kind: multiple
+    prompt: "Quels conteneurs Active Directory peuvent recevoir directement une liaison de Stratégie de Groupe (GPO) ?"
+    choices:
+      - id: a
+        text: "Une Unité d'Organisation (UO)"
+      - id: b
+        text: "La racine du Domaine"
+      - id: c
+        text: "Un Site Active Directory"
+      - id: d
+        text: "Le conteneur par défaut 'CN=Users'"
+    correct:
+      - a
+      - b
+      - c
+    explanation: "Une GPO ne peut être liée qu'à un Site, un Domaine ou une Unité d'Organisation (modèle SDOU). Les conteneurs génériques 'CN=Users' et 'CN=Computers' ne sont pas des UO et ne peuvent pas recevoir de liaison directe de GPO."
+
+  - kind: single
+    prompt: "Quelle applet de commande PowerShell permet d'ajouter un compte utilisateur dans un groupe de sécurité Active Directory ?"
+    choices:
+      - id: a
+        text: "Set-ADUser -Group"
+      - id: b
+        text: "Add-ADGroupMember -Identity <Groupe> -Members <Utilisateur>"
+      - id: c
+        text: "New-ADPrincipalGroupMapping"
+      - id: d
+        text: "Add-ADPrincipalMember"
+    correct:
+      - b
+    explanation: "'Add-ADGroupMember' est la commande standard du module ActiveDirectory pour affecter un ou plusieurs comptes ou groupes dans un groupe cible."
+
+  - kind: single
+    prompt: "Quelle est la différence fondamentale entre un Groupe de Sécurité et un Groupe de Distribution dans Active Directory ?"
+    choices:
+      - id: a
+        text: "Le groupe de distribution possède un mot de passe et pas le groupe de sécurité"
+      - id: b
+        text: "Seul le groupe de sécurité possède un identifiant de sécurité (SID) permettant de lui attribuer des droits sur des ressources"
+      - id: c
+        text: "Le groupe de sécurité est limité à 10 membres au maximum"
+      - id: d
+        text: "Le groupe de distribution n'est visible que par les administrateurs du domaine"
+    correct:
+      - b
+    explanation: "Les groupes de sécurité disposent d'un SID et sont évalués lors du contrôle d'accès aux fichiers et partages. Les groupes de distribution n'ont pas de SID et servent exclusivement de listes de diffusion pour la messagerie."
+
+  - kind: single
+    prompt: "Quel mécanisme Active Directory permet d'accorder à un technicien de support le droit de réinitialiser les mots de passe des utilisateurs d'une UO sans lui donner les droits d'administrateur du domaine ?"
+    choices:
+      - id: a
+        text: "Le catalogue global"
+      - id: b
+        text: "La délégation de contrôle (Delegation of Control)"
+      - id: c
+        text: "L'émulateur PDC"
+      - id: d
+        text: "Le rôle FSMO de schéma"
+    correct:
+      - b
+    explanation: "La délégation de contrôle (via l'assistant ou dsacls) permet d'accorder des permissions granulaires sur une Unité d'Organisation spécifique à des comptes ou groupes délégués, respectant le principe de moindre privilège."

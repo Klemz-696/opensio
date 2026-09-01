@@ -1,0 +1,79 @@
+slug: quiz-infrastructure-as-code-terraform
+title: "Quiz — Infrastructure as Code et Terraform"
+passing_score: 80
+position: 4
+questions:
+  - kind: single
+    prompt: "Quel est le rôle fondamental du fichier d'état 'terraform.tfstate' dans un projet Terraform ?"
+    choices:
+      - id: a
+        text: "Il conserve la cartographie et les métadonnées de l'infrastructure réelle existante pour permettre à Terraform de calculer les écarts (diff) avec le code source .tf"
+      - id: b
+        text: "Il contient le mot de passe administrateur de Windows"
+      - id: c
+        text: "Il sert d'antivirus pour les machines virtuelles"
+      - id: d
+        text: "Il génère les pages web du site internet"
+    correct:
+      - a
+    explanation: "Le fichier d'état (`.tfstate`) relie les ressources déclarées dans le code HCL aux identifiants réels des objets créés auprès des fournisseurs (cloud/virtualisation)."
+
+  - kind: single
+    prompt: "Pourquoi est-il crucial de configurer un 'Remote Backend' sécurisé (ex: bucket S3 chiffré avec DynamoDB) pour stocker le fichier d'état Terraform en équipe ?"
+    choices:
+      - id: a
+        text: "Pour centraliser l'état, empêcher les conflits d'exécution concurrente via le verrouillage d'état (State Locking) et protéger les secrets contenus dans le tfstate"
+      - id: b
+        text: "Pour supprimer l'obligation d'écrire du code HCL"
+      - id: c
+        text: "Pour rendre l'infrastructure accessible gratuitement"
+      - id: d
+        text: "Pour désactiver le pare-feu du serveur"
+    correct:
+      - a
+    explanation: "Le Remote Backend avec verrouillage évite que deux ingénieurs n'appliquent des changements contradictoires simultanément et protège les données d'état sensibles."
+
+  - kind: single
+    prompt: "Quelle commande Terraform permet de prévisualiser l'ensemble des créations (+), modifications (~) et destructions (-) de ressources avant toute modification réelle ?"
+    choices:
+      - id: a
+        text: "terraform plan"
+      - id: b
+        text: "terraform apply --force"
+      - id: c
+        text: "terraform init"
+      - id: d
+        text: "terraform destroy"
+    correct:
+      - a
+    explanation: "`terraform plan` analyse le code et l'état actuel pour générer une prévisualisation détaillée et sécurisante des actions qui seront menées lors du `apply`."
+
+  - kind: single
+    prompt: "Dans la syntaxe HCL de Terraform, quelle est la différence entre un bloc 'resource' et un bloc 'data' ?"
+    choices:
+      - id: a
+        text: "Un bloc 'resource' crée, gère et modifie un composant d'infrastructure, tandis qu'un bloc 'data' permet uniquement de lire et récupérer les informations d'un composant existant"
+      - id: b
+        text: "Un bloc 'data' coûte plus cher qu'un bloc 'resource'"
+      - id: c
+        text: "Un bloc 'resource' ne fonctionne qu'avec Docker"
+      - id: d
+        text: "Il n'y a aucune différence fonctionnelle"
+    correct:
+      - a
+    explanation: "Les blocs `resource` pilotent le cycle de vie d'objets créés par Terraform, alors que les blocs `data` (Data Sources) importent des données en lecture seule depuis l'infrastructure existante."
+
+  - kind: single
+    prompt: "Que réalise la commande 'terraform init' lors de sa première exécution dans un répertoire de projet ?"
+    choices:
+      - id: a
+        text: "Elle initialise le backend d'état et télécharge les plugins nécessaires pour l'ensemble des providers déclarés dans le code"
+      - id: b
+        text: "Elle supprime tous les serveurs du projet"
+      - id: c
+        text: "Elle formate le disque dur de la machine locale"
+      - id: d
+        text: "Elle exécute immédiatement la création des ressources en production"
+    correct:
+      - a
+    explanation: "`terraform init` prépare l'environnement de travail en téléchargeant les binaires des fournisseurs (AWS, Proxmox, Docker) et en initialisant le stockage d'état."

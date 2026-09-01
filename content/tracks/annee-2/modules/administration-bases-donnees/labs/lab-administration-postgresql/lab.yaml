@@ -1,0 +1,81 @@
+slug: lab-administration-postgresql
+title: "Administration Système, Sécurité RBAC & Maintenance d'une Instance PostgreSQL"
+level: 2_files
+max_score: 100
+estimated_minutes: 45
+context: |
+  Vous êtes administrateur système et devez configurer, sécuriser et préparer les procédures d'exploitation d'un serveur PostgreSQL 16 hébergeant la base de production `production_db`.
+
+  Votre mission consiste à rédiger l'ensemble des commandes SQL et scripts d'exploitation dans le fichier `admin_tasks.sql` afin de répondre aux 4 exigences opérationnelles suivantes :
+
+  1. **Modèle de Sécurité RBAC (Rôles & Privilèges)** :
+     - Créer deux rôles de groupe sans droit de connexion : `app_readonly` et `app_readwrite` (`NOLOGIN`).
+     - Accorder l'usage du schéma `public` (`GRANT USAGE ON SCHEMA public`).
+     - Accorder les privilèges de lecture seule (`GRANT SELECT ON ALL TABLES`) au groupe `app_readonly`.
+     - Accorder les privilèges de lecture/écriture (`GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES` et `USAGE, SELECT ON ALL SEQUENCES`) au groupe `app_readwrite`.
+     - Configurer les privilèges par défaut futurs (`ALTER DEFAULT PRIVILEGES IN SCHEMA public ...`).
+     - Créer deux utilisateurs nominatifs avec mot de passe chiffré (`WITH PASSWORD '...'`) :
+       - `user_reporting` rattaché à `app_readonly`
+       - `user_backend` rattaché à `app_readwrite`
+
+  2. **Durcissement de Sécurité & Révocations** :
+     - Révoquer les droits de création sur le schéma `public` accordés par défaut au pseudo-rôle `PUBLIC` (`REVOKE CREATE ON SCHEMA public FROM PUBLIC`).
+     - Révoquer les droits généraux de connexion ou de modification sur la base pour `PUBLIC`.
+
+  3. **Maintenance Préventive, Nettoyage MVCC & Indexation** :
+     - Exécuter la commande de maintenance courante non bloquante `VACUUM (VERBOSE, ANALYZE)` sur les tables de l'application.
+     - Lancer une reconstruction d'index avec `REINDEX TABLE tickets_support` (ou `REINDEX SCHEMA public`).
+     - Rédiger une requête d'audit interrogeant la vue système `pg_stat_user_tables` pour afficher le nom des tables (`relname`), le nombre de tuples vivants (`n_live_tup`) et le nombre de tuples morts (`n_dead_tup`).
+
+  4. **Métrologie des Requêtes Lentes & Procédures de Sauvegarde / Restauration** :
+     - Déclarer l'activation de l'extension d'analyse de performance `CREATE EXTENSION IF NOT EXISTS pg_stat_statements;`.
+     - Rédiger la requête de diagnostic restituant le Top 5 des requêtes les plus consommatrices en temps total depuis `pg_stat_statements` (`ORDER BY total_exec_time DESC LIMIT 5`).
+     - Documenter dans le script les commandes shell complètes de sauvegarde logique binaire compressée `pg_dump` avec format Custom (`-F c`) et la commande de restauration correspondante avec `pg_restore`.
+
+objectives:
+  - "Implémenter une architecture de sécurité RBAC stricte avec séparation des privilèges de lecture et d'écriture"
+  - "Durcir l'instance PostgreSQL en révoquant les permissions par défaut attribuées à PUBLIC"
+  - "Maîtriser les opérations de maintenance MVCC (VACUUM, ANALYZE, REINDEX) et l'analyse de fragmentation"
+  - "Exploiter pg_stat_statements pour détecter les requêtes lentes et formaliser les commandes pg_dump/pg_restore"
+
+prerequisites:
+  - "administration-postgresql-mysql-exploitation"
+  - "performance-optimisation-requetes-index"
+
+files:
+  editable:
+    - path: admin_tasks.sql
+      description: "Script d'administration, RBAC, maintenance et procédures d'exploitation PostgreSQL"
+
+hints:
+  - cost_percent: 10
+    text: "Pour les rôles de groupe, utilisez la clause 'NOLOGIN' et pour les utilisateurs finaux 'LOGIN WITH PASSWORD '...' '."
+  - cost_percent: 10
+    text: "N'oubliez pas d'accorder également les droits 'USAGE, SELECT ON ALL SEQUENCES' au groupe app_readwrite pour permettre l'incrémentation des clés SERIAL."
+  - cost_percent: 10
+    text: "Pour pg_dump, le format Custom s'active avec le paramètre '-F c' (ex: pg_dump -U postgres -F c -f backup.dump production_db)."
+
+validation:
+  type: script
+  image: opensio/validator-postgres-admin:latest
+  timeout_seconds: 30
+  checks:
+    - id: roles_and_privileges_rbac
+      required: true
+      points: 25
+      description: "Création des rôles RBAC (app_readonly, app_readwrite, user_reporting, user_backend) avec privilèges SELECT/DML appropriés"
+    - id: public_schema_hardening_and_revokes
+      required: true
+      points: 25
+      description: "Durcissement du schéma public et révocation des permissions excessives de PUBLIC (REVOKE CREATE ON SCHEMA public FROM PUBLIC)"
+    - id: maintenance_vacuum_analyze_reindex
+      required: true
+      points: 25
+      description: "Instructions de maintenance MVCC (VACUUM ANALYZE, REINDEX) et requête d'inspection de pg_stat_user_tables"
+    - id: backup_restore_and_slow_query_config
+      required: true
+      points: 25
+      description: "Extension pg_stat_statements, requête Top 5 requêtes lentes et commandes pg_dump/pg_restore au format Custom"
+
+scoring:
+  floor_percent: 50

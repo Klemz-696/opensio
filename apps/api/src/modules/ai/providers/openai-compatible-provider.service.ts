@@ -17,7 +17,7 @@ export class OpenAiCompatibleProvider implements AiProvider {
   private readonly defaultTimeoutMs: number;
 
   constructor() {
-    this.baseUrl = (process.env.AI_BASE_URL || 'http://127.0.0.1:11434/v1').replace(/\/+$/, '');
+    this.baseUrl = (process.env.OLLAMA_BASE_URL || process.env.AI_BASE_URL || 'http://127.0.0.1:11434/v1').replace(/\/+$/, '');
     this.defaultModel = process.env.AI_MODEL || 'llama3.1:8b';
     this.apiKey = process.env.AI_API_KEY;
     const parsedTimeout = Number(process.env.AI_TIMEOUT_MS);

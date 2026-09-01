@@ -5,12 +5,12 @@ import { scanContentDirectory } from './scanner.js';
 import { validateScannedContent } from './validator.js';
 import { executeContentSync } from './sync.service.js';
 
-const contentDir = resolve(__dirname, '../../../../content');
+const fixtureContentDir = resolve(__dirname, '__fixtures__/sample-content');
 
 describe('Moteur de Synchronisation de Contenu', () => {
   describe('Scanner et Validateur', () => {
     it('scanne le module de démonstration avec succès', () => {
-      const scanned = scanContentDirectory(contentDir);
+      const scanned = scanContentDirectory(fixtureContentDir);
 
       expect(scanned.errors).toHaveLength(0);
       expect(scanned.tracks).toHaveLength(1);
@@ -31,14 +31,14 @@ describe('Moteur de Synchronisation de Contenu', () => {
     });
 
     it('valide l’intégrité référentielle du contenu scanné', () => {
-      const scanned = scanContentDirectory(contentDir);
+      const scanned = scanContentDirectory(fixtureContentDir);
       const errors = validateScannedContent(scanned);
 
       expect(errors).toHaveLength(0);
     });
 
     it('détecte une référence de lab inexistante dans une leçon', () => {
-      const scanned = scanContentDirectory(contentDir);
+      const scanned = scanContentDirectory(fixtureContentDir);
       const altered = {
         ...scanned,
         tracks: [
@@ -100,7 +100,7 @@ describe('Moteur de Synchronisation de Contenu', () => {
         return;
       }
 
-      const report = await executeContentSync(prisma, contentDir);
+      const report = await executeContentSync(prisma, fixtureContentDir);
 
       expect(report.success).toBe(true);
       expect(report.errors).toHaveLength(0);
@@ -142,7 +142,7 @@ describe('Moteur de Synchronisation de Contenu', () => {
         return;
       }
 
-      const firstReport = await executeContentSync(prisma, contentDir);
+      const firstReport = await executeContentSync(prisma, fixtureContentDir);
       expect(firstReport.success).toBe(true);
 
       const questionsBefore = await prisma.quizQuestion.findMany({
@@ -150,7 +150,7 @@ describe('Moteur de Synchronisation de Contenu', () => {
         select: { id: true, position: true, prompt: true },
       });
 
-      const secondReport = await executeContentSync(prisma, contentDir);
+      const secondReport = await executeContentSync(prisma, fixtureContentDir);
       expect(secondReport.success).toBe(true);
       expect(secondReport.stats.tracks.created).toBe(0);
       expect(secondReport.stats.modules.created).toBe(0);

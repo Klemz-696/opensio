@@ -1,0 +1,14 @@
+# Fichier /etc/network/interfaces — Hyperviseur Proxmox VE
+
+# 1. Interface de boucle locale (Loopback)
+auto lo
+iface lo inet loopback
+
+# 2. Carte réseau physique Gigabit Ethernet
+# TODO: Configurer eno1 en mode manual
+
+# 3. Pont Virtuel Principal (vmbr0) : Gestion & Trafic VLANs
+# TODO: Configurer vmbr0 (IP: 192.168.10.250/24, GW: 192.168.10.254, bridge-ports: eno1, bridge-vlan-aware: yes)
+
+# 4. Pont Virtuel Privé Isolé (vmbr1) : Réseau interne DMZ
+# TODO: Configurer vmbr1 (IP: 10.0.0.254/24, bridge-ports: none)

@@ -129,3 +129,64 @@ La version **v1.0** constituera l'aboutissement de la plateforme OpenSIO pour le
 - Déploiement de scénarios d'ateliers d'infrastructure complexes comprenant plusieurs machines interconnectées (ex : _1 Routeur pare-feu + 1 Serveur Web en DMZ + 1 Serveur AD DS + 1 Poste client_).
 - Isolation réseau stricte entre apprenants par Software-Defined Networking (SDN Proxmox avec zones VxLAN ou VLANs dédiés par session) afin d'éviter tout conflit d'adresses IP ou diffusion parasite.
 - Utilisation de modèles de disques maîtres (_Linked Clones_) permettant un démarrage quasi instantané (< 15 secondes) de topologies multi-VMs tout en minimisant l'empreinte disque sur le stockage de virtualisation.
+
+---
+
+## 📚 4. Feuille de Route Pédagogique — Lot D3 & Contenu SISR
+
+Conformément à la spécification contractuelle du Blueprint (§25.1) et à la cartographie complète détaillée dans [`docs/modules-map.md`](./modules-map.md), le contenu pédagogique d'OpenSIO s'étend sur l'intégralité du programme national **BTS SIO option SISR** (1ère et 2ème année).
+
+### 4.1. État d'avancement du Catalogue
+
+| Parcours / Track | Modules livrés | Modules à créer | Total modules | Leçons opérationnelles | Labs opérationnels |
+|---|:---:|:---:|:---:|:---:|:---:|
+| **1ère Année (`annee-1`)** | 8 | 0 | 8 | 44 | 20 |
+| **2ème Année (`annee-2`)** | 11 | 0 | 11 | 56 | 23 |
+| **Total Global** | **19** | **0** | **19** | **100** | **43** |
+
+> **2026-08-28 (clôture lot d'audit v1-readiness)** : catalogue SISR **intégralement couvert** — 19/19 modules (100 leçons, 512 questions, 43 labs, 132/132 tests validateurs). Les dernières fiches de la cartographie sans équivalent livré, `serveurs-web-pki-tls` (fiche #11) et `vpn-acces-distants` (fiche #12), ont été produites (PRs #50/#51). Rappel des renommages/consolidations en production : `securite-pare-feu-filtrage` → `securite-perimetrique`, `supervision-metrologie` → `supervision-observabilite`, `cybersecurite-durcissement-audit` → `securite-systemes-durcissement`, `cloud-hybride-cicd` → `cloud-prive-virtualisation`, et `scripting-automatisation` + `automatisation-ansible` → `automatisation-devops`. Deux modules hors cartographie initiale ont été ajoutés (`administration-bases-donnees`, `veille-certification`).
+
+> **2026-08-29 (intégration PR #45)** : module `gestion-projets-agile` (rédigé au lot d3 phase 2.3, resté en attente) intégré après rebase — catalogue porté à **20/20 modules** (105 leçons, 537 questions, 45 labs, 138/138 tests validateurs).
+
+### 4.2. Planification des Phases de Production de Contenu
+
+```
+[Phase 1 : Cartographie des Modules] (Lot D3 - Terminé)
+     │
+     ▼
+[Phase 2.1 : Socle Systèmes & Services 1ère Année]
+  ├── linux-administration (6 leçons, 3 labs)
+  └── services-reseau-linux (5 leçons, 2 labs)
+     │
+     ▼
+[Phase 2.2 : Infrastructure & Support 1ère Année]
+  ├── virtualisation-systemes (5 leçons, 2 labs)
+  ├── sauvegardes-stockage (5 leçons, 2 labs)
+  ├── support-parc-glpi (5 leçons, 2 labs)
+  └── anglais-technique (5 leçons, 2 labs)
+     │
+     ▼
+[Phase 2.3 : Réseaux Avancés, Sécurité & Web 2ème Année]
+  ├── routage-interconnexion (5 leçons, 2 labs)
+  ├── securite-pare-feu-filtrage (6 leçons, 3 labs)
+  ├── serveurs-web-pki-tls (6 leçons, 3 labs)
+  └── vpn-acces-distants (5 leçons, 2 labs)
+     │
+     ▼
+[Phase 2.4 : Automatisation, DevOps & Métrologie 2ème Année]
+  ├── scripting-automatisation (6 leçons, 2 labs)
+  ├── conteneurisation-docker (6 leçons, 3 labs)
+  ├── supervision-metrologie (5 leçons, 2 labs)
+  └── automatisation-ansible (5 leçons, 2 labs)
+     │
+     ▼
+[Phase 2.5 : Cybersécurité Avancée, Haute Disponibilité & Cloud]
+  ├── cybersecurite-durcissement-audit (6 leçons, 3 labs)
+  ├── haute-disponibilite-clustering (5 leçons, 2 labs)
+  └── cloud-hybride-cicd (5 leçons, 2 labs)
+```
+
+> **Statut (2026-08-28, clôture)** : le catalogue est **100 % terminé** — les phases 1, 2.1 et 2.2 (1ère année, 8/8) et l'intégralité des phases 2.3 → 2.5 (2ème année, 11/11) sont couvertes par les slugs livrés (renommages détaillés en §4.1, dont `serveurs-web-pki-tls` et `vpn-acces-distants` produites en dernière étape, PRs #50/#51). Aucun module ne reste à produire.
+
+> 📖 Pour le détail complet des fiches modules, blocs de compétences associés, barèmes et jeux d'essais, consulter [`docs/modules-map.md`](./modules-map.md).
+

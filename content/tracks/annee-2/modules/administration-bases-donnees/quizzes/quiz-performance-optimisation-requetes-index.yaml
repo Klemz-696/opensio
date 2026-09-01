@@ -1,0 +1,80 @@
+slug: quiz-performance-optimisation-requetes-index
+title: "Quiz — Performance, Optimisation des Requêtes & Métrologie SGBD"
+passing_score: 80
+position: 4
+questions:
+  - kind: single
+    prompt: "Quelle commande SQL permet non seulement d'afficher le plan d'exécution théorique estimé par le planificateur, mais également d'exécuter réellement la requête pour chronométrer son temps exact ?"
+    choices:
+      - id: a
+        text: "EXPLAIN (ANALYZE, BUFFERS) SELECT ..."
+      - id: b
+        text: "SHOW PLAN SELECT ..."
+      - id: c
+        text: "ANALYZE TABLE SELECT ..."
+      - id: d
+        text: "SELECT * FROM sys.performance_profile"
+    correct:
+      - a
+    explanation: "La clause EXPLAIN seule ne fait qu'estimer le plan d'accès. L'ajout de l'option ANALYZE (ex: EXPLAIN ANALYZE) force l'exécution réelle de la requête et restitue les compteurs de temps réels (actual time) et le nombre exact de lignes traitées par chaque nœud."
+
+  - kind: single
+    prompt: "Dans un plan d'exécution, quel nœud d'accès indique que le moteur a trouvé toutes les colonnes demandées directement dans l'index sans avoir besoin d'accéder aux blocs de la table sous-jacente (Heap) ?"
+    choices:
+      - id: a
+        text: "Sequential Scan"
+      - id: b
+        text: "Bitmap Heap Scan"
+      - id: c
+        text: "Index Only Scan"
+      - id: d
+        text: "Nested Loop Join"
+    correct:
+      - c
+    explanation: "L'Index Only Scan est la stratégie d'accès la plus performante : l'index contient l'intégralité des attributs demandés par la clause SELECT et la condition WHERE. Si la carte de visibilité (visibility map) confirme la validité des pages, la table (Heap) n'est jamais lue sur le disque."
+
+  - kind: multiple
+    prompt: "Quel type d'index est particulièrement adapté pour indexer des documents JSONB, des colonnes de type tableau (Array) ou effectuer de la recherche textuelle plein texte (Full Text Search) sous PostgreSQL ?"
+    choices:
+      - id: a
+        text: "L'index GIN (Generalized Inverted Index)"
+      - id: b
+        text: "L'index B-Tree standard (uniquement sur les scalaires simples)"
+      - id: c
+        text: "L'index GiST (Generalized Search Tree) pour certaines structures hiérarchiques"
+      - id: d
+        text: "L'index Floppy Disk"
+    correct:
+      - a
+      - c
+    explanation: "Les index GIN (Generalized Inverted Index) et GiST sont spécialement conçus pour indexer les éléments composites et semi-structurés comme les documents JSONB (opérateurs @>, ?), les tableaux et les vecteurs textuels (tsvector). B-Tree est conçu pour l'ordre scalaire standard."
+
+  - kind: single
+    prompt: "Quel est le risque majeur si le paramètre 'work_mem' est configuré avec une valeur excessive (ex: 2 Go) sur un serveur accueillant 100 connexions concurrentes ?"
+    choices:
+      - id: a
+        text: "La base de données désactive automatiquement les clés étrangères"
+      - id: b
+        text: "Une saturation brutale de la mémoire vive (OOM - Out Of Memory) et un crash du serveur, car work_mem est alloué par opération de tri et par requête concurrente"
+      - id: c
+        text: "Les index B-Tree deviennent corrompus"
+      - id: d
+        text: "Le port d'écoute 5432 est automatiquement bloqué"
+    correct:
+      - b
+    explanation: "Contrairement à shared_buffers qui est alloué une seule fois globalement au démarrage, work_mem est alloué de manière dynamique pour chaque opération de tri (ORDER BY, DISTINCT, Hash Join). Si plusieurs requêtes exécutent plusieurs tris simultanés, la mémoire consommée peut atteindre plusieurs dizaines de fois la valeur, provoquant un arrêt brutal par le mécanisme OOM-Killer de Linux."
+
+  - kind: single
+    prompt: "Dans un pooler de connexions comme PgBouncer, quel mode de mutualisation ('pool_mode') permet de servir des milliers de requêtes web concurrentes avec seulement quelques dizaines de connexions réelles au moteur PostgreSQL ?"
+    choices:
+      - id: a
+        text: "Session pooling (la connexion est bloquée pendant toute la vie de la session client)"
+      - id: b
+        text: "Transaction pooling (la connexion réelle est attribuée uniquement pendant la durée d'une transaction SQL et libérée immédiatement au COMMIT)"
+      - id: c
+        text: "Disabled pooling (connexion directe sans proxy)"
+      - id: d
+        text: "Socket pooling"
+    correct:
+      - b
+    explanation: "Le mode 'Transaction pooling' est le mode roi pour les applications web : dès qu'une requête termine son bloc transactionnel (COMMIT ou ROLLBACK), la connexion physique sous-jacente est immédiatement restituée au pool pour traiter la transaction d'un autre client, démultipliant la capacité de traitement du serveur."

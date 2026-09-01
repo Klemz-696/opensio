@@ -1,0 +1,11 @@
+# Extensions OpenSSL — SOLUTION INVALIDE : SAN mono-domaine
+# Le service www.home.lan ne sera pas couvert : erreur navigateur.
+
+authorityKeyIdentifier = keyid, issuer
+basicConstraints       = CA:FALSE
+keyUsage               = digitalSignature, keyEncipherment
+extendedKeyUsage       = serverAuth
+subjectAltName         = @alt_names
+
+[alt_names]
+DNS.1 = opensio.home.lan

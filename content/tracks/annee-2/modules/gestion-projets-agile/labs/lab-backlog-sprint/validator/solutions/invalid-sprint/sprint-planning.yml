@@ -1,0 +1,8 @@
+sprint_number: 1
+sprint_goal: "Objectif trop ambitieux dépassant la capacité"
+team_capacity_sp: 20
+
+# 13 + 13 = 26 SP (> 20 SP autorisés)
+selected_stories:
+  - "US-01"
+  - "US-02"

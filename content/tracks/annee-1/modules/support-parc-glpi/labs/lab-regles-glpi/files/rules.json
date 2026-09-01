@@ -1,0 +1,17 @@
+{
+  "rules": [
+    {
+      "id": "incidents-vip",
+      "name": "Routage Incidents VIP & Direction",
+      "active": true,
+      "conditions": {
+        "demandeur_groupe": "Direction Generale"
+      },
+      "actions": {
+        "groupe_technicien": "",
+        "sla_tto_minutes": 0,
+        "sla_ttr_minutes": 0
+      }
+    }
+  ]
+}

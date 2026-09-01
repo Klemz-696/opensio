@@ -1,0 +1,16 @@
+# certification-roadmap.yml - Feuille de Route de Certifications IT
+
+target_role: "Administrateur Systèmes, Cloud & Réseaux"
+
+certifications:
+  - code: "200-301"
+    title: "Cisco Certified Network Associate (CCNA)"
+    vendor: "Cisco"
+    level: "associe"
+    estimated_cost_eur: 300
+    target_quarter: "2026-Q4"
+
+  # TODO: Déclarer au moins une seconde certification (ex: AZ-104, SAA-C03, EX200)
+
+# TODO: Calculer le total_budget_eur correspondant à la somme exacte
+total_budget_eur: 300

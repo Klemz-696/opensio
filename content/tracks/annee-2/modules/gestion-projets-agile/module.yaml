@@ -1,0 +1,25 @@
+slug: gestion-projets-agile
+title: "Gestion de Projets IT, Méthodes Agiles (Scrum, Kanban) & Pilotage"
+description: "Fondamentaux de la gestion de projets informatiques (Cycle en V vs Agile), cadre méthodologique Scrum et Kanban, découpage en User Stories et Backlog, estimation par Story Points, rituels d'équipe et pilotage par la valeur."
+position: 8
+difficulty: 2
+estimated_minutes: 450
+competency_refs:
+  - "B1.1"
+  - "B1.2"
+  - "B3.4"
+lessons:
+  - fondamentaux-gestion-projet-triangle-dor
+  - methodologies-agiles-scrum-kanban
+  - planification-backlog-user-stories-estimation
+  - suivi-pilotage-indicateurs-burndown-charts
+  - communication-reporting-gestion-changements
+quizzes:
+  - quiz-fondamentaux-gestion-projet-triangle-dor
+  - quiz-methodologies-agiles-scrum-kanban
+  - quiz-planification-backlog-user-stories-estimation
+  - quiz-suivi-pilotage-indicateurs-burndown-charts
+  - quiz-communication-reporting-gestion-changements
+labs:
+  - structuration-backlog-planification-sprint
+  - configuration-tableau-kanban-wip

@@ -1,0 +1,79 @@
+slug: quiz-visualisation-tableaux-bord-grafana
+title: "Quiz — Visualisation et Tableaux de Bord Grafana"
+passing_score: 80
+position: 3
+questions:
+  - kind: single
+    prompt: "Que représentent les trois lettres de la méthode 'USE', recommandée pour la supervision des ressources matérielles (CPU, RAM, Disque, Réseau) ?"
+    choices:
+      - id: a
+        text: "Utilization (Utilisation), Saturation (Saturation), Errors (Erreurs)"
+      - id: b
+        text: "User (Utilisateur), Server (Serveur), Entity (Entité)"
+      - id: c
+        text: "Unix, Software, Ethernet"
+      - id: d
+        text: "Upload, Storage, Encryption"
+    correct:
+      - a
+    explanation: "La méthode USE de Brendan Gregg analyse l'utilisation (% d'occupation), la saturation (files d'attente) et les erreurs de chaque composant physique."
+
+  - kind: single
+    prompt: "Que représentent les trois métriques clés de la méthode 'RED', préconisée pour la supervision des services et API applicatives ?"
+    choices:
+      - id: a
+        text: "Rate (Débit de requêtes), Errors (Taux d'erreurs), Duration (Durée / Latence)"
+      - id: b
+        text: "Routing, Encryption, Decryption"
+      - id: c
+        text: "Read, Execute, Delete"
+      - id: d
+        text: "RAM, Ethernet, Disk"
+    correct:
+      - a
+    explanation: "La méthode RED de Tom Wilkie se focalise sur le débit (req/s), les erreurs (5xx) et la latence (temps de réponse), reflétant directement l'expérience utilisateur."
+
+  - kind: single
+    prompt: "Dans un tableau de bord Grafana, à quoi sert la création d'une 'Variable de Dashboard' (ex: $instance) ?"
+    choices:
+      - id: a
+        text: "À générer une liste déroulante interactive permettant à l'utilisateur de filtrer dynamiquement tous les graphiques du tableau de bord selon le serveur ou l'environnement choisi"
+      - id: b
+        text: "À modifier le code source de l'application surveillée"
+      - id: c
+        text: "À payer l'abonnement mensuel de la plateforme"
+      - id: d
+        text: "À éteindre automatiquement le serveur en cas de panne"
+    correct:
+      - a
+    explanation: "Les variables Grafana rendent les tableaux de bord modulaires et réutilisables pour des centaines d'instances sans avoir à dupliquer les panels."
+
+  - kind: single
+    prompt: "À quoi sert la fonctionnalité d''Annotations' dans les graphiques temporels Grafana ?"
+    choices:
+      - id: a
+        text: "À superposer des marqueurs verticaux horodatés indiquant des événements externes (comme un déploiement CI/CD ou un redémarrage) pour faciliter la corrélation visuelle"
+      - id: b
+        text: "À traduire les textes de l'anglais vers le français"
+      - id: c
+        text: "À compresser la base de données PostgreSQL"
+      - id: d
+        text: "À bloquer l'accès aux utilisateurs non autorisés"
+    correct:
+      - a
+    explanation: "Les annotations permettent de visualiser instantanément si une dégradation de performance ou une hausse d'erreurs coïncide avec un événement précis (ex: nouveau commit déployé)."
+
+  - kind: single
+    prompt: "Quel type de panel Grafana est le plus adapté pour afficher un indicateur unique de santé globale ou un pourcentage de disponibilité avec un code couleur (vert/jaune/rouge) ?"
+    choices:
+      - id: a
+        text: "Stat Panel ou Gauge"
+      - id: b
+        text: "Table Panel"
+      - id: c
+        text: "Logs Panel"
+      - id: d
+        text: "Pie Chart"
+    correct:
+      - a
+    explanation: "Les panels Stat et Gauge offrent une visibilité instantanée sur les KPI essentiels grâce à des seuils de coloration (*Thresholds*) immédiatement compréhensibles."

@@ -6,7 +6,7 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { UserRole, UserStatus } from '@prisma/client';
+import { Role, UserStatus } from '@prisma/client';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { PasswordService } from './password.service';
 import { JwtService, UserTokenProfile } from './jwt.service';
@@ -17,6 +17,7 @@ import type { RegisterDto } from '../dto/register.dto';
 import type { LoginDto } from '../dto/login.dto';
 import type { ForgotPasswordDto } from '../dto/forgot-password.dto';
 import type { ResetPasswordDto } from '../dto/reset-password.dto';
+import type { ChangePasswordDto } from '../dto/change-password.dto';
 
 export interface AuthSuccessResult {
   accessToken: string;
@@ -28,8 +29,12 @@ export interface UserProfileResponse {
   id: string;
   email: string;
   displayName: string;
-  role: UserRole;
+  avatarUrl?: string | null;
+  bio?: string | null;
+  preferences?: unknown;
+  role: Role;
   status: UserStatus;
+  mustChangePassword: boolean;
   createdAt: Date;
   lastLoginAt: Date | null;
 }
@@ -78,8 +83,9 @@ export class AuthService {
         email: dto.email,
         displayName: dto.displayName,
         passwordHash,
-        role: UserRole.STUDENT,
+        role: Role.APPRENANT,
         status: UserStatus.ACTIVE,
+        mustChangePassword: false,
       },
     });
 
@@ -95,8 +101,12 @@ export class AuthService {
       id: user.id,
       email: user.email,
       displayName: user.displayName,
+      avatarUrl: user.avatarUrl,
+      bio: user.bio,
+      preferences: user.preferences,
       role: user.role,
       status: user.status,
+      mustChangePassword: user.mustChangePassword,
       createdAt: user.createdAt,
       lastLoginAt: user.lastLoginAt,
     };
@@ -141,6 +151,9 @@ export class AuthService {
       email: user.email,
       displayName: user.displayName,
       role: user.role,
+      avatarUrl: user.avatarUrl,
+      bio: user.bio,
+      mustChangePassword: user.mustChangePassword,
     };
 
     const accessToken = this.jwtService.generateAccessToken(userProfile);
@@ -177,6 +190,9 @@ export class AuthService {
       email: user.email,
       displayName: user.displayName,
       role: user.role,
+      avatarUrl: user.avatarUrl,
+      bio: user.bio,
+      mustChangePassword: user.mustChangePassword,
     };
 
     const accessToken = this.jwtService.generateAccessToken(userProfile);
@@ -217,6 +233,56 @@ export class AuthService {
     return this.passwordResetService.resetPassword(dto, ip);
   }
 
+  async changePassword(
+    userId: string,
+    dto: ChangePasswordDto,
+    ip?: string,
+  ): Promise<{ success: boolean; message: string }> {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user || user.status !== UserStatus.ACTIVE || user.deletedAt !== null) {
+      throw new UnauthorizedException('Utilisateur introuvable ou inactif.');
+    }
+
+    const isCurrentPasswordValid = await this.passwordService.verify(
+      user.passwordHash,
+      dto.currentPassword,
+    );
+    if (!isCurrentPasswordValid) {
+      throw new BadRequestException('Le mot de passe actuel est incorrect.');
+    }
+
+    const policy = this.passwordService.validatePolicy(dto.newPassword);
+    if (!policy.valid) {
+      throw new BadRequestException({
+        message: 'Le nouveau mot de passe ne respecte pas la politique de sécurité.',
+        errors: policy.errors,
+      });
+    }
+
+    const newPasswordHash = await this.passwordService.hash(dto.newPassword);
+
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        passwordHash: newPasswordHash,
+        mustChangePassword: false,
+      },
+    });
+
+    await this.auditService.logEvent({
+      action: 'AUTH_PASSWORD_CHANGE',
+      actorId: userId,
+      targetType: 'user',
+      targetId: userId,
+      ip,
+    });
+
+    return { success: true, message: 'Mot de passe mis à jour avec succès.' };
+  }
+
   async getMe(userId: string): Promise<UserProfileResponse> {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
@@ -230,8 +296,12 @@ export class AuthService {
       id: user.id,
       email: user.email,
       displayName: user.displayName,
+      avatarUrl: user.avatarUrl,
+      bio: user.bio,
+      preferences: user.preferences,
       role: user.role,
       status: user.status,
+      mustChangePassword: user.mustChangePassword,
       createdAt: user.createdAt,
       lastLoginAt: user.lastLoginAt,
     };

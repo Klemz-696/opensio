@@ -1,0 +1,79 @@
+slug: quiz-principes-conteneurisation-et-cycle-vie
+title: "Quiz — Principes de la Conteneurisation et Cycle de Vie"
+passing_score: 80
+position: 1
+questions:
+  - kind: single
+    prompt: "Quelle est la différence fondamentale d'architecture entre une machine virtuelle (VM) et un conteneur Docker ?"
+    choices:
+      - id: a
+        text: "La machine virtuelle embarque un OS invité complet et virtualise le matériel via un hyperviseur, tandis que le conteneur partage directement le noyau de l'hôte et isole l'espace utilisateur"
+      - id: b
+        text: "Le conteneur utilise son propre BIOS virtuel alors que la machine virtuelle n'en a pas"
+      - id: c
+        text: "Une machine virtuelle ne peut pas avoir d'adresse IP"
+      - id: d
+        text: "Les conteneurs ne peuvent s'exécuter que sur macOS"
+    correct:
+      - a
+    explanation: "Les conteneurs partagent le noyau Linux de l'hôte, ce qui les rend beaucoup plus légers, économes en RAM et quasi instantanés à démarrer par rapport aux VMs complètes."
+
+  - kind: single
+    prompt: "Quels mécanismes fondamentaux du noyau Linux permettent respectivement l'isolation des ressources (processus, réseau) et la limitation de leur consommation (CPU, RAM) ?"
+    choices:
+      - id: a
+        text: "Les Namespaces pour l'isolation et les Control Groups (cgroups) pour la limitation des ressources"
+      - id: b
+        text: "Le pare-feu iptables et le système de fichiers ext4"
+      - id: c
+        text: "Le swap et la mémoire cache L3"
+      - id: d
+        text: "Le gestionnaire de paquets apt et systemd"
+    correct:
+      - a
+    explanation: "Les `namespaces` isolent les ressources système (PID, réseau, montages) tandis que les `cgroups` contingentent et mesurent les quotas matériels (CPU, mémoire, I/O)."
+
+  - kind: single
+    prompt: "Par défaut, où sont stockées les modifications de fichiers créées ou modifiées à l'intérieur d'un conteneur en cours d'exécution ?"
+    choices:
+      - id: a
+        text: "Dans une couche d'écriture éphémère (Writable Container Layer) en mode Copy-on-Write, détruite lors de la suppression du conteneur"
+      - id: b
+        text: "Directement dans l'image de base qui est modifiée pour toujours"
+      - id: c
+        text: "Sur une clé USB connectée à l'ordinateur"
+      - id: d
+        text: "Dans le registre public Docker Hub automatiquement"
+    correct:
+      - a
+    explanation: "Les images sont strictement immuables (en lecture seule). Le conteneur superpose une fine couche accessible en écriture qui disparaît lors de la suppression du conteneur."
+
+  - kind: single
+    prompt: "Quelle commande permet d'ouvrir un interpréteur de commandes interactif (shell) à l'intérieur d'un conteneur déjà en cours d'exécution ?"
+    choices:
+      - id: a
+        text: "docker exec -it <nom_conteneur> sh"
+      - id: b
+        text: "docker build -t <nom_conteneur> ."
+      - id: c
+        text: "docker push <nom_conteneur>"
+      - id: d
+        text: "docker rmi <nom_conteneur>"
+    correct:
+      - a
+    explanation: "La commande `docker exec -it` permet de lancer un nouveau processus (ex: shell `sh` ou `bash`) au sein des namespaces d'un conteneur actif."
+
+  - kind: single
+    prompt: "Quel signal Unix la commande 'docker stop' envoie-t-elle en premier lieu au processus principal (PID 1) du conteneur pour lui permettre de s'arrêter proprement ?"
+    choices:
+      - id: a
+        text: "SIGTERM (avec un délai de grâce de 10 secondes avant l'envoi de SIGKILL si le processus ne s'arrête pas)"
+      - id: b
+        text: "SIGKILL immédiat sans préavis"
+      - id: c
+        text: "SIGHUP"
+      - id: d
+        text: "SIGSTOP"
+    correct:
+      - a
+    explanation: "`docker stop` envoie `SIGTERM` pour permettre à l'application de fermer ses connexions BDD et terminer ses requêtes en cours avant d'éventuellement forcer l'arrêt par `SIGKILL` après 10s."

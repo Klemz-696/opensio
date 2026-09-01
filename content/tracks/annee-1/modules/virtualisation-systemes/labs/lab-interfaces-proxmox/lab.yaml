@@ -1,0 +1,70 @@
+slug: configuration-interfaces-proxmox
+title: "Configuration des Interfaces Réseau Proxmox (Bridges & VLANs)"
+level: 2_files
+max_score: 100
+estimated_minutes: 45
+context: |
+  Vous êtes administrateur d'un nœud hyperviseur Proxmox VE au sein d'une infrastructure d'entreprise.
+  Vous devez configurer le fichier réseau système `/etc/network/interfaces` pour interconnecter les machines virtuelles avec le réseau d'entreprise et isoler une zone DMZ.
+
+  Architecture réseau demandée :
+  1. Interface de boucle locale : `lo` en mode loopback.
+  2. Carte réseau physique Gigabit : `eno1` configurée en mode `manual`.
+  3. Pont Virtuel Principal (`vmbr0`) :
+     - Raccordé à la carte physique `eno1` (`bridge-ports eno1`).
+     - Adresse IP de gestion : `192.168.10.250/24` (ou netmask 255.255.255.0).
+     - Passerelle par défaut : `192.168.10.254`.
+     - Spanning Tree désactivé (`bridge-stp off`), délai de transfert `bridge-fd 0`.
+     - Prise en charge native des VLANs 802.1Q : `bridge-vlan-aware yes` et `bridge-vids 2-4094`.
+  4. Pont Virtuel Privé Isolé (`vmbr1`) :
+     - Purement interne pour la zone DMZ sans carte physique rattachée (`bridge-ports none`).
+     - Adresse IP de la passerelle DMZ : `10.0.0.254/24` (ou netmask 255.255.255.0).
+     - Spanning Tree désactivé (`bridge-stp off`), délai `bridge-fd 0`.
+
+objectives:
+  - "Déclarer la carte physique Ethernet en mode manual sous Debian/Proxmox"
+  - "Configurer le pont virtuel principal vmbr0 avec IP fixe, passerelle et mode VLAN-aware"
+  - "Créer un pont virtuel isolé vmbr1 avec bridge-ports none pour une DMZ sécurisée"
+  - "Respecter la syntaxe standard du fichier /etc/network/interfaces"
+
+prerequisites:
+  - "reseau-virtuel-bridges-vlans"
+  - "architecture-proxmox-ve"
+
+files:
+  editable:
+    - path: interfaces
+      description: "Fichier de configuration réseau Debian / Proxmox (/etc/network/interfaces)"
+
+hints:
+  - cost_percent: 10
+    text: "La carte physique doit être configurée avec 'iface eno1 inet manual'."
+  - cost_percent: 10
+    text: "Pour 'vmbr0', associez 'bridge-ports eno1' et ajoutez 'bridge-vlan-aware yes'."
+  - cost_percent: 10
+    text: "Pour 'vmbr1', utilisez 'bridge-ports none' et l'adresse IP '10.0.0.254/24'."
+
+validation:
+  type: script
+  image: opensio/validator-interfaces:latest
+  timeout_seconds: 30
+  checks:
+    - id: loopback_and_physical
+      required: true
+      points: 25
+      description: "Interface lo et carte physique eno1 en mode manual"
+    - id: public_bridge_vmbr0
+      required: true
+      points: 35
+      description: "Pont public vmbr0 avec IP 192.168.10.250/24, passerelle et bridge-ports eno1"
+    - id: vlan_awareness
+      required: true
+      points: 20
+      description: "Support des VLANs 802.1Q activé sur vmbr0 (bridge-vlan-aware yes)"
+    - id: isolated_bridge_vmbr1
+      required: true
+      points: 20
+      description: "Pont privé isolé vmbr1 avec IP 10.0.0.254/24 et bridge-ports none"
+
+scoring:
+  floor_percent: 50

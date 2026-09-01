@@ -1,0 +1,79 @@
+slug: quiz-principes-itil-et-support
+title: "Quiz — Principes ITIL et Support"
+passing_score: 80
+position: 1
+questions:
+  - kind: single
+    prompt: "Selon le référentiel ITIL, comment qualifie-t-on l'appel d'un utilisateur signalant qu'il ne peut plus imprimer ses factures car l'imprimante réseau est hors-service ?"
+    choices:
+      - id: a
+        text: "Un Incident"
+      - id: b
+        text: "Une Demande de service"
+      - id: c
+        text: "Un Changement standard"
+      - id: d
+        text: "Un Événement de maintenance préventive"
+    correct:
+      - a
+    explanation: "Un Incident est défini par ITIL comme une interruption non planifiée ou une dégradation de la qualité d'un service informatique."
+
+  - kind: single
+    prompt: "Quelle est la différence fondamentale entre un Incident et un Problème dans ITIL ?"
+    choices:
+      - id: a
+        text: "L'Incident vise à rétablir le service au plus vite (même par un contournement), tandis que le Problème recherche et traite la cause racine pour éviter la récurrence"
+      - id: b
+        text: "L'Incident concerne uniquement le matériel et le Problème uniquement les logiciels"
+      - id: c
+        text: "Un Incident est toujours plus coûteux qu'un Problème"
+      - id: d
+        text: "Il n'y a aucune différence, ce sont deux synonymes"
+    correct:
+      - a
+    explanation: "La gestion des incidents se focalise sur la restauration rapide du service opérationnel, alors que la gestion des problèmes analyse et éradique la cause sous-jacente des dysfonctionnements."
+
+  - kind: single
+    prompt: "Qu'est-ce qu'une escalade fonctionnelle (horizontale) d'un ticket de support ?"
+    choices:
+      - id: a
+        text: "Le transfert du ticket vers un groupe de techniciens possédant des compétences techniques plus pointues (ex: N1 vers l'équipe Réseau N2)"
+      - id: b
+        text: "L'alerte envoyée au directeur général de l'entreprise"
+      - id: c
+        text: "L'augmentation automatique du salaire du technicien"
+      - id: d
+        text: "La suppression du ticket de la base de données"
+    correct:
+      - a
+    explanation: "L'escalade fonctionnelle réassigne le ticket à une équipe spécialisée (N2/N3) quand le N1 ne dispose pas des outils ou compétences pour le résoudre."
+
+  - kind: single
+    prompt: "Que désigne l'acronyme SLA (Service Level Agreement) ?"
+    choices:
+      - id: a
+        text: "Un contrat formel fixant les engagements de qualité et délais de rétablissement convenus entre le service informatique et les clients métiers"
+      - id: b
+        text: "Un protocole de routage dynamique sur Internet"
+      - id: c
+        text: "Un format de fichier d'impression 3D"
+      - id: d
+        text: "Le mot de passe administrateur par défaut"
+    correct:
+      - a
+    explanation: "Le SLA formalise les engagements de service (ex: 99.9 % de disponibilité, résolution des pannes critiques sous 2h)."
+
+  - kind: single
+    prompt: "Que mesure l'indicateur TTO (Time to Own) dans un centre de services ?"
+    choices:
+      - id: a
+        text: "Le délai écoulé entre la création du ticket et sa prise en charge / affectation à un technicien"
+      - id: b
+        text: "Le temps total nécessaire pour clore définitivement le ticket"
+      - id: c
+        text: "La durée de vie de la batterie de l'ordinateur portable"
+      - id: d
+        text: "Le temps de trajet du technicien jusqu'au bureau du demandeur"
+    correct:
+      - a
+    explanation: "Le TTO (temps de prise en charge) évalue la réactivité initiale du centre de services à qualifier et assigner une nouvelle sollicitation."

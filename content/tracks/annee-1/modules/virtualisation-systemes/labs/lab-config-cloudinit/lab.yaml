@@ -1,0 +1,70 @@
+slug: configuration-cloudinit-vm
+title: "Déploiement Automatisé d'une VM via Cloud-Init"
+level: 2_files
+max_score: 100
+estimated_minutes: 40
+context: |
+  Vous êtes administrateur système dans une entreprise déployant un nouveau cluster Proxmox VE.
+  Pour standardiser et accélérer le déploiement des serveurs virtuels Debian 12 sans intervention humaine, vous devez concevoir le fichier de configuration déclarative `user-data` utilisé par Cloud-Init au premier démarrage.
+
+  Spécifications à respecter dans `user-data` :
+  - L'en-tête de première ligne doit être `#cloud-config`.
+  - Nom d'hôte (`hostname`) : `srv-web-prod` et FQDN (`fqdn`) : `srv-web-prod.societe.lan` avec `manage_etc_hosts: true`.
+  - Mises à jour automatiques au démarrage : `package_update: true` et `package_upgrade: true`.
+  - Création du compte administrateur `admin-sys` :
+    - Droits `sudo` complets sans mot de passe : `ALL=(ALL) NOPASSWD:ALL`.
+    - Shell par défaut : `/bin/bash`.
+    - Groupes secondaires : `sudo, adm`.
+    - Clé SSH publique autorisée : `ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIG1234567890abcdefghijklmnopqrstuvwxyz admin@societe.lan`.
+  - Paquets indispensables déclarés dans `packages:` : `qemu-guest-agent`, `curl`, `htop`, `ufw`, `git`.
+  - Commandes post-installation dans `runcmd:` :
+    - Activation et démarrage de l'agent QEMU : `systemctl enable --now qemu-guest-agent`.
+    - Configuration défensive du pare-feu UFW : bloquer les flux entrants par défaut (`ufw default deny incoming`), autoriser les flux sortants (`ufw default allow outgoing`), autoriser le port SSH (`ufw allow 22/tcp`), et activer le pare-feu (`ufw --force enable`).
+
+objectives:
+  - "Rédiger un fichier déclaratif Cloud-Init user-data respectant la syntaxe YAML"
+  - "Créer un compte administrateur avec privilèges sudo et clé publique SSH"
+  - "Automatiser l'installation des paquets système indispensables"
+  - "Ordonnancer les commandes runcmd d'activation de l'agent QEMU et de durcissement pare-feu"
+
+prerequisites:
+  - "modeles-clones-lies-cloudinit"
+  - "linux-administration"
+
+files:
+  editable:
+    - path: user-data
+      description: "Fichier de configuration déclarative Cloud-Init YAML"
+
+hints:
+  - cost_percent: 10
+    text: "La première ligne doit impérativement être '#cloud-config'."
+  - cost_percent: 10
+    text: "Dans 'users:', déclarez 'admin-sys' avec la directive 'sudo: ALL=(ALL) NOPASSWD:ALL' et la clé SSH 'ssh-ed25519...'."
+  - cost_percent: 10
+    text: "Dans 'runcmd:', activez 'qemu-guest-agent' avec 'systemctl enable --now qemu-guest-agent' puis configurez 'ufw'."
+
+validation:
+  type: script
+  image: opensio/validator-cloudinit:latest
+  timeout_seconds: 30
+  checks:
+    - id: header_and_syntax
+      required: true
+      points: 25
+      description: "En-tête #cloud-config et déclaration hostname / fqdn conformes"
+    - id: users_and_security
+      required: true
+      points: 35
+      description: "Compte admin-sys, privilèges sudo et clé SSH autorisée"
+    - id: packages_installed
+      required: true
+      points: 20
+      description: "Paquets indispensables (qemu-guest-agent, curl, htop, ufw, git)"
+    - id: runcmd_and_hardening
+      required: true
+      points: 20
+      description: "Activation de l'agent QEMU et règles de pare-feu UFW dans runcmd"
+
+scoring:
+  floor_percent: 50

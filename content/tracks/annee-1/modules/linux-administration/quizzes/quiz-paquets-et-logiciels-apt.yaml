@@ -1,0 +1,80 @@
+slug: quiz-paquets-et-logiciels-apt
+title: "Quiz — Paquets et Logiciels APT"
+passing_score: 80
+position: 3
+questions:
+  - kind: single
+    prompt: "Quelle est la différence fondamentale entre 'apt remove paquet' et 'apt purge paquet' ?"
+    choices:
+      - id: a
+        text: "'apt remove' supprime les binaires mais conserve les fichiers de configuration, tandis qu''apt purge' supprime l'ensemble (binaires et configurations sous /etc)"
+      - id: b
+        text: "'apt purge' supprime les dépendances sans désinstaller le logiciel principal"
+      - id: c
+        text: "'apt remove' nécessite un redémarrage du serveur contrairement à 'apt purge'"
+      - id: d
+        text: "Il n'y a aucune différence, ce sont deux alias stricts de la même action"
+    correct:
+      - a
+    explanation: "'apt remove' préserve les fichiers de configuration sous /etc pour une réinstallation ultérieure rapide. 'apt purge' supprime définitivement les binaires ainsi que tous les fichiers de configuration associés."
+
+  - kind: single
+    prompt: "Quelle commande permet de savoir à quel paquet Debian installé appartient un fichier système particulier comme /etc/nginx/nginx.conf ?"
+    choices:
+      - id: a
+        text: "apt which /etc/nginx/nginx.conf"
+      - id: b
+        text: "dpkg -S /etc/nginx/nginx.conf"
+      - id: c
+        text: "dpkg -L /etc/nginx/nginx.conf"
+      - id: d
+        text: "apt-cache depends /etc/nginx/nginx.conf"
+    correct:
+      - b
+    explanation: "dpkg -S (ou --search) recherche dans la base des paquets installés quel paquet est propriétaire d'un chemin de fichier donné."
+
+  - kind: multiple
+    prompt: "Quels rôles remplit la commande 'apt update' ?"
+    choices:
+      - id: a
+        text: "Télécharger la liste à jour des paquets et versions disponibles depuis les dépôts configurés"
+      - id: b
+        text: "Mettre à niveau et réinstaller automatiquement les logiciels obsolètes"
+      - id: c
+        text: "Rafraîchir les métadonnées locales dans /var/lib/apt/lists/"
+      - id: d
+        text: "Nettoyer l'espace disque en supprimant les anciens noyaux"
+    correct:
+      - a
+      - c
+    explanation: "'apt update' ne met à niveau aucun logiciel (c'est le rôle d''apt upgrade'), il se contente de synchroniser les catalogues distants de paquets vers le cache local."
+
+  - kind: single
+    prompt: "Dans les dépôts Debian, que contient la composante 'non-free-firmware' ?"
+    choices:
+      - id: a
+        text: "Des logiciels malveillants bloqués par le pare-feu"
+      - id: b
+        text: "Les microprogrammes matériels propriétaires indispensables au fonctionnement de certaines cartes réseau ou puces graphiques"
+      - id: c
+        text: "Les codes sources non compilés des logiciels de la communauté"
+      - id: d
+        text: "Les packages de test de la version expérimentale"
+    correct:
+      - b
+    explanation: "Depuis Debian 12, 'non-free-firmware' isole les microcodes et firmwares propriétaires nécessaires à l'initialisation de certains contrôleurs matériels (cartes Wi-Fi, Ethernet, processeurs)."
+
+  - kind: single
+    prompt: "Quel paquet permet d'automatiser l'application quotidienne sans intervention humaine des correctifs de sécurité critiques ?"
+    choices:
+      - id: a
+        text: "unattended-upgrades"
+      - id: b
+        text: "cron-security"
+      - id: c
+        text: "apt-autofix"
+      - id: d
+        text: "systemd-patcher"
+    correct:
+      - a
+    explanation: "Le service 'unattended-upgrades' applique silencieusement les correctifs de la branche *-security de Debian et peut déclencher un redémarrage planifié si nécessaire."

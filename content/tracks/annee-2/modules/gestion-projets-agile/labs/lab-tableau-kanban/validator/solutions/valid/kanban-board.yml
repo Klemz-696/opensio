@@ -1,0 +1,27 @@
+board_name: "OpenSIO Core Team Kanban"
+
+columns:
+  - id: "backlog"
+    name: "Backlog Produit"
+    wip_limit: null
+    exit_criteria: "User Story rédigée selon le formalisme standard et estimée en Story Points."
+
+  - id: "analysis"
+    name: "Analyse & Cadrage Technique"
+    wip_limit: 2
+    exit_criteria: "Spécifications techniques validées et critères d'acceptation détaillés (DoR)."
+
+  - id: "in_progress"
+    name: "Développement en Cours"
+    wip_limit: 3
+    exit_criteria: "Code source rédigé, tests unitaires passants et documentation technique complétée."
+
+  - id: "review_test"
+    name: "Revue de Code & Tests d'Intégration"
+    wip_limit: 2
+    exit_criteria: "Revue par un pair approuvée et pipeline CI/CD vert (DoD validée)."
+
+  - id: "done"
+    name: "Terminé / Livré"
+    wip_limit: null
+    exit_criteria: "Fonctionnalité déployée en staging ou production et démonstrable au PO."

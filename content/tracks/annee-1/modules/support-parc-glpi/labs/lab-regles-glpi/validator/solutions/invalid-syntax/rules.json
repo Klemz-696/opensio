@@ -1,0 +1,10 @@
+{
+  "rules": [
+    {
+      "id": "incidents-vip",
+      "name": "Routage Incidents VIP",
+      "active": true
+      // Erreur de virgule / syntaxe JSON invalide
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+user_stories:
+  - id: "US-01"
+    title: "Connexion sécurisée des étudiants"
+    as_a: "Étudiant inscrit en BTS SIO"
+    i_want: "Me connecter avec mon adresse académique"
+    so_that: "Accéder à mes cours"
+    acceptance_criteria:
+      - "Validation email"
+    story_points: 13
+    priority: "Must"
+
+  - id: "US-02"
+    title: "Consultation du catalogue de modules"
+    as_a: "Étudiant ou enseignant"
+    i_want: "Parcourir la liste des modules"
+    so_that: "Sélectionner les parcours"
+    acceptance_criteria:
+      - "Affichage des modules"
+    story_points: 13
+    priority: "Must"
+
+  - id: "US-03"
+    title: "Passage d'un quiz"
+    as_a: "Étudiant"
+    i_want: "Répondre aux questions"
+    so_that: "Valider ma compréhension"
+    acceptance_criteria:
+      - "Score calculé"
+    story_points: 8
+    priority: "Must"
+
+  - id: "US-04"
+    title: "Export PDF"
+    as_a: "Étudiant"
+    i_want: "Exporter mon bilan"
+    so_that: "Partager mes résultats"
+    acceptance_criteria:
+      - "PDF généré"
+    story_points: 5
+    priority: "Should"

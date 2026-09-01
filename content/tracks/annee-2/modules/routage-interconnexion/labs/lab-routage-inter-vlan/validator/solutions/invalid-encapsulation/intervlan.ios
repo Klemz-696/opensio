@@ -1,0 +1,23 @@
+! Configuration sans encapsulation dot1q
+hostname R-GATEWAY
+!
+interface GigabitEthernet0/0/0.10
+ ip address 192.168.10.254 255.255.255.0
+!
+interface GigabitEthernet0/0/0.20
+ ip address 192.168.20.254 255.255.255.0
+!
+hostname SW-CORE-L3
+ip routing
+vlan 10
+vlan 20
+vlan 30
+interface Vlan10
+ ip address 192.168.10.254 255.255.255.0
+interface Vlan20
+ ip address 192.168.20.254 255.255.255.0
+interface Vlan30
+ ip address 192.168.30.254 255.255.255.0
+interface GigabitEthernet1/0/24
+ switchport mode trunk
+ no shutdown

@@ -1,0 +1,65 @@
+slug: configuration-dns-bind9
+title: "Déploiement et sécurisation d'un serveur DNS Bind9 faisant autorité"
+level: 2_files
+max_score: 100
+estimated_minutes: 45
+context: |
+  Vous devez configurer le serveur DNS d'autorité Bind9 pour l'entreprise `societe.lan` (réseau `192.168.10.0/24`).
+  Les exigences de configuration sont les suivantes :
+  1. Dans `named.conf.local` :
+     - Déclarer la zone directe `societe.lan` (type `master`, fichier `/etc/bind/db.societe.lan`).
+     - Déclarer la zone inverse `10.168.192.in-addr.arpa` (type `master`, fichier `/etc/bind/db.192.168.10`).
+  2. Dans `db.societe.lan` (Zone directe) :
+     - Enregistrement SOA valide (serveur maître `ns1.societe.lan.`, contact `admin.societe.lan.`, numéro de série YYYYMMDDNN, refresh 28800, retry 7200, expire 2419200, TTL négatif 3600).
+     - Serveurs de noms (NS) : `ns1.societe.lan.` et `ns2.societe.lan.`.
+     - Serveur de messagerie (MX, priorité 10) : `mail.societe.lan.`.
+     - Hôtes A : `ns1` (192.168.10.10), `ns2` (192.168.10.11), `mail` (192.168.10.15), `srv-web` (192.168.10.20), `srv-db` (192.168.10.30).
+     - Alias CNAME : `www` pointant vers `srv-web.societe.lan.`, `intranet` pointant vers `srv-web.societe.lan.`.
+  3. Dans `db.192.168.10` (Zone inverse) :
+     - SOA et NS conformes.
+     - Pointeurs PTR : 10 vers `ns1.societe.lan.`, 11 vers `ns2.societe.lan.`, 15 vers `mail.societe.lan.`, 20 vers `srv-web.societe.lan.`, 30 vers `srv-db.societe.lan.`.
+
+objectives:
+  - "Déclarer les zones directes et inverses dans named.conf.local"
+  - "Rédiger l'en-tête SOA avec timers et numéro de série standardisé"
+  - "Positionner avec exactitude les enregistrements A, CNAME, MX et PTR avec leurs points terminaux"
+  - "Garantir la réciprocité stricte entre résolution directe et inverse"
+
+prerequisites:
+  - "serveur-dns-bind9-autorite"
+
+files:
+  editable:
+    - path: named.conf.local
+      description: "Déclarations des zones locales directes et inverses"
+    - path: db.societe.lan
+      description: "Fichier de zone directe societe.lan"
+    - path: db.192.168.10
+      description: "Fichier de zone inverse 10.168.192.in-addr.arpa"
+
+hints:
+  - cost_percent: 10
+    text: "N'oubliez pas le point terminal '.' à la fin de tous les noms FQDN (ex: srv-web.societe.lan.)."
+  - cost_percent: 10
+    text: "La zone inverse pour 192.168.10.0/24 s'intitule exactement '10.168.192.in-addr.arpa'."
+
+validation:
+  type: script
+  image: opensio/validator-bind9:latest
+  timeout_seconds: 30
+  checks:
+    - id: zone_declarations_valid
+      required: true
+      points: 25
+      description: "Zones directe societe.lan et inverse 10.168.192.in-addr.arpa déclarées dans named.conf.local"
+    - id: forward_records_valid
+      required: true
+      points: 45
+      description: "Enregistrements SOA, NS, MX, A (ns1, ns2, mail, srv-web, srv-db) et CNAME (www, intranet) conformes"
+    - id: reverse_records_valid
+      required: true
+      points: 30
+      description: "Enregistrements PTR conformes et cohérents dans la zone inverse"
+
+scoring:
+  floor_percent: 50

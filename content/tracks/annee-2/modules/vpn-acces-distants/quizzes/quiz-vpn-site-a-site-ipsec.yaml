@@ -1,0 +1,81 @@
+slug: quiz-vpn-site-a-site-ipsec
+title: "Quiz — VPN Site-à-Site IPsec"
+passing_score: 80
+position: 2
+questions:
+  - kind: single
+    prompt: "Que négocie la phase 1 (IKE_SA) d'un tunnel IPsec ?"
+    choices:
+      - id: a
+        text: "L'authentification mutuelle des passerelles et un canal chiffré via Diffie-Hellman"
+      - id: b
+        text: "Les routes du réseau interne"
+      - id: c
+        text: "Les adresses IP attribuées aux postes du LAN"
+      - id: d
+        text: "La compression des paquets"
+    correct:
+      - a
+    explanation: "La phase 1 établit la confiance : authentification (certificats ou PSK) et canal sécurisé par DH éphémère. La phase 2 (CHILD_SA) négocie ensuite les sélecteurs de trafic et protège les données."
+
+  - kind: single
+    prompt: "Pourquoi préférer ESP en mode tunnel à AH en entreprise ?"
+    choices:
+      - id: a
+        text: "ESP chiffre les données et supporte NAT-T, alors qu'AH ne chiffre pas et casse derrière un NAT"
+      - id: b
+        text: "AH est plus rapide mais incompatible avec IPv6"
+      - id: c
+        text: "ESP ne nécessite aucune négociation"
+      - id: d
+        text: "AH interdit l'usage de certificats"
+    correct:
+      - a
+    explanation: "AH fournit l'intégrité sans chiffrement et couvre les en-têtes IP (donc incompatibles avec la réécriture NAT). ESP en tunnel mode chiffre, authentifie et se traverse un NAT via NAT-T (UDP 4500)."
+
+  - kind: multiple
+    prompt: "Quels éléments doivent concorder des deux côtés d'un tunnel IPsec pour qu'il s'établisse ?"
+    choices:
+      - id: a
+        text: "Les propositions IKE et ESP (algorithmes)"
+      - id: b
+        text: "Les sélecteurs de trafic (leftsubnet / rightsubnet)"
+      - id: c
+        text: "La version de Windows des postes clients"
+      - id: d
+        text: "L'authentification (certificats d'une même CA ou PSK identique)"
+    correct:
+      - a
+      - b
+      - d
+    explanation: "La négociation exige des propositions coïncidentes et des sélecteurs de trafic symétriques ; l'authentification doit provenir d'une confiance partagée. Les postes clients ne participent pas à la négociation du tunnel site-à-site."
+
+  - kind: single
+    prompt: "Quel est l'intérêt du 'rekeying' périodique des SA IPsec ?"
+    choices:
+      - id: a
+        text: "Renouveler les clés de session pour limiter l'impact d'une compromission"
+      - id: b
+        text: "Changer l'adresse IP publique des passerelles"
+      - id: c
+        text: "Compresser les données du tunnel"
+      - id: d
+        text: "Augmenter la MTU du lien"
+    correct:
+      - a
+    explanation: "Les CHILD_SA (et IKE_SA) sont renégociées périodiquement : une même clé ne chiffre jamais trop de données ni trop longtemps, ce qui borne la fenêtre d'exploitation d'une clé volée."
+
+  - kind: single
+    prompt: "Dans strongSwan, à quoi sert l'opérateur '!' en fin de proposition (ex: ike=aes256gcm16-ecp384!) ?"
+    choices:
+      - id: a
+        text: "Interdire tout algorithme non listé : verrouillage strict des négociations"
+      - id: b
+        text: "Activer le mode agressif"
+      - id: c
+        text: "Autoriser tous les algorithmes en secours"
+      - id: d
+        text: "Forcer la compression IPComp"
+    correct:
+      - a
+    explanation: "Sans le '!', le démon peut négocier des algorithmes supplémentaires en secours. Le suffixe '!' limite strictement aux propositions déclarées, conformément aux recommandations de durcissement."

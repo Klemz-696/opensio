@@ -1,0 +1,2 @@
+Service,Criticite,RPO_Cible,RTO_Cible,Strategie_Sauvegarde,Frequence_Test_Restauration
+# TODO: Renseigner les 4 services (Active Directory DS, ERP PostgreSQL, Serveur de Fichiers, Serveur de Logs)

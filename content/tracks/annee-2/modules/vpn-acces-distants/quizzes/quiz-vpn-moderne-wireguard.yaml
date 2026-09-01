@@ -1,0 +1,80 @@
+slug: quiz-vpn-moderne-wireguard
+title: "Quiz — WireGuard"
+passing_score: 80
+position: 3
+questions:
+  - kind: single
+    prompt: "Quel rôle joue la table des pairs (clés publiques) dans WireGuard ?"
+    choices:
+      - id: a
+        text: "Elle définit la politique de confiance : seul un peer déclaré peut s'authentifier"
+      - id: b
+        text: "Elle remplace le routage du noyau"
+      - id: c
+        text: "Elle stocke les certificats X.509"
+      - id: d
+        text: "Elle attribue des baux DHCP aux clients"
+    correct:
+      - a
+    explanation: "WireGuard n'a ni CA ni négociation : chaque interface ne parle qu'aux peers dont elle connaît la clé publique. Toute autre extrémité est ignorée par construction."
+
+  - kind: multiple
+    prompt: "Quels rôles assume la directive AllowedIPs d'un peer ?"
+    choices:
+      - id: a
+        text: "Router les paquets vers ces réseaux à travers l'interface wg0"
+      - id: b
+        text: "Filtrer les sources entrantes acceptées depuis ce peer (anti-usurpation)"
+      - id: c
+        text: "Définir le port d'écoute local"
+      - id: d
+        text: "Chiffrer différemment selon la destination"
+    correct:
+      - a
+      - b
+    explanation: "AllowedIPs est à la fois une route (sortie) et une ACL cryptographique (entrée). Le port d'écoute est défini par ListenPort dans [Interface] et le chiffrement est fixe."
+
+  - kind: single
+    prompt: "Sur quelle extrémité place-t-on PersistentKeepalive = 25 et pourquoi ?"
+    choices:
+      - id: a
+        text: "Côté client derrière NAT, pour maintenir ouverte la correspondance UDP du NAT"
+      - id: b
+        text: "Côté serveur, pour relancer les clients"
+      - id: c
+        text: "Des deux côtés systématiquement"
+      - id: d
+        text: "Sur le pare-feu uniquement"
+    correct:
+      - a
+    explanation: "Un NAT expire ses sessions UDP inactives : le client derrière le NAT doit émettre un paquet régulier pour conserver son mapping. Le serveur publiquement joignable n'en a pas besoin."
+
+  - kind: single
+    prompt: "Un client nomade doit router TOUT son trafic vers l'entreprise via WireGuard. Quelle valeur d'AllowedIPs ?"
+    choices:
+      - id: a
+        text: "0.0.0.0/0 (full tunnel), avec gestion dédiée du DNS et de la route par défaut"
+      - id: b
+        text: "10.99.0.0/24 uniquement"
+      - id: c
+        text: "La clé publique du serveur"
+      - id: d
+        text: "255.255.255.255/32"
+    correct:
+      - a
+    explanation: "0.0.0.0/0 route tout le trafic dans le tunnel (full tunnel) et rejette toute source non prise en charge. Il faut alors pousser le DNS interne et soigner les règles de routage pour ne pas perdre l'accès local."
+
+  - kind: single
+    prompt: "Quelle commande affiche l'état d'un tunnel WireGuard (handshake, compteurs, endpoint) ?"
+    choices:
+      - id: a
+        text: "wg show"
+      - id: b
+        text: "ipsec statusall"
+      - id: c
+        text: "netstat -tulpn uniquement"
+      - id: d
+        text: "wg-quick route"
+    correct:
+      - a
+    explanation: "wg show donne la dernière poignée de main, le trafic transféré et l'endpoint de chaque peer — premier réflexe de diagnostic. ipsec statusall concerne strongSwan, pas WireGuard."

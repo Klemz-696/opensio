@@ -1,0 +1,96 @@
+slug: quiz-routage-statique
+title: "Quiz — Routage Statique"
+passing_score: 80
+position: 6
+questions:
+  - kind: single
+    prompt: "Selon la règle du 'Longest Prefix Match', quelle route sera choisie par un routeur pour un paquet à destination de 192.168.1.130 ?"
+    choices:
+      - id: a
+        text: "0.0.0.0/0 via 10.0.0.1"
+      - id: b
+        text: "192.168.0.0/16 via 10.0.0.2"
+      - id: c
+        text: "192.168.1.0/24 via 10.0.0.3"
+      - id: d
+        text: "192.168.1.128/25 via 10.0.0.4"
+    correct:
+      - d
+    explanation: "La règle du plus long préfixe privilégie le masque le plus précis. Comme 192.168.1.130 fait partie du sous-réseau 192.168.1.128/25, le routeur sélectionne la route en /25 (25 bits à 1) plutôt que les routes plus larges (/24, /16 ou /0)."
+
+  - kind: single
+    prompt: "Quelle est la distance administrative (AD) par défaut d'une route statique sous Cisco IOS ?"
+    choices:
+      - id: a
+        text: "0"
+      - id: b
+        text: "1"
+      - id: c
+        text: "90"
+      - id: d
+        text: "110"
+    correct:
+      - b
+    explanation: "Une route statique a une distance administrative de 1 par défaut. Une interface directement connectée a une distance de 0, EIGRP 90 et OSPF 110."
+
+  - kind: single
+    prompt: "Quelle commande Cisco IOS permet de configurer une route par défaut vers la passerelle 192.0.2.1 ?"
+    choices:
+      - id: a
+        text: "ip route default 192.0.2.1"
+      - id: b
+        text: "ip route 0.0.0.0 0.0.0.0 192.0.2.1"
+      - id: c
+        text: "ip route 255.255.255.255 0.0.0.0 192.0.2.1"
+      - id: d
+        text: "ip default-gateway 192.0.2.1"
+    correct:
+      - b
+    explanation: "La syntaxe exacte pour déclarer la 'passerelle de dernier recours' (route par défaut) sur un routeur Cisco est 'ip route 0.0.0.0 0.0.0.0 <adresse-next-hop>'."
+
+  - kind: multiple
+    prompt: "Dans une architecture de routage 'Router-on-a-Stick', quelles étapes de configuration sont requises sur le routeur ?"
+    choices:
+      - id: a
+        text: "Activer l'interface physique avec la commande 'no shutdown'"
+      - id: b
+        text: "Créer des sous-interfaces logiques (ex : g0/0.10)"
+      - id: c
+        text: "Associer chaque sous-interface à son tag 802.1Q via la commande 'encapsulation dot1Q <vlan-id>'"
+      - id: d
+        text: "Désactiver le routage IP avec 'no ip routing'"
+    correct:
+      - a
+      - b
+      - c
+    explanation: "Router-on-a-Stick nécessite d'activer l'interface physique, de créer des sous-interfaces logiques et d'assigner l'encapsulation dot1Q avec le numéro de VLAN correspondant. 'no ip routing' désactiverait le routage."
+
+  - kind: single
+    prompt: "Une machine du VLAN 10 peut envoyer des requêtes ping vers le serveur du VLAN 20, mais ne reçoit aucune réponse (Timeout). Quelle est la cause la plus fréquente ?"
+    choices:
+      - id: a
+        text: "Le câble RJ45 est débranché"
+      - id: b
+        text: "Le serveur du VLAN 20 n'a pas de passerelle par défaut ou le routeur ne connaît pas la route de retour vers le VLAN 10"
+      - id: c
+        text: "Le commutateur a saturé sa table CAM"
+      - id: d
+        text: "Le protocole ICMP ne fonctionne pas entre VLANs"
+    correct:
+      - b
+    explanation: "L'absence de route de retour (soit sur la passerelle, soit sur la machine réceptrice qui ignore comment renvoyer les paquets au réseau source) est la cause majeure des pannes de routage asymétrique."
+
+  - kind: single
+    prompt: "Sur un commutateur de niveau 3 (Switch L3), quelle commande globale doit obligatoirement être exécutée pour activer les capacités de routage entre SVI ?"
+    choices:
+      - id: a
+        text: "ip routing"
+      - id: b
+        text: "router ospf 1"
+      - id: c
+        text: "switchport mode routing"
+      - id: d
+        text: "ip forward-protocol"
+    correct:
+      - a
+    explanation: "Sur les commutateurs multicouches Cisco, le moteur de routage IPv4 est désactivé par défaut. La commande 'ip routing' en mode de configuration globale est obligatoire pour activer le routage inter-VLAN."

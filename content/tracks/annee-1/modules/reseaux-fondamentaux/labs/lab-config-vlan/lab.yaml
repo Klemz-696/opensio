@@ -1,0 +1,66 @@
+slug: config-vlan-switch
+title: "Configuration et segmentation par VLAN sur commutateur d'entreprise"
+level: 2_files
+max_score: 100
+estimated_minutes: 45
+context: |
+  Vous devez configurer un commutateur de distribution Cisco Catalyst pour segmenter le réseau local d'un site tertiaire.
+  Le cahier des charges impose la création des VLANs suivants et leur affectation :
+  - VLAN 10 : Direction (ports FastEthernet 0/1 à 0/4)
+  - VLAN 20 : Commercial (ports FastEthernet 0/5 à 0/8)
+  - VLAN 30 : Technique (ports FastEthernet 0/9 à 0/12)
+  - VLAN 99 : Administration (SVI 192.168.99.2 255.255.255.0)
+
+  La liaison vers le routeur de bordure (port GigabitEthernet 0/1) doit être configurée en Trunk 802.1Q :
+  - Encapsulation dot1q
+  - VLAN natif configuré sur le VLAN 99 (Administration)
+  - Filtrage des VLANs autorisés : uniquement 10, 20, 30 et 99.
+
+  Renseignez le fichier de configuration switch.cfg avec les commandes Cisco IOS appropriées.
+
+objectives:
+  - "Créer les VLANs dans la base de données du commutateur et leur attribuer un nom conforme"
+  - "Configurer les ports d'accès (switchport mode access) et les associer aux VLANs correspondants"
+  - "Configurer le port Trunk 802.1Q avec son VLAN natif et la liste blanche des VLANs autorisés"
+  - "Configurer l'interface de gestion virtuelle SVI VLAN 99 et la passerelle par défaut"
+
+prerequisites:
+  - vlan-segmentation
+
+topology: null
+
+files:
+  editable:
+    - path: switch.cfg
+      description: "Fichier de configuration Cisco IOS du commutateur"
+
+hints:
+  - cost_percent: 10
+    text: "Utilisez 'interface range' pour configurer les plages de ports (ex : interface range FastEthernet0/1 - 4)."
+  - cost_percent: 10
+    text: "Sur le port Trunk Gi0/1, n'oubliez pas 'switchport trunk native vlan 99' et 'switchport trunk allowed vlan 10,20,30,99'."
+
+validation:
+  type: script
+  image: opensio/validator-ios:latest
+  timeout_seconds: 30
+  checks:
+    - id: vlan_db_valid
+      required: true
+      points: 30
+      description: "Création et nommage des VLANs 10, 20, 30 et 99"
+    - id: access_ports_valid
+      required: true
+      points: 35
+      description: "Configuration des ports d'accès Fa0/1-12 avec leurs VLANs respectifs"
+    - id: trunk_configured
+      required: true
+      points: 25
+      description: "Port Trunk Gi0/1 configuré avec encapsulation dot1q, VLAN natif 99 et allowed vlan"
+    - id: management_configured
+      required: false
+      points: 10
+      description: "Interface SVI VLAN 99 configurée avec son IP et passerelle par défaut"
+
+scoring:
+  floor_percent: 50

@@ -1,0 +1,81 @@
+slug: quiz-principes-durcissement-guides-anssi-cis
+title: "Quiz — Principes de Durcissement et Guides ANSSI/CIS"
+passing_score: 80
+position: 1
+questions:
+  - kind: single
+    prompt: "En quoi consiste concrètement la démarche de 'réduction de la surface d'attaque' sur un serveur en production ?"
+    choices:
+      - id: a
+        text: "À désactiver tous les démons et services réseau inutilisés, supprimer les compilateurs ou paquets superflus et fermer les ports non indispensables"
+      - id: b
+        text: "À réduire physiquement la taille de la baie informatique dans le centre de données"
+      - id: c
+        text: "À interdire l'accès à Internet à tous les employés de l'entreprise"
+      - id: d
+        text: "À éteindre les écrans des serveurs la nuit pour économiser de l'énergie"
+    correct:
+      - a
+    explanation: "Chaque paquet actif ou port ouvert représente une vulnérabilité potentielle. Minimiser les composants installés et actifs réduit mathématiquement les vecteurs d'exploitation accessibles aux attaquants."
+
+  - kind: single
+    prompt: "Quel est le principe fondamental du 'moindre privilège' (Least Privilege) en administration des systèmes ?"
+    choices:
+      - id: a
+        text: "Accorder à chaque utilisateur, service ou processus uniquement les permissions strictement nécessaires à l'exécution de sa tâche légitime"
+      - id: b
+        text: "Attribuer les privilèges root à tous les comptes pour éviter les blocages opérationnels"
+      - id: c
+        text: "Bloquer l'accès en lecture à tous les fichiers sans exception"
+      - id: d
+        text: "Utiliser un mot de passe court pour simplifier la saisie des commandes"
+    correct:
+      - a
+    explanation: "Le principe du moindre privilège cantonne l'impact d'une éventuelle compromission en empêchant un compte applicatif ou utilisateur standard d'altérer le système complet."
+
+  - kind: multiple
+    prompt: "Quels mécanismes techniques illustrent concrètement le concept de 'Défense en profondeur' (Defense in Depth) sur un serveur ?"
+    choices:
+      - id: a
+        text: "L'activation d'un pare-feu local de filtrage (ex: UFW ou nftables) sur l'hôte en complément du pare-feu réseau"
+      - id: b
+        text: "Le confinement des services applicatifs par un système de contrôle d'accès obligatoire (AppArmor ou SELinux)"
+      - id: c
+        text: "La désactivation totale des sauvegardes de données"
+      - id: d
+        text: "La surveillance et l'audit continu des journaux système avec auditd et un SIEM"
+    correct:
+      - a
+      - b
+      - d
+    explanation: "La défense en profondeur échelonne plusieurs couches indépendantes (pare-feu d'hôte, MAC, audit) pour qu'aucune défaillance d'une barrière unique ne permette une intrusion totale. Supprimer les sauvegardes détruirait au contraire la résilience."
+
+  - kind: single
+    prompt: "Dans les guides de durcissement GNU/Linux de l'ANSSI, que caractérise le niveau 'Intermédiaire' par rapport au niveau 'Minimal' ?"
+    choices:
+      - id: a
+        text: "Il constitue le standard recommandé pour les serveurs d'entreprise internes (SSH par clé publique exclusivement, durcissement sysctl, auditd)"
+      - id: b
+        text: "Il interdit formellement l'utilisation de tout système GNU/Linux"
+      - id: c
+        text: "Il autorise les mots de passe vides pour les comptes de test"
+      - id: d
+        text: "Il supprime l'obligation d'appliquer les correctifs de sécurité réguliers"
+    correct:
+      - a
+    explanation: "Le niveau Intermédiaire de l'ANSSI définit le socle opérationnel standard pour les serveurs d'entreprise (mots de passe forts, clés SSH uniquement, paramètres sysctl durcis et audit actif)."
+
+  - kind: single
+    prompt: "Quelle est la différence fondamentale entre les profils 'Level 1' et 'Level 2' dans les benchmarks CIS (Center for Internet Security) ?"
+    choices:
+      - id: a
+        text: "Le Level 1 regroupe les règles de sécurité essentielles sans impact fonctionnel, tandis que le Level 2 apporte un durcissement plus sévère pour environnements hautement sensibles"
+      - id: b
+        text: "Le Level 1 concerne les smartphones et le Level 2 les ordinateurs portables"
+      - id: c
+        text: "Le Level 2 est une ancienne version obsolète et dépréciée du Level 1"
+      - id: d
+        text: "Il n'y a aucune différence technique entre les deux profils"
+    correct:
+      - a
+    explanation: "Les benchmarks CIS distinguent les recommandations applicables sans risque de rupture applicative (Level 1) des mesures de durcissement approfondies nécessitant des adaptations logicielles (Level 2)."

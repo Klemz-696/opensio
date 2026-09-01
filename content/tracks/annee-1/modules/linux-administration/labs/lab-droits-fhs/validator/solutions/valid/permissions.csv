@@ -1,0 +1,6 @@
+path,owner,group,mode,role
+/var/www/html,www-data,www-data,755,site_web
+/data/partages/comptabilite,root,compta,2770,partage_comptabilite
+/data/partages/technique,root,technique,2770,partage_technique
+/data/partages/commun,root,users,1777,partage_commun
+/etc/ssl/private,root,ssl-cert,710,cles_tls

@@ -1,0 +1,10 @@
+---
+- name: "Playbook sans élévation de privilèges"
+  hosts: webservers
+  # Absence de become: true (échec des droits root)
+  tasks:
+    - name: "Installer Nginx"
+      ansible.builtin.apt:
+        name: nginx
+        state: present
+        update_cache: yes

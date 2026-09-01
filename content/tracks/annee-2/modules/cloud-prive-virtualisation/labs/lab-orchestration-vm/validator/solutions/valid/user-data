@@ -1,0 +1,20 @@
+#cloud-config
+hostname: srv-web-prod
+fqdn: srv-web-prod.opensio.local
+manage_etc_hosts: true
+
+users:
+  - name: devops
+    groups: sudo
+    shell: /bin/bash
+    sudo: ['ALL=(ALL) NOPASSWD:ALL']
+    ssh_authorized_keys:
+      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGu8VdK9p4w0bJ7QyP1xO8mN2eL4vT3w1yZ5x7r8q9s0 devops@opensio.local
+
+packages:
+  - qemu-guest-agent
+  - nginx
+
+runcmd:
+  - systemctl enable --now qemu-guest-agent
+  - systemctl enable --now nginx

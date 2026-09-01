@@ -1,0 +1,82 @@
+slug: quiz-reverse-proxy-et-load-balancing
+title: "Quiz — Reverse Proxy et Load Balancing"
+passing_score: 80
+position: 3
+questions:
+  - kind: single
+    prompt: "Quel est le rôle principal d'un reverse proxy dans une architecture web d'entreprise ?"
+    choices:
+      - id: a
+        text: "Exposer les services internes en un point unique avec terminaison TLS, filtrage et répartition de charge"
+      - id: b
+        text: "Filtrer le trafic sortant des utilisateurs vers Internet"
+      - id: c
+        text: "Stocker les mots de passe des utilisateurs"
+      - id: d
+        text: "Remplacer le pare-feu périmétrique"
+    correct:
+      - a
+    explanation: "Le reverse proxy centralise l'exposition des backends : TLS, compression, cache, filtrage et répartition. Il ne remplace pas le pare-feu (complémentaire) et ne traite pas le trafic sortant (forward proxy)."
+
+  - kind: multiple
+    prompt: "Quels en-têtes doivent être transmis par le proxy pour préserver la réalité du client ?"
+    choices:
+      - id: a
+        text: "X-Forwarded-For (chaîne des IP clientes)"
+      - id: b
+        text: "X-Forwarded-Proto (schéma http/https utilisé par le client)"
+      - id: c
+        text: "X-Powered-By (version du framework backend)"
+      - id: d
+        text: "Server (version du serveur web)"
+    correct:
+      - a
+      - b
+    explanation: "X-Forwarded-For et X-Forwarded-Proto reconstruisent la réalité de la requête côté backend (logs, rate limiting, cookies sécurisés). Les en-têtes X-Powered-By et Server sont, eux, à masquer car ils révèlent la pile technique."
+
+  - kind: single
+    prompt: "Quelle directive upstream envoie chaque requête vers le backend ayant le moins de connexions actives ?"
+    choices:
+      - id: a
+        text: "least_conn"
+      - id: b
+        text: "ip_hash"
+      - id: c
+        text: "round_robin"
+      - id: d
+        text: "keepalive"
+    correct:
+      - a
+    explanation: "least_conn équilibre selon la charge instantanée : idéal quand les temps de traitement sont inégaux. ip_hash fournit de l'affinité, round_robin est le défaut, keepalive maintient des connexions persistantes."
+
+  - kind: single
+    prompt: "Où doit résider le certificat TLS dans une architecture reverse proxy classique ?"
+    choices:
+      - id: a
+        text: "Sur le reverse proxy, qui termine TLS avant de relayer en HTTP interne"
+      - id: b
+        text: "Sur chaque client de l'entreprise"
+      - id: c
+        text: "Sur la base de données"
+      - id: d
+        text: "Nulle part, TLS est optionnel"
+    correct:
+      - a
+    explanation: "La terminaison TLS au proxy centralise la gestion des certificats et le chiffrement périmétrique ; le trafic interne vers les backends reste sur un réseau de confiance (ou re-chiffré si nécessaire)."
+
+  - kind: multiple
+    prompt: "Quels paramètres d'un bloc upstream améliorent la tolérance aux pannes d'un backend ?"
+    choices:
+      - id: a
+        text: "max_fails=3 pour tolérer plusieurs échecs avant exclusion"
+      - id: b
+        text: "fail_timeout=30s pour réintégrer le backend après un délai"
+      - id: c
+        text: "backup sur un serveur de secours repris en cas d'indisponibilité"
+      - id: d
+        text: "worker_connections 1024"
+    correct:
+      - a
+      - b
+      - c
+    explanation: "max_fails/fail_timeout gèrent l'exclusion temporaire d'un backend défaillant et backup désigne un serveur de secours. worker_connections est un paramètre de capacité du worker, sans rapport avec la répartition."

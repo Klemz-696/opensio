@@ -1,0 +1,81 @@
+slug: quiz-serveur-web-nginx-configuration
+title: "Quiz — Serveur Web Nginx"
+passing_score: 80
+position: 2
+questions:
+  - kind: single
+    prompt: "Comment Nginx parvient-il à gérer des milliers de connexions simultanées avec peu de ressources ?"
+    choices:
+      - id: a
+        text: "Une architecture événementielle asynchrone : quelques workers multiplexent les connexions via epoll"
+      - id: b
+        text: "Un thread du noyau Linux est créé pour chaque requête"
+      - id: c
+        text: "Il lance un nouveau processus complet pour chaque connexion comme Apache prefork"
+      - id: d
+        text: "Il répartit les requêtes sur plusieurs machines automatiquement"
+    correct:
+      - a
+    explanation: "Le modèle événementiel (event loop epoll) permet à chaque worker de traiter des milliers de connexions sans bloquer, contrairement au modèle processus-par-connexion."
+
+  - kind: multiple
+    prompt: "Quels ordres de blocs décrivent correctement la hiérarchie de configuration Nginx ?"
+    choices:
+      - id: a
+        text: "http contient les blocs server"
+      - id: b
+        text: "server contient les blocs location"
+      - id: c
+        text: "location contient le bloc events"
+      - id: d
+        text: "events et http sont des blocs de premier niveau"
+    correct:
+      - a
+      - b
+      - d
+    explanation: "La hiérarchie est : contexte global (events, http) > server (Virtual Host) > location (routage par URI). Le bloc events règle les connexions et ne peut pas être imbriqué dans location."
+
+  - kind: single
+    prompt: "Quel réflexe doit précéder systématiquement un rechargement de configuration Nginx en production ?"
+    choices:
+      - id: a
+        text: "Exécuter nginx -t pour valider la syntaxe, puis systemctl reload nginx"
+      - id: b
+        text: "Redémarrer le serveur physique"
+      - id: c
+        text: "Supprimer les fichiers de log"
+      - id: d
+        text: "Désactiver le pare-feu pour tester"
+    correct:
+      - a
+    explanation: "nginx -t détecte les erreurs de syntaxe ou de chemins avant l'application. Le reload applique ensuite la configuration sans coupure de service, contrairement à restart."
+
+  - kind: single
+    prompt: "Où place-t-on les Virtual Hosts sous Debian et comment les active-t-on ?"
+    choices:
+      - id: a
+        text: "Dans sites-available, puis lien symbolique vers sites-enabled"
+      - id: b
+        text: "Directement dans /etc/nginx/mime.types"
+      - id: c
+        text: "Dans /var/www/html uniquement"
+      - id: d
+        text: "Dans sites-enabled, puis copie vers sites-available"
+    correct:
+      - a
+    explanation: "Le convention Debian sépare les définitions (sites-available) de leur activation (sites-enabled via lien symbolique), ce qui permet de désactiver un site proprement sans effacer sa configuration."
+
+  - kind: single
+    prompt: "Pourquoi interdire les dotfiles (location ~ /\\.) dans un serveur de fichiers statiques ?"
+    choices:
+      - id: a
+        text: "Pour éviter l'exposition de fichiers sensibles comme .env, .git/config ou .htaccess"
+      - id: b
+        text: "Pour améliorer la vitesse de lecture du disque"
+      - id: c
+        text: "Parce que les navigateurs ne savent pas les télécharger"
+      - id: d
+        text: "Parce qu'ils sont protégés par le droit d'auteur"
+    correct:
+      - a
+    explanation: "Les fichiers cachés (.env, .git) contiennent fréquemment des secrets ou l'historique du code ; s'ils sont servis, un simple GET / .env révèle les secrets. deny all neutralise ce risque."

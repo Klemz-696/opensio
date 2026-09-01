@@ -15,13 +15,20 @@ export interface PageContext {
   lessonSlug?: string;
   quizSlug?: string;
   moduleSlug?: string;
+  moduleTitle?: string;
+  title?: string;
   isEvaluated?: boolean;
+  questionPrompt?: string;
+  userAnswer?: string;
+  choices?: string[];
 }
 
 export interface ChatConversationItem {
   id: string;
   userId: string;
   title: string;
+  isCustomTitle?: boolean;
+  archivedAt?: string | null;
   context?: PageContext;
   createdAt: string;
   updatedAt: string;
@@ -112,8 +119,12 @@ export async function updateAiPreferences(
   return res.json() as Promise<AiPreferences>;
 }
 
-export async function fetchConversations(token: string): Promise<ChatConversationItem[]> {
-  const res = await fetch(`${API_BASE}/chat/conversations`, {
+export async function fetchConversations(
+  token: string,
+  status: 'active' | 'archived' | 'all' = 'active'
+): Promise<ChatConversationItem[]> {
+  const queryParam = status ? `?status=${encodeURIComponent(status)}` : '';
+  const res = await fetch(`${API_BASE}/chat/conversations${queryParam}`, {
     headers: { Authorization: `Bearer ${token}` },
   });
 
@@ -139,6 +150,28 @@ export async function createConversation(
 
   if (!res.ok) {
     throw new Error('Impossible de créer la discussion.');
+  }
+
+  return res.json() as Promise<ChatConversationItem>;
+}
+
+export async function updateConversation(
+  conversationId: string,
+  data: { title?: string; isArchived?: boolean },
+  token: string
+): Promise<ChatConversationItem> {
+  const res = await fetch(`${API_BASE}/chat/conversations/${encodeURIComponent(conversationId)}`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(data),
+  });
+
+  if (!res.ok) {
+    const errorData = (await res.json().catch(() => ({}))) as { message?: string };
+    throw new Error(errorData.message || 'Impossible de mettre à jour la discussion.');
   }
 
   return res.json() as Promise<ChatConversationItem>;

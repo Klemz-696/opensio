@@ -10,13 +10,16 @@ model ChatConversation {
   id        String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   userId    String        @map("user_id") @db.Uuid
   user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  title     String
-  context   Json?
-  createdAt DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt DateTime      @updatedAt @map("updated_at") @db.Timestamptz(6)
-  messages  ChatMessage[]
+  title         String
+  isCustomTitle Boolean       @default(false) @map("is_custom_title")
+  archivedAt    DateTime?     @map("archived_at") @db.Timestamptz(6)
+  context       Json?
+  createdAt     DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime      @updatedAt @map("updated_at") @db.Timestamptz(6)
+  messages      ChatMessage[]
 
   @@index([userId, createdAt])
+  @@index([userId, archivedAt])
   @@map("chat_conversations")
 }
 

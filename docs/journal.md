@@ -623,11 +623,909 @@ Implémentation complète du suivi de progression de l'étudiant et du tableau d
   - Documentation dans `docs/installation.md` de la procédure de bascule dev (les données étant 100 % reproductibles via `pnpm db:migrate`, `pnpm seed` et `pnpm content:sync`).
   - Alignement de `README.md`.
 
+### 5. Exécution de pnpm sous Windows & Contrôle de version (>= 9)
+- **Constat** : Sous Windows, `pnpm` est installé sous forme de script externe (`pnpm.cmd` / `pnpm.ps1`). L'appel direct via `System.Diagnostics.Process` échouait silencieusement dans `Get-SafeCommandOutput`, produisant un affichage vide `[v] pnpm detecte : v`.
+- **Correction** :
+  - Encapsulation des commandes via `cmd.exe /c` dans `Get-SafeCommandOutput` pour résoudre correctement les scripts `.cmd`/`.bat`/`.ps1` et la variable `PATHEXT`.
+  - Parsing robuste de la version avec suppression du préfixe éventuel `v` et contrôle de version majeure >= 9 (avec affichage conforme `v11.23.0` et proposition de mise à jour si la version est obsolète).
+  - Aligné sur `scripts/install.sh` avec conformité ShellCheck 100 %.
 
+---
 
+## 2026-08-25 — Lot B12 : Refonte du Déploiement en Wizard Interactif 3 Phases
 
+**Branche** : `feat/b12-wizard-installation`  
+**Objectif** : Transformer l'installation d'OpenSIO en un parcours interactif complet structuré en trois phases (Analyse -> Configuration -> Exécution), avec support des 4 scénarios d'inférence IA, découpage modulaire sous `scripts/lib/` (conformité D-13), script dédié pour nœud Ollama distant, mode non interactif et mode simulation (`--dry-run`).
 
+### Réalisations techniques
 
+1. **Refonte modulaire de `scripts/install.sh`** :
+   - Découpage par responsabilité sous `scripts/lib/` (chaque fichier respectant strictement la règle D-13 <= 400 lignes) :
+     - `common.sh` : utilitaires de journalisation, prompts interactifs, comparateur sémantique de versions, générateur de secrets cryptographiques, exécuteur sécurisé compatible `--dry-run`.
+     - `detect.sh` : Phase 1 — détection du système d'exploitation (Debian 12/13, Ubuntu 22.04+), vérification des prérequis avec le pattern détection -> affichage -> comparaison -> avertissement/remédiation (Docker >= 24.0, Compose >= 2.20, Git >= 2.30, Node >= 20, pnpm >= 9), analyse des ressources matérielles (RAM, vCPU, espace disque), sondage de disponibilité des ports réseau (5432, 6379, 3000, 4000, 80, 443) et détection d'installation existante.
+     - `ollama.sh` : détection d'Ollama local sur l'hôte, sondage de nœuds distants via `GET /api/tags` avec timeout strict, vérification de présence du modèle (`llama3.1:8b`) et déclencheur de téléchargement distant via `POST /api/pull`.
+     - `config.sh` : Phase 2 — questions interactives avec valeurs par défaut entre crochets, sélection du mode (dev/prod), 4 choix d'intégration Ollama (hôte, conteneur profil `ai`, distant, sans IA), domaine et certificat TLS (interne ou public ACME), ports personnalisables, gestion des mots de passe, politique de seed (complet, minimal, aucun), évaluation des ressources par scénario et récapitulatif tabulaire avant confirmation.
+     - `runner.sh` : Phase 3 — exécution séquentielle sans interruption : clone/pull, génération du `.env`, démarrage des conteneurs Compose, attente des healthchecks (db, api, web), exécution des migrations Prisma, amorçage du seed choisi et synchronisation du référentiel pédagogique (D-02).
+   - Point d'entrée `scripts/install.sh` optimisé avec téléchargement éphémère automatique des modules de `lib/` en cas d'exécution distante via pipe (`curl ... | bash`).
+   - Support complet du mode non interactif (`OPENSIO_NONINTERACTIVE=1`) et du mode simulation (`--dry-run`).
 
+2. **Nouveau script de préparation de nœud Ollama dédié (`scripts/setup-ollama-node.sh`)** :
+   - Installation automatique d'Ollama sur machine Linux distante.
+   - Configuration de l'override systemd `Environment="OLLAMA_HOST=0.0.0.0"`.
+   - Téléchargement du modèle de langage demandé (`llama3.1:8b` par défaut).
+   - Configuration du pare-feu UFW pour restreindre l'accès au port 11434 uniquement au sous-réseau LAN spécifié.
+   - Avertissement de sécurité bien visible rappelant l'absence d'authentification native dans Ollama.
 
+3. **Durcissement Docker Compose Prod (`docker-compose.prod.yml`)** :
+   - Paramétrage des ports du service `caddy` via variables d'environnement (`${HTTP_PORT:-80}:80` et `${HTTPS_PORT:-443}:443`).
+   - Ajout de `extra_hosts: ["host.docker.internal:host-gateway"]` sur le service `api` pour la communication avec Ollama hôte sous Linux.
+   - Service `ollama` configuré avec profil optionnel `ai`, volume `ollama_models`, healthcheck `ollama list || exit 1` et redémarrage automatique `restart: unless-stopped`.
+   - Caddyfile mis à jour pour supporter la directive TLS personnalisable (`{$TLS_DIRECTIVE:tls internal}`).
 
+4. **Parité Windows (`scripts/install.ps1`)** :
+   - Contrôle des prérequis avec le pattern établi (Docker, Git, Node, pnpm).
+   - Choix de l'assistant IA adapté à Windows (Ollama local existant, nœud distant, sans IA).
+   - Maintien du focus développement local (BDD Docker + applications Node.js).
+
+5. **Prise en compte du mode Seed paramétrable (`apps/api/prisma/seed.ts`)** :
+   - Support de la variable `SEED_MODE` (`full` vs `minimal`) permettant de n'initialiser que le compte administrateur en mode minimal.
+
+6. **Restructuration de la documentation de déploiement (`docs/deployment.md`)** :
+   - Matrice de décision comparative en tête de document (VM/LXC x 4 scénarios d'inférence).
+   - Guide pas à pas par scénario avec dimensionnement matériel recommandé.
+   - Documentation du mode non interactif (tableau des variables d'environnement) et de l'option `--dry-run`.
+   - Section sécurité détaillée (isolation réseau d'Ollama, certificats TLS Caddy, gestion des secrets).
+
+### Tests et Conformité
+- Contrôle strict des variables IA : support conjoint de `OLLAMA_BASE_URL` et `AI_BASE_URL` dans `apps/api/src/config/env.validation.ts`, `apps/api/src/modules/ai/` et le générateur `.env`.
+- Formatage ASCII pur : suppression de tous les émojis et caractères unicode dans les scripts (`[v]`, `[i]`, `[!]`, `[x]`, `[DRY-RUN]`, `-->`).
+- `shellcheck` sans option `-x` (alignement CI `ludeeus/action-shellcheck`) : 100 % propre avec directives `# shellcheck source=... disable=SC1091`.
+- `bash -n` sur tous les scripts Bash : 100 % valide.
+- Règle D-13 / RM-13 : 100 % des fichiers <= 400 lignes.
+- Validation des 8 scénarios d'exécution du wizard en mode `--dry-run`.
+
+---
+
+## 2026-08-25 — Lot C1 : Enrichissement du Contenu Pédagogique (BTS SIO SISR)
+
+**Branche** : `feat/c1-contenu-pedagogique`  
+**Objectif** : Enrichir le catalogue OpenSIO avec 12 nouvelles leçons détaillées, 12 quiz d'évaluation approfondis (72 questions avec explications pédagogiques) et 6 ateliers pratiques complets (niveaux 2_files avec validateurs autonomes et suites de fixtures).
+
+### 1. Conventions d'Auteur & Outils de Validation (Étape 0)
+- Rédaction du guide d'auteur `content/README.md` formalisant la structure, les métadonnées requises et les formats contractuels (Markdown, YAML, CSV).
+- Création du script de validation autonome `content/validate.mjs` exécutant :
+  - La validation Zod de tous les parcours, modules, leçons, quiz et labs via `@opensio/content-schema`.
+  - La vérification de l'intégrité référentielle croisée (leçons liées, quiz, compétences B1/B2, labs requis).
+  - L'exécution automatique de chaque suite de fixtures de lab (`solutions/valid/`, `solutions/invalid-*/`).
+
+### 2. Module "Réseaux : Fondamentaux" (Étape 1)
+Complétion intégrale du module avec 7 leçons, 7 quiz et 4 ateliers pratiques :
+- **Leçons & Quiz associés (5+ questions par quiz)** :
+  - `01-adressage-ipv4.md` + `quiz-adressage.yaml` (Existant)
+  - `02-modeles-osi-tcpip.md` + `quiz-modeles-osi-tcpip.yaml` (Nouveau) : Couches OSI/TCP-IP, encapsulation, PDU, TCP vs UDP, ports d'écoute et commandes de diagnostic.
+  - `03-subnetting-vlsm.md` + `quiz-subnetting-vlsm.yaml` (Nouveau) : Calculs avancés de masques à longueur variable, optimisation de découpage, exercices pas-à-pas.
+  - `04-ipv6-essentiels.md` + `quiz-ipv6-essentiels.yaml` (Nouveau) : Structure 128 bits, règles de compression, types d'adresses (GUA, ULA, Link-Local), SLAAC, EUI-64 et protocole NDP.
+  - `05-vlan-segmentation.md` + `quiz-vlan-segmentation.yaml` (Nouveau) : Isolation niveau 2, modes Access vs Trunk, tag 802.1Q, VLAN natif, durcissement et commandes Cisco IOS.
+  - `06-routage-statique.md` + `quiz-routage-statique.yaml` (Nouveau) : Décision d'acheminement, Longest Prefix Match, routes par défaut/flottantes, Router-on-a-Stick, interfaces SVI et pannes de route retour.
+  - `07-dns-et-dhcp.md` + `quiz-dns-et-dhcp.yaml` (Nouveau) : Hiérarchie DNS, types d'enregistrements (A, AAAA, CNAME, MX, PTR), processus DORA, options DHCP (3, 6, 15), agent de relais IP Helper et commandes de diagnostic.
+- **Ateliers Pratiques (Labs de niveau 2_files avec validateurs)** :
+  - `lab-plan-adressage` (slug : `plan-adressage-pme`) (Existant)
+  - `lab-plan-vlsm` (slug : `plan-vlsm-complet`) (Nouveau) : Découpage VLSM d'une entreprise multi-sites sur `172.16.0.0/20` (500, 120, 60, 25, 2x2 postes) avec `plan.csv`.
+  - `lab-config-vlan` (slug : `config-vlan-switch`) (Nouveau) : Configuration Cisco IOS d'un commutateur Catalyst avec VLANs 10, 20, 30, SVI 99 et port Trunk 802.1Q dans `switch.cfg`.
+  - `lab-maquette-dns-dhcp` (slug : `maquette-dns-dhcp`) (Nouveau) : Déploiement combiné DNS/DHCP sur `192.168.50.0/24` avec domaine local, étendue dynamique, options et réservation d'imprimante dans `dnsmasq.conf`.
+
+### 3. Module "Windows Server & Active Directory" (Étape 2)
+Création complète du nouveau module `windows-server-ad` comprenant 6 leçons, 6 quiz et 3 ateliers pratiques :
+- **Leçons & Quiz associés** :
+  - `01-installation-et-roles.md` + `quiz-windows-installation-roles.yaml` : Éditions Standard vs Datacenter, Server Core vs Desktop Experience, rôles/fonctionnalités, RSAT, WinRM et automatisation PowerShell.
+  - `02-ad-ds-et-domaine.md` + `quiz-ad-ds-et-domaine.yaml` : Forêt, domaines, contrôleurs de domaine, NTDS.dit, SYSVOL, Catalogue Global, les 5 rôles FSMO et dépendance critique DNS.
+  - `03-utilisateurs-groupes-uo.md` + `quiz-utilisateurs-groupes-uo.yaml` : Arborescence d'UO, gestion du cycle de vie des identités, groupes (Sécurité vs Distribution, Global/Local/Universel), méthode AGDLP et délégation d'administration.
+  - `04-strategies-de-groupe-gpo.md` + `quiz-strategies-de-groupe-gpo.yaml` : Architecture GPC/GPT, hiérarchie LSDOU, blocage d'héritage, GPO Enforced, filtrage de sécurité, GPP Item-Level Targeting et dépannage (gpupdate, gpresult).
+  - `05-dns-dhcp-sous-windows.md` + `quiz-dns-dhcp-windows.yaml` : Zones DNS intégrées à AD, mises à jour dynamiques sécurisées, autorisation du serveur DHCP dans AD, basculement DHCP (Failover Load Balance / Hot Standby) et cmdlets PowerShell.
+  - `06-partages-et-droits-ntfs.md` + `quiz-partages-et-droits-ntfs.yaml` : Partage SMB vs NTFS, règle du plus restrictif, héritage/droits explicites, implémentation AGDLP et commandes `icacls`.
+- **Ateliers Pratiques** :
+  - `lab-promotion-dc` (slug : `promotion-controleur-domaine`) : Script PowerShell `promote-dc.ps1` d'installation du rôle AD DS et de promotion du DC racine de la forêt `entreprise.lan`.
+  - `lab-uo-gpo` (slug : `organisation-uo-et-gpo`) : Modélisation d'arborescence UO d'entreprise et liaisons GPO avec gestion de l'héritage dans `structure-uo.csv`.
+  - `lab-partage-ntfs` (slug : `partage-et-droits-ntfs`) : Matrice de sécurité des partages SMB et permissions NTFS selon la méthode AGDLP dans `plan.csv`.
+
+### 4. Bilan & Validations
+- `node content/validate.mjs` : 100 % valide (13 leçons, 13 quiz, 77 questions, 7 labs, 21/21 tests de validateurs passants).
+- `pnpm content:validate` : 100 % valide (18/18 tests de schéma Vitest passants).
+- `pnpm content:sync` : Synchronisation Prisma réussie (+12 leçons, +6 labs, +12 quiz, +72 questions).
+- `node scripts/check-file-size.mjs` : 100 % conforme D-13 (0 violation > 400 lignes).
+- `pnpm test` : 100 % vert (173 tests passants sur l'ensemble du monorepo).
+- Aucun emoji présent dans l'ensemble des fichiers de contenu et de code.
+
+---
+
+## [Lot C3] — Enrichissement du Mentor IA & Coaching Interactif
+
+**Date** : 25/08/2026  
+**Branches** : `feat/c3-gestion-conversations` (PR 1), `feat/c3-mentor-contextuel` (PR 2)  
+**Objectif** : Gestion avancée des conversations du Mentor IA (CRUD, auto-titrage, renommage inline, archivage/désarchivage, isolation stricte), mentor contextuel avec injection fine titre/objectifs (sans surcharge de contexte LLM), et coaching interactif de quiz sur les erreurs.
+
+### 1. Gestion des Conversations (Partie 1)
+- **Base de Données & Migration Prisma** :
+  - Colonnes `isCustomTitle` (Boolean, default false) et `archivedAt` (DateTime nullable) avec index composite `@@index([userId, archivedAt])` dans `apps/api/prisma/schema/chat.prisma`.
+  - Migration SQL `20260825210000_c3_chat_conversations_archive`.
+- **API NestJS pure sans dépendance LLM** :
+  - `ChatConversationService` : CRUD complet avec contrôle d'appartenance strict (403 Forbidden / 404 Not Found).
+  - `PATCH /api/v1/chat/conversations/:id` : Renommage manuel et archivage/désarchivage.
+  - `DELETE /api/v1/chat/conversations/:id` : Suppression définitive avec cascade des messages.
+  - `GET /api/v1/chat/conversations?status=active|archived|all` : Filtrage selon le statut.
+  - Renommage automatique au 1er message via troncature déterministe propre sans appel LLM (`conversation-namer.util.ts`).
+- **Interface Frontend Apprenant** :
+  - Panneau latéral des discussions (`MentorConversationSidebar`, `MentorConversationItem`) avec liste active, section repliable des discussions archivées, renommage inline (Entrée/Échap) et suppression avec confirmation modale.
+  - Accessibilité ARIA complète au clavier et lecteur d'écran.
+
+### 2. Mentor Contextuel & Coaching Quiz (Partie 2)
+- **Mentor Contextuel à Injection Fine** :
+  - `AiContextSanitizerService` : Résolution serveur des entités (`Lesson`, `Module`, `Lab`, `Quiz`).
+  - Injection dans le prompt système du **titre et des objectifs pédagogiques UNIQUEMENT** (jamais le cours complet), garantissant le respect de la fenêtre de contexte de `llama3.1:8b`.
+  - Affichage discret dans le header du mentor du contexte actif (`Leçon : ...`, `Coaching Quiz`, `Lab : ...`).
+  - Dégradation gracieuse et comportement général préservé en l'absence de contexte de page.
+- **Coaching Interactif de Quiz** :
+  - Sur l'écran de résultat de quiz (`QuizResultView`), bouton accessible « Expliquer avec le mentor » sur chaque réponse incorrecte (`!question.isCorrect`).
+  - Émission de l'événement `opensio:open-mentor` initialisant une discussion pré-configurée avec la question, la réponse de l'étudiant et les consignes de coaching bienveillant (explication du piège conceptuel sans donner la réponse brute).
+  - Maintien intégral des explications statiques existantes (Lot 5 / C1).
+- **Refactoring & Conformité D-13** :
+  - Découpage modulaire du frontend (`use-mentor-chat.ts`, `mentor-chat-header.tsx`, `mentor-conversation-sidebar.tsx`, `mentor-conversation-item.tsx`, `mentor-chat-drawer.tsx`).
+  - Tous les fichiers sources $\le$ 400 lignes (0 violation D-13).
+
+### 3. Validations & Qualité
+- `pnpm lint` : 100 % vert (0 erreur, 0 avertissement).
+- `pnpm typecheck` : 100 % vert dans tous les packages.
+- `node scripts/check-file-size.mjs` : 100 % conforme D-13.
+- `pnpm test` : 100 % vert (183 tests automatisés passants).
+
+---
+
+## 2026-08-26 — Correctif critique : Isolation complète de la base de données de test
+
+**Branche** : `fix/tests-isolation-db`  
+**Problème résolu** : Les tests d'intégration et E2E exécutaient des écritures (synchronisation, fixtures) directement contre la base `DATABASE_URL` de développement (`opensio`), purgeant le catalogue réel à chaque exécution de `pnpm test`.
+
+### Réalisations
+- **Base de données de test dédiée** :
+  - Création de la base PostgreSQL `opensio_test`.
+  - Script d'initialisation cross-platform `apps/api/src/prisma/ensure-test-db.ts` et montage `infra/docker/init-test-db.sql` dans `docker-compose.dev.yml`.
+  - Création des fichiers `.env.test` (racine et `apps/api/.env.test`) avec `DATABASE_URL` pointant vers `opensio_test`.
+- **Configuration Vitest & Dérivation Automatique** :
+  - Fichier de setup global `apps/api/test/setup-env.ts` forçant `NODE_ENV=test`, chargeant `.env.test` et dérivant automatiquement toute `DATABASE_URL` pointant vers `opensio` vers `opensio_test`.
+- **Garde-fous de sécurité stricts** :
+  - `PrismaService` et `env.validation.ts` : Si `NODE_ENV === 'test'` et que `DATABASE_URL` cible la base de développement `opensio`, l'exécution est immédiatement bloquée avec une erreur explicite.
+- **Workflow CI GitHub Actions & Cohérence Local / CI** :
+  - Service Postgres aligné sur `POSTGRES_DB: opensio_test` et mot de passe unifié.
+  - Déploiement des migrations via `prisma migrate deploy` directement contre `opensio_test` avant `pnpm test`.
+  - Création de `.env.test.example` et `apps/api/.env.test.example` documentant la configuration attendue.
+  - Harmonisation du skip gracieux en local dans `app-boot.e2e.spec.ts` et `chat.e2e.spec.ts` (0 test skippé en CI).
+- **Vérification d'idempotence et d'intégrité** :
+  - L'exécution de `pnpm test` suivie de `pnpm content:sync` affiche 100 % de « inchangés » sur la base de développement (0 suppression, 0 réinsertion).
+
+---
+
+## 2026-08-26 — [Lot C2 — Partie 1] : Interface et Expérience Utilisateur — Navigation & Progression
+
+**Branche** : `feat/c2-navigation-progression`  
+**Objectif** : Amélioration de l'expérience utilisateur et de la navigation globale d'OpenSIO (audit UX complet étape 0, navigation séquentielle de cours avec touches directes, sommaire latéral repliable du module, progression visuelle systématique sur le catalogue et mise en avant de la reprise de lecture sur le tableau de bord).
+
+### 1. Audit UX Initial (Étape 0)
+- Cartographie intégrale des pages (`/catalogue`, `/catalogue/[moduleSlug]`, `/catalogue/[moduleSlug]/[lessonSlug]`, `/catalogue/[moduleSlug]/quiz/[quizSlug]`, `/catalogue/[moduleSlug]/labs/[labSlug]`, `/dashboard`) et de leurs composants.
+- Constat de non-régression : réutilisation intégrale des endpoints et services existants (`CatalogProgressEnricherService`, `ProgressAggregationService`, `DashboardService`) sans altération du cache ni requêtes N+1.
+
+### 2. Navigation de Leçon & Sommaire de Module
+- **Composant `LessonNavigation` (`apps/web/components/lessons/lesson-navigation.tsx`)** :
+  - Boutons Précédent et Suivant avec affichage dynamique du titre de la leçon et de son statut d'achèvement.
+  - En fin de module : détection automatique et proposition d'un lien d'évaluation vers le quiz du module (`quiz-*.yaml`) ou vers la page récapitulative du module.
+  - Navigation au clavier accessible : écoute des touches directes `Flèche gauche` et `Flèche droite` avec garde stricte (désactivée dans les `<input>`, `<textarea>`, `<select>`, zones `contentEditable`, terminaux et éléments à rôle de saisie) et neutralisation si une touche modificatrice (`Alt`, `Ctrl`, `Meta`, `Shift`) est active.
+  - Indicateur visuel `kbd` (`←` / `→`) pour guider l'apprenant.
+- **Composant `LessonModuleSidebar` (`apps/web/components/lessons/lesson-module-sidebar.tsx`)** :
+  - Sommaire latéral repliable du module affichant l'ensemble des leçons dans l'ordre pédagogique.
+  - Indicateurs d'état : coche verte pour les leçons terminées, puce de focus pour la leçon active (`aria-current="page"`), durée estimée et barre de progression globale du module.
+  - Accès direct aux quiz et labs du module.
+  - Support responsive : volet rétractable sur desktop et tiroir (drawer) avec backdrop sur mobile, fermeture via la touche `Échap` et accessibilité ARIA complète (`aria-expanded`, `aria-controls`).
+
+### 3. Progression Visuelle sur le Catalogue
+- **Composant `ModuleCard` (`apps/web/components/catalog/module-card.tsx`)** :
+  - Affichage systématique et harmonisé de la jauge de progression pour tous les modules (ex: `0/7 leçons (0 %)` si non entamé, jauge bleue en cours, jauge verte émeraude avec badge « Validé » à 100 %).
+  - Accessibilité : attributs `role="progressbar"`, `aria-valuenow`, `aria-valuemin="0"`, `aria-valuemax="100"` et `aria-label`.
+
+### 4. Tableau de Bord — Reprendre où tu t'es arrêté
+- **Composant `DashboardResume` (`apps/web/components/dashboard/dashboard-resume.tsx`)** :
+  - Identification et mise en valeur prioritaire de la dernière leçon consultée non terminée (`status === 'started'`) dans une carte dédiée avec bouton direct « Reprendre la leçon ».
+  - Grille secondaire pour les autres activités récentes et état vide accueillant pour les nouveaux apprenants.
+
+### 5. Validations & Tests
+- `apps/web/test/lesson-navigation.spec.tsx` : 5 tests unitaires validant l'affichage, la transition vers le quiz, la navigation clavier et les gardes sur les champs de saisie.
+- `apps/web/test/lesson-module-sidebar.spec.tsx` : 3 tests validant le rendu des leçons, l'indicateur `aria-current="page"`, la bascule et la fermeture par la touche `Échap`.
+- `apps/web/test/module-card.spec.tsx` : tests mis à jour avec le rôle `progressbar` et l'état par défaut à 0 %.
+- `apps/web/test/dashboard-page.spec.tsx` : tests mis à jour avec la nouvelle structure de reprise d'activité.
+- `pnpm test` : 100 % vert (**267 tests automatisés** : 185 API, 64 Web, 18 Content-Schema).
+- `pnpm lint` : 100 % vert (0 erreur, 0 avertissement).
+- `pnpm typecheck` : 100 % vert.
+- `node scripts/check-file-size.mjs` : 100 % conforme D-13 (270 fichiers analysés, 0 violation > 400 lignes).
+- `pnpm build` : Build de production Next.js 15 App Router et NestJS 11 validé avec succès.
+
+---
+
+## 2026-08-26 — [Lot C2 — Partie 2] : Interface et Expérience Utilisateur — UX Quiz & Labs
+
+**Branche** : `feat/c2-ux-quiz-labs`  
+**Objectif** : Perfectionnement de l'expérience interactive des quiz et des ateliers pratiques (labs) avec progression pas-à-pas, révision complète des réponses avant soumission finale, checklist interactive des étapes de lab avec suivi local, cartouche enrichi temps/points et intégration complète des blocs de commandes copiables.
+
+### 1. Ergonomie et Déroulement des Quiz
+- **Mode Pas-à-Pas & Stepper Interactif (`QuizStepper`)** :
+  - Découpage séquentiel des questions avec affichage clair du rang (`Question X sur Y`).
+  - Navigation par pastilles d'états : en cours (bordure active), répondue (fond émeraude et coche), non répondue (fond ardoise sombre).
+  - Boutons de déplacement rapide « Précédente » et « Suivante » avec mise à jour immédiate du scroll et des états de validation.
+- **Écran de Revue & Récapitulatif Pré-Soumission (`QuizReviewStep`)** :
+  - Vue d'ensemble de l'ensemble des réponses sélectionnées par l'étudiant avec affichage détaillé des intitulés de choix.
+  - Alerte visuelle en cas de questions non renseignées (`X questions sans réponse`).
+  - Bouton direct « Modifier » ramenant précisément sur la question ciblée.
+  - Soumission finale sécurisée avec états de chargement (`isSubmitting`) et désactivation préventive des boutons.
+- **Transition douce vers les résultats** :
+  - Animations discrètes `animate-in fade-in` et harmonisation du scroll vers le résultat.
+
+### 2. Ergonomie et Déroulement des Labs
+- **Checklist Interactive des Étapes (`LabStepChecklist`)** :
+  - Agrégation structurée des objectifs pédagogiques et des critères d'évaluation du validateur.
+  - Cochage interactif avec persistance locale dans le navigateur (`localStorage`) indexée par lab et session.
+  - Jauge de progression dédiée (`X / Y étapes franchies - Z%`) et action de réinitialisation.
+- **Blocs de Code et Commandes Copiables** :
+  - Contexte et scénario de lab rendus via `MarkdownRenderer` : coloration syntaxique Shiki et bouton « Copier » universel avec retour visuel immédiat.
+- **Cartouche Enrichi Temps / Points (`LabHeader`)** :
+  - Présentation modernisée en grille : durée estimée, score maximum, seuil plancher après indices, nombre d'indices et badge de statut de session dynamique.
+
+### 3. Validations & Tests
+- `apps/web/test/quiz-runner.spec.tsx` : 6 tests unitaires et d'intégration validant le mode pas-à-pas, la navigation, le stepper, la revue et la soumission.
+- `apps/web/test/quiz-stepper.spec.tsx` : 3 tests unitaires du composant stepper.
+- `apps/web/test/quiz-review-step.spec.tsx` : 4 tests unitaires de l'écran récapitulatif.
+- `apps/web/test/lab-step-checklist.spec.tsx` : 3 tests unitaires de la checklist et du stockage local.
+- `apps/web/test/lab-header.spec.tsx` : 2 tests du cartouche temps/points et des badges de session.
+- `apps/web/test/lab-context.spec.tsx` : 1 test du rendu Markdown et des contrôles de validation.
+- `pnpm test` : 100 % vert (**282 tests automatisés** : 185 API, 79 Web, 18 Content-Schema).
+- `pnpm lint` : 100 % vert (0 erreur, 0 avertissement).
+- `pnpm typecheck` : 100 % vert.
+---
+
+## 2026-08-26 — [Lot D1] : Comptes réels, rôles et administration
+
+**Branche** : `feat/d1-roles-admin`  
+**Objectif** : Mise en place du modèle de rôles formel (`ADMIN`, `APPRENANT`), administration des comptes utilisateurs, amorçage sécurisé configurable (seed admin & démo conditionnelle), procédure de premier login avec mot de passe temporaire forcé et interface d'administration complète.
+
+### 1. Modèle de Données & Migration Prisma
+- **Enum `Role`** : remplacement de l'ancien `UserRole` par `enum Role { ADMIN @map("admin"), APPRENANT @map("apprenant") }`.
+- **Flag `mustChangePassword`** : ajout du champ booléen `mustChangePassword Boolean @default(false) @map("must_change_password")` sur le modèle `User`.
+- **Migration SQL robuste** : création de `20260826160000_lot_d1_roles_admin` assurant la migration sécurisée des comptes existants (`student`/`teacher` convertis en `apprenant`).
+- **Seed & Configuration d'Amorçage** :
+  - Compte administrateur configurable via `SEED_ADMIN_EMAIL`, `SEED_ADMIN_NAME`, `SEED_ADMIN_PASSWORD` (documenté dans `.env.example`).
+  - Compte étudiant démo conditionné à `DEMO_SEED=true` (absent par défaut).
+
+### 2. Backend & API NestJS
+- **Décorateur `@Roles` & `RolesGuard`** : protection RBAC native au niveau des routes et contrôleurs API.
+- **Module Administration (`AdminModule`)** :
+  - `GET /api/v1/admin/users` : liste paginée avec filtres (recherche texte, rôle, statut).
+  - `POST /api/v1/admin/users` : création de compte par un admin avec génération de mot de passe temporaire et `mustChangePassword=true`.
+  - `PATCH /api/v1/admin/users/:id` : mise à jour des informations, rôle et statut (avec garde-fous stricts interdisant l'auto-rétrogradation et l'auto-désactivation d'un admin).
+  - `POST /api/v1/admin/users/:id/reset-password` : réinitialisation de mot de passe par l'admin, révocation instantanée des sessions actives et activation de `mustChangePassword`.
+  - Révocation automatique de toutes les sessions actives (`RefreshTokenService.revokeAllUserTokens`) lors de la désactivation ou de la réinitialisation de compte.
+  - Traçabilité totale via `AuditService` (`ADMIN_USER_CREATE`, `ADMIN_USER_UPDATE`, `ADMIN_USER_PASSWORD_RESET`).
+- **Changement de Mot de Passe (`POST /api/v1/auth/change-password`)** :
+  - Endpoint authentifié permettant à l'utilisateur de valider son ancien mot de passe, de définir son nouveau mot de passe fort et de désactiver `mustChangePassword`.
+
+### 3. Frontend Web Next.js 15 & Interface d'Administration
+- **Navigation conditionnelle (`Navbar`)** : affichage du lien « Administration » réservé exclusivement aux utilisateurs possédant le rôle `ADMIN`.
+- **Garde de route (`AdminRoute`)** : protection des pages `/admin/*` avec redirection des non-connectés et message d'accès restreint pour les apprenants.
+- **Page de Gestion des Utilisateurs (`/admin/users`)** :
+  - Cartouche de statistiques dynamiques (Total, Administrateurs, Apprenants, Comptes actifs).
+  - Barre de filtres (recherche nom/email, filtre par rôle, filtre par statut, réinitialisation).
+  - Tableau moderne et réactif avec badges de rôle, indicateurs d'état, badges de sécurité (mot de passe temporaire / défini), dates de création et dernier accès.
+  - Dialogue de création (`CreateUserDialog`) avec génération/saisie de mot de passe temporaire et bouton de copie en un clic.
+  - Dialogue de modification (`EditUserDialog`) avec protection contre l'auto-rétrogradation.
+  - Dialogue de réinitialisation (`ResetPasswordDialog`) avec génération de mot de passe temporaire et bouton de copie.
+  - Dialogue d'activation/désactivation (`ToggleStatusDialog`) avec confirmation explicite et protection contre l'auto-verrouillage.
+- **Modale de changement forcé (`ForcePasswordChangeModal`)** :
+  - Modale bloquante globale déclenchée automatiquement dès la connexion si `mustChangePassword=true`.
+  - Checklist interactive des critères de sécurité du mot de passe en temps réel.
+
+### 4. Validations & Qualité
+- **Tests API** :
+  - `apps/api/src/modules/admin/__tests__/admin-users.service.spec.ts` : 9 tests unitaires (CRUD, filtres, auto-protection, révocation, politique de mot de passe).
+  - `apps/api/src/modules/admin/__tests__/admin-users.e2e.spec.ts` : 6 tests d'intégration PostgreSQL et contrôles RBAC.
+  - `apps/api/src/modules/auth/auth.e2e.spec.ts` : tests d'intégration mis à jour avec le flux complet de changement de mot de passe.
+  - Tous les tests de modules existants (`auth`, `labs`, `quizzes`, `progress`, `terminal`, `ai`, `demo-*`) mis à jour pour le nouvel enum `Role`.
+- **Tests Frontend** :
+  - `apps/web/test/admin-route.spec.tsx` : 4 tests de protection RBAC frontend.
+  - `apps/web/test/force-password-change-modal.spec.tsx` : 4 tests du modal de changement forcé de mot de passe.
+  - `apps/web/test/navbar-admin.spec.tsx` : 2 tests de conditionnement de la navigation.
+  - `apps/web/test/admin-users-page.spec.tsx` : 2 tests d'intégration de la page d'administration.
+- **Bilan des Métriques** :
+  - `pnpm test` : 100 % vert (**303 tests automatisés** : 194 API, 91 Web, 18 Content-Schema).
+  - `pnpm lint` : 100 % vert (0 erreur, 0 avertissement).
+  - `pnpm typecheck` : 100 % vert (0 erreur TypeScript).
+  - `node scripts/check-file-size.mjs` : 100 % conforme D-13 (305 fichiers analysés, 0 violation > 400 lignes).
+  - `pnpm build` : Build de production Next.js 15 App Router et NestJS 11 validé avec succès.
+
+---
+
+## 2026-08-26 — [Lot D2] : Profil utilisateur complet, Avatar, Préférences & RGPD
+
+**Branche** : `feat/d2-profil`  
+**Objectif** : Implémentation complète de la gestion du profil utilisateur : correctif préalable du seed admin D-09, upload/suppression d'avatar sécurisé avec stockage disque local et validation stricte de types MIME / magic bytes, édition des informations personnelles et de la biographie, gestion des préférences d'interface et d'IA, changement de mot de passe avec checklist D-09, et flux d'effacement RGPD avec suppression physique de l'avatar et purge en cascade.
+
+### 1. Correctif Préalable — Validation D-09 du Seed Admin
+- **Validation stricte au seed** : `prisma/seed.ts` valide désormais `SEED_ADMIN_PASSWORD` (et `SEED_STUDENT_PASSWORD`) contre la politique de sécurité D-09 (12+ caractères, au moins 3 classes).
+- **Échec bruyant et explicite** : si le mot de passe est insuffisant, le script lève une erreur explicite avec code de sortie non nul.
+- **Cohérence des hashs** : inclusion de `passwordHash` dans le bloc `update` de l'upsert afin de garantir que les comptes existants reçoivent le hash exact de la variable d'environnement courante.
+- **Test automatisé** : `apps/api/src/modules/auth/__tests__/seed-validation.spec.ts` (4 tests unitaires).
+
+### 2. Modèle de Données & Migration Prisma
+- **Champs ajoutés au modèle `User`** :
+  - `avatarUrl String? @map("avatar_url")`
+  - `bio String? @db.Text`
+  - `preferences Json?`
+- **Migration SQL** : `20260826180000_lot_d2_user_profile` appliquée avec succès.
+
+### 3. Backend & API Profil (`ProfileModule`)
+- **Stockage Sécurisé de l'Avatar (`AvatarStorageService`)** :
+  - Stockage local dans `uploads/avatars/` (compatible volume Docker).
+  - Validation binaire stricte des magic bytes (JPEG, PNG, WebP, GIF) et limite de taille à 2 Mo max.
+  - Génération de noms de fichiers sécurisés (`avatar_<userId>_<timestamp>_<uuid>.<ext>`) et protection regex anti-traversée de chemin.
+  - Streaming sécurisé avec en-têtes `X-Content-Type-Options: nosniff` et cache optimisé.
+  - Suppression automatique de l'ancien fichier d'avatar lors d'un remplacement.
+- **Endpoints REST API (`/api/v1/profile` & `/api/v1/users/avatar`)** :
+  - `GET /api/v1/profile` : Profil complet de l'utilisateur connecté avec bio, préférences et IA.
+  - `PATCH /api/v1/profile` : Mise à jour du nom d'affichage et de la bio (validation Zod).
+  - `POST /api/v1/profile/avatar` : Upload d'avatar (`multipart/form-data`, validation fichier et audit log).
+  - `DELETE /api/v1/profile/avatar` : Suppression de la photo de profil et purge du fichier disque.
+  - `GET /api/v1/profile/preferences` : Consultation des préférences d'interface et IA.
+  - `PATCH /api/v1/profile/preferences` : Mise à jour atomique des préférences.
+  - `DELETE /api/v1/profile` : Suppression de compte RGPD (détruit le fichier avatar, révoque tous les refresh tokens de session, consigne l'audit log `USER_ACCOUNT_DELETE_RGPD` et supprime le compte en base).
+  - `@Public() GET /api/v1/users/avatar/:filename` : Endpoint public de diffusion sécurisée de l'avatar.
+- **Mise à jour d'AuthService & JwtService** :
+  - Les profils renvoyés lors du login, refresh et `getMe` intègrent `avatarUrl`, `bio` et `preferences`.
+
+### 4. Frontend Web Next.js 15 & Expérience Profil (`apps/web`)
+- **Affichage Avatar & Initiales dans la `Navbar`** :
+  - Affiche l'image de l'avatar si disponible, ou le fallback élégant des initiales (`getInitials`) avec lien direct vers `/profile`.
+- **Page Profil Complète (`/profile`)** :
+  - `ProfileHeader` : Cartouche visuel avec grand avatar, nom d'affichage, badge de rôle, adresse email, date d'inscription et date du dernier accès.
+  - `AvatarUploader` : Sélecteur de fichier avec prévisualisation en direct, validation 2 Mo / format d'image, bouton d'enregistrement et bouton de suppression.
+  - `ProfileEditor` : Modification du nom et de la bio avec compteur de caractères en temps réel (max 500).
+  - `ProfilePreferences` : Personnalisation du thème (sombre/clair/système), effets sonores et préférences de l'assistant Mentor IA.
+  - `ProfileSecurity` : Formulaire de changement de mot de passe avec checklist interactive D-09 en temps réel.
+  - `ProfileRgpd` : Cartouche d'information RGPD et zone critique de suppression définitive du compte avec modale sécurisée et saisie obligatoire de confirmation.
+
+### 5. Validations & Tests
+- **Tests API** :
+  - `apps/api/src/modules/auth/__tests__/seed-validation.spec.ts` : 4 tests unitaires de validation du seed.
+  - `apps/api/src/modules/profile/__tests__/avatar-storage.service.spec.ts` : 10 tests unitaires du stockage d'avatar.
+  - `apps/api/src/modules/profile/__tests__/profile.service.spec.ts` : 7 tests unitaires de la logique métier et RGPD.
+  - `apps/api/src/modules/profile/__tests__/profile.e2e.spec.ts` : 6 tests d'intégration PostgreSQL complets.
+- **Tests Frontend** :
+  - `apps/web/test/navbar-avatar.spec.tsx` : 2 tests d'affichage d'avatar et initiales dans la navbar.
+  - `apps/web/test/avatar-uploader.spec.tsx` : 5 tests du composant uploader (validation, preview, upload, suppression).
+  - `apps/web/test/profile-editor.spec.tsx` : 2 tests d'édition et soumission du profil.
+  - `apps/web/test/profile-preferences.spec.tsx` : 1 test de gestion des préférences.
+  - `apps/web/test/profile-rgpd.spec.tsx` : 2 tests de confirmation et suppression RGPD.
+  - `apps/web/test/profile-page.spec.tsx` : 2 tests d'intégration de la page `/profile`.
+- **Bilan Global des Métriques** :
+  - `pnpm test` : 100 % vert (**351 tests automatisés** : 228 API, 105 Web, 18 Content-Schema — 0 skipped).
+  - `pnpm lint` : 100 % vert (0 erreur, 0 avertissement).
+  - `pnpm typecheck` : 100 % vert (0 erreur TypeScript).
+---
+
+## 2026-08-26 — [Fix Lot D2] : Câblage complet & Correction du Thème Clair / Sombre / Système
+
+**Branche** : `fix/d2-theme-clair`  
+**Objectif** : Rendre le thème clair pleinement fonctionnel avec bascule instantanée sans flash de chargement (FOUC), palette de couleurs claire complète et contrastée sur tous les composants (cartes, tableaux, formulaires, code Shiki dual-theme, terminal simulé, tiroir Mentor IA), support des 3 options de préférences (sombre par défaut, clair, système suivant l'OS), synchronisation du profil utilisateur et repli `localStorage`.
+
+### 1. Mécanisme de Thème & Zéro Flash au Chargement
+- **Intégration de `next-themes`** :
+  - Client wrapper `ThemeProvider` (`apps/web/components/theme/theme-provider.tsx`) configuré avec `attribute="class"`, `defaultTheme="dark"`, `enableSystem={true}` et stockage automatique de clé `theme` dans `localStorage`.
+  - Intégration dans le layout racine `apps/web/app/layout.tsx` avec `suppressHydrationWarning` sur la balise `<html>`.
+  - Script bloquant inline côté serveur injecté par `next-themes` éliminant tout flash de thème blanc/noir au premier chargement.
+- **Configuration Tailwind CSS** :
+  - Ajout de `darkMode: 'class'` dans `packages/config/tailwind/tailwind.config.ts` et `apps/web/tailwind.config.ts`.
+
+### 2. Design Tokens & Palette Graphique Bi-Thème
+- **Tokens CSS (`apps/web/styles/tokens.css`)** :
+  - `:root` : palette claire native contrastée (`--bg-primary: #f8fafc`, `--bg-secondary: #ffffff`, `--bg-card: rgba(255, 255, 255, 0.92)`, `--text-primary: #0f172a`, `--border-default: #e2e8f0`, etc.).
+  - `.dark` : palette sombre d'origine conservée et sublimée (`--bg-primary: #020617`, `--bg-secondary: #0b1120`, `--text-primary: #f8fafc`, etc.).
+- **Composants & Feuilles de Style Spécialisées** :
+  - `base.css` : adaptation des classes `.glass-panel` et `.glass-panel-hover` pour les fonds clairs et sombres.
+  - `lessons.css` : adaptation complète de la typographie `.lesson-prose` (titres, paragraphes, citations, listes, tableaux, code inline).
+  - `CodeBlock` (`apps/web/components/lessons/code-block.tsx`) : coloration syntaxique Shiki bi-thème simultanée (`github-light-default` / `github-dark-default`), bascule instantanée sans ré-exécution de `codeToHtml` grâce aux variables CSS `--shiki-light` / `--shiki-dark`.
+  - `LabTerminal` (`apps/web/components/labs/lab-terminal.tsx`) : contrôles, barre d'état et raccourcis adaptés en mode clair tout en préservant un contraste élevé sur la console terminal.
+  - Navbar, fil d'Ariane, formulaires d'authentification, pages Catalogue, Dashboard, Administration, Profil et tiroir Mentor IA intégralement adaptés avec contrastes certifiés.
+
+### 3. Câblage des Préférences & Tests
+- **Sélecteur de Thème (`ProfilePreferences`)** :
+  - Boutons interactifs avec icônes `Moon`, `Sun`, `Sliders` pour « Sombre », « Clair », « Système ».
+  - Bascule visuelle immédiate via `useTheme().setTheme` combinée à la sauvegarde de profil via l'API REST `PATCH /api/v1/profile/preferences`.
+- **Tests Automatisés Frontend** :
+  - `apps/web/test/theme-integration.spec.tsx` : tests d'intégration Vitest validant le `ThemeProvider`, la valeur par défaut (`dark`), la bascule vers `light` et `system`, et l'interaction avec `ProfilePreferences`.
+- **Bilan des Métriques** :
+  - `pnpm test` : 100 % vert (**354 tests automatisés** : 228 API, 108 Web, 18 Content-Schema — 0 skipped, 0 failed).
+  - `pnpm lint` : 100 % vert (0 erreur, 0 avertissement).
+  - `pnpm typecheck` : 100 % vert (0 erreur TypeScript).
+  - `node scripts/check-file-size.mjs` : 100 % conforme D-13 (331 fichiers analysés, 0 violation > 400 lignes).
+
+---
+
+## 2026-08-26 — [Correctif Exhaustif] : Audit & Conversion Bi-Thème Complète avec Garde-Fou CI
+
+**Branche** : `fix/theme-clair-complet`  
+**Objectif** : Éliminer 100 % des classes sombres hardcodées résiduelles dans `apps/web` (boutons/cartes d'accès aux leçons/quiz/labs, en-tête de module, listes de cours, progression de track, widgets dashboard, modales, dialogues admin, formulaires, tiroir Mentor IA et skeletons de chargement), mettre en place un script de contrôle automatisé `scripts/check-theme-classes.mjs` intégré à la CI GitHub Actions, et certifier l'accessibilité bi-thème page par page.
+
+### 1. Audit Exhaustif & Remplacement des Classes Hardcodées
+- **Composants Catalogue (`apps/web/components/catalog/`)** :
+  - `module-header.tsx`, `module-lessons-list.tsx`, `module-quizzes-list.tsx`, `module-labs-list.tsx`, `track-section.tsx`, `module-card.tsx` : conversion des fonds fixes, bordures sombres et textes atténués en variantes bi-thème (`dark:`).
+- **Composants Dashboard (`apps/web/components/dashboard/`)** :
+  - `dashboard-header.tsx`, `dashboard-stats.tsx`, `dashboard-recommendations.tsx`, `dashboard-resume.tsx`, `dashboard-tracks.tsx`, `dashboard-quizzes.tsx`, `dashboard-activity.tsx` : cartes, jauges et compteurs adaptés aux contrastes clairs et sombres.
+- **Composants Leçons, Labs & Quiz** :
+  - `lesson-header.tsx`, `lesson-metadata.tsx`, `lesson-module-sidebar.tsx`, `lesson-navigation.tsx`, `lesson-complete-button.tsx`, `markdown-renderer.tsx`.
+  - `lab-header.tsx`, `lab-context.tsx`, `lab-editor.tsx`, `lab-hints.tsx`, `lab-session-controls.tsx`, `lab-step-checklist.tsx`, `lab-terminal.tsx`, `lab-verdict.tsx`.
+  - `quiz-runner.tsx`, `quiz-stepper.tsx`, `quiz-question-item.tsx`, `quiz-review-step.tsx`, `quiz-result-view.tsx`.
+- **Composants Admin, Auth & Profil** :
+  - `admin-users-header.tsx`, `admin-users-filters.tsx`, `admin-users-table.tsx`, `admin-pagination.tsx`, `create-user-dialog.tsx`, `edit-user-dialog.tsx`, `reset-password-dialog.tsx`, `toggle-status-dialog.tsx`.
+  - `login-form.tsx`, `force-password-change-modal.tsx`, `admin-route.tsx`, `protected-route.tsx`.
+  - `profile-editor.tsx`, `profile-header.tsx`, `profile-preferences.tsx`, `profile-rgpd.tsx`, `profile-security.tsx`, `avatar-uploader.tsx`.
+  - `mentor-chat-drawer.tsx`, `mentor-chat-header.tsx`, `mentor-chat-input.tsx`, `mentor-chat-messages.tsx`, `mentor-chat-settings.tsx`, `mentor-conversation-item.tsx`, `mentor-conversation-sidebar.tsx`.
+- **Pages & Skeletons de chargement (`apps/web/app/**`)** :
+  - Remplacement de toutes les classes `bg-slate-800` et `text-slate-400` des squelettes (`loading.tsx`) par des classes dynamiques `bg-slate-200 dark:bg-slate-800`.
+
+### 2. Garde-Fou CI Durable (`scripts/check-theme-classes.mjs`)
+- Création d'un script d'analyse statique dédié `scripts/check-theme-classes.mjs` vérifiant l'absence de classes sombres hardcodées sans variante `dark:` dans `apps/web/app` et `apps/web/components`.
+- Ajout du script `"check:theme": "node scripts/check-theme-classes.mjs"` dans le `package.json` racine.
+- Intégration dans le pipeline CI `.github/workflows/ci.yml` pour bloquer toute régression future.
+
+### 3. Validations & Métriques
+- `node scripts/check-theme-classes.mjs` : **0 violation** sur 83 fichiers analysés.
+- `node scripts/check-file-size.mjs` : 100 % conforme D-13 (0 violation > 400 lignes sur 331 fichiers analysés).
+- `pnpm lint --force` : 100 % vert (0 erreur, 0 avertissement sur les 4 packages).
+- `pnpm typecheck --force` : 100 % vert (0 erreur TypeScript).
+- `pnpm test --force` : 100 % vert (**354 tests passants** : 228 API, 108 Web, 18 Content-Schema — 0 failed, 0 skipped).
+- `pnpm build --force` : 100 % vert (Next.js 15 App Router et NestJS 11).
+
+---
+
+## 2026-08-27 — [Lot D3] : Contenu SISR — Cartographie & Phase 2.1 (Socle Linux & Services Réseau)
+
+**Branches** : `docs/d3-carte-modules` (Phase 1), `feat/d3-socle-systemes-linux` (Phase 2.1)  
+**Objectif** : Cartographie exhaustive des 19 modules du référentiel national BTS SIO option SISR, ordonnancement pédagogique en 5 phases, réintégration justifiée du module transversal d'anglais technique, et production complète des 2 modules prioritaires de 1ère année (`linux-administration` et `services-reseau-linux`).
+
+### 1. Phase 1 — Cartographie Référentiel & Investigation
+- **Investigation Git sur `anglais-technique`** :
+  - Identification de l'omission technique lors du passage à la structure hiérarchique par tracks en v0.2.0.
+  - Justification contractuelle et réintégration au catalogue en 1ère année (Module transversal, épreuve nationale E2).
+- **Cartographie Référentiel (`docs/modules-map.md`)** :
+  - Définition complète des 19 modules (8 en 1ère année, 11 en 2ème année), alignés sur les blocs B1.1–B1.6, B2.1–B2.3, B3.1–B3.4 et E2.
+  - Spécification détaillée des slugs, intitulés, durées, niveaux, idées de labs et matrice de couverture croisée.
+  - Mise à jour de la feuille de route pédagogique dans `docs/roadmap.md` (§4).
+
+### 2. Phase 2.1 — Production du Module `linux-administration`
+- **Module `linux-administration`** (6 leçons, 6 quiz, 3 labs) :
+  - `01-arborescence-fhs-et-permissions.md` + `quiz-arborescence-fhs-et-permissions.yaml` : Norme FHS, UGO octal/symbolique, bits spéciaux SUID, SGID, Sticky Bit et ACL POSIX.
+  - `02-gestion-utilisateurs-et-sudo.md` + `quiz-gestion-utilisateurs-et-sudo.yaml` : Fichiers `/etc/passwd`, `/etc/shadow`, `/etc/group`, commande `chage` et délégation `visudo`/`sudoers`.
+  - `03-paquets-et-logiciels-apt.md` + `quiz-paquets-et-logiciels-apt.yaml` : Dépôts APT, clés GPG, gestion des paquets `dpkg`/`apt`, et correctifs `unattended-upgrades`.
+  - `04-gestion-services-systemd.md` + `quiz-gestion-services-systemd.yaml` : Unités `.service`, `.target`, cycle de vie `systemctl`, rédaction d'unité et dépannage.
+  - `05-stockage-disques-et-lvm.md` + `quiz-stockage-disques-et-lvm.yaml` : GPT, ext4/xfs, points de montage `/etc/fstab` durcis avec UUIDs, architecture LVM (PV, VG, LV) et extension à chaud.
+  - `06-analyse-journaux-et-processus.md` + `quiz-analyse-journaux-et-processus.yaml` : Surveillance des processus (`ps`, `htop`, `free`, `df`), signaux POSIX, `journalctl` et rotation `logrotate`.
+  - **3 Labs autonomes de niveau 2_files avec suites de tests complètes** :
+    - `lab-droits-fhs` (`droits-fhs-et-permissions`) : Matrice de sécurisation FHS (SGID 2770, Sticky 1777, TLS 710) dans `permissions.csv`.
+    - `lab-configuration-lvm` (`configuration-stockage-lvm`) : Montages fstab durcis avec UUIDs et options `nodev,nosuid,noexec` dans `fstab`.
+    - `lab-depannage-systemd` (`depannage-service-systemd`) : Unité de service systemd durcie (non-root, After/Requires, Restart, NoNewPrivileges) dans `api-backend.service`.
+
+### 3. Phase 2.1 — Production du Module `services-reseau-linux`
+- **Module `services-reseau-linux`** (5 leçons, 5 quiz, 2 labs) :
+  - `01-serveur-dhcp-linux.md` + `quiz-serveur-dhcp-linux.yaml` : Processus DORA, configuration ISC-DHCP (`dhcpd.conf`), architecture ISC Kea (JSON) et baux.
+  - `02-serveur-dns-bind9-autorite.md` + `quiz-serveur-dns-bind9-autorite.yaml` : Architecture Bind9, zones directes/inverses, enregistrements SOA, NS, MX, A, CNAME, PTR et point terminal.
+  - `03-resolution-dns-recursive-cache.md` + `quiz-resolution-dns-recursive-cache.yaml` : Résolution récursive vs itérative, forwarders, randomisation des ports, DNSSEC, durcissement ANSSI et administration `rndc`.
+  - `04-synchronisation-horaire-ntp.md` + `quiz-synchronisation-horaire-ntp.yaml` : Strates NTP (0 à 15), importance pour Kerberos/TLS, configuration Chrony (`chrony.conf`), outil `chronyc` et client `systemd-timesyncd`.
+  - `05-relais-dhcp-et-multi-sous-reseaux.md` + `quiz-relais-dhcp-et-multi-sous-reseaux.yaml` : Traversée des routeurs, champ `giaddr`, Option 82, `isc-dhcp-relay` et `ip helper-address`.
+  - **2 Labs autonomes de niveau 2_files avec suites de tests complètes** :
+    - `lab-dns-bind9` (`configuration-dns-bind9`) : Déploiement complet Bind9 (zone directe `db.societe.lan` et zone inverse `db.192.168.10` avec réciprocité PTR).
+    - `lab-serveur-dhcp-kea` (`configuration-dhcp-kea`) : Déploiement ISC Kea JSON (`kea-dhcp4.conf`) avec pools, options DHCP et réservation MAC.
+
+### 4. Validations & Métriques de Contenu
+- `node content/validate.mjs` : **100 % valide** :
+  - 4 modules opérationnels (`reseaux-fondamentaux`, `windows-server-ad`, `linux-administration`, `services-reseau-linux`).
+  - 24 leçons complètes et relues.
+  - 24 quiz d'évaluation (132 questions avec explications pédagogiques).
+  - 12 ateliers pratiques de niveau 2_files avec validateurs autonomes.
+  - **36 / 36 tests de validateurs passants** sur les suites de fixtures (`valid` et `invalid-*`).
+- `pnpm content:validate` : 100 % valide (18/18 tests Zod passants).
+- `node scripts/check-file-size.mjs` : 100 % conforme D-13 (331 fichiers analysés, 0 violation > 400 lignes).
+- `node scripts/check-theme-classes.mjs` : 100 % conforme bi-thème (0 violation).
+
+### 5. Phase 2.2 — Production du Module `virtualisation-systemes`
+- **Module `virtualisation-systemes`** (5 leçons, 5 quiz, 2 labs) :
+  - `01-hyperviseurs-type1-type2.md` + `quiz-hyperviseurs-type1-type2.yaml` : Hyperviseurs Type 1 (Bare-Metal) vs Type 2 (Hosted), KVM/QEMU, virtualisation imbriquée, extensions CPU (VT-x, AMD-V, EPT, NPT).
+  - `02-architecture-proxmox-ve.md` + `quiz-architecture-proxmox-ve.yaml` : Architecture Proxmox VE (Debian 12 + KVM + LXC + pve-cluster), corosync, stockage (local-lvm, ZFS, Ceph, NFS) et commandes CLI `qm` / `pct` / `pvesm`.
+  - `03-reseau-virtuel-bridges-vlans.md` + `quiz-reseau-virtuel-bridges-vlans.yaml` : Linux Bridges (`vmbr0`, `vmbr1`), configuration `/etc/network/interfaces`, mode `bridge-vlan-aware`, isolation DMZ et agrégation de liens (Bonds LACP 802.3ad).
+  - `04-modeles-clones-lies-cloudinit.md` + `quiz-modeles-clones-lies-cloudinit.yaml` : Modèles de VMs, Clones intégraux vs Clones liés (_Linked Clones_), et provisionnement automatisé Cloud-Init (`user-data`, `users`, `packages`, `runcmd`).
+  - `05-dimensionnement-ressources-quotas.md` + `quiz-dimensionnement-ressources-quotas.yaml` : Sur-allocation (Overcommitment vCPU/vRAM), ballon mémoire VirtIO Ballooning, limitation I/O (IOPS, débit Mo/s) et pools de ressources.
+  - **2 Labs autonomes de niveau 2_files avec suites de tests complètes** :
+    - `lab-config-cloudinit` (`configuration-cloudinit-vm`) : Configuration déclarative Cloud-Init dans `user-data` avec en-tête `#cloud-config`, compte `admin-sys`, clé SSH et durcissement pare-feu UFW dans `runcmd:`.
+    - `lab-interfaces-proxmox` (`configuration-interfaces-proxmox`) : Configuration réseau `/etc/network/interfaces` Proxmox avec pont public `vmbr0` (VLAN-aware, passerelle) et pont privé isolé `vmbr1` (DMZ interne).
+
+### 6. Validations Globales Post-Virtualisation
+- `node content/validate.mjs` : **100 % valide** :
+  - 5 modules opérationnels (`reseaux-fondamentaux`, `windows-server-ad`, `linux-administration`, `services-reseau-linux`, `virtualisation-systemes`).
+  - 29 leçons rédigées et validées.
+  - 29 quiz d'évaluation (157 questions).
+  - 14 ateliers pratiques (Labs).
+  - **43 / 43 tests de validateurs passants** sur les suites de fixtures.
+- `pnpm content:validate` : 100 % valide (18/18 tests Zod passants).
+- `node scripts/check-file-size.mjs` : 100 % conforme D-13 (331 fichiers analysés, 0 violation > 400 lignes).
+- `node scripts/check-theme-classes.mjs` : 100 % conforme bi-thème (0 violation).
+- `pnpm test --force` : 100 % vert (357 tests passants dans le monorepo).
+- `pnpm build --force` : 100 % réussi.
+
+### 7. Phase 2.2 — Production du Module `sauvegardes-stockage`
+- **Module `sauvegardes-stockage`** (5 leçons, 5 quiz, 2 labs) :
+  - `01-technologies-stockage-raid.md` + `quiz-technologies-stockage-raid.yaml` : Technologies de disques (HDD SAS/SATA, SSD NVMe U.2/PCIe), protocoles réseau DAS, NAS (NFS/SMB), SAN (iSCSI, Fibre Channel), RAID matériel vs logiciel (`mdadm`), niveaux RAID 0, 1, 5, 6, 10 (capacités, tolérances) et disques Hot-Spare.
+  - `02-strategie-sauvegarde-3-2-1.md` + `quiz-strategie-sauvegarde-3-2-1.yaml` : Règle du 3-2-1-1-0 (immuabilité WORM / S3 Object Lock, Air-Gap, 0 erreur), typologie complète / différentielle / incrémentale / incrémentale inverse, déduplication au bloc et rétention GFS (_Grandfather-Father-Son_).
+  - `03-outils-sauvegarde-linux.md` + `quiz-outils-sauvegarde-linux.yaml` : Synchronisation et miroirs `rsync` (`-a`, `--delete`, `--link-dest`), solutions dédupliquées BorgBackup / Restic, automatisation Cron (`/etc/cron.d/`) et Timers systemd, contrôle d'intégrité SHA-256.
+  - `04-outils-sauvegarde-windows-veeam.md` + `quiz-outils-sauvegarde-windows-veeam.yaml` : Clichés instantanés Windows VSS (_Volume Shadow Copy Service_), sauvegarde de l'état du système Active Directory (System State) et mode DSRM, architecture Veeam Backup & Replication (Proxy, Repository Linux immuable, CBT, Instant VM Recovery).
+  - `05-restauration-metriques-rto-rpo.md` + `quiz-restauration-metriques-rto-rpo.yaml` : Démarches PCA (haute disponibilité sans coupure) vs PRA (reconstruction après sinistre), métriques temporelles RTO, RPO, MTD ($RTO < MTD$), calendrier de tests périodiques de restauration ANSSI / ISO 27001 et matrice de criticité.
+  - **2 Labs autonomes de niveau 2_files avec suites de tests complètes** :
+    - `lab-script-backup-rsync` (`script-sauvegarde-rsync-rotation`) : Script Bash `backup.sh` avec mode strict `set -euo pipefail`, synchronisation `rsync` (-a, --delete, --exclude), calcul d'empreinte `sha256sum` dans `checksums.sha256`, rotation des archives de plus de 7 jours (`find -mtime`) et journalisation `backup.log`.
+    - `lab-plan-pca-rpo` (`matrice-pca-pra-rpo-rto`) : Matrice de continuité d'activité `plan-continuite.csv` classant les 4 services d'entreprise (AD DS, ERP PostgreSQL, Fichiers, Logs) avec RTO cible, RPO cible, stratégies techniques et fréquence des tests de restauration.
+
+### 8. Validations Globales Post-Sauvegardes
+- `node content/validate.mjs` : **100 % valide** :
+  - 6 modules opérationnels (`reseaux-fondamentaux`, `windows-server-ad`, `linux-administration`, `services-reseau-linux`, `virtualisation-systemes`, `sauvegardes-stockage`).
+  - 34 leçons rédigées et validées.
+  - 34 quiz d'évaluation (182 questions).
+  - 16 ateliers pratiques (Labs).
+  - **50 / 50 tests de validateurs passants** sur les suites de fixtures.
+- `pnpm content:validate` : 100 % valide (18/18 tests Zod passants).
+- `node scripts/check-file-size.mjs` : 100 % conforme D-13 (331 fichiers analysés, 0 violation > 400 lignes).
+- `node scripts/check-theme-classes.mjs` : 100 % conforme bi-thème (0 violation).
+- `pnpm test --force` : 100 % vert (357 tests passants dans le monorepo).
+- `pnpm build --force` : 100 % réussi.
+
+### 9. Phase 2.2 — Production du Module `support-parc-glpi`
+- **Module `support-parc-glpi`** (5 leçons, 5 quiz, 2 labs) :
+  - `01-principes-itil-et-support.md` + `quiz-principes-itil-et-support.yaml` : Référentiel ITIL v4, typologie des événements (Incident vs Demande de service vs Problème vs Changement), niveaux de support et chaîne d'escalade (N1, N2, N3), conventions de service (SLA, OLA, UC) et métriques TTO / TTR / FCR.
+  - `02-architecture-glpi-et-deploiement.md` + `quiz-architecture-glpi-et-deploiement.yaml` : Architecture LAMP de GLPI (Apache/Nginx, MariaDB, PHP 8.2/8.3-FPM, cron), arborescence hiérarchique des entités (multi-sites, sous-entités, récursivité) et profils RBAC (Self-Service, Technician, Admin, Super-Admin).
+  - `03-inventaire-automatise-agents.md` + `quiz-inventaire-automatise-agents.yaml` : Fonctionnement et télémétrie de GLPI Agent (rapports JSON, collecte matérielle et logicielle), déploiement massif par GPO Active Directory / script, découverte réseau et inventaire SNMP (switches, imprimantes, routeurs, association des ports LLDP/CDP et tables ARP).
+  - `04-gestion-tickets-et-sla.md` + `quiz-gestion-tickets-et-sla.yaml` : Cycle de vie normalisé d'un ticket (Nouveau, En cours, En attente, Résolu, Clos), matrice de priorité Urgence / Impact, moteur de règles métier d'affectation automatique, et gestion des SLA (TTO, TTR, escalades automatiques).
+  - `05-habilitations-et-cycle-de-vie.md` + `quiz-habilitations-et-cycle-de-vie.yaml` : Cycle de vie des actifs ITAM (Commande, En stock, En service, En réparation, Réforme D3E), effacement sécurisé NIST 800-88, gestion des licences logicielles (OEM, Volume, SaaS) et synchronisation d'annuaire Active Directory / LDAPS.
+  - **2 Labs autonomes de niveau 2_files avec suites de tests complètes** :
+    - `lab-regles-glpi` (`regles-routage-tickets-sla`) : Fichier déclaratif JSON `rules.json` configurant 3 règles métier complètes (incidents VIP avec SLA TTR $\le$ 2h / TTO $\le$ 15min, pannes réseau vers équipe Réseau SLA TTR $\le$ 4h, demandes bureautiques vers N1 SLA TTR $\le$ 24h).
+    - `lab-inventaire-snmp` (`configuration-decouverte-snmp`) : Fichier déclaratif YAML `snmp-discovery.yaml` définissant la tâche d'inventaire réseau avec agent proxy, plages IP commutateurs (192.168.10.x) et copieurs (192.168.20.x), profils SNMP v2c et SNMP v3 sécurisé (`authPriv`, SHA, AES) et options de topologie LLDP/ARP.
+
+### 10. Validations Globales Post-GLPI
+- `node content/validate.mjs` : **100 % valide** :
+  - 7 modules opérationnels (`reseaux-fondamentaux`, `windows-server-ad`, `linux-administration`, `services-reseau-linux`, `virtualisation-systemes`, `sauvegardes-stockage`, `support-parc-glpi`).
+  - 39 leçons rédigées et validées.
+  - 39 quiz d'évaluation (207 questions).
+  - 18 ateliers pratiques (Labs).
+  - **57 / 57 tests de validateurs passants** sur les suites de fixtures.
+- `pnpm content:validate` : 100 % valide (18/18 tests Zod passants).
+- `node scripts/check-file-size.mjs` : 100 % conforme D-13 (331 fichiers analysés, 0 violation > 400 lignes).
+- `node scripts/check-theme-classes.mjs` : 100 % conforme bi-thème (0 violation).
+- `pnpm test --force` : 100 % vert (357 tests passants dans le monorepo).
+- `pnpm build --force` : 100 % réussi.
+
+### 11. Phase 2.2 — Production du Module `anglais-technique` (Clôture Parcours 1ère Année SISR)
+- **Module `anglais-technique`** (5 leçons, 5 quiz, 2 labs) :
+  - `01-vocabulaire-infrastructure-reseau.md` + `quiz-vocabulaire-infrastructure-reseau.yaml` : Lexique anglophone du matériel serveur (chassis, rack, redundant PSUs, hot-swappable drives, NIC, HBA, throughput), connectique réseau (patch cord/panel, SFP+ transceivers, managed switches, default gateway) et pièges des faux-amis (legacy, facility, location, deprecate).
+  - `02-lecture-documentation-et-rfcs.md` + `quiz-lecture-documentation-et-rfcs.yaml` : Mots-clés normatifs IETF RFC 2119 (MUST, MUST NOT, SHOULD, SHOULD NOT, MAY), structure formelle des pages de manuel UNIX/Linux (NAME, SYNOPSIS, OPTIONS, RETURN VALUE) et analyse de guides de déploiement éditeurs.
+  - `03-tickets-incident-et-support.md` + `quiz-tickets-incident-et-support.yaml` : Rédaction de tickets d'assistance professionnels (Summary, Severity P1/P2/P3, Symptoms, Steps to Reproduce, Workaround, RCA), communication utilisateur polie en anglais et retours constructeur RMA.
+  - `04-analyse-logs-et-messages-erreur.md` + `quiz-analyse-logs-et-messages-erreur.yaml` : Interprétation des niveaux Syslog RFC 5424 (Emergency à Debug), analyse des messages d'erreur système courants (`Connection refused`, `No space left on device`, `Permission denied`), codes d'état Web/HTTP et fiches de procédures d'exploitation (SOP).
+  - `05-securite-sauvegardes-bonnes-pratiques.md` + `quiz-securite-sauvegardes-bonnes-pratiques.yaml` : Terminologie cyberdéfense (Vulnerabilities, CVE, CVSS Score, Exploits, Hardening, Patch Management), principes de sécurité (Least Privilege, Defense in Depth, Zero Trust, Air-Gap) et analyse de Security Advisories.
+  - **2 Labs autonomes de niveau 2_files avec suites de tests complètes** :
+    - `lab-ticket-support-anglais` (`redaction-ticket-support-anglais`) : Rédaction d'un rapport d'incident formel en anglais dans `ticket.md` qualifiant une panne critique PostgreSQL (ERP indisponible, 150 utilisateurs bloqués, diagnostic disque 100% plein, contournement 2 Go libérés et demande d'extension de partition de 50 Go au N2).
+    - `lab-documentation-technique` (`analyse-documentation-technique-anglais`) : Analyse d'un avis de sécurité CVE-2026-4019 et d'un journal d'erreur Nginx/OpenSSL dans `diagnostic.json` avec qualification de sévérité Emergency/CVSS 9.8, plan de mise à niveau des paquets, durcissement TLSv1.2/1.3 et vérification sans coupure `nginx -t && systemctl reload nginx`.
+
+### 12. Bilan Global — 100 % du Parcours 1ère Année SISR Finalisé
+- `node content/validate.mjs` : **100 % valide** :
+  - **8 modules opérationnels** (`reseaux-fondamentaux`, `windows-server-ad`, `linux-administration`, `services-reseau-linux`, `virtualisation-systemes`, `sauvegardes-stockage`, `support-parc-glpi`, `anglais-technique`).
+  - **44 leçons rédigées et validées**.
+  - **44 quiz d'évaluation (232 questions avec explications pédagogiques)**.
+  - **20 ateliers pratiques (Labs)**.
+  - **63 / 63 tests de validateurs passants** sur les suites de fixtures.
+- `pnpm content:validate` : 100 % valide (18/18 tests Zod passants).
+- `node scripts/check-file-size.mjs` : 100 % conforme D-13 (331 fichiers analysés, 0 violation > 400 lignes).
+- `node scripts/check-theme-classes.mjs` : 100 % conforme bi-thème (0 violation).
+### 13. Phase 2.3 — Initialisation du Parcours 2ème Année (`annee-2`)
+- **Fichier de parcours `content/tracks/annee-2/track.yaml`** :
+  - Slug : `annee-2`
+  - Titre : `BTS SIO SISR — 2ème année`
+  - Description : `Réseaux avancés et routage, sécurité périmétrique et filtrage, conteneurisation Docker, automatisation DevOps et cybersécurité.`
+  - Position : 2
+- **Module placeholder `content/tracks/annee-2/modules/routage-interconnexion/module.yaml`** :
+  - Slug : `routage-interconnexion`
+
+---
+
+## 2026-08-28 — [Lot D4] : Finalisation du Contenu 2ème Année — Modules 3 à 9 (bilan)
+
+**PRs** : #40 à #48 (`content/d4-*` → `main`)
+
+Production et validation de 9 modules supplémentaires du parcours `annee-2` (5 leçons, 5 quiz et 2 labs chacun, validateurs niveau 2_files avec suites de fixtures) :
+
+| # | Module | Focus | Labs |
+|---|---|---|---|
+| 1 | `routage-interconnexion` | Routage statique/dynamique, OSPF mono/multi-zones, inter-VLAN, NAT/PAT | OSPF, inter-VLAN |
+| 2 | `securite-perimetrique` | Zones/DMZ, nftables, NAT, appliances UTM, durcissement | Filtrage DMZ, NAT |
+| 3 | `conteneurisation-docker` | Images, volumes/réseaux, Compose, durcissement conteneurs | Dockerfile, Compose |
+| 4 | `automatisation-devops` | Culture CI/CD, Ansible, pipelines GitHub Actions/GitLab, Terraform, Prometheus/Grafana | Playbook Ansible, pipeline CI |
+| 5 | `supervision-observabilite` | Métriques/logs/traces, alerting, observabilité applicative | Supervision |
+| 6 | `cloud-prive-virtualisation` | Virtualisation avancée, cloud privé, conteneurs de calcul | Provisionnement |
+| 7 | `securite-systemes-durcissement` | Référentiels ANSSI/CIS, durcissement Linux/Windows, audits défensifs | Durcissement SSH, audit |
+| 8 | `administration-bases-donnees` | SQL/PostgreSQL, sauvegarde/restauration, optimisation, droits | Administration SQL |
+| 9 | `veille-certification` | Veille technologique, préparation certifications, CV & entretiens | Veille, certification |
+
+### Bilan consolidé après Lot D4
+- `node content/validate.mjs` : **100 % valide** — 2 tracks, **17 modules**, **89 leçons**, **89 quiz (457 questions)**, **38 labs**, **117/117 tests de validateurs** passants.
+- `pnpm content:validate` : 18/18 tests Zod ; `node scripts/check-file-size.mjs` : 0 violation D-13 ; `check-theme-classes` : 0 violation ; `pnpm lint` : 0 erreur.
+- `content:sync` : idempotence confirmée (tous compteurs « inchangés ») ; CI GitHub verte sur `main` (runs #46 à #48).
+- Restent à produire en `annee-2` : `serveurs-web-pki-tls` (fiche #11) et `vpn-acces-distants` (fiche #12) de `docs/modules-map.md`.
+
+### Difficultés & décisions
+- La cartographie initiale a été renommée/consolidée en production (détail dans `docs/roadmap.md` §4.1) ; décision consignée plutôt que renommage rétroactif des fiches pour préserver l'historique des PRs.
+
+---
+
+## 2026-08-28 — Audit v1-readiness : état des lieux complet, hygiène de sécurité & rattrapage documentaire
+
+**Branche** : `docs/audit-v1-readiness` (issue de `audit/v1-readiness`)
+
+---
+
+## 2026-08-28 — Clôture : catalogue SISR 19/19 modules & verrouillage de l'audit v1-readiness
+
+**Branche** : `cloture/content-19-modules` · **PR** : #52
+
+### Fusion du lot d'audit v1-readiness (ordre des lots respecté)
+1. **PR #49** (`docs/audit-v1-readiness`) : hygiène de sécurité (untrack `.env.test`, `.gitignore`), rapport `docs/audit/v1-readiness.md`, rattrapage roadmap/README/journal.
+2. **PR #50** (`content/d4-serveurs-web-pki-tls`) : fiche #11 — 6 leçons, 6 quiz, 3 labs (reverse proxy Nginx, PKI OpenSSL, durcissement TLS).
+3. **PR #51** (`content/d4-vpn-acces-distants`) : fiche #12 — 5 leçons, 5 quiz, 2 labs (WireGuard site-à-site, OpenVPN nomade).
+
+Les trois PR ont été fusionnées sur `main` après passage complet de la CI globale et de la validation du contenu.
+
+### Catalogue final (vérifié par `node content/validate.mjs`)
+- **19 modules** (8 en 1ère année, 11 en 2ème) · **100 leçons** · **100 quiz (512 questions)** · **43 labs** · **132/132 tests de validateurs** passants.
+- `pnpm content:validate` 18/18 · D-13 0 violation · `content:sync` idempotent.
+
+### Clôture documentaire
+- `docs/roadmap.md` §4.1 : tableau à **19/19 modules, 0 à créer** (56 leçons / 23 labs en 2ème année) ; §4.2 : statut « catalogue 100 % terminé ».
+- `README.md` : « 19 modules sur 19 », ampleur SISR complète, 480+ tests, trajectoire recentrée sur Homelab/Production.
+- Le **référentiel BTS SIO SISR (tracks 1ère + 2ème années) est intégralement couvert**, conformément à la cartographie `docs/modules-map.md`.
+
+### Décision
+- L'ouverture du jalon **v1.0 (Homelab Proxmox, noVNC, SDN)** devient la prochaine étape ; elle reste conditionnée par la revue de jalon et les points ouverts « Instructions pour Antigravity » §5. Aucune implémentation v1.0 n'est anticipée dans le code (règle blueprint §6).
+### Réalisations
+- **Rejouage des validations contractuelles** (Instructions §4) : `pnpm lint` (0 erreur, 14 warnings), `pnpm typecheck` (4/4), `pnpm test` (API 228 + web 111 + content-schema 18 = **357 tests Vitest passants** + 117 tests validateurs), `check-file-size` (0 violation, 10 avertissements ≥ 300 lignes), `content:sync` idempotent, `check-theme-classes` (0 violation). CI GitHub : 6 derniers runs `main` verts.
+- **Sécurité** : `.env.test` (racine) et `apps/api/.env.test` contenaient un secret JWT effectif et étaient suivis par git — violation de la règle blueprint « ne jamais committer de secret, même temporaire ». **Correction** : retrait du suivi (`git rm --cached`, fichiers conservés localement) + ajout au `.gitignore` ; la CI fournit ses propres variables et `apps/api/test/setup-env.ts` gère l'absence du fichier (fallback + dérivation `opensio` → `opensio_test`). Scan des scripts/infra/workflows : aucun secret en dur (générateurs uniquement).
+- **Conformité blueprint §6** : aucune implémentation v1.0 anticipée — Proxmox présent uniquement dans les énumérations de types (`LAB_RUNNER`), l'interface `LabRunner` et un label de badge ; aucun code noVNC/websockify.
+- **Rattrapage documentaire** : `docs/roadmap.md` §4.1/§4.2 (tableaux d'avancement et statut des phases), `README.md` (état réel du catalogue 17/19 modules, 470+ tests, `pnpm 11`, remplacement de la référence morte `pnpm doctor`, correction `scripts/backup-db.sh` → `scripts/backup.sh`).
+- **Rapport d'audit** : `docs/audit/v1-readiness.md` (constats classés, preuves rejouables, décisions).
+- **Nettoyage** : suppression de l'artefact local obsolète `ci-fail.log` (échec ShellCheck du 25/08 déjà corrigé par `fix/ci-shellcheck`, fusionnée dans `main`).
+
+### Prochaines étapes (approuvées par le commanditaire)
+1. Production du module `serveurs-web-pki-tls` (6 leçons, 6 quiz, 3 labs) — branche `content/d4-serveurs-web-pki-tls`.
+2. Production du module `vpn-acces-distants` (5 leçons, 5 quiz, 2 labs) — branche `content/d4-vpn-acces-distants`.
+3. Clôture : `docs/roadmap.md` §4.1 à 19/19 modules, journal final.
+  - Titre : `Routage Dynamique, OSPF & Interconnexion Réseau`
+  - Position : 1, Difficulté : 3, Estimation : 550 min, Blocs : B2.1, B2.2
+  - Validation réussie de la structure multitrack par `@opensio/content-schema`, le moteur de synchronisation et `content/validate.mjs`.
+- **Mise à jour de `docs/modules-map.md`** :
+  - Mise à jour de l'état des lieux (8 modules de 1ère année complétés, 11 modules de 2ème année cartographiés).
+- **Validations globales multitrack** :
+  - `node content/validate.mjs` : 2 parcours, 9 modules, 44 leçons, 44 quiz, 20 labs, 63/63 tests validateurs passants (100 % valide).
+  - `pnpm content:validate` : 18/18 tests passants.
+  - `node scripts/check-file-size.mjs` : 100 % conforme D-13 (0 violation > 400 lignes).
+  - `node scripts/check-theme-classes.mjs` : 100 % conforme bi-thème (0 violation).
+  - `pnpm test --force` : 100 % vert (357 tests passants dans le monorepo).
+  - `pnpm build --force` : 100 % réussi.
+
+### 14. Phase 2.3 — Production du Module `routage-interconnexion` (2ème Année SISR)
+- **Module `routage-interconnexion`** (5 leçons, 5 quiz, 2 labs) :
+  - `01-principes-routage-statique-dynamique.md` + `quiz-principes-routage-statique-dynamique.yaml` : Fonctionnement de la couche 3 (RIB, FIB, saut par saut), règle du masque le plus long, routage statique, distance administrative (AD) et routes statiques flottantes (Floating routes), taxonomie des protocoles dynamiques (IGP/EGP, Vecteur de distance vs État de liens).
+  - `02-protocole-ospf-architecture-et-etats.md` + `quiz-protocole-ospf-architecture-et-etats.yaml` : Architecture hiérarchique OSPFv2 (Backbone Area 0, routeurs ABR et ASBR), machine à 7 états d'adjacence (Down à Full), élection DR/BDR sur réseaux broadcast, calcul du coût et réajustement de la bande passante de référence (`auto-cost reference-bandwidth 100000`).
+  - `03-routage-inter-vlan-sous-interfaces.md` + `quiz-routage-inter-vlan-sous-interfaces.yaml` : Isolation de niveau 2 des VLANs, architecture Router-on-a-Stick (RoaS) avec liaisons Trunk 802.1Q et sous-interfaces `encapsulation dot1Q`, routage matériel sur commutateurs de niveau 3 via interfaces virtuelles SVI (`interface Vlan <id>`) et comparatif technique de performance.
+  - `04-nat-pat-et-routage-par-defaut.md` + `quiz-nat-pat-et-routage-par-defaut.yaml` : Translation d'adresses privées (RFC 1918), NAT statique 1:1, PAT / Surcharge / Masquerade avec réécriture de ports TCP/UDP, route par défaut (0.0.0.0/0) et injection OSPF `default-information originate`, architecture d'interconnexion multi-sites.
+  - `05-supervision-et-diagnostic-routage.md` + `quiz-supervision-et-diagnostic-routage.yaml` : Lecture de la table de routage (`show ip route`, codes C, S, O, O IA, O*E2), diagnostic de sessions de voisinage (`show ip ospf neighbor`), résolution du blocage ExStart/Exchange (MTU Mismatch), détection de boucles de routage (TTL Expired) et impact du routage asymétrique sur les pare-feu d'état.
+  - **2 Labs autonomes de niveau 2_files avec suites de tests complètes** :
+    - `lab-config-ospf` (`configuration-routage-dynamique-ospf`) : Configuration complète du routeur R1-CORE sous FRRouting dans `frr.conf` (Router-ID 10.255.255.1, référence 100 Gbps, annonces Area 0, coûts eth1=10 et eth2=100, passive-interface eth0 et default-information originate).
+    - `lab-routage-inter-vlan` (`configuration-routage-inter-vlan`) : Configuration Cisco IOS dans `intervlan.ios` du routeur RoaS (sous-interfaces .10, .20, .30 dot1Q) et du switch L3 (activation `ip routing`, VLANs 10/20/30, SVIs Vlan10/20/30 et port Trunk).
+
+### 15. Validations Globales Post-Routage-Interconnexion
+- `node content/validate.mjs` : **100 % valide** :
+  - **2 parcours opérationnels** (`annee-1`, `annee-2`).
+  - **9 modules opérationnels** (8 en 1ère année, 1 en 2ème année).
+  - **49 leçons rédigées et validées**.
+  - **49 quiz d'évaluation (257 questions avec explications pédagogiques)**.
+  - **22 ateliers pratiques (Labs)**.
+  - **69 / 69 tests de validateurs passants** sur les suites de fixtures.
+- `pnpm content:validate` : 100 % valide (18/18 tests Zod passants).
+- `node scripts/check-file-size.mjs` : 100 % conforme D-13 (331 fichiers analysés, 0 violation > 400 lignes).
+- `node scripts/check-theme-classes.mjs` : 100 % conforme bi-thème (0 violation).
+- `pnpm test --force` : 100 % vert (357 tests passants dans le monorepo).
+- `pnpm build --force` : 100 % réussi.
+
+### 16. Phase 2.3 — Production du Module `securite-perimetrique` (2ème Année SISR)
+- **Module `securite-perimetrique`** (5 leçons, 5 quiz, 2 labs) :
+  - `01-principes-securite-perimetrique-zones.md` + `quiz-principes-securite-perimetrique-zones.yaml` : Modèle périmétrique vs Zero Trust ("Never trust, always verify"), découpage en zones de sécurité (LAN, DMZ, WAN, Management OOB), règle d'or d'étanchéité de la DMZ (aucun flux initié vers le LAN), principes de Défense en Profondeur et matrice d'urbanisation de flux d'entreprise.
+  - `02-pare-feu-stateful-et-filtrage.md` + `quiz-pare-feu-stateful-et-filtrage.yaml` : Filtrage sans état (Stateless) vs avec état (Stateful Inspection), module conntrack Linux et ses 4 états de session (NEW, ESTABLISHED, RELATED, INVALID), syntaxe et architecture `nftables` (famille `inet`, chaînes `input`, `forward`, `output` avec politique `policy drop`), audit et journalisation.
+  - `03-nat-securise-et-exposition-services.md` + `quiz-nat-securise-et-exposition-services.yaml` : Analyse des risques de l'exposition directe de serveurs, architecture de publication sécurisée en DMZ (Reverse Proxy Nginx, WAF), configuration du DNAT (Port Forwarding) et SNAT / Masquerade sous `nftables`, réduction de la surface d'attaque (Rate Limiting, IP Whitelisting).
+  - `04-vpn-site-a-site-et-acces-distants.md` + `quiz-vpn-site-a-site-et-acces-distants.yaml` : Propriétés de sécurité VPN (Confidentialité, Intégrité HMAC, Authentification, Anti-Rejeu), topologies Site-à-Site vs Nomade, comparatif IPsec (IKEv2/ESP) vs WireGuard vs OpenVPN, cryptokey routing WireGuard et recommandations ANSSI (PFS, AES-GCM, ChaCha20-Poly1305).
+  - `05-durcissement-perimetrique-et-protection.md` + `quiz-durcissement-perimetrique-et-protection.yaml` : Durcissement des équipements réseau (bannissement Telnet/HTTP/SNMPv1-v2, forçage SSHv2 avec clés asymétriques, architecture AAA avec RADIUS/TACACS+), protection anti-usurpation uRPF, sécurisation de couche 2 sur commutateurs (DHCP Snooping, Dynamic ARP Inspection, Port Security) et mitigation anti-DDoS (SYN Cookies).
+  - **2 Labs autonomes de niveau 2_files avec suites de tests complètes** :
+    - `lab-regles-pare-feu` (`configuration-pare-feu-stateful-nftables`) : Configuration complète du pare-feu avec état sous `nftables` dans `nftables.conf` (flush ruleset, tables inet filter et ip nat, chaînes input/forward en policy drop, conntrack, flux LAN->WAN, WAN->DMZ ports 80/443, DNAT vers 192.168.50.10, Masquerade sur eth1 et confinement DMZ).
+    - `lab-vpn-site-a-site` (`configuration-tunnel-vpn-wireguard`) : Configuration complète du tunnel VPN WireGuard dans `wg0.conf` sur la passerelle Siège (Address 10.100.0.1/30, ListenPort 51820, PrivateKey, PublicKey distante, Endpoint 198.51.100.20:51820, AllowedIPs incluant 10.100.0.2/32 et 192.168.20.0/24, PersistentKeepalive 25).
+
+### 17. Validations Globales Post-Sécurité-Périmétrique
+- `node content/validate.mjs` : **100 % valide** :
+  - **2 parcours opérationnels** (`annee-1`, `annee-2`).
+  - **10 modules opérationnels** (8 en 1ère année, 2 en 2ème année).
+  - **54 leçons rédigées et validées**.
+  - **54 quiz d'évaluation (282 questions avec explications pédagogiques)**.
+  - **24 ateliers pratiques (Labs)**.
+  - **75 / 75 tests de validateurs passants** sur les suites de fixtures.
+- `pnpm content:validate` : 100 % valide (18/18 tests Zod passants).
+- `node scripts/check-file-size.mjs` : 100 % conforme D-13 (331 fichiers analysés, 0 violation > 400 lignes).
+- `node scripts/check-theme-classes.mjs` : 100 % conforme bi-thème (0 violation).
+- `pnpm test --force` : 100 % vert (357 tests passants dans le monorepo).
+- `pnpm build --force` : 100 % réussi.
+
+### 18. Phase 2.3 — Production du Module `conteneurisation-docker` (2ème Année SISR)
+- **Module `conteneurisation-docker`** (5 leçons, 5 quiz, 2 labs) :
+  - `01-principes-conteneurisation-et-cycle-vie.md` + `quiz-principes-conteneurisation-et-cycle-vie.yaml` : Virtualisation classique (VM / hyperviseur) vs Conteneurisation (OS-level virtualization), mécanismes noyau Linux (`namespaces` pour l'isolation et `cgroups` pour la limitation matérielle), calques en lecture seule d'images et couche d'écriture éphémère Copy-on-Write (Overlay2), cycle de vie complet (`run`, `exec`, `logs`, `stop` avec signal SIGTERM, `rm`, `prune`).
+  - `02-dockerfile-construction-et-bonnes-pratiques.md` + `quiz-dockerfile-construction-et-bonnes-pratiques.yaml` : Instructions d'un Dockerfile (`FROM`, `WORKDIR`, `COPY`, `RUN`, `ENV`, `EXPOSE`, `USER`, `CMD` vs `ENTRYPOINT`), exploitation du cache de calques (copie ordonnée des dépendances), fichier `.dockerignore`, sécurité non-root et construction multi-étapes (**Multi-Stage Builds**) réduisant la taille des images de 90 %.
+  - `03-reseau-docker-et-communication-inter-conteneurs.md` + `quiz-reseau-docker-et-communication-inter-conteneurs.yaml` : Pilotes de réseau Docker (`bridge`, `host`, `none`, `macvlan`, `overlay`), publication et mappage de ports (`-p hôte:conteneur`), réseaux personnalisés (User-Defined Bridges) et serveur DNS intégré de Docker (`127.0.0.11`) pour la découverte automatique par nom de conteneur.
+  - `04-volumes-stockage-et-persistance.md` + `quiz-volumes-stockage-et-persistance.yaml` : Éphémérité du stockage conteneurisé par défaut, comparaison des 3 modes de persistance (Volumes nommés gérés par Docker, Bind Mounts pour le développement et l'injection de conf `:ro`, tmpfs en mémoire vive), procédures de sauvegarde et restauration de volumes via conteneur éphémère.
+  - `05-orchestration-multi-services-docker-compose.md` + `quiz-orchestration-multi-services-docker-compose.yaml` : Orchestration 3-tiers multi-conteneurs avec Docker Compose (`compose.yaml`), segmentation réseau isolée (frontend/backend), sondes de santé (`healthcheck` avec `pg_isready`), démarrage ordonné (`depends_on` avec `condition: service_healthy`), politiques de redémarrage `restart: unless-stopped` et mise à l'échelle (`--scale`).
+  - **2 Labs autonomes de niveau 2_files avec suites de tests complètes** :
+    - `lab-dockerfile-application` (`construction-image-docker-optimisee`) : Conception d'un Dockerfile multi-stage pour une API Node.js TypeScript (étape builder avec cache package*.json et `npm ci`, étape production minimale avec `COPY --from=builder`, variable `ENV NODE_ENV=production`, `USER node` non-root et `CMD ["node", "dist/main.js"]`).
+    - `lab-docker-compose-services` (`deploiement-stack-docker-compose`) : Conception d'un fichier `docker-compose.yml` complet pour une pile 3-tiers (proxy Nginx port 80 sur frontend-net, backend Node.js sur frontend-net et backend-net avec healthcheck, database PostgreSQL sur backend-net avec volume nommé `db_data` et healthcheck `pg_isready`, cache Redis sur backend-net, et `restart: unless-stopped`).
+
+### 19. Validations Globales Post-Conteneurisation-Docker
+- `node content/validate.mjs` : **100 % valide** :
+  - **2 parcours opérationnels** (`annee-1`, `annee-2`).
+  - **11 modules opérationnels** (8 en 1ère année, 3 en 2ème année).
+  - **59 leçons rédigées et validées**.
+  - **59 quiz d'évaluation (307 questions avec explications pédagogiques)**.
+  - **26 ateliers pratiques (Labs)**.
+  - **81 / 81 tests de validateurs passants** sur les suites de fixtures.
+- `pnpm content:validate` : 100 % valide (18/18 tests Zod passants).
+- `node scripts/check-file-size.mjs` : 100 % conforme D-13 (331 fichiers analysés, 0 violation > 400 lignes).
+- `node scripts/check-theme-classes.mjs` : 100 % conforme bi-thème (0 violation).
+- `pnpm test --force` : 100 % vert (357 tests passants dans le monorepo).
+- `pnpm build --force` : 100 % réussi.
+
+### 20. Phase 2.3 — Production du Module `automatisation-devops` (2ème Année SISR)
+- **Module `automatisation-devops`** (5 leçons, 5 quiz, 2 labs) :
+  - `01-principes-devops-et-culture-cicd.md` + `quiz-principes-devops-et-culture-cicd.yaml` : Mouvement DevOps, décloisonnement Dev et Ops, modèle CAMS (Culture, Automation, Measurement, Sharing), continuum CI/CD (Intégration Continue, Livraison Continue avec validation humaine vs Déploiement Continu automatisé de bout en bout), métriques d'ingénierie DORA et Shift-Left Testing.
+  - `02-gestion-configuration-ansible.md` + `quiz-gestion-configuration-ansible.yaml` : Architecture sans agent (Agentless via SSH / Python), inventaires d'hôtes et variables, modules idempotents (`apt`, `template`, `file`, `systemd`), playbooks YAML, templates Jinja2 (`.j2`), élévation `become: true`, et exécution conditionnelle de `handlers` de rechargement.
+  - `03-pipelines-cicd-github-actions-gitlab-ci.md` + `quiz-pipelines-cicd-github-actions-gitlab-ci.yaml` : Pipelines CI/CD modernes, structure YAML des workflows, déclencheurs `push`/`pull_request`, exécuteurs `runs-on: ubuntu-latest`, dépendances ordonnées `needs: [test]`, sécurisation par GitHub Secrets chiffrés, mise en cache npm et stratégies de déploiement (Rolling, Blue/Green, Canary).
+  - `04-infrastructure-as-code-terraform.md` + `quiz-infrastructure-as-code-terraform.yaml` : Approche déclarative de l'IaC avec Terraform / OpenTofu, fournisseurs (Providers Cloud, Proxmox, Docker), blocs `resource` et `data`, rôle critique du fichier d'état `terraform.tfstate` avec Remote Backend et verrouillage d'état, cycle de vie (`init`, `plan`, `apply`, `destroy`), variables et outputs.
+  - `05-supervision-observabilite-prometheus-grafana.md` + `quiz-supervision-observabilite-prometheus-grafana.yaml` : Piliers de l'observabilité (Logs, Métriques, Traces), modèle de tirage périodique (Pull Scraping) de Prometheus, exportateurs (`node_exporter`, `cAdvisor`), requêtes PromQL (`rate()`, agrégations), Alertmanager, tableaux de bord Grafana et concepts SRE (SLI, SLO, SLA, Budget d'erreur).
+  - **2 Labs autonomes de niveau 2_files avec suites de tests complètes** :
+    - `lab-ansible-deploiement` (`deploiement-automatise-ansible`) : Conception d'un playbook Ansible `playbook.yml` complet pour provisionner Nginx sur le groupe `webservers` (installation `apt`, template Jinja2 vers `sites-available/app.conf`, lien symbolique `sites-enabled/app.conf`, suppression de `default`, activation du service `systemd` et handler `state: reloaded`).
+    - `lab-pipeline-cicd` (`definition-pipeline-cicd-github-actions`) : Conception d'un workflow GitHub Actions `deploy.yml` complet (déclencheurs `push`/`pull_request` sur `main`, job `test` avec `actions/checkout`, `actions/setup-node`, `npm ci`, `npm run lint`, `npm test`, et job `deploy` avec `needs: test`, condition `main`, build, archivage d'artefacts `actions/upload-artifact@v4` et secret chiffré).
+
+### 21. Validations Globales Post-Automatisation-DevOps
+- `node content/validate.mjs` : **100 % valide** :
+  - **2 parcours opérationnels** (`annee-1`, `annee-2`).
+  - **12 modules opérationnels** (8 en 1ère année, 4 en 2ème année).
+  - **64 leçons rédigées et validées**.
+  - **64 quiz d'évaluation (332 questions avec explications pédagogiques)**.
+  - **28 ateliers pratiques (Labs)**.
+  - **87 / 87 tests de validateurs passants** sur les suites de fixtures.
+- `pnpm content:validate` : 100 % valide (18/18 tests Zod passants).
+- `node scripts/check-file-size.mjs` : 100 % conforme D-13 (331 fichiers analysés, 0 violation > 400 lignes).
+- `node scripts/check-theme-classes.mjs` : 100 % conforme bi-thème (0 violation).
+- `pnpm test --force` : 100 % vert (357 tests passants dans le monorepo).
+- `pnpm build --force` : 100 % réussi.
+
+### 22. Phase 2.3 — Production du Module `supervision-observabilite` (2ème Année SISR)
+- **Module `supervision-observabilite`** (5 leçons, 5 quiz, 2 labs) :
+  - `01-concepts-supervision-alerting-sli-slo.md` + `quiz-concepts-supervision-alerting-sli-slo.yaml` : Supervision en boîte noire vs Observabilité en boîte blanche, cycle de vie d'une alerte, prévention de la fatigue des alertes (Alert Fatigue), importance des Runbooks d'exploitation, et indicateurs SRE (SLI, SLO, SLA, Budget d'erreur).
+  - `02-collecte-metriques-promql-retention.md` + `quiz-collecte-metriques-promql-retention.yaml` : Modèle de données des séries temporelles (Time Series), collecte par tirage (Pull Scraping), 4 types de métriques (Counter, Gauge, Histogram, Summary), requêtes PromQL avancées (`rate()`, `histogram_quantile(0.95, ...)`), stockage TSDB, rétention et prévention de l'explosion de cardinalité.
+  - `03-visualisation-tableaux-bord-grafana.md` + `quiz-visualisation-tableaux-bord-grafana.yaml` : Architecture de Grafana, types de panels (Time Series, Stat, Gauge, Heatmap), variables de dashboard dynamiques (`$instance`), annotations temporelles d'événements, méthode USE pour l'infrastructure (Utilization, Saturation, Errors) et méthode RED pour les services applicatifs (Rate, Errors, Duration).
+  - `04-gestion-centralisation-logs-loki.md` + `quiz-gestion-centralisation-logs-loki.yaml` : Enjeux de la centralisation des logs, comparatif architectural Elasticsearch (ELK) vs Grafana Loki, agent de collecte Promtail (scraping `/var/log/*`, pipeline stages JSON et mapping de labels), requêtes de filtrage et de métriques LogQL (`|=`, `|~`, `rate()`).
+  - `05-traces-distribuees-observabilite-opentelemetry.md` + `quiz-traces-distribuees-observabilite-opentelemetry.yaml` : Traçage distribué dans les microservices, concepts de Trace, Span, Span ID et arbre d'exécution hiérarchique, propagation de contexte HTTP W3C Trace Context (`traceparent`), architecture du collecteur OpenTelemetry (Receivers, Processors, Exporters), et corrélation complète Métriques / Traces / Logs via `trace_id`.
+  - **2 Labs autonomes de niveau 2_files avec suites de tests complètes** :
+    - `lab-prometheus-grafana` (`configuration-supervision-prometheus-grafana`) : Configuration de Prometheus (`prometheus.yml` avec intervalles, `alerts.yml`, jobs `node-exporter` et `nginx-exporter`) et règles d'alerte (`InstanceDown` sur `up == 0`, `HighCpuUsage` avec calcul PromQL, `for: 5m`, `severity: warning/critical`, `summary` et `description`).
+    - `lab-centralisation-logs` (`centralisation-logs-promtail-loki`) : Configuration de Promtail (`promtail-config.yml` avec écoute 9080, positions, client Loki, scrape `/var/log/nginx/*.log`, pipeline_stages JSON avec label `status`) et requêtes LogQL (`queries.logql` avec filtrage d'erreurs 5xx et métrique `rate()` par hôte).
+
+### 23. Validations Globales Post-Supervision-Observabilite
+- `node content/validate.mjs` : **100 % valide** :
+  - **2 parcours opérationnels** (`annee-1`, `annee-2`).
+  - **13 modules opérationnels** (8 en 1ère année, 5 en 2ème année).
+  - **69 leçons rédigées et validées**.
+  - **69 quiz d'évaluation (357 questions avec explications pédagogiques)**.
+  - **30 ateliers pratiques (Labs)**.
+  - **93 / 93 tests de validateurs passants** sur les suites de fixtures.
+- `pnpm content:validate` : 100 % valide (18/18 tests Zod passants).
+- `node scripts/check-file-size.mjs` : 100 % conforme D-13 (331 fichiers analysés, 0 violation > 400 lignes).
+- `node scripts/check-theme-classes.mjs` : 100 % conforme bi-thème (0 violation).
+- `pnpm test --force` : 100 % vert (357 tests passants dans le monorepo).
+- `pnpm build --force` : 100 % réussi.
+
+### 24. Phase 2.3 — Production du Module `cloud-prive-virtualisation` (2ème Année SISR)
+- **Module `cloud-prive-virtualisation`** (5 leçons, 5 quiz, 2 labs) :
+  - `01-concepts-cloud-computing-modeles-hybrides.md` + `quiz-concepts-cloud-computing-modeles-hybrides.yaml` : Modèles de service IaaS/PaaS/SaaS (NIST), modèles de déploiement (Public, Privé, Hybride, Multi-Cloud), impacts financiers CapEx vs OpEx, souveraineté numérique, RGPD, qualification SecNumCloud de l'ANSSI et Cloud Bursting.
+  - `02-virtualisation-avancee-kvm-libvirt-clusters.md` + `quiz-virtualisation-avancee-kvm-libvirt-clusters.yaml` : Module noyau KVM, émulateur QEMU, pilotes paravirtualisés VirtIO, gestion en CLI via libvirt et `virsh`, stockage distribué Ceph RBD/iSCSI, Live Migration sans coupure, Quorum Corosync et Fencing (STONITH) anti-Split-Brain.
+  - `03-plateforme-cloud-prive-proxmox-openstack.md` + `quiz-plateforme-cloud-prive-proxmox-openstack.yaml` : Architecture hyperconvergée Proxmox VE (pmxcfs, SDN, Ceph), architecture modulaire OpenStack (Keystone, Nova, Neutron, Cinder, Glance, Horizon), isolation multi-tenant, pools de ressources, quotas stricts et réseaux VXLAN.
+  - `04-orchestration-hybridation-vm-conteneurs.md` + `quiz-orchestration-hybridation-vm-conteneurs.yaml` : Coexistence des paradigmes VMs (KVM) et Conteneurs (LXC/Docker/Kubernetes), virtualisation imbriquée (Nested Virtualization), provisionnement instantané par Templates et Clones Liés (Linked Clones), automatisation au boot par Cloud-Init (`user-data`), et pilotage déclaratif IaC.
+  - `05-exploitation-supervision-securite-cloud-prive.md` + `quiz-exploitation-supervision-securite-cloud-prive.yaml` : Capacity Planning, gestion de l'Overcommitment CPU/RAM (KSM, Ballooning), sauvegardes dédupliquées par blocs (Proxmox Backup Server / Dirty Bitmaps QEMU), segmentation réseau des flux (Management OOB, Corosync, Stockage, Public) et durcissement des accès hyperviseurs.
+  - **2 Labs autonomes de niveau 2_files avec suites de tests complètes** :
+    - `lab-deploiement-cloud-prive` (`configuration-cluster-cloud-prive`) : Conception de la topologie d'un cluster Cloud Privé (`cluster-config.yml` avec 3 nœuds, réseau de cluster dédié, HA activée et pool multi-tenant `project-data` avec quotas) et réseau SDN (`sdn-zones.cfg` avec zone VXLAN `zone-prod`, MTU 1450, pairs et VNets frontend/backend avec sous-réseaux et passerelles).
+    - `lab-orchestration-vm` (`orchestration-vm-templates-cloudinit`) : Automatisation de VM avec Cloud-Init (`user-data` avec entête `#cloud-config`, hostname, utilisateur `devops` sudo sans mdp + clé SSH, paquets `qemu-guest-agent`/`nginx` et `runcmd`) et manifeste d'orchestration (`vm-orchestration.yml` avec template ID 9000, clone lié `linked`, sizing, attachement au VNet SDN et snapshot initial `snapshot_before_deploy: true`).
+
+### 25. Validations Globales Post-Cloud-Prive-Virtualisation
+- `node content/validate.mjs` : **100 % valide** :
+  - **2 parcours opérationnels** (`annee-1`, `annee-2`).
+  - **14 modules opérationnels** (8 en 1ère année, 6 en 2ème année).
+  - **74 leçons rédigées et validées**.
+  - **74 quiz d'évaluation (382 questions avec explications pédagogiques)**.
+  - **32 ateliers pratiques (Labs)**.
+  - **99 / 99 tests de validateurs passants** sur les suites de fixtures.
+- `pnpm content:validate` : 100 % valide (18/18 tests Zod passants).
+- `node scripts/check-file-size.mjs` : 100 % conforme D-13 (331 fichiers analysés, 0 violation > 400 lignes).
+- `node scripts/check-theme-classes.mjs` : 100 % conforme bi-thème (0 violation).
+- `pnpm test --force` : 100 % vert (357 tests passants dans le monorepo).
+- `pnpm build --force` : 100 % réussi.
+
+### 26. Phase 2.3 — Production du Module `securite-systemes-durcissement` (2ème Année SISR)
+- **Module `securite-systemes-durcissement`** (5 leçons, 5 quiz, 2 labs) :
+  - `01-principes-durcissement-guides-anssi-cis.md` + `quiz-principes-durcissement-guides-anssi-cis.yaml` : Réduction de la surface d'attaque, principe du moindre privilège, défense en profondeur (Defense in Depth), benchmarks CIS (Level 1 / Level 2) et recommandations de durcissement de l'ANSSI (Minimal, Intermédiaire, Renforcé, Haut).
+  - `02-durcissement-systemes-linux-ssh-auditd.md` + `quiz-durcissement-systemes-linux-ssh-auditd.yaml` : Durcissement OpenSSH (`PermitRootLogin no`, `PasswordAuthentication no`, clés uniquement), pile réseau sécurisée sysctl (SYN Cookies, rp_filter, ICMP redirects, ip_forward=0), randomisation mémoire ASLR (`randomize_va_space=2`), journalisation `auditd` et contrôle d'accès obligatoire MAC (AppArmor/SELinux).
+  - `03-durcissement-windows-server-gpo-laps.md` + `quiz-durcissement-windows-server-gpo-laps.yaml` : Stratégies de groupe (GPO) Active Directory, suppression des protocoles obsolètes (SMBv1, LLMNR, NTLMv1), solution Windows LAPS contre le Pass-the-Hash, chiffrement BitLocker/TPM et audit des journaux de sécurité (Event IDs 4624, 4625, 4720, 4728/4732).
+  - `04-gestion-correctifs-vulnerabilites-cve.md` + `quiz-gestion-correctifs-vulnerabilites-cve.yaml` : Cycle de Patch Management d'entreprise, dictionnaire CVE, échelle de score CVSS v3.1 (Low à Critical), fenêtrage de maintenance et automatisation des correctifs de sécurité critiques avec `unattended-upgrades`.
+  - `05-reponse-incidents-forensics-post-mortem.md` + `quiz-reponse-incidents-forensics-post-mortem.yaml` : Cycle de réponse à incident (NIST SP 800-61 / ISO 27035 : Préparation, Détection, Confinement, Éradication, Récupération, Post-Mortem), ordre de volatilité (RFC 3227), préservation de la mémoire vive (RAM) et indicateurs de compromission (IoC).
+  - **2 Labs autonomes de niveau 2_files avec suites de tests complètes** :
+    - `lab-durcissement-linux` (`durcissement-serveur-linux-ansible`) : Playbook Ansible `hardening-playbook.yml` pour durcir OpenSSH, installer/activer `auditd` et `ufw`, déployer les paramètres noyau `sysctl-security.conf` (SYN Cookies, rp_filter, ASLR) et notifier le rechargement de SSH.
+    - `lab-gestion-correctifs` (`politique-patch-management-automatise`) : Déploiement de la configuration de mise à jour automatique `50unattended-upgrades` (restriction `-security`, blacklist `mysql-server`/`nginx`, redémarrage nocturne 03:30) et `02periodic` (tâches quotidiennes et autoclean hebdomadaire).
+
+### 27. Validations Globales Post-Securite-Systemes-Durcissement
+- `node content/validate.mjs` : **100 % valide** :
+  - **2 parcours opérationnels** (`annee-1`, `annee-2`).
+  - **15 modules opérationnels** (8 en 1ère année, 7 en 2ème année).
+  - **79 leçons rédigées et validées**.
+  - **79 quiz d'évaluation (407 questions avec explications pédagogiques)**.
+  - **34 ateliers pratiques (Labs)**.
+  - **105 / 105 tests de validateurs passants** sur les suites de fixtures.
+- `pnpm content:validate` : 100 % valide (18/18 tests Zod passants).
+- `node scripts/check-file-size.mjs` : 100 % conforme D-13 (331 fichiers analysés, 0 violation > 400 lignes).
+- `node scripts/check-theme-classes.mjs` : 100 % conforme bi-thème (0 violation).
+- `pnpm test --force` : 100 % vert (357 tests passants dans le monorepo).
+- `pnpm build --force` : 100 % réussi.
+
+### 28. Phase 2.3 — Production du Module `veille-certification` (2ème Année SISR)
+- **Module `veille-certification`** (5 leçons, 5 quiz, 2 labs) :
+  - `01-methodologie-veille-technologique-curation.md` + `quiz-methodologie-veille-technologique-curation.yaml` : Démarche de veille active vs passive, mécanismes de collecte Push (flux RSS/Atom, newsletters) vs Pull, typologie des sources fiables (CERT-FR, CNCF, NIST NVD, RFC), lutte contre l'infobésité et formalisation de fiches d'impact opérationnel pour le SI.
+  - `02-panorama-certifications-it-systemes-reseaux.md` + `quiz-panorama-certifications-it-systemes-reseaux.yaml` : Panorama exhaustif des certifications IT par domaine : Réseaux (Cisco CCNA 200-301), Systèmes Linux (LPIC-1, Red Hat RHCSA EX200), Cloud Public (AWS SAA-C03, Azure AZ-104), DevOps (Terraform Associate, CKA Kubernetes) et Sécurité (CompTIA Security+), niveaux, formats QCM vs Labs pratiques, coûts et validité (3 ans).
+  - `03-preparation-examens-certification-methodologie.md` + `quiz-preparation-examens-certification-methodologie.yaml` : Triade d'apprentissage (théorie ciblée, pratique intensive à 50 %, examens blancs avec analyse des erreurs), rétroplanning sur 8-12 semaines, mise en place de Home Labs (Proxmox, Packet Tracer, Free Tiers Cloud), gestion du temps et règles de passage (Pearson VUE en centre vs Online Proctoring).
+  - `04-portfolio-technique-visibilite-open-source.md` + `quiz-portfolio-technique-visibilite-open-source.yaml` : Valorisation par la preuve, structure d'un profil GitHub exemplaire avec README documentés, schémas d'architecture et absence de secrets, blog technique et retours d'expérience, badges officiels Credly vérifiables et contributions open source.
+  - `05-insertion-professionnelle-entretiens-carrieres-sisr.md` + `quiz-insertion-professionnelle-entretiens-carrieres-sisr.yaml` : Typologies d'employeurs (ESN, clients finaux, secteur public), CV technique optimisé, méthode STAR (Situation, Tâche, Action, Résultat) pour les entretiens RH/techniques, démarche méthodique de diagnostic en couches (modèle OSI) et trajectoires de carrière (Admin Senior, Cloud/DevOps, RSSI).
+  - **2 Labs autonomes de niveau 2_files avec suites de tests complètes** :
+    - `lab-plan-veille` (`elaboration-plan-veille-technologique`) : Plan de veille structuré `veille-plan.yml` (thématique ciblée, outils et 4 sources variées avec URLs sécurisées) et fiche de synthèse d'actualité `veille-synthese.md` (métadonnées, résumé technique, analyse d'impact sur le SI et préconisations d'actions concrètes).
+    - `lab-choix-certifications` (`construction-parcours-certification-it`) : Feuille de route pluriannuelle `certification-roadmap.yml` (profil cible, 3 certifications officielles ordonnées avec budget total calculé) et plan d'étude hebdomadaire `study-plan.yml` (8 h/semaine, 10 semaines/cert, ressources variées et description du Home Lab).
+
+### 29. Validations Globales Post-Veille-Certification
+- `node content/validate.mjs` : **100 % valide** :
+  - **2 parcours opérationnels** (`annee-1`, `annee-2`).
+  - **16 modules opérationnels** (8 en 1ère année, 8 en 2ème année).
+  - **84 leçons rédigées et validées**.
+  - **84 quiz d'évaluation (432 questions avec explications pédagogiques)**.
+  - **36 ateliers pratiques (Labs)**.
+  - **111 / 111 tests de validateurs passants** sur les suites de fixtures.
+- `pnpm content:validate` : 100 % valide (18/18 tests Zod passants).
+- `node scripts/check-file-size.mjs` : 100 % conforme D-13 (331 fichiers analysés, 0 violation > 400 lignes).
+- `node scripts/check-theme-classes.mjs` : 100 % conforme bi-thème (0 violation).
+- `pnpm test --force` : 100 % vert (357 tests passants dans le monorepo).
+- `pnpm build --force` : 100 % réussi.
+
+## 2026-08-29 — Intégration du module gestion-projets-agile (20/20)
+
+- La PR #45 (module complet : 5 leçons, 5 quiz, 2 labs avec validateurs) était restée ouverte lors de la clôture du 28/08. Rebase sur main, résolution des conflits documentaires (`journal.md`, `modules-map.md`), merge.
+- Validation : 20 modules, 105 leçons, 105 quiz (537 questions), 45 labs, 138/138 tests validateurs ; 132 tests web + 200 tests API verts.

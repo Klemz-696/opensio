@@ -1,6 +1,6 @@
-/* Markdown Lesson Content Styling */
+/* Markdown Lesson Content Styling (Light Mode Default) */
 .lesson-prose {
-  color: #e2e8f0;
+  color: #334155;
   line-height: 1.75;
   font-size: 1.05rem;
 }
@@ -9,7 +9,7 @@
 .lesson-prose h2,
 .lesson-prose h3,
 .lesson-prose h4 {
-  color: #f8fafc;
+  color: #0f172a;
   font-weight: 700;
   letter-spacing: -0.02em;
   margin-top: 2rem;
@@ -18,18 +18,18 @@
 
 .lesson-prose h1 {
   font-size: 1.875rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
   padding-bottom: 0.5rem;
 }
 
 .lesson-prose h2 {
   font-size: 1.5rem;
-  color: #38bdf8;
+  color: #0284c7;
 }
 
 .lesson-prose h3 {
   font-size: 1.25rem;
-  color: #cbd5e1;
+  color: #1e293b;
 }
 
 .lesson-prose p {
@@ -56,32 +56,94 @@
 }
 
 .lesson-prose strong {
-  color: #f8fafc;
+  color: #0f172a;
   font-weight: 600;
 }
 
 .lesson-prose a {
-  color: #38bdf8;
+  color: #0284c7;
   text-decoration: underline;
   text-underline-offset: 3px;
   transition: color 0.15s ease;
 }
 
 .lesson-prose a:hover {
-  color: #7dd3fc;
+  color: #0369a1;
 }
 
 .lesson-prose blockquote {
-  border-left: 4px solid #38bdf8;
+  border-left: 4px solid #0284c7;
   padding-left: 1rem;
   font-style: italic;
-  color: #94a3b8;
+  color: #475569;
   margin: 1.5rem 0;
-  background: rgba(56, 189, 248, 0.05);
+  background: rgba(2, 132, 199, 0.06);
   padding: 0.75rem 1rem;
   border-radius: 0 8px 8px 0;
 }
 
+/* Wrapper pour scroll horizontal sur mobile (tableaux larges) */
+.lesson-prose-table-wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin: 1.5rem 0;
+  border-radius: 10px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.07);
+  border: 1px solid #e2e8f0;
+}
+
+.lesson-prose-table-wrapper table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0; /* marge portée par le wrapper */
+  font-size: 0.95rem;
+  min-width: 480px; /* force le scroll plutôt qu'un écrasement */
+}
+
+.lesson-prose-table-wrapper th,
+.lesson-prose-table-wrapper td {
+  border: 0;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 0.7rem 1rem;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.lesson-prose-table-wrapper thead th {
+  background: linear-gradient(180deg, #f1f5f9 0%, #e8eef4 100%);
+  color: #0f172a;
+  font-weight: 700;
+  font-size: 0.875rem;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  border-bottom: 2px solid #cbd5e1;
+}
+
+.lesson-prose-table-wrapper thead th:first-child {
+  border-radius: 10px 0 0 0;
+}
+
+.lesson-prose-table-wrapper thead th:last-child {
+  border-radius: 0 10px 0 0;
+}
+
+.lesson-prose-table-wrapper tbody tr:nth-child(even) {
+  background-color: #f8fafc;
+}
+
+.lesson-prose-table-wrapper tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.lesson-prose-table-wrapper tbody tr {
+  transition: background-color 0.12s ease;
+}
+
+.lesson-prose-table-wrapper tbody tr:hover {
+  background-color: #eff6ff;
+}
+
+/* Legacy fallback : tableaux GFM non wrappés */
 .lesson-prose table {
   width: 100%;
   border-collapse: collapse;
@@ -91,33 +153,148 @@
 
 .lesson-prose th,
 .lesson-prose td {
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid #e2e8f0;
   padding: 0.75rem 1rem;
   text-align: left;
 }
 
 .lesson-prose th {
-  background-color: rgba(30, 41, 59, 0.7);
-  color: #f1f5f9;
+  background-color: #f1f5f9;
+  color: #0f172a;
   font-weight: 600;
 }
 
 .lesson-prose tr:nth-child(even) {
-  background-color: rgba(15, 23, 42, 0.4);
+  background-color: #f8fafc;
+}
+
+/* KaTeX — intégration thème clair */
+.lesson-prose .katex {
+  font-size: 1.1em;
+}
+
+.lesson-prose .katex-display {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.5rem 0;
 }
 
 .lesson-prose hr {
   border: 0;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: 1px solid #e2e8f0;
   margin: 2.5rem 0;
 }
 
 .lesson-prose :not(pre) > code {
-  background-color: rgba(30, 41, 59, 0.8);
-  color: #38bdf8;
+  background-color: #f1f5f9;
+  color: #0284c7;
   padding: 0.2rem 0.4rem;
   border-radius: 4px;
   font-size: 0.9em;
   font-family: var(--font-mono);
+  border: 1px solid rgba(2, 132, 199, 0.2);
+}
+
+/* Dark Mode Overrides */
+.dark .lesson-prose {
+  color: #e2e8f0;
+}
+
+.dark .lesson-prose h1,
+.dark .lesson-prose h2,
+.dark .lesson-prose h3,
+.dark .lesson-prose h4 {
+  color: #f8fafc;
+}
+
+.dark .lesson-prose h1 {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.dark .lesson-prose h2 {
+  color: #38bdf8;
+}
+
+.dark .lesson-prose h3 {
+  color: #cbd5e1;
+}
+
+.dark .lesson-prose strong {
+  color: #f8fafc;
+}
+
+.dark .lesson-prose a {
+  color: #38bdf8;
+}
+
+.dark .lesson-prose a:hover {
+  color: #7dd3fc;
+}
+
+.dark .lesson-prose blockquote {
+  border-left: 4px solid #38bdf8;
+  color: #94a3b8;
+  background: rgba(56, 189, 248, 0.05);
+}
+
+/* Dark mode — wrapper tableaux GFM */
+.dark .lesson-prose-table-wrapper {
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.35);
+}
+
+.dark .lesson-prose-table-wrapper th,
+.dark .lesson-prose-table-wrapper td {
+  border-bottom-color: rgba(255, 255, 255, 0.07);
+}
+
+.dark .lesson-prose-table-wrapper thead th {
+  background: linear-gradient(180deg, rgba(30, 41, 59, 0.85) 0%, rgba(15, 23, 42, 0.7) 100%);
+  color: #f1f5f9;
+  border-bottom-color: rgba(255, 255, 255, 0.12);
+}
+
+.dark .lesson-prose-table-wrapper tbody tr:nth-child(even) {
+  background-color: rgba(15, 23, 42, 0.4);
+}
+
+.dark .lesson-prose-table-wrapper tbody tr:hover {
+  background-color: rgba(56, 189, 248, 0.06);
+}
+
+/* Dark mode — legacy fallback */
+.dark .lesson-prose th,
+.dark .lesson-prose td {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.dark .lesson-prose th {
+  background-color: rgba(30, 41, 59, 0.7);
+  color: #f1f5f9;
+}
+
+.dark .lesson-prose tr:nth-child(even) {
+  background-color: rgba(15, 23, 42, 0.4);
+}
+
+/* KaTeX — intégration thème sombre */
+.dark .lesson-prose .katex {
+  color: #e2e8f0;
+}
+
+.dark .lesson-prose .katex-display {
+  background: rgba(15, 23, 42, 0.3);
+  border-radius: 6px;
+  padding: 0.75rem 1rem;
+}
+
+.dark .lesson-prose hr {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.dark .lesson-prose :not(pre) > code {
+  background-color: rgba(30, 41, 59, 0.8);
+  color: #38bdf8;
   border: 1px solid rgba(56, 189, 248, 0.2);
 }
+

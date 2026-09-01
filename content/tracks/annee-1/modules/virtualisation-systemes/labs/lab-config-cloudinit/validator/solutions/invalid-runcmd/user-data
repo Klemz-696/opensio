@@ -1,0 +1,22 @@
+#cloud-config
+
+hostname: srv-web-prod
+fqdn: srv-web-prod.societe.lan
+manage_etc_hosts: true
+
+users:
+  - name: admin-sys
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    shell: /bin/bash
+    ssh_authorized_keys:
+      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIG1234567890abcdefghijklmnopqrstuvwxyz admin@societe.lan
+
+packages:
+  - qemu-guest-agent
+  - curl
+  - htop
+  - ufw
+  - git
+
+runcmd:
+  - echo "Initialisation terminee"

@@ -1,0 +1,9 @@
+// 02periodic - Périodicité des Tâches APT
+
+// TODO: Configurer Update-Package-Lists à 1 jour
+
+// TODO: Configurer Download-Upgradeable-Packages à 1 jour
+
+// TODO: Configurer AutocleanInterval à 7 jours
+
+// TODO: Configurer Unattended-Upgrade à 1 jour

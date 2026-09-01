@@ -1,0 +1,12 @@
+Unattended-Upgrade::Allowed-Origins {
+    "${distro_id}:${distro_codename}-security";
+};
+
+Unattended-Upgrade::Package-Blacklist {
+    "mysql-server";
+    "nginx";
+};
+
+Unattended-Upgrade::Remove-Unused-Dependencies "true";
+Unattended-Upgrade::Automatic-Reboot "true";
+Unattended-Upgrade::Automatic-Reboot-Time "03:30";
