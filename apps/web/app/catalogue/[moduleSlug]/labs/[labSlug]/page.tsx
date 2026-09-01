@@ -268,7 +268,6 @@ export default function LabPage({ params }: LabPageProps) {
         <div className="mb-8">
           <ScenarioPlayer
             steps={SCENARIO_STEPS_BY_SLUG[lab.slug] ?? []}
-            session={session}
             isSessionActive={session.status === 'running'}
             isValidating={isValidating}
             onValidate={handleValidateScenario}
