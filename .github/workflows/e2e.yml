@@ -2,14 +2,27 @@ name: E2E Tests
 
 on:
   push:
-    branches: [main, develop]
-  pull_request:
     branches: [main]
+    paths:
+      - 'apps/**'
+      - 'e2e/**'
+      - 'packages/**'
+      - 'pnpm-lock.yaml'
+  pull_request:
+    paths:
+      - 'apps/**'
+      - 'e2e/**'
+      - 'packages/**'
+      - 'pnpm-lock.yaml'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   e2e:
     runs-on: ubuntu-latest
-    
+
     services:
       postgres:
         image: postgres:17
@@ -26,34 +39,35 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      
+
       - uses: pnpm/action-setup@v4
-          
+
       - name: Use Node.js 22
         uses: actions/setup-node@v4
         with:
           node-version: '22'
           cache: 'pnpm'
-      
+          cache-dependency-path: pnpm-lock.yaml
+
       - name: Install dependencies
-        run: pnpm install
-        
+        run: pnpm install --frozen-lockfile
+
       - name: Generate Prisma Client
         run: pnpm --filter @opensio/api exec prisma generate
-        
+
       - name: Build content schema
         run: pnpm --filter @opensio/content-schema run build
-      
+
       - name: Install Playwright browsers
         run: pnpm exec playwright install --with-deps chromium
-      
+
       - name: Run E2E tests
         run: pnpm test:e2e
         env:
           CI: true
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/opensio_test
           JWT_SECRET: e2e-tests-only-not-a-real-secret-0123456789abcdef0123456789abcdef
-      
+
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v4
