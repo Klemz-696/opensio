@@ -5,3 +5,14 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, [tabindex]:focus-visible {
+    outline: 2px solid #0ea5e9;
+    outline-offset: 2px;
+  }
+  
+  html.dark a:focus-visible, html.dark button:focus-visible, html.dark input:focus-visible, html.dark select:focus-visible, html.dark textarea:focus-visible, html.dark [tabindex]:focus-visible {
+    outline-color: #38bdf8;
+  }
+}

@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Bot, AlertCircle, MessageSquare } from 'lucide-react';
 import type { PageContext } from '../../lib/api/chat-api';
 import { useMentorChat } from './use-mentor-chat';
@@ -44,6 +44,16 @@ export function MentorChatDrawer({ currentContext }: MentorChatDrawerProps) {
     handleChangeModel,
     handleSendMessage,
   } = useMentorChat(currentContext);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) {
+        setIsOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, setIsOpen]);
 
   if (!user) return null;
 
