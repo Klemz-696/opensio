@@ -41,10 +41,10 @@ USER nextjs
 EXPOSE 3000
 
 ENV PORT=3000
-ENV HOSTNAME="[IP_ADDRESS]"
+ENV HOSTNAME="0.0.0.0"
 
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=5 \
-  CMD wget --no-verbose --tries=1 --spider http://[IP_ADDRESS] || exit 1
+  CMD wget --no-verbose --tries=1 --spider http://127.0.0.1:3000 || exit 1
 
 # Démarrage du serveur Node.js généré par le mode standalone
 CMD ["node", "apps/web/server.js"]
