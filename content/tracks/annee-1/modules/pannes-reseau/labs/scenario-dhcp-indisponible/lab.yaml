@@ -1,0 +1,81 @@
+slug: scenario-dhcp-indisponible
+title: "Scénario S1 — DHCP indisponible"
+level: 1_theory
+max_score: 100
+estimated_minutes: 30
+context: |
+  ## Contexte de l'incident
+
+  Il est 8h45. Plusieurs utilisateurs du bâtiment B appellent le helpdesk : leurs postes Windows
+  ne parviennent pas à accéder aux ressources réseau. Les adresses IP affichées dans `ipconfig`
+  commencent par **169.254.x.x**.
+
+  ### Tickets utilisateurs (extraits)
+
+  > **Ticket #4821** — Marie D. (Compta) : « Mon PC n'a pas internet et je ne vois plus les partages réseau. Mon adresse IP affiche 169.254.43.12. »
+
+  > **Ticket #4822** — Jean-Paul R. (RH) : « Même problème. Adresse 169.254.17.88. J'ai essayé de redémarrer, ça n'a rien changé. »
+
+  ### Données disponibles
+
+  **Extrait de log système (serveur DHCP `srv-dhcp01`) :**
+  ```
+  Sep 01 08:30:12 srv-dhcp01 systemd[1]: isc-dhcp-server.service: Main process exited, code=exited, status=1/FAILURE
+  Sep 01 08:30:12 srv-dhcp01 systemd[1]: isc-dhcp-server.service: Failed with result 'exit-code'.
+  Sep 01 08:30:12 srv-dhcp01 systemd[1]: Failed to start ISC DHCP IPv4 server.
+  Sep 01 08:30:09 srv-dhcp01 dhcpd[3421]: error: subnet 192.168.10.0, netmask 255.255.255.0: Option routers (value 192.168.99.1) is not in subnet!
+  Sep 01 08:29:58 srv-dhcp01 dhcpd[3421]: Internet Systems Consortium DHCP Server 4.4.3
+  ```
+
+  **Résultat de `systemctl status isc-dhcp-server` sur srv-dhcp01 :**
+  ```
+  ● isc-dhcp-server.service - ISC DHCP IPv4 server
+       Loaded: loaded (/lib/systemd/system/isc-dhcp-server.service; enabled)
+       Active: failed (Result: exit-code) since Tue 2026-09-01 08:30:12 CEST
+  ```
+
+  **Extrait de `/etc/dhcp/dhcpd.conf` (tel que trouvé) :**
+  ```
+  subnet 192.168.10.0 netmask 255.255.255.0 {
+    range 192.168.10.100 192.168.10.200;
+    option routers 192.168.99.1;        # ← Passerelle sur un autre réseau
+    option domain-name-servers 192.168.10.1;
+  }
+  ```
+
+objectives:
+  - "Identifier la cause d'une adresse APIPA sur les postes clients"
+  - "Diagnostiquer un service DHCP arrêté et en trouver la cause dans les logs"
+  - "Proposer la correction de la configuration dhcpd.conf"
+  - "Lister les étapes de vérification post-remédiation"
+
+prerequisites:
+  - "serveur-dhcp-linux"
+
+hints:
+  - cost_percent: 10
+    text: "Une adresse 169.254.x.x (APIPA) signifie que le client n'a reçu aucune réponse DHCP. Vérifiez d'abord si le service DHCP est actif sur le serveur."
+  - cost_percent: 10
+    text: "Dans les logs, la ligne clé est : 'Option routers (value 192.168.99.1) is not in subnet!'. L'option 'routers' doit appartenir au sous-réseau déclaré dans la directive 'subnet'."
+  - cost_percent: 15
+    text: "La correction consiste à remplacer '192.168.99.1' par une adresse dans le sous-réseau 192.168.10.0/24, par exemple '192.168.10.254' (la passerelle réelle du réseau du bâtiment B)."
+
+validation:
+  type: script
+  timeout_seconds: 30
+  checks:
+    - id: diagnostic_cause
+      required: true
+      points: 30
+      description: "Identification correcte de la cause (adresse APIPA = absence de réponse DHCP)"
+    - id: diagnostic_service
+      required: true
+      points: 30
+      description: "Identification du service isc-dhcp-server en échec et de l'erreur de configuration"
+    - id: remediation
+      required: true
+      points: 40
+      description: "Correction proposée : option routers dans le sous-réseau 192.168.10.0/24"
+
+scoring:
+  floor_percent: 50
