@@ -1,0 +1,108 @@
+name: opensio-prod
+
+services:
+  caddy:
+    image: caddy:2-alpine
+    container_name: opensio-caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - opensio-net
+    environment:
+      - DOMAIN=${DOMAIN:-localhost}
+    depends_on:
+      web:
+        condition: service_healthy
+      api:
+        condition: service_healthy
+
+  db:
+    image: postgres:17-alpine
+    container_name: opensio-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: opensio
+      POSTGRES_USER: opensio
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      PGDATA: /var/lib/postgresql/data
+    volumes:
+      - opensio-pgdata:/var/lib/postgresql/data
+    networks:
+      - opensio-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U opensio -d opensio"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: ../../
+      dockerfile: apps/api/Dockerfile
+    container_name: opensio-api
+    restart: unless-stopped
+    env_file:
+      - ../../.env.production
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - JWT_SECRET=${JWT_SECRET}
+      - REGISTRATION_ENABLED=${REGISTRATION_ENABLED:-false}
+      - OLLAMA_BASE_URL=${OLLAMA_BASE_URL:-http://ollama:11434}
+      # L'API a besoin d'accéder au socket Docker pour les conteneurs de validation (v0.2)
+      # Note: Si la sécurité est primordiale, utiliser docker-socket-proxy
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - opensio-content:/app/content # Pour la synchronisation
+    networks:
+      - opensio-net
+    depends_on:
+      db:
+        condition: service_healthy
+
+  web:
+    build:
+      context: ../../
+      dockerfile: apps/web/Dockerfile
+      args:
+        - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-/api/v1}
+    container_name: opensio-web
+    restart: unless-stopped
+    env_file:
+      - ../../.env.production
+    environment:
+      - API_INTERNAL_URL=http://api:4000
+    networks:
+      - opensio-net
+    depends_on:
+      api:
+        condition: service_healthy
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: opensio-ollama
+    restart: unless-stopped
+    profiles:
+      - ollama-local
+    volumes:
+      - ollama-models:/root/.ollama
+    networks:
+      - opensio-net
+    # En local sans GPU, c'est lent mais fonctionnel
+    # Ajouter des labels NVIDIA ici si un GPU passthrough est disponible
+
+networks:
+  opensio-net:
+    driver: bridge
+
+volumes:
+  opensio-pgdata:
+  opensio-content:
+  caddy_data:
+  caddy_config:
+  ollama-models:
