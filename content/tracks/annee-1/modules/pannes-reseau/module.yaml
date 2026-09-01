@@ -1,0 +1,18 @@
+slug: pannes-reseau
+title: "Scénarios de panne réseau et systèmes"
+description: "Cinq scénarios de dépannage guidés couvrant les pannes d'infrastructure les plus fréquentes en contexte SISR : DHCP, DNS, services web, espace disque et règles de pare-feu. Chaque scénario fournit des symptômes réels, des logs fournis et un parcours de diagnostic pas à pas."
+position: 5
+difficulty: 3
+estimated_minutes: 250
+competency_refs:
+  - "B2.1"
+  - "B2.2"
+  - "B2.3"
+lessons: []
+quizzes: []
+labs:
+  - scenario-dhcp-indisponible
+  - scenario-dns-incorrect
+  - scenario-service-web-arrete
+  - scenario-disque-plein
+  - scenario-regle-pare-feu

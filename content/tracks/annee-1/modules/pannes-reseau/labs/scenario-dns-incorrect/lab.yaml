@@ -1,0 +1,97 @@
+slug: scenario-dns-incorrect
+title: "Scénario S2 — Résolution DNS incorrecte"
+level: 1_theory
+max_score: 100
+estimated_minutes: 30
+context: |
+  ## Contexte de l'incident
+
+  Les utilisateurs signalent que certains noms de domaine internes ne se résolvent plus correctement.
+  Le service de messagerie interne `mail.entreprise.lan` est injoignable alors que le serveur est
+  fonctionnel. Les sites Internet publics, eux, sont accessibles normalement.
+
+  ### Tickets utilisateurs (extraits)
+
+  > **Ticket #5102** — IT Operations : « Le nom mail.entreprise.lan ne se résout plus. Le serveur mail est pourtant en ligne (IP 10.0.1.25 pingable). »
+
+  ### Données disponibles
+
+  **Test de résolution DNS depuis un poste client :**
+  ```
+  $ dig mail.entreprise.lan @10.0.0.53
+  ;; ANSWER SECTION : (vide)
+  ;; status: NXDOMAIN
+  ;; SERVER: 10.0.0.53#53(10.0.0.53)
+  ```
+
+  **Test de résolution sur le serveur DNS lui-même :**
+  ```
+  $ dig mail.entreprise.lan @127.0.0.1
+  ;; status: NXDOMAIN
+  ```
+
+  **Extrait de `/etc/bind/zones/db.entreprise.lan` (zone forward) :**
+  ```
+  $TTL 86400
+  @  IN  SOA  ns1.entreprise.lan. admin.entreprise.lan. (
+              2026090101 ; Serial
+              3600       ; Refresh
+              900        ; Retry
+              604800     ; Expire
+              86400 )    ; Minimum TTL
+
+  @          IN  NS   ns1.entreprise.lan.
+  ns1        IN  A    10.0.0.53
+  www        IN  A    10.0.1.10
+  ftp        IN  A    10.0.1.20
+  ; mail   IN  A    10.0.1.25     ← Enregistrement commenté par erreur
+  ```
+
+  **Extrait de `/etc/bind/named.conf.options` :**
+  ```
+  forwarders {
+    192.168.0.254;   // ← Résolveur intermédiaire qui ne répond plus
+  };
+  ```
+
+objectives:
+  - "Diagnostiquer une résolution DNS retournant NXDOMAIN pour un nom interne"
+  - "Identifier un enregistrement A manquant ou commenté dans un fichier de zone"
+  - "Proposer la correction du fichier de zone et le rechargement du service"
+  - "Identifier un forwarder défaillant et sa correction"
+
+prerequisites:
+  - "serveur-dns-bind9-autorite"
+  - "resolution-dns-recursive-cache"
+
+hints:
+  - cost_percent: 10
+    text: "Un NXDOMAIN signifie que le serveur DNS fait autorité sur cette zone mais n'a pas trouvé l'enregistrement. Examinez le fichier de zone pour mail.entreprise.lan."
+  - cost_percent: 10
+    text: "Dans db.entreprise.lan, la ligne de l'enregistrement A pour 'mail' est précédée d'un point-virgule (;), ce qui la transforme en commentaire Bind9. Décommentez-la."
+  - cost_percent: 15
+    text: "Après correction du fichier de zone, rechargez avec 'rndc reload entreprise.lan' ou 'systemctl reload bind9'. Le forwarder 192.168.0.254 doit être remplacé par un résolveur fiable (ex. 1.1.1.1)."
+
+validation:
+  type: script
+  timeout_seconds: 30
+  checks:
+    - id: diagnostic_nxdomain
+      required: true
+      points: 25
+      description: "Explication correcte de la cause d'un NXDOMAIN"
+    - id: diagnostic_zone
+      required: true
+      points: 35
+      description: "Identification de l'enregistrement A commenté dans le fichier de zone"
+    - id: remediation_zone
+      required: true
+      points: 25
+      description: "Correction proposée : décommenter l'enregistrement et recharger Bind9"
+    - id: remediation_forwarder
+      required: false
+      points: 15
+      description: "Correction bonus : remplacement du forwarder défaillant"
+
+scoring:
+  floor_percent: 50

@@ -1,0 +1,1 @@
+{ "steps": [ { "id": "diagnostic_ordre", "answer": "b" }, { "id": "diagnostic_regle", "answer": "c" }, { "id": "remediation", "answer": "b" } ] }
