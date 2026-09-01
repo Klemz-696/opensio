@@ -1,0 +1,1 @@
+{"type":"https://httpstatuses.com/401","title":"Unauthorized","status":401,"detail":"Cookie de rafraîchissement absent","instance":"/api/v1/auth/refresh","timestamp":"2026-09-01T19:46:02.219Z"}

@@ -14,7 +14,9 @@ export async function login(page: Page) {
   await page.goto('/login');
 
   // Champ email : maintenant correctement labélisé "Adresse Email"
-  await page.getByLabel(/adresse email/i).fill(STUDENT.email);
+  await page
+    .getByRole('textbox', { name: /adresse email/i })
+    .fill(STUDENT.email);
 
   // Champ mot de passe : maintenant labélisé
   await page.getByLabel(/mot de passe/i).fill(STUDENT.password);
@@ -29,7 +31,9 @@ export async function login(page: Page) {
 export async function loginAdmin(page: Page) {
   await page.goto('/login');
 
-  await page.getByLabel(/adresse email/i).fill(ADMIN.email);
+  await page
+    .getByRole('textbox', { name: /adresse email/i })
+    .fill(ADMIN.email);
 
   await page.getByLabel(/mot de passe/i).fill(ADMIN.password);
 
