@@ -5,7 +5,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { Prisma, LabSessionStatus, LabEventKind } from '@prisma/client';
+import { Prisma, LabSessionStatus, LabEventKind, LabLevel } from '@prisma/client';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { AuditService } from '../../audit/audit.service';
 import { LabsService } from './labs.service';
@@ -163,6 +163,10 @@ export class LabSessionsService {
 
     const labDef = this.labsService.loadLabDefinition(session.lab.definitionPath);
     const allowedPaths = new Set((labDef.files?.editable || []).map((f) => f.path));
+
+    if (session.lab.level === LabLevel.LEVEL_1_THEORY) {
+      allowedPaths.add('answers.json');
+    }
 
     for (const file of files) {
       if (!allowedPaths.has(file.path)) {

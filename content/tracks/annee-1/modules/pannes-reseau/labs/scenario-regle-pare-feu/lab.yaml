@@ -1,0 +1,95 @@
+slug: scenario-regle-pare-feu
+title: "Scénario S10 — Mauvaise règle de pare-feu"
+level: 1_theory
+max_score: 100
+estimated_minutes: 35
+context: |
+  ## Contexte de l'incident
+
+  Le service HTTPS du serveur `srv-web01` (192.168.20.10) est devenu inaccessible depuis le
+  réseau des postes de travail (VLAN 30, 10.10.30.0/24) après une mise à jour du pare-feu
+  opérée hier soir. Les accès depuis le VLAN administration (10.10.10.0/24) fonctionnent encore.
+
+  ### Tickets utilisateurs (extraits)
+
+  > **Ticket #7890** — Chef de projet : « Impossible d'accéder à notre intranet depuis mon poste. Erreur "connexion refusée". Les collègues du service IT y arrivent encore. »
+
+  ### Données disponibles
+
+  **Résultat de `nft list ruleset` sur le pare-feu `fw01` :**
+  ```
+  table inet filter {
+    chain INPUT {
+      type filter hook input priority 0; policy drop;
+    }
+
+    chain FORWARD {
+      type filter hook forward priority 0; policy drop;
+
+      # Règles VLAN admin → srv-web01
+      ip saddr 10.10.10.0/24 ip daddr 192.168.20.10 tcp dport { 80, 443 } accept
+
+      # Règle ajoutée hier soir (erronée)
+      ip saddr 10.10.30.0/24 ip daddr 192.168.20.10 tcp dport 443 drop
+
+      # Règle qui devrait autoriser les postes de travail
+      ip saddr 10.10.30.0/24 ip daddr 192.168.20.10 tcp dport { 80, 443 } accept
+
+      # Règle de logging
+      log prefix "[FW-DROP] " drop
+    }
+
+    chain OUTPUT {
+      type filter hook output priority 0; policy accept;
+    }
+  }
+  ```
+
+  **Test de connectivité depuis un poste du VLAN 30 :**
+  ```
+  $ curl -v https://192.168.20.10
+  * connect to 192.168.20.10 port 443 failed: Connection refused
+  ```
+
+  **Extrait du journal de log du pare-feu :**
+  ```
+  [FW-DROP] IN=eth1 OUT=eth2 SRC=10.10.30.5 DST=192.168.20.10 PROTO=TCP DPT=443
+  [FW-DROP] IN=eth1 OUT=eth2 SRC=10.10.30.8 DST=192.168.20.10 PROTO=TCP DPT=443
+  ```
+
+objectives:
+  - "Lire et interpréter un ruleset nftables pour identifier une règle bloquante"
+  - "Comprendre l'ordre d'évaluation des règles dans un pare-feu à politique drop"
+  - "Identifier la règle incorrecte et proposer la correction minimale"
+  - "Appliquer le principe de moindre privilège dans les règles de pare-feu"
+
+prerequisites:
+  - "linux-administration"
+
+hints:
+  - cost_percent: 10
+    text: "Dans nftables comme dans iptables, les règles sont évaluées de haut en bas. La première règle qui correspond à un paquet s'applique et stoppe l'évaluation."
+  - cost_percent: 10
+    text: "Cherchez dans FORWARD une règle avec 'drop' pour le VLAN 30 (10.10.30.0/24) vers le port 443. Elle précède la règle 'accept' pour le même trafic — c'est la cause du blocage."
+  - cost_percent: 15
+    text: "La correction minimale est de supprimer la règle erronée 'drop' (ligne 'ip saddr 10.10.30.0/24 ip daddr 192.168.20.10 tcp dport 443 drop'). La règle 'accept' déjà présente suffit. N'ajoutez pas de règles inutiles (principe de moindre privilège)."
+
+validation:
+  type: script
+  timeout_seconds: 30
+  checks:
+    - id: diagnostic_ordre
+      required: true
+      points: 30
+      description: "Compréhension de l'ordre d'évaluation des règles (first-match)"
+    - id: diagnostic_regle
+      required: true
+      points: 30
+      description: "Identification de la règle drop erronée pour VLAN30 → port 443"
+    - id: remediation
+      required: true
+      points: 40
+      description: "Correction proposée : suppression de la règle drop redondante"
+
+scoring:
+  floor_percent: 50

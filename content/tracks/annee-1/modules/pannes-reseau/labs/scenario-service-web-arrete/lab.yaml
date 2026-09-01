@@ -1,0 +1,89 @@
+slug: scenario-service-web-arrete
+title: "Scénario S6 — Service web arrêté"
+level: 1_theory
+max_score: 100
+estimated_minutes: 25
+context: |
+  ## Contexte de l'incident
+
+  Le serveur d'application interne `app.entreprise.lan` renvoie une erreur **HTTP 502 Bad Gateway**
+  depuis 09h15. Le reverse proxy Nginx est actif, mais le backend applicatif n'est plus accessible.
+
+  ### Tickets utilisateurs (extraits)
+
+  > **Ticket #6340** — Direction : « L'application de gestion de projet affiche "502 Bad Gateway" depuis ce matin. »
+
+  ### Données disponibles
+
+  **Réponse HTTP observée :**
+  ```
+  HTTP/1.1 502 Bad Gateway
+  Server: nginx/1.24.0
+  ```
+
+  **Extrait du log Nginx (`/var/log/nginx/app.error.log`) :**
+  ```
+  2026/09/01 09:15:03 [error] 1248#1248: *312 connect() failed (111: Connection refused)
+      while connecting to upstream, upstream: "http://127.0.0.1:3000/",
+      client: 10.0.50.12, server: app.entreprise.lan
+  ```
+
+  **Vérification du service applicatif sur le serveur :**
+  ```
+  $ systemctl status myapp.service
+  ● myapp.service - Application de gestion de projet
+       Active: failed (Result: exit-code) since Tue 2026-09-01 09:14:58 CEST
+   Main PID: 2091 (code=exited, status=1/FAILURE)
+
+  Sep 01 09:14:58 srv-app01 myapp[2091]: Error: EADDRINUSE: address already in use :::3000
+  ```
+
+  **Vérification des ports :**
+  ```
+  $ ss -tlnp | grep 3000
+  (aucune sortie)
+  ```
+
+  **Journal systemd :**
+  ```
+  Sep 01 09:10:22 srv-app01 myapp[1977]: Server listening on port 3000
+  Sep 01 09:14:58 srv-app01 myapp[2091]: Error: EADDRINUSE: address already in use :::3000
+  Sep 01 09:14:58 srv-app01 systemd[1]: myapp.service: Main process exited, status=1/FAILURE
+  ```
+
+objectives:
+  - "Interpréter une erreur 502 Bad Gateway dans le contexte Nginx / backend"
+  - "Diagnostiquer un service applicatif arrêté via systemctl et les logs"
+  - "Identifier la cause racine (conflit de port EADDRINUSE)"
+  - "Proposer la remédiation et les vérifications post-redémarrage"
+
+prerequisites:
+  - "linux-administration"
+
+hints:
+  - cost_percent: 10
+    text: "Un 502 Bad Gateway signifie que le reverse proxy (Nginx) ne peut pas joindre le backend. Vérifiez l'état du service applicatif avec 'systemctl status myapp.service'."
+  - cost_percent: 10
+    text: "Le log affiche 'EADDRINUSE: address already in use :::3000'. Un autre processus occupait le port 3000 lors du dernier démarrage. Identifiez-le avec 'ss -tlnp | grep 3000' ou 'lsof -i :3000'."
+  - cost_percent: 15
+    text: "Tuez le processus fantôme occupant le port (ou redémarrez proprement), puis relancez avec 'systemctl start myapp.service'. Vérifiez que 'ss -tlnp | grep 3000' montre maintenant le processus attendu."
+
+validation:
+  type: script
+  timeout_seconds: 30
+  checks:
+    - id: diagnostic_502
+      required: true
+      points: 25
+      description: "Interprétation correcte de l'erreur 502 (backend inaccessible)"
+    - id: diagnostic_service
+      required: true
+      points: 35
+      description: "Identification du service myapp en échec et de la cause (EADDRINUSE port 3000)"
+    - id: remediation
+      required: true
+      points: 40
+      description: "Remédiation : libérer le port et relancer le service + vérification"
+
+scoring:
+  floor_percent: 50

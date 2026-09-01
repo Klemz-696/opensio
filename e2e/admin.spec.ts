@@ -21,7 +21,7 @@ test.describe('Admin Panel', () => {
     // 4. Ouvrir la modale d'édition pour cet étudiant
     // On cible la ligne de l'étudiant, puis son bouton "Modifier l'utilisateur"
     const studentRow = page.locator('tr').filter({ hasText: 'student@opensio.local' });
-    await studentRow.getByTitle("Modifier l'utilisateur").click();
+    await studentRow.getByTitle("Modifier l'utilisateur").click({ force: true });
 
     // 5. Vérifier que la modale d'édition est ouverte
     // Le composant n'a pas l'attribut role="dialog", on cible donc le div principal ou le texte

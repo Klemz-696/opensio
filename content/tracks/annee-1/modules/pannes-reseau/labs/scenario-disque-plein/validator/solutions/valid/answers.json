@@ -1,0 +1,1 @@
+{ "steps": [ { "id": "diagnostic_volume", "answer": "b" }, { "id": "diagnostic_logrotate", "answer": "a" }, { "id": "remediation_immediate", "answer": "c" }, { "id": "remediation_preventive", "answer": "b" } ] }
