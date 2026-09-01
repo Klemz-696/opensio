@@ -34,7 +34,7 @@ export default function MentionsLegalesPage() {
               <p>Le site OpenSIO est édité à titre personnel.</p>
               <ul className="list-disc pl-5 mt-2 space-y-1">
                 <li><strong>Nom de l'éditeur :</strong> Klemz</li>
-                <li><strong>Contact email :</strong> klemz.contact@gmail.com</li>
+                <li><strong>Contact email :</strong> <a href="mailto:klemz.support@gmail.com" className="text-sky-600 dark:text-sky-400 hover:underline">klemz.support@gmail.com</a></li>
                 <li><strong>Directeur de la publication :</strong> Klemz</li>
               </ul>
             </div>
