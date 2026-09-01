@@ -3,6 +3,7 @@
 import React, { Suspense } from 'react';
 import { RegisterForm } from '../../components/auth/register-form';
 import { Loader2 } from 'lucide-react';
+import { LegalFooter } from '../../components/layout/legal-footer';
 
 export default function RegisterPage() {
   return (
@@ -21,6 +22,7 @@ export default function RegisterPage() {
       >
         <RegisterForm />
       </Suspense>
+      <LegalFooter />
     </main>
   );
 }
