@@ -61,6 +61,14 @@ environnement où chaque notion est immédiatement mise en application.
 | 🤖 Assistant IA | Chat intégré (Ollama local, optionnel) pour aide contextuelle aux exercices |
 | 🚀 Lanceur intelligent | `pnpm opensio` orchestre tout : Docker, DB, ports, seed, raccourcis, démarrage |
 
+## 📸 Aperçu
+
+![Page de connexion](docs/screenshots/login.png)
+![Catalogue des cours](docs/screenshots/catalogue.png)
+![Lecteur de cours](docs/screenshots/lecteur.png)
+![Mentor IA](docs/screenshots/mentor.png)
+![Dashboard Admin](docs/screenshots/admin.png)
+
 ## 📚 Le catalogue SISR
 
 Le catalogue complet — objectifs, fiches et statut de chaque module — est
@@ -257,8 +265,8 @@ Les tests sont exécutés automatiquement sur chaque push/PR via GitHub Actions.
 
 ## 🗺️ Feuille de route
 
-Le catalogue SISR (20/20 modules, 105 leçons, 45 labs) est **terminé**. La route vers la v1.0 —
-durcissement, accessibilité, tests E2E, déploiement — est détaillée dans
+Le catalogue SISR (20/20 modules, 105 leçons, 45 labs) est **terminé**. La version v1.0.0 est publiée et inclut toutes ces fonctionnalités (durcissement, accessibilité, tests E2E, déploiement).
+L'évolution future (roadmap v1.1 avec responsive mobile, etc.) est détaillée dans
 [docs/roadmap.md](docs/roadmap.md), et chaque étape est tracée dans le
 [journal de bord](docs/journal.md).
 
