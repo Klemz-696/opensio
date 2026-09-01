@@ -33,9 +33,9 @@ export default function MentionsLegalesPage() {
             <div className="prose dark:prose-invert max-w-none text-slate-600 dark:text-slate-300">
               <p>Le site OpenSIO est édité à titre personnel.</p>
               <ul className="list-disc pl-5 mt-2 space-y-1">
-                <li><strong>Nom de l'éditeur :</strong> [Prénom Nom de l'éditeur]</li>
-                <li><strong>Contact email :</strong> [email de contact]</li>
-                <li><strong>Directeur de la publication :</strong> [Prénom Nom de l'éditeur]</li>
+                <li><strong>Nom de l'éditeur :</strong> Klemz</li>
+                <li><strong>Contact email :</strong> klemz.contact@gmail.com</li>
+                <li><strong>Directeur de la publication :</strong> Klemz</li>
               </ul>
             </div>
           </section>
@@ -53,7 +53,7 @@ export default function MentionsLegalesPage() {
                 Aucun sous-traitant tiers n'est impliqué dans l'hébergement physique des données.
               </p>
               <ul className="list-disc pl-5 mt-2 space-y-1">
-                <li><strong>Hébergeur :</strong> [Prénom Nom de l'éditeur]</li>
+                <li><strong>Hébergeur :</strong> Klemz</li>
                 <li><strong>Localisation des serveurs :</strong> France</li>
               </ul>
             </div>
