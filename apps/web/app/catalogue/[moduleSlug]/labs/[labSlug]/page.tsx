@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, use } from 'react';
+import React, { useCallback, useEffect, useState, use } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, AlertCircle, RefreshCw } from 'lucide-react';
 import { useAuth } from '../../../../../lib/auth/use-auth';
@@ -24,6 +24,8 @@ import { LabTerminal } from '../../../../../components/labs/lab-terminal';
 import { LabHints } from '../../../../../components/labs/lab-hints';
 import { LabVerdict } from '../../../../../components/labs/lab-verdict';
 import { LabSessionControls } from '../../../../../components/labs/lab-session-controls';
+import { ScenarioPlayer } from '../../../../../components/labs/scenario-player';
+import { SCENARIO_STEPS_BY_SLUG } from '../../../../../lib/scenarios/scenario-steps';
 import LabDetailLoading from './loading';
 import { Code, Terminal as TerminalIcon } from 'lucide-react';
 
@@ -149,6 +151,36 @@ export default function LabPage({ params }: LabPageProps) {
     }
   };
 
+  /**
+   * Validation d'un scénario de niveau 1_theory via answers.json
+   * Les réponses sont envoyées comme fichier dans le body de /validate
+   */
+  const handleValidateScenario = useCallback(
+    async (answers: Array<{ id: string; answer: string }>) => {
+      if (!accessToken || !labSlug || !session) return;
+      setIsValidating(true);
+      setError(null);
+      try {
+        const answersFile = [{ path: 'answers.json', content: JSON.stringify({ steps: answers }) }];
+        const v = await validateLabSession(labSlug, session.id, accessToken, answersFile);
+        setVerdict(v);
+        setSession((prev) =>
+          prev ? { ...prev, status: v.status, score: v.score, lastResult: v } : null
+        );
+      } catch (err: unknown) {
+        setError(err instanceof Error ? err.message : 'Erreur lors de la validation du scénario.');
+      } finally {
+        setIsValidating(false);
+      }
+    },
+    [accessToken, labSlug, session]
+  );
+
+  /** Ouvre le drawer IA avec un message pré-rempli (custom event global) */
+  const handleOpenAI = useCallback((context: string) => {
+    window.dispatchEvent(new CustomEvent('opensio:open-mentor', { detail: { message: context } }));
+  }, []);
+
   const handleStopSession = async () => {
     if (!accessToken || !labSlug || !session) return;
     if (confirm('Êtes-vous sûr de vouloir abandonner cette session ?')) {
@@ -232,7 +264,20 @@ export default function LabPage({ params }: LabPageProps) {
         />
       )}
 
-      {session && (
+      {session && lab.level === '1_theory' && (
+        <div className="mb-8">
+          <ScenarioPlayer
+            steps={SCENARIO_STEPS_BY_SLUG[lab.slug] ?? []}
+            session={session}
+            isSessionActive={session.status === 'running'}
+            isValidating={isValidating}
+            onValidate={handleValidateScenario}
+            onAskAI={handleOpenAI}
+          />
+        </div>
+      )}
+
+      {session && lab.level !== '1_theory' && (
         <div className="mb-8">
           <div className="flex items-center gap-2 mb-3 border-b border-slate-200 dark:border-slate-800 pb-2">
             <button

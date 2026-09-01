@@ -1,0 +1,1 @@
+{ "steps": [ { "id": "diagnostic_nxdomain", "answer": "a" }, { "id": "diagnostic_zone", "answer": "a" }, { "id": "remediation_zone", "answer": "c" }, { "id": "remediation_forwarder", "answer": "b" } ] }

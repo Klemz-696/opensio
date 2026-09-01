@@ -1,0 +1,94 @@
+slug: scenario-disque-plein
+title: "Scénario S7 — Disque presque plein"
+level: 1_theory
+max_score: 100
+estimated_minutes: 30
+context: |
+  ## Contexte de l'incident
+
+  Le système de supervision envoie une alerte critique à 23h42 : **le volume `/` du serveur
+  `srv-prod01` est utilisé à 98 %**. Des services applicatifs commencent à émettre des erreurs
+  d'écriture. Le serveur de base de données refuse de créer de nouvelles transactions.
+
+  ### Alerte reçue
+
+  > **[CRITIQUE]** srv-prod01 : Espace disque / à 98% (seuil: 85%). Actions immédiates requises.
+
+  ### Données disponibles
+
+  **Résultat de `df -h` sur srv-prod01 :**
+  ```
+  Filesystem      Size  Used Avail Use%  Mounted on
+  /dev/sda1        40G   39G  800M  98%  /
+  /dev/sdb1       500G  120G  380G  24%  /data
+  tmpfs           2.0G     0  2.0G   0%  /dev/shm
+  ```
+
+  **Résultat de `du -sh /var/log/* | sort -rh | head -10` :**
+  ```
+  18G  /var/log/nginx
+  12G  /var/log/myapp
+   4G  /var/log/postgresql
+  500M /var/log/syslog
+  200M /var/log/auth.log
+  ```
+
+  **Contenu de `/etc/logrotate.d/nginx` :**
+  ```
+  /var/log/nginx/*.log {
+      weekly
+      missingok
+      rotate 52
+      compress
+      delaycompress
+      notifempty
+      create 0640 www-data adm
+      # postrotate manquant
+  }
+  ```
+
+  **Extrait de `/var/log/nginx/access.log` (50 dernières lignes) :**
+  ```
+  ... (logs normaux sans anomalie de volume inhabituelle)
+  ```
+
+objectives:
+  - "Identifier les volumes et partitions saturés avec df et du"
+  - "Localiser les fichiers les plus volumineux responsables de la saturation"
+  - "Diagnostiquer l'absence de rotation des logs (logrotate mal configuré)"
+  - "Proposer les actions immédiates et la prévention à long terme"
+
+prerequisites:
+  - "linux-administration"
+
+hints:
+  - cost_percent: 10
+    text: "Commencez par 'df -h' pour voir quel volume est plein, puis 'du -sh /var/log/* | sort -rh' pour identifier les répertoires les plus volumineux."
+  - cost_percent: 10
+    text: "Les 18 Go de logs Nginx semblent anormaux pour une rotation hebdomadaire avec 52 semaines de rétention. Vérifiez /etc/logrotate.d/nginx : la directive 'postrotate' est absente, ce qui empêche Nginx d'ouvrir de nouveaux fichiers de log après rotation."
+  - cost_percent: 15
+    text: "Action immédiate : 'logrotate -f /etc/logrotate.d/nginx' force la rotation. Ensuite, ajoutez la directive 'postrotate / endscript' avec 'nginx -s reopen'. Envisagez aussi de déplacer /var/log vers le volume /data (500G) si la croissance des logs est structurelle."
+
+validation:
+  type: script
+  timeout_seconds: 30
+  checks:
+    - id: diagnostic_volume
+      required: true
+      points: 20
+      description: "Identification du volume / saturé et du répertoire /var/log comme source principale"
+    - id: diagnostic_logrotate
+      required: true
+      points: 40
+      description: "Identification de l'absence de postrotate dans la config logrotate Nginx"
+    - id: remediation_immediate
+      required: true
+      points: 25
+      description: "Action immédiate : forcer logrotate + corriger la config"
+    - id: remediation_preventive
+      required: false
+      points: 15
+      description: "Mesure préventive : déplacer /var/log vers /data ou mettre en place une supervision"
+
+scoring:
+  floor_percent: 50
