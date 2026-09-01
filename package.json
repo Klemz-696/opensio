@@ -20,6 +20,7 @@
     "opensio": "node scripts/opensio.mjs",
     "test:e2e": "node e2e/prepare.mjs && playwright test",
     "test:e2e:quick": "playwright test --grep @smoke",
+    "secrets:generate": "node scripts/generate-secrets.mjs",
     "lint-staged": "lint-staged"
   },
   "lint-staged": {
