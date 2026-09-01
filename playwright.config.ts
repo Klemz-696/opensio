@@ -15,7 +15,7 @@ export default defineConfig({
     {
       command: 'pnpm --filter @opensio/api dev',
       port: 4000,
-      reuseExistingServer: false,
+      reuseExistingServer: !process.env.CI,
       timeout: 300_000,
       stdout: 'inherit',
       stderr: 'inherit',
@@ -28,9 +28,9 @@ export default defineConfig({
       },
     },
     {
-      command: 'pnpm --filter @opensio/web dev',
+      command: 'pnpm --filter @opensio/web start',
       port: 3000,
-      reuseExistingServer: false,
+      reuseExistingServer: !process.env.CI,
       timeout: 300_000,
       stdout: 'inherit',
       stderr: 'inherit',
