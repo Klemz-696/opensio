@@ -50,6 +50,9 @@ importers:
       jsonwebtoken:
         specifier: ^9.0.3
         version: 9.0.3
+      prisma:
+        specifier: 6.19.3
+        version: 6.19.3(typescript@5.9.3)
       reflect-metadata:
         specifier: ^0.2.2
         version: 0.2.2
@@ -96,9 +99,6 @@ importers:
       eslint:
         specifier: ^9.20.1
         version: 9.39.5(jiti@1.21.7)(supports-color@8.1.1)
-      prisma:
-        specifier: ^6.19.3
-        version: 6.19.3(typescript@5.9.3)
       tsx:
         specifier: ^4.23.12
         version: 4.23.12
