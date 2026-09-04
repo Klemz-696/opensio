@@ -36,9 +36,24 @@ export class AuthGuard implements CanActivate {
     }
 
     const request = context.switchToHttp().getRequest<Request & { user?: AuthenticatedUser }>();
+
+    // Si déjà injecté (par exemple en mode SINGLE_USER_MODE via le middleware)
+    if (request.user) {
+      return true;
+    }
+
     const authHeader = request.headers.authorization;
 
     if (!authHeader) {
+      if (process.env.SINGLE_USER_MODE === 'true') {
+        request.user = {
+          id: 'single-user-admin',
+          email: 'admin@opensio.local',
+          displayName: 'Administrateur OpenSIO',
+          role: Role.ADMIN,
+        };
+        return true;
+      }
       throw new UnauthorizedException('En-tête Authorization manquant');
     }
 

@@ -1565,3 +1565,51 @@ Les trois PR ont été fusionnées sur `main` après passage complet de la CI gl
   - Ajout d'une section Dépannage exhaustive (politique d'exécution PowerShell, démon Docker, rafraîchissement du PATH).
 - **Publication v1.0.1** :
   - Bump de version `1.0.1` dans tous les `package.json` et synchronisation de l'endpoint `/health`.
+
+---
+
+## 2026-09-04 — Correctif v1.0.2 : Fiabilisation du chargement .env & Amélioration UX de l'Authentification
+
+**Contexte** : Signalement de plusieurs anomalies bloquantes au premier démarrage de l'API (crash au démarrage car `validateEnv()` était exécuté avant le chargement des variables `.env`, scripts `sync/cli.ts` et `prisma/seed.ts` sans variables d'environnement, variables PowerShell non transmises par Turbo) et difficultés ergonomiques liées à l'authentification (inscriptions publiques fermées sans information de l'utilisateur, absence d'option pour masquer/afficher les mots de passe, absence de mode mono-utilisateur pour un usage personnel fluide).
+
+### 1. Fiabilisation du chargement des variables d'environnement (Partie A)
+- **Module résilient `load-env.ts` (`apps/api/src/config/load-env.ts`)** :
+  - Recherche et charge `.env` et `.env.local` depuis le cwd, le dossier de l'API (`apps/api/.env`) et la racine du monorepo sans écraser les variables système existantes (`override: false`).
+  - Ajout de la dépendance `dotenv` dans `apps/api/package.json`.
+  - Importation prioritaire au tout début de `apps/api/src/main.ts`, `apps/api/src/sync/cli.ts` et `apps/api/prisma/seed.ts`.
+- **Transmission Turborepo (`turbo.json`)** :
+  - Déclaration de `passThroughEnv` sur la tâche `dev` pour transmettre systématiquement les variables d'environnement (`PORT`, `API_PORT`, `DATABASE_URL`, `JWT_SECRET`, `REFRESH_SECRET`, `REGISTRATION_ENABLED`, `SINGLE_USER_MODE`, `NODE_ENV`).
+- **Orchestration des scripts (`scripts/lib/env.mjs` & `scripts/generate-secrets.mjs`)** :
+  - Mise à jour de `env.mjs` pour vérifier la présence de `apps/api/.env`, le copier depuis `.env.example` si nécessaire, et synchroniser automatiquement `API_PORT` en cas de changement de port.
+  - Ajout de `--target dev` et `--force` dans `generate-secrets.mjs` pour générer un `JWT_SECRET` aléatoire sécurisé directement dans `apps/api/.env`.
+- **Client Prisma automatique (`package.json`, `install.ps1`, `install.sh`)** :
+  - Ajout du hook `"postinstall": "pnpm db:generate"` à la racine du monorepo.
+  - Génération explicite du client Prisma et initialisation des `.env` dans les installeurs Windows (`install.ps1`) et Unix (`install.sh`).
+
+### 2. Expérience Utilisateur de l'Authentification (Partie B)
+- **Composant réutilisable `PasswordInput` (`apps/web/components/ui/password-input.tsx`)** :
+  - Support de l'affichage/masquage dynamique du mot de passe avec icônes Lucide (`Eye`, `EyeOff`).
+  - Accessibilité ARIA complète (`aria-label`, bascule clavier).
+  - Conformité stricte bi-thème (clair/sombre).
+  - Remplacement de tous les inputs mot de passe dans l'application (`login-form.tsx`, `register-form.tsx`, `reset-password-form.tsx`, `force-password-change-modal.tsx`, `profile-security.tsx`, `create-user-dialog.tsx`, `reset-password-dialog.tsx`).
+  - Création de la suite de tests unitaires `apps/web/test/password-input.spec.tsx`.
+- **Mode mono-utilisateur (`SINGLE_USER_MODE`)** :
+  - Support de la variable `SINGLE_USER_MODE` dans `env.validation.ts` (booléen avec défaut à `false`).
+  - Création de `SingleUserMiddleware` (`apps/api/src/common/middleware/single-user.middleware.ts`) injectant automatiquement l'administrateur principal actif en base sur toute requête entrante.
+  - Mise à jour de `AuthGuard` et `RolesGuard` pour accorder automatiquement l'accès complet en mode mono-utilisateur.
+  - Création de l'endpoint public `GET /api/v1/auth/config` exposant `{ singleUserMode, registrationEnabled }`.
+  - Intégration côté frontend dans `auth-context.tsx`, affichage d'un badge « Mono-utilisateur » dans la Navbar et masquage du bouton de déconnexion.
+- **Gestion des inscriptions désactivées (`REGISTRATION_ENABLED=false`)** :
+  - Sur `/login` : information visuelle claire indiquant la fermeture des inscriptions publiques.
+  - Sur `/register` : affichage d'un écran dédié convivial informant l'utilisateur que l'instance est privée avec bouton de retour vers la connexion.
+- **Retours de redirection d'authentification (`reason=auth_required`)** :
+  - Ajout du paramètre `reason=auth_required` dans `protected-route.tsx` et `admin-route.tsx`.
+  - Affichage d'un bandeau informatif élégant « Connexion requise » sur le formulaire de connexion.
+
+### 3. Validations et publication v1.0.2 (Partie C)
+- Bump de version vers `1.0.2` dans tous les packages (`package.json`, `apps/api/package.json`, `apps/web/package.json`, `app.service.ts`, `install.sh`, `install.ps1`, `README.md`, `docs/installation.md`).
+- `pnpm lint` : 100 % vert (0 erreur, 0 avertissement sur l'ensemble des 4 packages).
+- `pnpm typecheck` : 100 % vert (TypeScript 5.7 sans aucune erreur).
+- `node scripts/check-theme-classes.mjs` : 100 % conforme bi-thème (0 violation détectée sur 101 fichiers analysés).
+- `node scripts/check-file-size.mjs` : 100 % conforme D-13/RM-13 (0 fichier > 400 lignes sur 355 fichiers analysés).
+- Tests unitaires : 100 % verts (44 fichiers, 200 tests passants côté API ; 34 fichiers, 135 tests passants côté Web).

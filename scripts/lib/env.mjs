@@ -5,6 +5,8 @@ import { ROOT, step, info, warn, ok, ko, ask, c, IS_WIN, run } from './utils.mjs
 
 const WEB_ENV = path.join(ROOT, 'apps', 'web', '.env');
 const WEB_ENV_EXAMPLE = WEB_ENV + '.example';
+const API_ENV = path.join(ROOT, 'apps', 'api', '.env');
+const API_ENV_EXAMPLE = API_ENV + '.example';
 
 const portFree = (port) =>
   new Promise((res) => {
@@ -76,6 +78,15 @@ export async function envCheck(rl) {
   } else {
     ko('apps/web/.env absent (et pas de .env.example) — à créer manuellement.');
   }
+
+  if (fs.existsSync(API_ENV)) {
+    ok('apps/api/.env présent');
+  } else if (fs.existsSync(API_ENV_EXAMPLE)) {
+    fs.copyFileSync(API_ENV_EXAMPLE, API_ENV);
+    warn('apps/api/.env créé depuis .env.example — pense à renseigner les secrets.');
+  } else {
+    ko('apps/api/.env absent (et pas de .env.example) — à créer manuellement.');
+  }
 }
 
 export async function portsCheck(rl) {
@@ -137,6 +148,18 @@ export async function portsCheck(rl) {
     setEnv('NEXT_PUBLIC_API_URL', `http://localhost:${targets[1].port}`);
     fs.writeFileSync(WEB_ENV, env.trim() + '\n');
     info(`apps/web/.env mis à jour (PORT=${targets[0].port}, NEXT_PUBLIC_API_URL=http://localhost:${targets[1].port})`);
+
+    if (fs.existsSync(API_ENV)) {
+      let apiEnv = fs.readFileSync(API_ENV, 'utf8');
+      const setApiEnv = (key, val) => {
+        const re = new RegExp(`^${key}=.*`, 'm');
+        if (re.test(apiEnv)) apiEnv = apiEnv.replace(re, `${key}=${val}`);
+        else apiEnv += `\n${key}=${val}`;
+      };
+      setApiEnv('API_PORT', targets[1].port);
+      fs.writeFileSync(API_ENV, apiEnv.trim() + '\n');
+      info(`apps/api/.env mis à jour (API_PORT=${targets[1].port})`);
+    }
   }
 }
 

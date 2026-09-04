@@ -23,11 +23,18 @@ export interface ProblemDetails {
   errors?: Record<string, string[]>;
 }
 
+export interface AuthConfig {
+  singleUserMode: boolean;
+  registrationEnabled: boolean;
+}
+
 export interface AuthState {
   user: AuthUser | null;
   accessToken: string | null;
   isLoading: boolean;
   isAuthenticated: boolean;
+  isSingleUserMode: boolean;
+  isRegistrationEnabled: boolean;
 }
 
 export interface LoginResponse {
