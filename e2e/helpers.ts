@@ -17,7 +17,7 @@ export async function login(page: Page) {
   await page.getByLabel(/adresse email/i).fill(STUDENT.email);
 
   // Champ mot de passe : maintenant labélisé
-  await page.getByLabel(/mot de passe/i).fill(STUDENT.password);
+await page.getByRole('textbox', { name: /mot de passe/i }).fill(STUDENT.password);
 
   // Bouton de soumission
   await page.getByRole('button', { name: 'Se connecter' }).click();
@@ -31,7 +31,7 @@ export async function loginAdmin(page: Page) {
 
   await page.getByLabel(/adresse email/i).fill(ADMIN.email);
 
-  await page.getByLabel(/mot de passe/i).fill(ADMIN.password);
+  await page.getByRole('textbox', { name: /mot de passe/i }).fill(ADMIN.password);
 
   await page.getByRole('button', { name: 'Se connecter' }).click();
 
