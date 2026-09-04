@@ -1,3 +1,4 @@
+import '../src/config/load-env';
 import { PrismaClient, Role, UserStatus } from '@prisma/client';
 import * as argon2 from 'argon2';
 import { isPasswordPolicyValid } from '../src/modules/auth/dto/register.dto';

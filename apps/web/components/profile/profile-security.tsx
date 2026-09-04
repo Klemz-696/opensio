@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { Check, CheckCircle2, KeyRound, Loader2, Lock, XCircle } from 'lucide-react';
 import { useAuth } from '../../lib/auth/use-auth';
+import { PasswordInput } from '../ui/password-input';
 
 export function ProfileSecurity() {
   const { changePassword } = useAuth();
@@ -93,13 +94,12 @@ export function ProfileSecurity() {
             <label className="block text-xs font-semibold text-slate-700 dark:text-slate-200 mb-1.5">
               Mot de passe actuel
             </label>
-            <input
-              type="password"
+            <PasswordInput
               value={currentPassword}
               onChange={(e) => setCurrentPassword(e.target.value)}
               required
               placeholder="••••••••••••"
-              className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950/80 border border-slate-300 dark:border-slate-700 focus:border-sky-500 focus:ring-1 focus:ring-sky-500 text-slate-900 dark:text-white text-xs placeholder:text-slate-500 dark:placeholder:text-slate-400 transition-colors"
+              showDefaultLeftIcon={false}
             />
           </div>
 
@@ -108,13 +108,12 @@ export function ProfileSecurity() {
             <label className="block text-xs font-semibold text-slate-700 dark:text-slate-200 mb-1.5">
               Nouveau mot de passe
             </label>
-            <input
-              type="password"
+            <PasswordInput
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
               required
               placeholder="••••••••••••"
-              className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950/80 border border-slate-300 dark:border-slate-700 focus:border-sky-500 focus:ring-1 focus:ring-sky-500 text-slate-900 dark:text-white text-xs placeholder:text-slate-500 dark:placeholder:text-slate-400 transition-colors"
+              showDefaultLeftIcon={false}
             />
           </div>
 
@@ -123,13 +122,12 @@ export function ProfileSecurity() {
             <label className="block text-xs font-semibold text-slate-700 dark:text-slate-200 mb-1.5">
               Confirmer le nouveau mot de passe
             </label>
-            <input
-              type="password"
+            <PasswordInput
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               required
               placeholder="••••••••••••"
-              className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950/80 border border-slate-300 dark:border-slate-700 focus:border-sky-500 focus:ring-1 focus:ring-sky-500 text-slate-900 dark:text-white text-xs placeholder:text-slate-500 dark:placeholder:text-slate-400 transition-colors"
+              showDefaultLeftIcon={false}
             />
           </div>
         </div>

@@ -11,6 +11,7 @@ import {
   ShieldCheck,
 } from 'lucide-react';
 import { useAuth } from '../../lib/auth/use-auth';
+import { PasswordInput } from '../ui/password-input';
 
 export function ForcePasswordChangeModal() {
   const { user, changePassword, logout } = useAuth();
@@ -87,48 +88,36 @@ export function ForcePasswordChangeModal() {
             <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
               Mot de passe temporaire actuel
             </label>
-            <div className="relative">
-              <input
-                type="password"
-                required
-                value={currentPassword}
-                onChange={(e) => setCurrentPassword(e.target.value)}
-                placeholder="Entrez le mot de passe temporaire"
-                className="w-full px-3.5 py-2 bg-white dark:bg-slate-950/60 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
-              />
-            </div>
+            <PasswordInput
+              required
+              value={currentPassword}
+              onChange={(e) => setCurrentPassword(e.target.value)}
+              placeholder="Entrez le mot de passe temporaire"
+            />
           </div>
 
           <div>
             <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
               Nouveau mot de passe personnel
             </label>
-            <div className="relative">
-              <input
-                type="password"
-                required
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                placeholder="Nouveau mot de passe fort"
-                className="w-full px-3.5 py-2 bg-white dark:bg-slate-950/60 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
-              />
-            </div>
+            <PasswordInput
+              required
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              placeholder="Nouveau mot de passe fort"
+            />
           </div>
 
           <div>
             <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
               Confirmer le nouveau mot de passe
             </label>
-            <div className="relative">
-              <input
-                type="password"
-                required
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                placeholder="Répétez le nouveau mot de passe"
-                className="w-full px-3.5 py-2 bg-white dark:bg-slate-950/60 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
-              />
-            </div>
+            <PasswordInput
+              required
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              placeholder="Répétez le nouveau mot de passe"
+            />
           </div>
 
           {/* Checklist des exigences */}

@@ -8,7 +8,7 @@ import { useAuth } from '../../lib/auth/use-auth';
 import { getInitials, formatRole } from '../../lib/utils/formatters';
 
 export function Navbar() {
-  const { user, logout, isAuthenticated } = useAuth();
+  const { user, logout, isAuthenticated, isSingleUserMode } = useAuth();
   const router = useRouter();
 
   const handleLogout = async () => {
@@ -30,6 +30,11 @@ export function Navbar() {
                 <span className="text-[10px] uppercase font-bold tracking-widest px-1.5 py-0.5 rounded bg-sky-500/15 dark:bg-sky-500/20 text-sky-600 dark:text-sky-400 border border-sky-500/30">
                   SISR
                 </span>
+                {isSingleUserMode && (
+                  <span className="hidden sm:inline-flex text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20">
+                    Mono-utilisateur
+                  </span>
+                )}
               </span>
             </div>
           </Link>
@@ -90,14 +95,27 @@ export function Navbar() {
               </div>
             </Link>
 
-            <button
-              onClick={handleLogout}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium text-rose-600 dark:text-rose-400 hover:text-rose-700 dark:hover:text-rose-300 hover:bg-rose-500/10 border border-rose-500/20 transition-all cursor-pointer"
-              title="Se déconnecter"
+            {!isSingleUserMode && (
+              <button
+                onClick={handleLogout}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium text-rose-600 dark:text-rose-400 hover:text-rose-700 dark:hover:text-rose-300 hover:bg-rose-500/10 border border-rose-500/20 transition-all cursor-pointer"
+                title="Se déconnecter"
+              >
+                <LogOut className="w-4 h-4" />
+                <span className="hidden sm:inline">Déconnexion</span>
+              </button>
+            )}
+          </div>
+        )}
+
+        {!isAuthenticated && !isSingleUserMode && (
+          <div className="flex items-center gap-3">
+            <Link
+              href="/login"
+              className="px-3.5 py-1.5 rounded-xl bg-sky-500 hover:bg-sky-600 text-white font-medium text-xs transition-colors shadow-sm"
             >
-              <LogOut className="w-4 h-4" />
-              <span className="hidden sm:inline">Déconnexion</span>
-            </button>
+              Connexion
+            </Link>
           </div>
         )}
       </div>

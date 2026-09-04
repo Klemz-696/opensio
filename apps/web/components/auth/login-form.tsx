@@ -6,8 +6,9 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { Lock, Mail, AlertCircle, Loader2, ArrowRight } from 'lucide-react';
+import { Lock, Mail, AlertCircle, Loader2, ArrowRight, Info } from 'lucide-react';
 import { useAuth } from '../../lib/auth/use-auth';
+import { PasswordInput } from '../ui/password-input';
 import type { ProblemDetails } from '../../lib/auth/auth-types';
 
 const loginSchema = z.object({
@@ -21,8 +22,9 @@ export function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectUrl = searchParams.get('redirect') || '/catalogue';
+  const reason = searchParams.get('reason');
 
-  const { login } = useAuth();
+  const { login, isSingleUserMode, isRegistrationEnabled } = useAuth();
   const [globalError, setGlobalError] = useState<ProblemDetails | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -76,6 +78,38 @@ export function LoginForm() {
         </p>
       </div>
 
+      {reason === 'auth_required' && (
+        <div className="mb-6 p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-800 dark:text-amber-200 text-sm flex items-start gap-3">
+          <Info className="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+          <div className="flex-1">
+            <p className="font-semibold text-amber-900 dark:text-amber-100">Connexion requise</p>
+            <p className="text-xs text-amber-700 dark:text-amber-300 mt-1">
+              Veuillez vous connecter pour accéder à cette page.
+            </p>
+          </div>
+        </div>
+      )}
+
+      {isSingleUserMode && (
+        <div className="mb-6 p-4 rounded-xl bg-sky-500/10 border border-sky-500/30 text-sky-800 dark:text-sky-200 text-sm flex flex-col gap-2">
+          <div className="flex items-start gap-3">
+            <Info className="w-5 h-5 text-sky-600 dark:text-sky-400 shrink-0 mt-0.5" />
+            <div className="flex-1">
+              <p className="font-semibold text-sky-900 dark:text-sky-100">Mode mono-utilisateur activé</p>
+              <p className="text-xs text-sky-700 dark:text-sky-300 mt-1">
+                Cette instance est configurée en accès direct avec privilèges administrateur.
+              </p>
+            </div>
+          </div>
+          <Link
+            href={redirectUrl}
+            className="mt-2 w-full text-center py-2 px-3 rounded-lg bg-sky-500 hover:bg-sky-600 text-white font-medium text-xs transition-colors shadow"
+          >
+            Accéder directement au catalogue &rarr;
+          </Link>
+        </div>
+      )}
+
       {globalError && (
         <div className="mb-6 p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-700 dark:text-rose-300 text-sm flex items-start gap-3">
           <AlertCircle className="w-5 h-5 text-rose-500 dark:text-rose-400 shrink-0 mt-0.5" />
@@ -112,21 +146,12 @@ export function LoginForm() {
           <label htmlFor="password" className="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-2">
             Mot de passe
           </label>
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500 dark:text-slate-400">
-              <Lock className="w-5 h-5" />
-            </div>
-            <input
-              {...register('password')}
-              id="password"
-              type="password"
-              placeholder="••••••••••••"
-              className="w-full pl-11 pr-4 py-2.5 bg-slate-50 dark:bg-slate-950/60 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white placeholder:text-slate-500 dark:placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all text-sm"
-            />
-          </div>
-          {errors.password && (
-            <p className="text-rose-500 dark:text-rose-400 text-xs mt-1.5">{errors.password.message}</p>
-          )}
+          <PasswordInput
+            {...register('password')}
+            id="password"
+            placeholder="••••••••••••"
+            error={errors.password?.message}
+          />
           <div className="mt-2 text-right">
             <Link
               href="/forgot-password"
@@ -165,12 +190,18 @@ export function LoginForm() {
           Remplir avec le compte étudiant démo (du seed)
         </button>
 
-        <Link
-          href="/register"
-          className="text-xs text-slate-600 dark:text-slate-400 hover:text-sky-500 dark:hover:text-sky-400 transition-colors"
-        >
-          Pas encore de compte ? <span className="font-semibold underline underline-offset-4">S'inscrire</span>
-        </Link>
+        {isRegistrationEnabled ? (
+          <Link
+            href="/register"
+            className="text-xs text-slate-600 dark:text-slate-400 hover:text-sky-500 dark:hover:text-sky-400 transition-colors"
+          >
+            Pas encore de compte ? <span className="font-semibold underline underline-offset-4">S'inscrire</span>
+          </Link>
+        ) : (
+          <span className="text-xs text-slate-500 dark:text-slate-400 block">
+            Inscriptions publiques fermées sur cette instance.
+          </span>
+        )}
       </div>
     </div>
   );

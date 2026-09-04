@@ -11,7 +11,7 @@ export class AppService {
   getHealth(): HealthCheckResponse {
     return {
       status: 'ok',
-      version: '1.0.1',
+      version: '1.0.2',
       timestamp: new Date().toISOString(),
     };
   }

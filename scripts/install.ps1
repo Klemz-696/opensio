@@ -1,7 +1,7 @@
 #Requires -Version 5.1
 <#
 .SYNOPSIS
-  Installateur OpenSIO -- Plateforme BTS SIO SISR (v1.0.1)
+  Installateur OpenSIO -- Plateforme BTS SIO SISR (v1.0.2)
 .DESCRIPTION
   Installation automatisee : iex (irm https://raw.githubusercontent.com/Klemz-696/opensio/main/scripts/install.ps1)
   Parametres :
@@ -31,7 +31,7 @@ function Write-Header {
     Write-Host " | |_| | |_) |  __/ | | |___) | | |_| |" -ForegroundColor Cyan
     Write-Host "  \___/| .__/ \___|_| |_|____/___\___/ " -ForegroundColor Cyan
     Write-Host "       |_|                             `n" -ForegroundColor Cyan
-    Write-Host "  OpenSIO -- Plateforme BTS SIO SISR (Installateur v1.0.1)" -ForegroundColor Gray
+    Write-Host "  OpenSIO -- Plateforme BTS SIO SISR (Installateur v1.0.2)" -ForegroundColor Gray
     if ($DryRun) { Write-Host "  [DRY-RUN : Diagnostic uniquement -- aucune modification]" -ForegroundColor Yellow }
     Write-Host "`n$('-' * 60)`n" -ForegroundColor DarkGray
 }
@@ -281,6 +281,27 @@ try {
     & pnpm install
     if ($LASTEXITCODE -ne 0) { Abort "Echec de pnpm install." }
     Write-Ok "Dependances installees"
+
+    # Preparation des variables d'environnement et du client Prisma
+    $webEnv = Join-Path $InstallDir 'apps\web\.env'
+    $webEnvEx = Join-Path $InstallDir 'apps\web\.env.example'
+    if (-not (Test-Path $webEnv) -and (Test-Path $webEnvEx)) {
+        Copy-Item $webEnvEx $webEnv
+        Write-Ok "apps/web/.env initialise"
+    }
+
+    $apiEnv = Join-Path $InstallDir 'apps\api\.env'
+    $apiEnvEx = Join-Path $InstallDir 'apps\api\.env.example'
+    if (-not (Test-Path $apiEnv) -and (Test-Path $apiEnvEx)) {
+        Copy-Item $apiEnvEx $apiEnv
+        & node scripts/generate-secrets.mjs --target dev
+        Write-Ok "apps/api/.env initialise avec secrets securises"
+    }
+
+    & pnpm db:generate
+    if ($LASTEXITCODE -eq 0) {
+        Write-Ok "Client Prisma genere"
+    }
 } finally { Pop-Location }
 
 Write-Host "`n$('-' * 60)" -ForegroundColor DarkGray

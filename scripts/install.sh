@@ -47,7 +47,7 @@ echo -e "${CYAN} ██║   ██║██╔═══╝ ██╔══╝  
 echo -e "${CYAN} ╚██████╔╝██║     ███████╗██║ ╚████║███████║██║╚██████╔╝${NC}"
 echo -e "${CYAN}  ╚═════╝ ╚═╝     ╚══════╝╚═╝  ╚═══╝╚══════╝╚═╝ ╚═════╝ ${NC}\n"
 echo -e "${GRAY}  La plateforme d'entraînement BTS SIO SISR${NC}"
-echo -e "${GRAY}  Installateur automatique v1.0.1 (macOS / Linux)${NC}"
+echo -e "${GRAY}  Installateur automatique v1.0.2 (macOS / Linux)${NC}"
 if [ "$DRY_RUN" = true ]; then
   echo -e "${YELLOW}  [DRY-RUN : Diagnostic uniquement — aucun changement]${NC}"
 fi
@@ -289,6 +289,20 @@ info "Cela peut prendre 1 à 3 minutes au premier lancement..."
 cd "$INSTALL_DIR"
 if pnpm install; then
   ok "Dépendances installées avec succès"
+
+  # Initialisation des fichiers d'environnement si absents
+  if [ ! -f "$INSTALL_DIR/apps/web/.env" ] && [ -f "$INSTALL_DIR/apps/web/.env.example" ]; then
+    cp "$INSTALL_DIR/apps/web/.env.example" "$INSTALL_DIR/apps/web/.env"
+    ok "apps/web/.env initialisé"
+  fi
+
+  if [ ! -f "$INSTALL_DIR/apps/api/.env" ] && [ -f "$INSTALL_DIR/apps/api/.env.example" ]; then
+    cp "$INSTALL_DIR/apps/api/.env.example" "$INSTALL_DIR/apps/api/.env"
+    node "$INSTALL_DIR/scripts/generate-secrets.mjs" --target dev || true
+    ok "apps/api/.env initialisé avec secrets générés"
+  fi
+
+  pnpm db:generate || true
 else
   abort "pnpm install a échoué."
 fi

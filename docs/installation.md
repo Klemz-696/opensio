@@ -150,3 +150,10 @@ Sous Windows, Node.js résout parfois `localhost` vers `::1` (IPv6). Si Ollama n
 Le modèle `llama3.1:8b` requiert environ 5 Go de mémoire RAM disponible. Si votre PC dispose de moins de 16 Go de RAM :
 - Téléchargez un modèle plus léger comme `ollama pull llama3.2:3b` ou `qwen2.5-coder:7b`.
 - Renseignez `AI_MODEL=llama3.2:3b` dans votre `.env`.
+
+### 8. Mode Mono-Utilisateur & Gestion des Inscriptions (v1.0.2)
+- **Mode Mono-Utilisateur (`SINGLE_USER_MODE=true`)** :
+  Idéal pour une utilisation personnelle en local. L'API et l'interface reconnaissent automatiquement l'utilisateur comme administrateur principal sans exiger de connexion par mot de passe.
+- **Inscriptions Publiques (`REGISTRATION_ENABLED=false`)** :
+  Par défaut, les inscriptions publiques sont fermées. Si vous souhaitez autoriser les étudiants à créer leur compte en autonomie, définissez `REGISTRATION_ENABLED=true` dans `apps/api/.env`.
+

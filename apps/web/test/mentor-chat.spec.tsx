@@ -75,6 +75,8 @@ describe('MentorChatDrawer (Assistant IA Frontend — Lot C3)', () => {
       accessToken: 'valid-jwt-token',
       isLoading: false,
       isAuthenticated: true,
+      isSingleUserMode: false,
+      isRegistrationEnabled: false,
       login: vi.fn(),
       logout: vi.fn(),
       setAccessToken: vi.fn(),

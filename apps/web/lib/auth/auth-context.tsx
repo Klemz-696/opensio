@@ -2,6 +2,7 @@
 
 import React, { createContext, useCallback, useEffect, useState } from 'react';
 import type {
+  AuthConfig,
   AuthContextValue,
   AuthUser,
   LoginResponse,
@@ -50,18 +51,52 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // D-09 / RM-13 : Access token conservé EN MÉMOIRE uniquement (jamais localStorage ni sessionStorage)
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isSingleUserMode, setIsSingleUserMode] = useState<boolean>(false);
+  const [isRegistrationEnabled, setIsRegistrationEnabled] = useState<boolean>(false);
 
-  // Restauration de session automatique via le cookie HttpOnly de rafraîchissement au montage
+  // Restauration de session et détection de la configuration d'instance
   useEffect(() => {
     let isMounted = true;
 
     async function restoreSession() {
       try {
+        // 1. Récupération de la configuration d'authentification publique
+        let singleUser = false;
+        try {
+          const cfgRes = await fetch('/api/v1/auth/config');
+          if (cfgRes.ok) {
+            const cfgData: AuthConfig = await cfgRes.json();
+            if (isMounted) {
+              setIsSingleUserMode(cfgData.singleUserMode);
+              setIsRegistrationEnabled(cfgData.registrationEnabled);
+            }
+            singleUser = cfgData.singleUserMode;
+          }
+        } catch {
+          // Ignorer l'indisponibilité temporaire de la config
+        }
+
+        // 2. Restauration de session classique via refreshToken HttpOnly
         const data = await requestSessionRefresh();
         if (isMounted) {
           if (data) {
             setUser(data.user);
             setAccessToken(data.accessToken);
+          } else if (singleUser) {
+            // Mode mono-utilisateur : tentative de récupération directe de l'admin
+            try {
+              const meRes = await fetch('/api/v1/auth/me');
+              if (meRes.ok) {
+                const meUser: AuthUser = await meRes.json();
+                setUser(meUser);
+              } else {
+                setUser(null);
+                setAccessToken(null);
+              }
+            } catch {
+              setUser(null);
+              setAccessToken(null);
+            }
           } else {
             setUser(null);
             setAccessToken(null);
@@ -199,7 +234,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     user,
     accessToken,
     isLoading,
-    isAuthenticated: Boolean(user && accessToken),
+    isAuthenticated: Boolean(user && (accessToken || isSingleUserMode)),
+    isSingleUserMode,
+    isRegistrationEnabled,
     login,
     logout,
     changePassword,
