@@ -1,6 +1,6 @@
 {
   "name": "opensio",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "description": "Plateforme auto-hébergée de formation et de révision pratique pour le BTS SIO SISR",
   "scripts": {
