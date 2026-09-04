@@ -142,7 +142,7 @@ flowchart LR
 ### ⚡ Installation en une commande
 
 > **Prérequis unique** : [Docker Desktop](https://www.docker.com/products/docker-desktop/) installé et démarré.
-> Node.js, pnpm et Git sont installés automatiquement si absents.
+> Node.js, pnpm et Git sont vérifiés et configurés automatiquement si absents.
 
 **Sous Windows (recommandé)**, ouvrez **PowerShell** et exécutez :
 
@@ -150,13 +150,17 @@ flowchart LR
 iex (irm https://raw.githubusercontent.com/Klemz-696/opensio/main/scripts/install.ps1)
 ```
 
+*Options disponibles : `-InstallDir <chemin>` (dossier personnalisé, défaut : `~\opensio`), `-DryRun` (diagnostic sans installation).*
+
 **Sous macOS / Linux**, ouvrez votre terminal et exécutez :
 
 ```bash
 bash <(curl -s https://raw.githubusercontent.com/Klemz-696/opensio/main/scripts/install.sh)
 ```
 
-Le script installe tout, clone le projet, et lance OpenSIO. **C'est tout.**
+*Options disponibles : `--dir <chemin>` (dossier personnalisé, défaut : `~/opensio`), `--dry-run`.*
+
+Le script configure l'environnement, clone le projet, installe les dépendances et lance OpenSIO.
 
 À la fin de l'installation sous Windows, un raccourci **OpenSIO.bat** est créé sur votre Bureau.
 Pour tous les systèmes, vous pourrez relancer le projet plus tard en tapant `pnpm opensio` dans le dossier du projet.
@@ -165,9 +169,17 @@ Pour tous les systèmes, vous pourrez relancer le projet plus tard en tapant `pn
 
 ### 🔧 Installation manuelle (avancée)
 
-Si vous préférez cloner vous-même l'application :
+Si vous préférez cloner et configurer vous-même l'application :
 
-**Prérequis** : Node.js ≥ 22, pnpm ≥ 9, Git, Docker Desktop
+**Prérequis système obligatoires** :
+- **Node.js LTS** (≥ 22.0.0) : [Télécharger Node.js](https://nodejs.org/)
+- **pnpm** (activé via Corepack intégré à Node.js) :
+  ```bash
+  corepack enable
+  corepack prepare pnpm@10 --activate
+  ```
+- **Git** : [Télécharger Git](https://git-scm.com/)
+- **Docker Desktop** : installé et **démarré** ([Télécharger Docker](https://www.docker.com/products/docker-desktop/))
 
 ```bash
 # 1. Cloner le dépôt
@@ -258,7 +270,7 @@ Les tests sont exécutés automatiquement sur chaque push/PR via GitHub Actions.
 
 ## 🗺️ Feuille de route
 
-Le catalogue SISR (20/20 modules, 105 leçons, 45 labs) est **terminé**. La version v1.0.0 est publiée et inclut toutes ces fonctionnalités (durcissement, accessibilité, tests E2E, déploiement).
+Le catalogue SISR (20/20 modules, 105 leçons, 45 labs) est **terminé**. La version v1.0.1 est publiée et inclut toutes ces fonctionnalités (durcissement, accessibilité, tests E2E, déploiement, installateurs fiabilisés).
 L'évolution future (roadmap v1.1 avec responsive mobile, etc.) est détaillée dans
 [docs/roadmap.md](docs/roadmap.md), et chaque étape est tracée dans le
 [journal de bord](docs/journal.md).

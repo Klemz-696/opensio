@@ -1529,3 +1529,39 @@ Les trois PR ont été fusionnées sur `main` après passage complet de la CI gl
 
 - La PR #45 (module complet : 5 leçons, 5 quiz, 2 labs avec validateurs) était restée ouverte lors de la clôture du 28/08. Rebase sur main, résolution des conflits documentaires (`journal.md`, `modules-map.md`), merge.
 - Validation : 20 modules, 105 leçons, 105 quiz (537 questions), 45 labs, 138/138 tests validateurs ; 132 tests web + 200 tests API verts.
+
+---
+
+## 2026-09-04 — Correctif v1.0.1 : Fiabilisation de l'installeur Windows & Choix du dossier d'installation
+
+**Contexte** : Signalement de blocages réels sous Windows 11 lors de l'exécution de la commande one-liner `iex (irm ...)`. Détection impossible de `pnpm` en installation manuelle et gel de la session sur l'étape de vérification des prérequis.
+
+### Diagnostic des anomalies
+
+1. **Prompts interactifs silencieux / avalés** :
+   - L'appel `npm install -g pnpm 2>&1 | Out-Null` masquait les erreurs sans lever d'exception en PowerShell natif. En cas de droits insuffisants, le script poursuivait avec une version vide sans avertissement.
+   - La commande documentée `irm ... | iex` redirigeait l'entrée standard `stdin`, ce qui provoquait le blocage indéfini de `Read-Host` (invite Docker Desktop ou dossier).
+   - Corepack requiert `$env:COREPACK_ENABLE_DOWNLOAD_PROMPT = '0'` pour ne pas bloquer sur la confirmation de téléchargement `[Y/n]`.
+   - Winget doit impérativement être appelé avec `--accept-package-agreements --accept-source-agreements --disable-interactivity`.
+2. **Chemin `$PSScriptRoot` vide en mémoire** :
+   - En exécution directe via `iex (irm ...)`, le script n'a pas de chemin local. Il doit d'abord demander le dossier d'installation, cloner le projet, puis se relancer localement via `& "$InstallDir\scripts\install.ps1" -InstallDir $InstallDir -SkipDirPrompt`.
+3. **`pnpm` manquant après clonage manuel** :
+   - La documentation omettait la commande d'activation Corepack (`corepack enable && corepack prepare pnpm@10 --activate`).
+
+### Actions réalisées
+
+- **Refonte de `scripts/install.ps1`** :
+  - Ajout des paramètres `-InstallDir` (dossier personnalisé avec défaut `$env:USERPROFILE\opensio`), `-DryRun` (mode diagnostic sans modification) et `-SkipDirPrompt`.
+  - Validation stricte des dossiers système et de la racine de lecteur.
+  - Stratégie `pnpm` priorisant Corepack avec `$env:COREPACK_ENABLE_DOWNLOAD_PROMPT = '0'` et repli vers `npm install -g pnpm`.
+  - Rechargement automatique et complet des variables d'environnement (`Update-SessionPath`).
+  - Détection fiable du démon Docker (`docker info`) avec proposition interactive de démarrage.
+  - Respect strict de la règle **D-13** (< 400 lignes, 298 lignes au total).
+- **Mise à niveau de `scripts/install.sh`** :
+  - Parité avec support des options `--dir` et `--dry-run`, validation anti-dossiers système et affichage du dossier final.
+- **Documentation (`README.md` et `docs/installation.md`)** :
+  - Documentation des options `-InstallDir` / `--dir` et `-DryRun`.
+  - Correction de la commande Windows : utilisation de `iex (irm ...)` au lieu de `irm ... | iex`.
+  - Ajout d'une section Dépannage exhaustive (politique d'exécution PowerShell, démon Docker, rafraîchissement du PATH).
+- **Publication v1.0.1** :
+  - Bump de version `1.0.1` dans tous les `package.json` et synchronisation de l'endpoint `/health`.
