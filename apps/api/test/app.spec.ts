@@ -9,7 +9,7 @@ describe('AppController (Lot 0 baseline)', () => {
     const result = appController.getHealth();
 
     expect(result.status).toBe('ok');
-    expect(result.version).toBe('1.0.1');
+    expect(result.version).toBe('1.0.2');
     expect(result.timestamp).toBeDefined();
   });
 });

@@ -20,7 +20,7 @@ export function AdminRoute({ children }: AdminRouteProps) {
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
-      router.push('/login?redirect=%2Fadmin%2Fusers');
+      router.push('/login?redirect=%2Fadmin%2Fusers&reason=auth_required');
     }
   }, [isLoading, isAuthenticated, router]);
 

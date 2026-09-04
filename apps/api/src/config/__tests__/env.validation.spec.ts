@@ -8,11 +8,20 @@ describe('validateEnv', () => {
     JWT_SECRET: 'a-very-strong-and-random-64-bytes-secret-key-that-is-not-a-default-template-key-for-test',
   };
 
-  it('devrait valider une configuration valide', () => {
+  it('devrait valider une configuration valide et initialiser SINGLE_USER_MODE par défaut à false', () => {
     const config = validateEnv(validBaseConfig);
     expect(config.NODE_ENV).toBe('development');
     expect(config.API_PORT).toBe(4000);
     expect(config.JWT_SECRET).toBe(validBaseConfig.JWT_SECRET);
+    expect(config.SINGLE_USER_MODE).toBe(false);
+  });
+
+  it('devrait convertir SINGLE_USER_MODE="true" en booléen true', () => {
+    const config = validateEnv({
+      ...validBaseConfig,
+      SINGLE_USER_MODE: 'true',
+    });
+    expect(config.SINGLE_USER_MODE).toBe(true);
   });
 
   it('devrait rejeter un JWT_SECRET de moins de 64 caractères', () => {

@@ -1,6 +1,6 @@
 {
   "name": "@opensio/web",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "private": true,
   "description": "Frontend Next.js 15 (App Router) pour OpenSIO",
   "scripts": {

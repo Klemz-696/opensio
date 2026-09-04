@@ -11,6 +11,7 @@ import {
   ShieldAlert,
 } from 'lucide-react';
 import { adminApi, type AdminUserItem } from '../../lib/api/admin-api';
+import { PasswordInput } from '../ui/password-input';
 
 interface ResetPasswordDialogProps {
   isOpen: boolean;
@@ -170,12 +171,11 @@ export function ResetPasswordDialog({
               <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
                 Mot de passe temporaire personnalisé (Optionnel)
               </label>
-              <input
-                type="password"
+              <PasswordInput
                 value={temporaryPassword}
                 onChange={(e) => setTemporaryPassword(e.target.value)}
                 placeholder="Laisser vide pour générer un mot de passe aléatoire"
-                className="w-full px-3.5 py-2 bg-white dark:bg-slate-950/60 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
+                showDefaultLeftIcon={false}
               />
             </div>
 
