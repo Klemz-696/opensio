@@ -1,3 +1,4 @@
+import './config/load-env';
 import { NestFactory } from '@nestjs/core';
 import { WsAdapter } from '@nestjs/platform-ws';
 import cookieParser from 'cookie-parser';

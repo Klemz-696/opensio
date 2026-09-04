@@ -1,6 +1,6 @@
 {
   "name": "opensio",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "private": true,
   "description": "Plateforme auto-hébergée de formation et de révision pratique pour le BTS SIO SISR",
   "scripts": {
@@ -20,7 +20,9 @@
     "opensio": "node scripts/opensio.mjs",
     "test:e2e": "node e2e/prepare.mjs && playwright test",
     "test:e2e:quick": "playwright test --grep @smoke",
+    "postinstall": "pnpm db:generate",
     "secrets:generate": "node scripts/generate-secrets.mjs",
+    "secrets:generate:dev": "node scripts/generate-secrets.mjs --target dev",
     "lint-staged": "lint-staged"
   },
   "lint-staged": {

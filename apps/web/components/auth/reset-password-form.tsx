@@ -6,7 +6,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { Lock, AlertCircle, Loader2, KeyRound, CheckCircle2 } from 'lucide-react';
+import { AlertCircle, Loader2, KeyRound, CheckCircle2 } from 'lucide-react';
+import { PasswordInput } from '../ui/password-input';
 import type { ProblemDetails } from '../../lib/auth/auth-types';
 import { isPasswordPolicyValid } from './register-form';
 
@@ -145,21 +146,12 @@ export function ResetPasswordForm() {
           <label htmlFor="newPassword" className="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-2">
             Nouveau mot de passe
           </label>
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500 dark:text-slate-400">
-              <Lock className="w-5 h-5" />
-            </div>
-            <input
-              id="newPassword"
-              {...register('newPassword')}
-              type="password"
-              placeholder="••••••••••••"
-              className="w-full pl-11 pr-4 py-2.5 bg-slate-50 dark:bg-slate-950/60 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white placeholder:text-slate-500 dark:placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-fuchsia-500 focus:border-transparent transition-all text-sm"
-            />
-          </div>
-          {errors.newPassword && (
-            <p className="text-rose-500 dark:text-rose-400 text-xs mt-1.5">{errors.newPassword.message}</p>
-          )}
+          <PasswordInput
+            id="newPassword"
+            {...register('newPassword')}
+            placeholder="••••••••••••"
+            error={errors.newPassword?.message}
+          />
         </div>
 
         <button

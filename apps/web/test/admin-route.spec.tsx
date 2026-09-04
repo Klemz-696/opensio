@@ -50,7 +50,7 @@ describe('AdminRoute Component (RBAC Front)', () => {
       </AdminRoute>,
     );
 
-    expect(mockPush).toHaveBeenCalledWith('/login?redirect=%2Fadmin%2Fusers');
+    expect(mockPush).toHaveBeenCalledWith('/login?redirect=%2Fadmin%2Fusers&reason=auth_required');
     expect(screen.queryByText('Contenu Secret Admin')).toBeNull();
   });
 

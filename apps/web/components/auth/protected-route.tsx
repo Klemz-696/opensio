@@ -17,7 +17,7 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
       const redirectParam = encodeURIComponent(pathname || '/catalogue');
-      router.push(`/login?redirect=${redirectParam}`);
+      router.push(`/login?redirect=${redirectParam}&reason=auth_required`);
     }
   }, [isLoading, isAuthenticated, router, pathname]);
 

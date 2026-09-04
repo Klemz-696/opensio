@@ -270,7 +270,7 @@ Les tests sont exécutés automatiquement sur chaque push/PR via GitHub Actions.
 
 ## 🗺️ Feuille de route
 
-Le catalogue SISR (20/20 modules, 105 leçons, 45 labs) est **terminé**. La version v1.0.1 est publiée et inclut toutes ces fonctionnalités (durcissement, accessibilité, tests E2E, déploiement, installateurs fiabilisés).
+Le catalogue SISR (20/20 modules, 105 leçons, 45 labs) est **terminé**. La version v1.0.2 est publiée et inclut toutes ces fonctionnalités (fiabilisation du chargement .env, installateurs durcis, PasswordInput ergonomique, mode mono-utilisateur, durcissement accessibilité et tests).
 L'évolution future (roadmap v1.1 avec responsive mobile, etc.) est détaillée dans
 [docs/roadmap.md](docs/roadmap.md), et chaque étape est tracée dans le
 [journal de bord](docs/journal.md).

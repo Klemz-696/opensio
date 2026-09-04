@@ -7,7 +7,7 @@ test.describe('Inscription', () => {
     // Remplir formulaire
     await page.getByLabel(/nom/i).fill('Test User');
     await page.getByLabel(/e-?mail/i).fill(`test+${Date.now()}@opensio.local`);
-    await page.getByLabel(/mot de passe/i).fill('Test12345678!');
+    await page.getByRole('textbox', { name: /mot de passe/i }).fill('Test12345678!');
     await page.getByRole('button', { name: /s'inscrire/i }).click();
     
     // Attendre redirection vers le catalogue après inscription

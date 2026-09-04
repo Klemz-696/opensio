@@ -1,3 +1,4 @@
+import '../config/load-env.js';
 import { PrismaClient } from '@prisma/client';
 import { executeContentSync } from './sync.service.js';
 import { printSyncReport } from './reporter.js';

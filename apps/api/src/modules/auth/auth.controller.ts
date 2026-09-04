@@ -153,10 +153,32 @@ export class AuthController {
     return this.authService.changePassword(user.id, dto, ip);
   }
 
+  @Public()
+  @Get('config')
+  @HttpCode(HttpStatus.OK)
+  getConfig() {
+    return {
+      singleUserMode: process.env.SINGLE_USER_MODE === 'true',
+      registrationEnabled: process.env.REGISTRATION_ENABLED === 'true',
+    };
+  }
+
   @UseGuards(AuthGuard)
   @Get('me')
   @HttpCode(HttpStatus.OK)
   async getMe(@CurrentUser() user: AuthenticatedUser) {
+    if (!user || user.id === 'single-user-admin') {
+      return {
+        id: 'single-user-admin',
+        email: 'admin@opensio.local',
+        displayName: 'Administrateur OpenSIO',
+        role: 'ADMIN',
+        status: 'ACTIVE',
+        mustChangePassword: false,
+        createdAt: new Date(),
+        lastLoginAt: new Date(),
+      };
+    }
     return this.authService.getMe(user.id);
   }
 

@@ -15,6 +15,11 @@ export const envSchema = z
       .transform((val) => val.toLowerCase() === 'true')
       .or(z.boolean())
       .default(false),
+    SINGLE_USER_MODE: z
+      .string()
+      .transform((val) => val.toLowerCase() === 'true')
+      .or(z.boolean())
+      .default(false),
     CONTENT_PATH: z.string().default('./content'),
     LAB_RUNNER: z.enum(['simulation', 'docker', 'proxmox']).default('simulation'),
     TERMINAL_ENABLED: z
